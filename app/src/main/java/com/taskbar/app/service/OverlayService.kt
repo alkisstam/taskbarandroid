@@ -398,6 +398,7 @@ private fun OverlayContent(
             Column(modifier = Modifier.wrapContentHeight()) {
                 AppMenuPanel(
                     viewModel = appMenuViewModel,
+                    onHideTaskbar = taskbarViewModel::hideTaskbar,
                     modifier = Modifier
                 )
                 AnimatedVisibility(

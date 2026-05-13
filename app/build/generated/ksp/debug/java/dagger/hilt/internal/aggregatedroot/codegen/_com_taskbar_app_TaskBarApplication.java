@@ -13,8 +13,10 @@ import javax.annotation.processing.Generated;
     originatingRoot = "com.taskbar.app.TaskBarApplication",
     originatingRootPackage = "com.taskbar.app",
     rootAnnotation = HiltAndroidApp.class,
+    rootComponentPackage = "dagger.hilt.components",
     rootSimpleNames = "TaskBarApplication",
-    originatingRootSimpleNames = "TaskBarApplication"
+    originatingRootSimpleNames = "TaskBarApplication",
+    rootComponentSimpleNames = "SingletonComponent"
 )
 @Generated("dagger.hilt.processor.internal.root.AggregatedRootGenerator")
 public class _com_taskbar_app_TaskBarApplication {

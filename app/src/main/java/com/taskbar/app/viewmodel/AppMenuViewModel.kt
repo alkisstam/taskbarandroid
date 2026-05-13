@@ -27,7 +27,10 @@ data class QuickControlsState(
     val autoBrightness: Boolean = false,
     val canWriteSettings: Boolean = false,
     val hasTorch: Boolean = false,
-    val canSetSilent: Boolean = false
+    val canSetSilent: Boolean = false,
+    val dndEnabled: Boolean = false,
+    val dndPermissionGranted: Boolean = false,
+    val canShowPowerMenu: Boolean = false
 )
 
 @HiltViewModel
@@ -122,7 +125,10 @@ class AppMenuViewModel @Inject constructor(
             autoBrightness = quickControls.isAutoBrightnessEnabled(),
             canWriteSettings = quickControls.canWriteSettings(),
             hasTorch = quickControls.hasTorch(),
-            canSetSilent = quickControls.canSetSilent()
+            canSetSilent = quickControls.canSetSilent(),
+            dndEnabled = quickControls.isDndEnabled(),
+            dndPermissionGranted = quickControls.isDndPermissionGranted(),
+            canShowPowerMenu = quickControls.canShowPowerMenu()
         )
     }
 
@@ -160,5 +166,22 @@ class AppMenuViewModel @Inject constructor(
         val newState = !_quickControlsState.value.autoBrightness
         quickControls.setAutoBrightness(newState)
         _quickControlsState.value = _quickControlsState.value.copy(autoBrightness = newState)
+    }
+
+    fun toggleDnd() {
+        quickControls.toggleDnd()
+        _quickControlsState.value = _quickControlsState.value.copy(
+            dndEnabled = quickControls.isDndEnabled()
+        )
+    }
+
+    fun openQrScanner() {
+        quickControls.openQrScanner()
+        _menuVisible.value = false
+    }
+
+    fun showPowerMenu() {
+        quickControls.showPowerMenu()
+        _menuVisible.value = false
     }
 }

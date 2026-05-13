@@ -4,7 +4,7 @@
             "outputFile": "com.taskbar.app-mergeDebugResources-71:/values-night-v8/values-night-v8.xml",
             "map": [
                 {
-                    "source": "/home/alkis/.gradle/caches/8.13/transforms/132127c3a7d998260f9baa8c584ac05f/transformed/appcompat-1.7.0/res/values-night-v8/values-night-v8.xml",
+                    "source": "/home/alkis/.gradle/caches/9.4.1/transforms/69c948bc9d2b5309f8c78980adb7e17d/transformed/appcompat-1.7.0/res/values-night-v8/values-night-v8.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
                         "startColumns": "4,4,4,4,4,4,4,4",
@@ -21,7 +21,7 @@
                     }
                 },
                 {
-                    "source": "/home/alkis/.gradle/caches/8.13/transforms/d19cd826bb4d25b530d6e7517460117a/transformed/material-1.12.0/res/values-night-v8/values-night-v8.xml",
+                    "source": "/home/alkis/.gradle/caches/9.4.1/transforms/04e5162d0a5b15e584c5c7580a0a518d/transformed/material-1.12.0/res/values-night-v8/values-night-v8.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",

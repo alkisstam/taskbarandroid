@@ -5,8 +5,11 @@
 5    android:versionName="1.0" >
 6
 7    <uses-sdk
+7-->INJECTED
 8        android:minSdkVersion="26"
+8-->INJECTED
 9        android:targetSdkVersion="35" />
+9-->INJECTED
 10
 11    <!-- Overlay permission -->
 12    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
@@ -39,191 +42,195 @@
 23    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 23-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:16:5-81
 23-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:16:22-78
-24
-25    <uses-feature
-25-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:18:5-91
-26        android:name="android.hardware.camera.flash"
-26-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:18:19-63
-27        android:required="false" />
-27-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:18:64-88
-28
-29    <permission
-29-->[androidx.core:core:1.15.0] /home/alkis/.gradle/caches/8.13/transforms/065a1be75cae1356edc5efc7d28060c7/transformed/core-1.15.0/AndroidManifest.xml:22:5-24:47
-30        android:name="com.taskbar.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
-30-->[androidx.core:core:1.15.0] /home/alkis/.gradle/caches/8.13/transforms/065a1be75cae1356edc5efc7d28060c7/transformed/core-1.15.0/AndroidManifest.xml:23:9-81
-31        android:protectionLevel="signature" />
-31-->[androidx.core:core:1.15.0] /home/alkis/.gradle/caches/8.13/transforms/065a1be75cae1356edc5efc7d28060c7/transformed/core-1.15.0/AndroidManifest.xml:24:9-44
-32
-33    <uses-permission android:name="com.taskbar.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
-33-->[androidx.core:core:1.15.0] /home/alkis/.gradle/caches/8.13/transforms/065a1be75cae1356edc5efc7d28060c7/transformed/core-1.15.0/AndroidManifest.xml:26:5-97
-33-->[androidx.core:core:1.15.0] /home/alkis/.gradle/caches/8.13/transforms/065a1be75cae1356edc5efc7d28060c7/transformed/core-1.15.0/AndroidManifest.xml:26:22-94
-34
-35    <application
-35-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:20:5-69:19
-36        android:name="com.taskbar.app.TaskBarApplication"
-36-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:21:9-43
-37        android:allowBackup="true"
-37-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:22:9-35
-38        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-38-->[androidx.core:core:1.15.0] /home/alkis/.gradle/caches/8.13/transforms/065a1be75cae1356edc5efc7d28060c7/transformed/core-1.15.0/AndroidManifest.xml:28:18-86
-39        android:debuggable="true"
-40        android:extractNativeLibs="false"
-41        android:icon="@mipmap/ic_launcher"
-41-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:23:9-43
-42        android:label="@string/app_name"
-42-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:24:9-41
-43        android:roundIcon="@mipmap/ic_launcher_round"
-43-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:25:9-54
-44        android:supportsRtl="true"
-44-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:26:9-35
-45        android:theme="@style/Theme.TaskBar" >
-45-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:27:9-45
-46        <activity
-46-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:29:9-37:20
-47            android:name="com.taskbar.app.MainActivity"
-47-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:30:13-41
-48            android:exported="true"
-48-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:31:13-36
-49            android:windowSoftInputMode="adjustResize" >
-49-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:32:13-55
-50            <intent-filter>
-50-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:33:13-36:29
-51                <action android:name="android.intent.action.MAIN" />
-51-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:34:17-69
-51-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:34:25-66
-52
-53                <category android:name="android.intent.category.LAUNCHER" />
-53-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:35:17-77
-53-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:35:27-74
-54            </intent-filter>
-55        </activity>
-56
-57        <service
-57-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:39:9-46:19
-58            android:name="com.taskbar.app.service.OverlayService"
-58-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:40:13-51
-59            android:exported="false"
-59-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:41:13-37
-60            android:foregroundServiceType="specialUse" >
-60-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:42:13-55
-61            <property
-61-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:43:13-45:59
-62                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-62-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:44:17-76
-63                android:value="TaskBar overlay service" />
-63-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:45:17-56
-64        </service>
-65        <service
-65-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:48:9-59:19
-66            android:name="com.taskbar.app.service.TaskBarAccessibilityService"
-66-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:49:13-64
-67            android:exported="true"
-67-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:50:13-36
-68            android:label="@string/accessibility_service_label"
-68-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:51:13-64
-69            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" >
-69-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:52:13-79
-70            <intent-filter>
-70-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:53:13-55:29
-71                <action android:name="android.accessibilityservice.AccessibilityService" />
-71-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:54:17-92
-71-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:54:25-89
-72            </intent-filter>
-73
-74            <meta-data
-74-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:56:13-58:72
-75                android:name="android.accessibilityservice"
-75-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:57:17-60
-76                android:resource="@xml/accessibility_service_config" />
-76-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:58:17-69
-77        </service>
-78
-79        <receiver
-79-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:61:9-67:20
-80            android:name="com.taskbar.app.service.BootReceiver"
-80-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:62:13-49
-81            android:exported="true" >
-81-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:63:13-36
-82            <intent-filter>
-82-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:64:13-66:29
-83                <action android:name="android.intent.action.BOOT_COMPLETED" />
-83-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:65:17-79
-83-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:65:25-76
-84            </intent-filter>
-85        </receiver>
-86
-87        <activity
-87-->[androidx.compose.ui:ui-tooling-android:1.7.6] /home/alkis/.gradle/caches/8.13/transforms/f71fc7919846dfdd769e12789ecea6f1/transformed/ui-tooling-release/AndroidManifest.xml:23:9-25:39
-88            android:name="androidx.compose.ui.tooling.PreviewActivity"
-88-->[androidx.compose.ui:ui-tooling-android:1.7.6] /home/alkis/.gradle/caches/8.13/transforms/f71fc7919846dfdd769e12789ecea6f1/transformed/ui-tooling-release/AndroidManifest.xml:24:13-71
-89            android:exported="true" />
-89-->[androidx.compose.ui:ui-tooling-android:1.7.6] /home/alkis/.gradle/caches/8.13/transforms/f71fc7919846dfdd769e12789ecea6f1/transformed/ui-tooling-release/AndroidManifest.xml:25:13-36
-90
-91        <provider
-91-->[androidx.emoji2:emoji2:1.3.0] /home/alkis/.gradle/caches/8.13/transforms/dabc9bfd36a5bd35b5f65cdc8053d8a2/transformed/emoji2-1.3.0/AndroidManifest.xml:24:9-32:20
-92            android:name="androidx.startup.InitializationProvider"
-92-->[androidx.emoji2:emoji2:1.3.0] /home/alkis/.gradle/caches/8.13/transforms/dabc9bfd36a5bd35b5f65cdc8053d8a2/transformed/emoji2-1.3.0/AndroidManifest.xml:25:13-67
-93            android:authorities="com.taskbar.app.androidx-startup"
-93-->[androidx.emoji2:emoji2:1.3.0] /home/alkis/.gradle/caches/8.13/transforms/dabc9bfd36a5bd35b5f65cdc8053d8a2/transformed/emoji2-1.3.0/AndroidManifest.xml:26:13-68
-94            android:exported="false" >
-94-->[androidx.emoji2:emoji2:1.3.0] /home/alkis/.gradle/caches/8.13/transforms/dabc9bfd36a5bd35b5f65cdc8053d8a2/transformed/emoji2-1.3.0/AndroidManifest.xml:27:13-37
-95            <meta-data
-95-->[androidx.emoji2:emoji2:1.3.0] /home/alkis/.gradle/caches/8.13/transforms/dabc9bfd36a5bd35b5f65cdc8053d8a2/transformed/emoji2-1.3.0/AndroidManifest.xml:29:13-31:52
-96                android:name="androidx.emoji2.text.EmojiCompatInitializer"
-96-->[androidx.emoji2:emoji2:1.3.0] /home/alkis/.gradle/caches/8.13/transforms/dabc9bfd36a5bd35b5f65cdc8053d8a2/transformed/emoji2-1.3.0/AndroidManifest.xml:30:17-75
-97                android:value="androidx.startup" />
-97-->[androidx.emoji2:emoji2:1.3.0] /home/alkis/.gradle/caches/8.13/transforms/dabc9bfd36a5bd35b5f65cdc8053d8a2/transformed/emoji2-1.3.0/AndroidManifest.xml:31:17-49
-98            <meta-data
-98-->[androidx.lifecycle:lifecycle-process:2.8.7] /home/alkis/.gradle/caches/8.13/transforms/88684bc3f900b4ac977d54fa70dc4d32/transformed/lifecycle-process-2.8.7/AndroidManifest.xml:29:13-31:52
-99                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
-99-->[androidx.lifecycle:lifecycle-process:2.8.7] /home/alkis/.gradle/caches/8.13/transforms/88684bc3f900b4ac977d54fa70dc4d32/transformed/lifecycle-process-2.8.7/AndroidManifest.xml:30:17-78
-100                android:value="androidx.startup" />
-100-->[androidx.lifecycle:lifecycle-process:2.8.7] /home/alkis/.gradle/caches/8.13/transforms/88684bc3f900b4ac977d54fa70dc4d32/transformed/lifecycle-process-2.8.7/AndroidManifest.xml:31:17-49
-101            <meta-data
-101-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/8.13/transforms/f4171fb28029216d1879abbb9cdebaf1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:29:13-31:52
-102                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
-102-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/8.13/transforms/f4171fb28029216d1879abbb9cdebaf1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:30:17-85
-103                android:value="androidx.startup" />
-103-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/8.13/transforms/f4171fb28029216d1879abbb9cdebaf1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:31:17-49
-104        </provider>
-105
-106        <receiver
-106-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/8.13/transforms/f4171fb28029216d1879abbb9cdebaf1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:34:9-52:20
-107            android:name="androidx.profileinstaller.ProfileInstallReceiver"
-107-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/8.13/transforms/f4171fb28029216d1879abbb9cdebaf1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:35:13-76
-108            android:directBootAware="false"
-108-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/8.13/transforms/f4171fb28029216d1879abbb9cdebaf1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:36:13-44
-109            android:enabled="true"
-109-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/8.13/transforms/f4171fb28029216d1879abbb9cdebaf1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:37:13-35
-110            android:exported="true"
-110-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/8.13/transforms/f4171fb28029216d1879abbb9cdebaf1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:38:13-36
-111            android:permission="android.permission.DUMP" >
-111-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/8.13/transforms/f4171fb28029216d1879abbb9cdebaf1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:39:13-57
-112            <intent-filter>
-112-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/8.13/transforms/f4171fb28029216d1879abbb9cdebaf1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:40:13-42:29
-113                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
-113-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/8.13/transforms/f4171fb28029216d1879abbb9cdebaf1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:41:17-91
-113-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/8.13/transforms/f4171fb28029216d1879abbb9cdebaf1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:41:25-88
-114            </intent-filter>
-115            <intent-filter>
-115-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/8.13/transforms/f4171fb28029216d1879abbb9cdebaf1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:43:13-45:29
-116                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
-116-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/8.13/transforms/f4171fb28029216d1879abbb9cdebaf1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:44:17-85
-116-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/8.13/transforms/f4171fb28029216d1879abbb9cdebaf1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:44:25-82
-117            </intent-filter>
-118            <intent-filter>
-118-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/8.13/transforms/f4171fb28029216d1879abbb9cdebaf1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:46:13-48:29
-119                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
-119-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/8.13/transforms/f4171fb28029216d1879abbb9cdebaf1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:47:17-88
-119-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/8.13/transforms/f4171fb28029216d1879abbb9cdebaf1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:47:25-85
-120            </intent-filter>
-121            <intent-filter>
-121-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/8.13/transforms/f4171fb28029216d1879abbb9cdebaf1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:49:13-51:29
-122                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
-122-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/8.13/transforms/f4171fb28029216d1879abbb9cdebaf1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:50:17-95
-122-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/8.13/transforms/f4171fb28029216d1879abbb9cdebaf1/transformed/profileinstaller-1.4.0/AndroidManifest.xml:50:25-92
-123            </intent-filter>
-124        </receiver>
-125    </application>
-126
-127</manifest>
+24    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+24-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:17:5-85
+24-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:17:22-82
+25
+26    <uses-feature
+26-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:19:5-91
+27        android:name="android.hardware.camera.flash"
+27-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:19:19-63
+28        android:required="false" />
+28-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:19:64-88
+29
+30    <permission
+30-->[androidx.core:core:1.15.0] /home/alkis/.gradle/caches/9.4.1/transforms/8f0d8fc7a164f3d7cdb2e74843568cfa/transformed/core-1.15.0/AndroidManifest.xml:22:5-24:47
+31        android:name="com.taskbar.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+31-->[androidx.core:core:1.15.0] /home/alkis/.gradle/caches/9.4.1/transforms/8f0d8fc7a164f3d7cdb2e74843568cfa/transformed/core-1.15.0/AndroidManifest.xml:23:9-81
+32        android:protectionLevel="signature" />
+32-->[androidx.core:core:1.15.0] /home/alkis/.gradle/caches/9.4.1/transforms/8f0d8fc7a164f3d7cdb2e74843568cfa/transformed/core-1.15.0/AndroidManifest.xml:24:9-44
+33
+34    <uses-permission android:name="com.taskbar.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+34-->[androidx.core:core:1.15.0] /home/alkis/.gradle/caches/9.4.1/transforms/8f0d8fc7a164f3d7cdb2e74843568cfa/transformed/core-1.15.0/AndroidManifest.xml:26:5-97
+34-->[androidx.core:core:1.15.0] /home/alkis/.gradle/caches/9.4.1/transforms/8f0d8fc7a164f3d7cdb2e74843568cfa/transformed/core-1.15.0/AndroidManifest.xml:26:22-94
+35
+36    <application
+36-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:21:5-70:19
+37        android:name="com.taskbar.app.TaskBarApplication"
+37-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:22:9-43
+38        android:allowBackup="true"
+38-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:23:9-35
+39        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+39-->[androidx.core:core:1.15.0] /home/alkis/.gradle/caches/9.4.1/transforms/8f0d8fc7a164f3d7cdb2e74843568cfa/transformed/core-1.15.0/AndroidManifest.xml:28:18-86
+40        android:debuggable="true"
+41        android:extractNativeLibs="false"
+41-->INJECTED
+42        android:icon="@mipmap/ic_launcher"
+42-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:24:9-43
+43        android:label="@string/app_name"
+43-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:25:9-41
+44        android:roundIcon="@mipmap/ic_launcher_round"
+44-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:26:9-54
+45        android:supportsRtl="true"
+45-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:27:9-35
+46        android:theme="@style/Theme.TaskBar" >
+46-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:28:9-45
+47        <activity
+47-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:30:9-38:20
+48            android:name="com.taskbar.app.MainActivity"
+48-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:31:13-41
+49            android:exported="true"
+49-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:32:13-36
+50            android:windowSoftInputMode="adjustResize" >
+50-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:33:13-55
+51            <intent-filter>
+51-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:34:13-37:29
+52                <action android:name="android.intent.action.MAIN" />
+52-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:35:17-69
+52-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:35:25-66
+53
+54                <category android:name="android.intent.category.LAUNCHER" />
+54-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:36:17-77
+54-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:36:27-74
+55            </intent-filter>
+56        </activity>
+57
+58        <service
+58-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:40:9-47:19
+59            android:name="com.taskbar.app.service.OverlayService"
+59-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:41:13-51
+60            android:exported="false"
+60-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:42:13-37
+61            android:foregroundServiceType="specialUse" >
+61-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:43:13-55
+62            <property
+62-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:44:13-46:59
+63                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+63-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:45:17-76
+64                android:value="TaskBar overlay service" />
+64-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:46:17-56
+65        </service>
+66        <service
+66-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:49:9-60:19
+67            android:name="com.taskbar.app.service.TaskBarAccessibilityService"
+67-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:50:13-64
+68            android:exported="true"
+68-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:51:13-36
+69            android:label="@string/accessibility_service_label"
+69-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:52:13-64
+70            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" >
+70-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:53:13-79
+71            <intent-filter>
+71-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:54:13-56:29
+72                <action android:name="android.accessibilityservice.AccessibilityService" />
+72-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:55:17-92
+72-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:55:25-89
+73            </intent-filter>
+74
+75            <meta-data
+75-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:57:13-59:72
+76                android:name="android.accessibilityservice"
+76-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:58:17-60
+77                android:resource="@xml/accessibility_service_config" />
+77-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:59:17-69
+78        </service>
+79
+80        <receiver
+80-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:62:9-68:20
+81            android:name="com.taskbar.app.service.BootReceiver"
+81-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:63:13-49
+82            android:exported="true" >
+82-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:64:13-36
+83            <intent-filter>
+83-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:65:13-67:29
+84                <action android:name="android.intent.action.BOOT_COMPLETED" />
+84-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:66:17-79
+84-->/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/src/main/AndroidManifest.xml:66:25-76
+85            </intent-filter>
+86        </receiver>
+87
+88        <activity
+88-->[androidx.compose.ui:ui-tooling-android:1.8.2] /home/alkis/.gradle/caches/9.4.1/transforms/4903a00eed61ebdf67eba52991ba96c3/transformed/ui-tooling-release/AndroidManifest.xml:23:9-25:39
+89            android:name="androidx.compose.ui.tooling.PreviewActivity"
+89-->[androidx.compose.ui:ui-tooling-android:1.8.2] /home/alkis/.gradle/caches/9.4.1/transforms/4903a00eed61ebdf67eba52991ba96c3/transformed/ui-tooling-release/AndroidManifest.xml:24:13-71
+90            android:exported="true" />
+90-->[androidx.compose.ui:ui-tooling-android:1.8.2] /home/alkis/.gradle/caches/9.4.1/transforms/4903a00eed61ebdf67eba52991ba96c3/transformed/ui-tooling-release/AndroidManifest.xml:25:13-36
+91
+92        <provider
+92-->[androidx.emoji2:emoji2:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/f1c0795c328d88c964831d54021d5e5b/transformed/emoji2-1.4.0/AndroidManifest.xml:24:9-32:20
+93            android:name="androidx.startup.InitializationProvider"
+93-->[androidx.emoji2:emoji2:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/f1c0795c328d88c964831d54021d5e5b/transformed/emoji2-1.4.0/AndroidManifest.xml:25:13-67
+94            android:authorities="com.taskbar.app.androidx-startup"
+94-->[androidx.emoji2:emoji2:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/f1c0795c328d88c964831d54021d5e5b/transformed/emoji2-1.4.0/AndroidManifest.xml:26:13-68
+95            android:exported="false" >
+95-->[androidx.emoji2:emoji2:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/f1c0795c328d88c964831d54021d5e5b/transformed/emoji2-1.4.0/AndroidManifest.xml:27:13-37
+96            <meta-data
+96-->[androidx.emoji2:emoji2:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/f1c0795c328d88c964831d54021d5e5b/transformed/emoji2-1.4.0/AndroidManifest.xml:29:13-31:52
+97                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+97-->[androidx.emoji2:emoji2:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/f1c0795c328d88c964831d54021d5e5b/transformed/emoji2-1.4.0/AndroidManifest.xml:30:17-75
+98                android:value="androidx.startup" />
+98-->[androidx.emoji2:emoji2:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/f1c0795c328d88c964831d54021d5e5b/transformed/emoji2-1.4.0/AndroidManifest.xml:31:17-49
+99            <meta-data
+99-->[androidx.lifecycle:lifecycle-process:2.8.7] /home/alkis/.gradle/caches/9.4.1/transforms/c131ca7c5336e3897efdceffc3c3dd52/transformed/lifecycle-process-2.8.7/AndroidManifest.xml:29:13-31:52
+100                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+100-->[androidx.lifecycle:lifecycle-process:2.8.7] /home/alkis/.gradle/caches/9.4.1/transforms/c131ca7c5336e3897efdceffc3c3dd52/transformed/lifecycle-process-2.8.7/AndroidManifest.xml:30:17-78
+101                android:value="androidx.startup" />
+101-->[androidx.lifecycle:lifecycle-process:2.8.7] /home/alkis/.gradle/caches/9.4.1/transforms/c131ca7c5336e3897efdceffc3c3dd52/transformed/lifecycle-process-2.8.7/AndroidManifest.xml:31:17-49
+102            <meta-data
+102-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/8b8767e13e13f925a7272d8f96d32e20/transformed/profileinstaller-1.4.0/AndroidManifest.xml:29:13-31:52
+103                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+103-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/8b8767e13e13f925a7272d8f96d32e20/transformed/profileinstaller-1.4.0/AndroidManifest.xml:30:17-85
+104                android:value="androidx.startup" />
+104-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/8b8767e13e13f925a7272d8f96d32e20/transformed/profileinstaller-1.4.0/AndroidManifest.xml:31:17-49
+105        </provider>
+106
+107        <receiver
+107-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/8b8767e13e13f925a7272d8f96d32e20/transformed/profileinstaller-1.4.0/AndroidManifest.xml:34:9-52:20
+108            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+108-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/8b8767e13e13f925a7272d8f96d32e20/transformed/profileinstaller-1.4.0/AndroidManifest.xml:35:13-76
+109            android:directBootAware="false"
+109-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/8b8767e13e13f925a7272d8f96d32e20/transformed/profileinstaller-1.4.0/AndroidManifest.xml:36:13-44
+110            android:enabled="true"
+110-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/8b8767e13e13f925a7272d8f96d32e20/transformed/profileinstaller-1.4.0/AndroidManifest.xml:37:13-35
+111            android:exported="true"
+111-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/8b8767e13e13f925a7272d8f96d32e20/transformed/profileinstaller-1.4.0/AndroidManifest.xml:38:13-36
+112            android:permission="android.permission.DUMP" >
+112-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/8b8767e13e13f925a7272d8f96d32e20/transformed/profileinstaller-1.4.0/AndroidManifest.xml:39:13-57
+113            <intent-filter>
+113-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/8b8767e13e13f925a7272d8f96d32e20/transformed/profileinstaller-1.4.0/AndroidManifest.xml:40:13-42:29
+114                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+114-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/8b8767e13e13f925a7272d8f96d32e20/transformed/profileinstaller-1.4.0/AndroidManifest.xml:41:17-91
+114-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/8b8767e13e13f925a7272d8f96d32e20/transformed/profileinstaller-1.4.0/AndroidManifest.xml:41:25-88
+115            </intent-filter>
+116            <intent-filter>
+116-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/8b8767e13e13f925a7272d8f96d32e20/transformed/profileinstaller-1.4.0/AndroidManifest.xml:43:13-45:29
+117                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+117-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/8b8767e13e13f925a7272d8f96d32e20/transformed/profileinstaller-1.4.0/AndroidManifest.xml:44:17-85
+117-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/8b8767e13e13f925a7272d8f96d32e20/transformed/profileinstaller-1.4.0/AndroidManifest.xml:44:25-82
+118            </intent-filter>
+119            <intent-filter>
+119-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/8b8767e13e13f925a7272d8f96d32e20/transformed/profileinstaller-1.4.0/AndroidManifest.xml:46:13-48:29
+120                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+120-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/8b8767e13e13f925a7272d8f96d32e20/transformed/profileinstaller-1.4.0/AndroidManifest.xml:47:17-88
+120-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/8b8767e13e13f925a7272d8f96d32e20/transformed/profileinstaller-1.4.0/AndroidManifest.xml:47:25-85
+121            </intent-filter>
+122            <intent-filter>
+122-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/8b8767e13e13f925a7272d8f96d32e20/transformed/profileinstaller-1.4.0/AndroidManifest.xml:49:13-51:29
+123                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+123-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/8b8767e13e13f925a7272d8f96d32e20/transformed/profileinstaller-1.4.0/AndroidManifest.xml:50:17-95
+123-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/alkis/.gradle/caches/9.4.1/transforms/8b8767e13e13f925a7272d8f96d32e20/transformed/profileinstaller-1.4.0/AndroidManifest.xml:50:25-92
+124            </intent-filter>
+125        </receiver>
+126    </application>
+127
+128</manifest>

@@ -1,26 +1,26 @@
 [
     {
-        "merged": "/home/alkis/.gradle/daemon/8.13/com.taskbar.app-debug-73:/drawable_ic_launcher_foreground.xml.flat",
-        "source": "/home/alkis/.gradle/daemon/8.13/com.taskbar.app-main-75:/drawable/ic_launcher_foreground.xml"
-    },
-    {
-        "merged": "/home/alkis/.gradle/daemon/8.13/com.taskbar.app-debug-73:/drawable_ic_launcher_background.xml.flat",
-        "source": "/home/alkis/.gradle/daemon/8.13/com.taskbar.app-main-75:/drawable/ic_launcher_background.xml"
+        "merged": "com.taskbar.app-debug-73:/xml_file_paths.xml.flat",
+        "source": "com.taskbar.app-main-75:/xml/file_paths.xml"
     },
     {
         "merged": "com.taskbar.app-debug-73:/xml_accessibility_service_config.xml.flat",
         "source": "com.taskbar.app-main-75:/xml/accessibility_service_config.xml"
     },
     {
-        "merged": "/home/alkis/.gradle/daemon/8.13/com.taskbar.app-debug-73:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
-        "source": "/home/alkis/.gradle/daemon/8.13/com.taskbar.app-main-75:/mipmap-anydpi-v26/ic_launcher_round.xml"
+        "merged": "com.taskbar.app-debug-73:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.taskbar.app-main-75:/mipmap-anydpi-v26/ic_launcher_round.xml"
     },
     {
-        "merged": "/home/alkis/.gradle/daemon/8.13/com.taskbar.app-debug-73:/mipmap-anydpi-v26_ic_launcher.xml.flat",
-        "source": "/home/alkis/.gradle/daemon/8.13/com.taskbar.app-main-75:/mipmap-anydpi-v26/ic_launcher.xml"
+        "merged": "com.taskbar.app-debug-73:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.taskbar.app-main-75:/drawable/ic_launcher_foreground.xml"
     },
     {
-        "merged": "/home/alkis/.gradle/daemon/8.13/com.taskbar.app-debug-73:/xml_file_paths.xml.flat",
-        "source": "/home/alkis/.gradle/daemon/8.13/com.taskbar.app-main-75:/xml/file_paths.xml"
+        "merged": "com.taskbar.app-debug-73:/drawable_ic_launcher_background.xml.flat",
+        "source": "com.taskbar.app-main-75:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "com.taskbar.app-debug-73:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.taskbar.app-main-75:/mipmap-anydpi-v26/ic_launcher.xml"
     }
 ]

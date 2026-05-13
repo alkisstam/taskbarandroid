@@ -1,0 +1,1 @@
+-keep,allowobfuscation,allowshrinking class com.taskbar.app.viewmodel.AppMenuViewModel
