@@ -1,0 +1,1 @@
+{"className":"com.taskbar.app.service.Hilt_BootReceiver","classAnnotations":["dagger.hilt.android.internal.OnReceiveBytecodeInjectionMarker"],"interfaces":[],"superClasses":["android.content.BroadcastReceiver","java.lang.Object"]}
