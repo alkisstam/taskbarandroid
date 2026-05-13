@@ -70,7 +70,10 @@ fun TaskbarView(
                     items(pinnedApps, key = { it.packageName }) { app ->
                         PinnedAppItem(
                             app = app,
-                            onLaunch = { taskbarViewModel.launchApp(app.packageName) },
+                            onLaunch = {
+                                taskbarViewModel.launchApp(app.packageName)
+                                taskbarViewModel.hideTaskbar()
+                            },
                             onUnpin = { taskbarViewModel.unpinApp(app.packageName) }
                         )
                     }
