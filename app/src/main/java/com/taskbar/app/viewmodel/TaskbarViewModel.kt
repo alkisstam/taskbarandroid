@@ -2,6 +2,9 @@ package com.taskbar.app.viewmodel
 
 import android.content.Context
 import android.content.Intent
+import android.database.ContentObserver
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.text.TextUtils
 import androidx.lifecycle.ViewModel
@@ -58,11 +61,39 @@ class TaskbarViewModel @Inject constructor(
     private val _isTaskbarVisible = MutableStateFlow(true)
     val isTaskbarVisible: StateFlow<Boolean> = _isTaskbarVisible.asStateFlow()
 
+    private val _isAccessibilityEnabled = MutableStateFlow(checkAccessibilityEnabled())
+    val isAccessibilityEnabled: StateFlow<Boolean> = _isAccessibilityEnabled.asStateFlow()
+
+    private val accessibilityObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
+        override fun onChange(selfChange: Boolean) {
+            _isAccessibilityEnabled.value = checkAccessibilityEnabled()
+        }
+    }
+
     fun showTaskbar() { _isTaskbarVisible.value = true }
     fun hideTaskbar() { _isTaskbarVisible.value = false }
 
     init {
         loadApps()
+        context.contentResolver.registerContentObserver(
+            Settings.Secure.getUriFor(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES),
+            false,
+            accessibilityObserver
+        )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        context.contentResolver.unregisterContentObserver(accessibilityObserver)
+    }
+
+    private fun checkAccessibilityEnabled(): Boolean {
+        val flat = Settings.Secure.getString(
+            context.contentResolver,
+            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+        ) ?: return false
+        val componentName = "${context.packageName}/${TaskBarAccessibilityService::class.java.name}"
+        return flat.split(':').any { TextUtils.equals(it.trim(), componentName) }
     }
 
     private fun loadApps() {
@@ -131,14 +162,5 @@ class TaskbarViewModel @Inject constructor(
         context.stopService(intent)
     }
 
-    fun isAccessibilityServiceEnabled(): Boolean {
-        val flat = Settings.Secure.getString(
-            context.contentResolver,
-            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
-        ) ?: return false
-        val componentName = "${context.packageName}/${TaskBarAccessibilityService::class.java.name}"
-        return flat.split(':').any {
-            TextUtils.equals(it.trim(), componentName)
-        }
-    }
+    fun isAccessibilityServiceEnabled(): Boolean = _isAccessibilityEnabled.value
 }

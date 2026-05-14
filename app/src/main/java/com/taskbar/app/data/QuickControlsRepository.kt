@@ -7,6 +7,7 @@ import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.media.AudioManager
 import android.provider.Settings
+import android.util.Log
 import com.taskbar.app.service.TaskBarAccessibilityService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -19,6 +20,8 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
+private const val TAG = "QuickControlsRepository"
+
 @Singleton
 class QuickControlsRepository @Inject constructor(
     @ApplicationContext private val context: Context
@@ -27,15 +30,25 @@ class QuickControlsRepository @Inject constructor(
     private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
     private var torchCameraId: String? = null
+    @Volatile private var torchState: Boolean = false
 
     init {
         torchCameraId = cameraManager.cameraIdList.firstOrNull { id ->
             cameraManager.getCameraCharacteristics(id)
                 .get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true
         }
+        torchCameraId?.let {
+            cameraManager.registerTorchCallback(object : CameraManager.TorchCallback() {
+                override fun onTorchModeChanged(cameraId: String, enabled: Boolean) {
+                    if (cameraId == torchCameraId) torchState = enabled
+                }
+            }, null)
+        }
     }
 
     fun hasTorch(): Boolean = torchCameraId != null
+
+    fun getTorchState(): Boolean = torchState
 
     fun setTorch(enabled: Boolean) {
         torchCameraId?.let { id ->
@@ -54,6 +67,7 @@ class QuickControlsRepository @Inject constructor(
         try {
             audioManager.ringerMode = mode
         } catch (e: SecurityException) {
+            Log.w(TAG, "Permission denied when setting ringer mode", e)
         }
     }
 
