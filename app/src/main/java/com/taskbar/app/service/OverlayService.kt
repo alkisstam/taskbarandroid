@@ -9,9 +9,11 @@ import android.content.Intent
 import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.os.IBinder
+import android.util.Log
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
+import android.view.ViewTreeObserver
 import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.compose.animation.AnimatedVisibility
@@ -46,6 +48,7 @@ import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.taskbar.app.MainActivity
 import com.taskbar.app.R
 import com.taskbar.app.data.AppRepository
+import com.taskbar.app.util.Constants
 import com.taskbar.app.data.PreferencesRepository
 import com.taskbar.app.data.QuickControlsRepository
 import com.taskbar.app.ui.appmenu.AppMenuPanel
@@ -86,7 +89,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private var overlayView: View? = null
     private var pillView: View? = null
     private var searchView: View? = null
-    private var globalLayoutListener: android.view.ViewTreeObserver.OnGlobalLayoutListener? = null
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     private lateinit var taskbarViewModel: TaskbarViewModel
@@ -99,6 +101,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
 
     companion object {
+        private const val TAG = "OverlayService"
         private const val NOTIFICATION_ID = 1001
         private const val CHANNEL_ID = "taskbar_overlay_channel"
     }
@@ -157,7 +160,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private fun setOverlayFlags(interactive: Boolean, focusable: Boolean) {
         val view = overlayView ?: return
         try { windowManager.updateViewLayout(view, overlayLayoutParams(interactive, focusable)) }
-        catch (e: Exception) { }
+        catch (e: Exception) { Log.w(TAG, "Failed to update overlay layout flags", e) }
     }
 
     private fun observeOverlayInteractivity() {
@@ -174,7 +177,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 if (interactive) {
                     setOverlayFlags(interactive = true, focusable = menuOpen && !searching)
                 } else {
-                    kotlinx.coroutines.delay(400)
+                    kotlinx.coroutines.delay(Constants.OVERLAY_HIDE_DEBOUNCE_MS)
                     setOverlayFlags(interactive = false, focusable = false)
                 }
             }
@@ -198,22 +201,33 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             overlayView = composeView
             windowManager.addView(composeView, overlayLayoutParams())
         } catch (e: Exception) {
+            Log.e(TAG, "Failed to add overlay view", e)
             overlayView = null
         }
     }
 
     private fun observeKeyboardVisibility() {
-        val listener = android.view.ViewTreeObserver.OnGlobalLayoutListener {
-            val view = overlayView ?: return@OnGlobalLayoutListener
+        val view = overlayView ?: return
+        val layoutListener = ViewTreeObserver.OnGlobalLayoutListener {
+            val v = overlayView ?: return@OnGlobalLayoutListener
             val rect = Rect()
-            view.getWindowVisibleDisplayFrame(rect)
-            val screenHeight = view.rootView?.height ?: return@OnGlobalLayoutListener
+            v.getWindowVisibleDisplayFrame(rect)
+            val screenHeight = v.rootView?.height ?: return@OnGlobalLayoutListener
             val keypadHeight = screenHeight - rect.bottom
-            val keyboardVisible = keypadHeight > screenHeight * 0.15
-            overlayView?.visibility = if (keyboardVisible) View.GONE else View.VISIBLE
+            val keyboardVisible = keypadHeight > screenHeight * Constants.KEYBOARD_VISIBLE_THRESHOLD
+            v.visibility = if (keyboardVisible) View.GONE else View.VISIBLE
         }
-        globalLayoutListener = listener
-        overlayView?.viewTreeObserver?.addOnGlobalLayoutListener(listener)
+        view.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+            override fun onViewAttachedToWindow(v: View) {
+                v.viewTreeObserver.addOnGlobalLayoutListener(layoutListener)
+            }
+            override fun onViewDetachedFromWindow(v: View) {
+                v.viewTreeObserver.removeOnGlobalLayoutListener(layoutListener)
+            }
+        })
+        if (view.isAttachedToWindow) {
+            view.viewTreeObserver.addOnGlobalLayoutListener(layoutListener)
+        }
     }
 
     private fun pillLayoutParams(positionXDp: Float = 16f, positionYDp: Float = 80f): WindowManager.LayoutParams {
@@ -247,6 +261,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             val initial = taskbarViewModel.pillSettings.value
             windowManager.addView(composeView, pillLayoutParams(initial.positionXDp, initial.positionYDp))
         } catch (e: Exception) {
+            Log.e(TAG, "Failed to add pill view", e)
             pillView = null
         }
     }
@@ -256,7 +271,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             taskbarViewModel.pillSettings.collect { settings ->
                 val view = pillView ?: return@collect
                 try { windowManager.updateViewLayout(view, pillLayoutParams(settings.positionXDp, settings.positionYDp)) }
-                catch (e: Exception) { }
+                catch (e: Exception) { Log.w(TAG, "Failed to update pill position", e) }
             }
         }
     }
@@ -301,6 +316,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             searchView = wrapper
             windowManager.addView(wrapper, searchLayoutParams())
         } catch (e: Exception) {
+            Log.e(TAG, "Failed to add search view", e)
             searchView = null
         }
     }
@@ -315,15 +331,15 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private fun removeOverlayView() {
         overlayView?.let {
-            try { windowManager.removeView(it) } catch (e: Exception) { }
+            try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove overlay view", e) }
             overlayView = null
         }
         pillView?.let {
-            try { windowManager.removeView(it) } catch (e: Exception) { }
+            try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove pill view", e) }
             pillView = null
         }
         searchView?.let {
-            try { windowManager.removeView(it) } catch (e: Exception) { }
+            try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove search view", e) }
             searchView = null
         }
     }
@@ -361,7 +377,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-        overlayView?.viewTreeObserver?.removeOnGlobalLayoutListener(globalLayoutListener)
         removeOverlayView()
         serviceScope.cancel()
         _viewModelStore.clear()
@@ -398,6 +413,7 @@ private fun OverlayContent(
             Column(modifier = Modifier.wrapContentHeight()) {
                 AppMenuPanel(
                     viewModel = appMenuViewModel,
+                    onHideTaskbar = taskbarViewModel::hideTaskbar,
                     modifier = Modifier
                 )
                 AnimatedVisibility(

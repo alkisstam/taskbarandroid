@@ -18,6 +18,10 @@ class TaskBarAccessibilityService : AccessibilityService() {
         startForegroundService(intent)
     }
 
+    fun showPowerMenu() {
+        performGlobalAction(GLOBAL_ACTION_POWER_DIALOG)
+    }
+
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {}
 
     override fun onInterrupt() {}

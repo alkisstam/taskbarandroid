@@ -11,6 +11,8 @@ import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.json.JSONArray
+import org.json.JSONException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -56,14 +58,23 @@ class PreferencesRepository @Inject constructor(
         private val TASKBAR_POSITION_Y_KEY = floatPreferencesKey("taskbar_position_y")
         private val TASKBAR_WIDTH_KEY = floatPreferencesKey("taskbar_width_fraction")
         private val TASKBAR_HEIGHT_KEY = floatPreferencesKey("taskbar_height_dp")
-        private const val SEPARATOR = "||"
+
+        private fun serializePinnedApps(packages: List<String>): String =
+            JSONArray(packages).toString()
+
+        private fun deserializePinnedApps(stored: String): List<String> {
+            return try {
+                val arr = JSONArray(stored)
+                List(arr.length()) { arr.getString(it) }
+            } catch (e: JSONException) {
+                // Migrate from legacy "||"-delimited format
+                stored.split("||").filter { it.isNotBlank() }
+            }
+        }
     }
 
     val pinnedApps: Flow<List<String>> = context.dataStore.data.map { prefs ->
-        prefs[PINNED_APPS_KEY]
-            ?.split(SEPARATOR)
-            ?.filter { it.isNotBlank() }
-            ?: emptyList()
+        prefs[PINNED_APPS_KEY]?.let { deserializePinnedApps(it) } ?: emptyList()
     }
 
     val themeMode: Flow<ThemeMode> = context.dataStore.data.map { prefs ->
@@ -80,7 +91,7 @@ class PreferencesRepository @Inject constructor(
 
     suspend fun savePinnedApps(packages: List<String>) {
         context.dataStore.edit { prefs ->
-            prefs[PINNED_APPS_KEY] = packages.joinToString(SEPARATOR)
+            prefs[PINNED_APPS_KEY] = serializePinnedApps(packages)
         }
     }
 
@@ -99,12 +110,11 @@ class PreferencesRepository @Inject constructor(
     suspend fun pinApp(packageName: String) {
         context.dataStore.edit { prefs ->
             val current = prefs[PINNED_APPS_KEY]
-                ?.split(SEPARATOR)
-                ?.filter { it.isNotBlank() }
+                ?.let { deserializePinnedApps(it) }
                 ?.toMutableList() ?: mutableListOf()
             if (!current.contains(packageName)) {
                 current.add(packageName)
-                prefs[PINNED_APPS_KEY] = current.joinToString(SEPARATOR)
+                prefs[PINNED_APPS_KEY] = serializePinnedApps(current)
             }
         }
     }
@@ -112,11 +122,10 @@ class PreferencesRepository @Inject constructor(
     suspend fun unpinApp(packageName: String) {
         context.dataStore.edit { prefs ->
             val current = prefs[PINNED_APPS_KEY]
-                ?.split(SEPARATOR)
-                ?.filter { it.isNotBlank() }
+                ?.let { deserializePinnedApps(it) }
                 ?.toMutableList() ?: mutableListOf()
             current.remove(packageName)
-            prefs[PINNED_APPS_KEY] = current.joinToString(SEPARATOR)
+            prefs[PINNED_APPS_KEY] = serializePinnedApps(current)
         }
     }
 

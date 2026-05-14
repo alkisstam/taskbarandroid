@@ -14,8 +14,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrightnessAuto
 import androidx.compose.material.icons.filled.BrightnessHigh
+import androidx.compose.material.icons.filled.DoNotDisturb
+import androidx.compose.material.icons.filled.DoNotDisturbOff
 import androidx.compose.material.icons.filled.FlashlightOff
 import androidx.compose.material.icons.filled.FlashlightOn
+import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.PowerSettingsNew
 import androidx.compose.material.icons.filled.ScreenRotation
 import androidx.compose.material.icons.filled.ScreenRotationAlt
 import androidx.compose.material.icons.filled.Vibration
@@ -42,6 +46,10 @@ fun QuickControls(
     onToggleAutoRotate: () -> Unit,
     onToggleAutoBrightness: () -> Unit,
     onRequestWriteSettings: () -> Unit,
+    onToggleDnd: () -> Unit,
+    onRequestDndPermission: () -> Unit,
+    onOpenQrScanner: () -> Unit,
+    onShowPowerMenu: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -102,6 +110,29 @@ fun QuickControls(
                 label = "Bright",
                 active = state.autoBrightness,
                 onClick = onToggleAutoBrightness
+            )
+        }
+
+        QuickControlTile(
+            icon = if (state.dndEnabled) Icons.Filled.DoNotDisturb else Icons.Filled.DoNotDisturbOff,
+            label = "DND",
+            active = state.dndEnabled,
+            onClick = if (state.dndPermissionGranted) onToggleDnd else onRequestDndPermission
+        )
+
+        QuickControlTile(
+            icon = Icons.Filled.QrCodeScanner,
+            label = "QR",
+            active = false,
+            onClick = onOpenQrScanner
+        )
+
+        if (state.canShowPowerMenu) {
+            QuickControlTile(
+                icon = Icons.Filled.PowerSettingsNew,
+                label = "Power",
+                active = false,
+                onClick = onShowPowerMenu
             )
         }
     }

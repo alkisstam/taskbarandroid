@@ -22,6 +22,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import com.taskbar.app.data.PillGesture
 import com.taskbar.app.data.PillSettings
+import com.taskbar.app.util.Constants
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -82,7 +83,7 @@ private fun DoubleTapPill(pillSettings: PillSettings, onExpand: () -> Unit) {
                 tapCount++
                 if (tapCount == 1) {
                     tapJob = scope.launch {
-                        delay(300)
+                        delay(Constants.DOUBLE_TAP_WINDOW_MS)
                         tapCount = 0
                     }
                 } else if (tapCount >= 2) {
@@ -106,9 +107,9 @@ private fun SwipePill(
         modifier = Modifier.pointerInput(direction) {
             detectDragGestures { _, dragAmount ->
                 val triggered = when (direction) {
-                    SwipeDir.UP   -> dragAmount.y < -20f && abs(dragAmount.y) > abs(dragAmount.x)
-                    SwipeDir.DOWN -> dragAmount.y > 20f  && abs(dragAmount.y) > abs(dragAmount.x)
-                    SwipeDir.IN   -> dragAmount.x > 20f  && abs(dragAmount.x) > abs(dragAmount.y)
+                    SwipeDir.UP   -> dragAmount.y < -Constants.SWIPE_TRIGGER_THRESHOLD_PX && abs(dragAmount.y) > abs(dragAmount.x)
+                    SwipeDir.DOWN -> dragAmount.y > Constants.SWIPE_TRIGGER_THRESHOLD_PX  && abs(dragAmount.y) > abs(dragAmount.x)
+                    SwipeDir.IN   -> dragAmount.x > Constants.SWIPE_TRIGGER_THRESHOLD_PX  && abs(dragAmount.x) > abs(dragAmount.y)
                 }
                 if (triggered) onExpand()
             }

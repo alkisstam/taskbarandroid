@@ -39,6 +39,7 @@ import com.taskbar.app.viewmodel.AppMenuViewModel
 @Composable
 fun AppMenuPanel(
     viewModel: AppMenuViewModel,
+    onHideTaskbar: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val menuVisible by viewModel.menuVisible.collectAsState()
@@ -131,7 +132,7 @@ fun AppMenuPanel(
                     AppGrid(
                         apps = apps,
                         pinnedPackages = pinnedPackages,
-                        onLaunchApp = viewModel::launchApp,
+                        onLaunchApp = { pkg -> viewModel.launchApp(pkg); onHideTaskbar() },
                         onPinApp = viewModel::pinApp,
                         onUnpinApp = viewModel::unpinApp,
                         modifier = Modifier.weight(0.8f)
@@ -150,6 +151,15 @@ fun AppMenuPanel(
                             }
                             context.startActivity(intent)
                         },
+                        onToggleDnd = viewModel::toggleDnd,
+                        onRequestDndPermission = {
+                            val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS).apply {
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            }
+                            context.startActivity(intent)
+                        },
+                        onOpenQrScanner = viewModel::openQrScanner,
+                        onShowPowerMenu = viewModel::showPowerMenu,
                         modifier = Modifier
                             .weight(0.2f)
                     )

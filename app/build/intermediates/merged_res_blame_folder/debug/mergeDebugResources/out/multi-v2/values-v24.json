@@ -4,17 +4,7 @@
             "outputFile": "com.taskbar.app-mergeDebugResources-71:/values-v24/values-v24.xml",
             "map": [
                 {
-                    "source": "/home/alkis/.gradle/caches/8.13/transforms/132127c3a7d998260f9baa8c584ac05f/transformed/appcompat-1.7.0/res/values-v24/values-v24.xml",
-                    "from": {
-                        "startLines": "2,3",
-                        "startColumns": "4,4",
-                        "startOffsets": "55,212",
-                        "endColumns": "156,134",
-                        "endOffsets": "207,342"
-                    }
-                },
-                {
-                    "source": "/home/alkis/.gradle/caches/8.13/transforms/d19cd826bb4d25b530d6e7517460117a/transformed/material-1.12.0/res/values-v24/values-v24.xml",
+                    "source": "/home/alkis/.gradle/caches/9.4.1/transforms/04e5162d0a5b15e584c5c7580a0a518d/transformed/material-1.12.0/res/values-v24/values-v24.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,9,12,15",
                         "startColumns": "4,4,4,4,4,4,4,4",
@@ -30,6 +20,16 @@
                         "endLines": "4,5,6,7,10,13,16,19",
                         "endColumns": "84,98,86,100,10,10,10,10",
                         "endOffsets": "427,526,613,714,913,1126,1327,1542"
+                    }
+                },
+                {
+                    "source": "/home/alkis/.gradle/caches/9.4.1/transforms/69c948bc9d2b5309f8c78980adb7e17d/transformed/appcompat-1.7.0/res/values-v24/values-v24.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,212",
+                        "endColumns": "156,134",
+                        "endOffsets": "207,342"
                     }
                 }
             ]

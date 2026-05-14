@@ -24,23 +24,21 @@ class MainActivity : ComponentActivity() {
     private val taskbarViewModel: TaskbarViewModel by viewModels()
 
     private var hasOverlayPermission by mutableStateOf(false)
-    private var hasAccessibilityPermission by mutableStateOf(false)
 
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
         hasOverlayPermission = Settings.canDrawOverlays(this)
-        hasAccessibilityPermission = taskbarViewModel.isAccessibilityServiceEnabled()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         hasOverlayPermission = Settings.canDrawOverlays(this)
-        hasAccessibilityPermission = taskbarViewModel.isAccessibilityServiceEnabled()
 
         setContent {
             val themeMode by taskbarViewModel.themeMode.collectAsState()
+            val hasAccessibilityPermission by taskbarViewModel.isAccessibilityEnabled.collectAsState()
             TaskBarTheme(themeMode = themeMode) {
                 SettingsScreen(
                     viewModel = taskbarViewModel,
@@ -56,7 +54,6 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         hasOverlayPermission = Settings.canDrawOverlays(this)
-        hasAccessibilityPermission = taskbarViewModel.isAccessibilityServiceEnabled()
     }
 
     private fun requestOverlayPermission() {

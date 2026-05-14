@@ -3729,6 +3729,7 @@ string app_name
 string appbar_scrolling_view_behavior
 string auto_brightness
 string auto_rotate
+string autofill
 string bottom_sheet_behavior
 string bottomsheet_action_collapse
 string bottomsheet_action_expand
@@ -3859,6 +3860,7 @@ string material_timepicker_minute
 string material_timepicker_pm
 string material_timepicker_select_time
 string material_timepicker_text_input_mode_description
+string mc2_snackbar_pane_title
 string mtrl_badge_numberless_content_description
 string mtrl_checkbox_button_icon_path_checked
 string mtrl_checkbox_button_icon_path_group_name
@@ -3949,6 +3951,7 @@ string selected
 string settings
 string side_sheet_accessibility_pane_title
 string side_sheet_behavior
+string snackbar_pane_title
 string start_taskbar
 string state_empty
 string state_off

@@ -4,7 +4,7 @@
             "outputFile": "com.taskbar.app-mergeDebugResources-71:/values-h480dp-land-v13/values-h480dp-land-v13.xml",
             "map": [
                 {
-                    "source": "/home/alkis/.gradle/caches/8.13/transforms/d19cd826bb4d25b530d6e7517460117a/transformed/material-1.12.0/res/values-h480dp-land-v13/values-h480dp-land-v13.xml",
+                    "source": "/home/alkis/.gradle/caches/9.4.1/transforms/04e5162d0a5b15e584c5c7580a0a518d/transformed/material-1.12.0/res/values-h480dp-land-v13/values-h480dp-land-v13.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10",
                         "startColumns": "4,4,4,4,4,4,4,4,4",

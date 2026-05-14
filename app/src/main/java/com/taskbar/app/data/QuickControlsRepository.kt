@@ -2,10 +2,13 @@ package com.taskbar.app.data
 
 import android.content.Context
 import android.app.NotificationManager
+import android.content.Intent
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.media.AudioManager
 import android.provider.Settings
+import android.util.Log
+import com.taskbar.app.service.TaskBarAccessibilityService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
@@ -17,6 +20,8 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
+private const val TAG = "QuickControlsRepository"
+
 @Singleton
 class QuickControlsRepository @Inject constructor(
     @ApplicationContext private val context: Context
@@ -25,15 +30,25 @@ class QuickControlsRepository @Inject constructor(
     private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
     private var torchCameraId: String? = null
+    @Volatile private var torchState: Boolean = false
 
     init {
         torchCameraId = cameraManager.cameraIdList.firstOrNull { id ->
             cameraManager.getCameraCharacteristics(id)
                 .get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true
         }
+        torchCameraId?.let {
+            cameraManager.registerTorchCallback(object : CameraManager.TorchCallback() {
+                override fun onTorchModeChanged(cameraId: String, enabled: Boolean) {
+                    if (cameraId == torchCameraId) torchState = enabled
+                }
+            }, null)
+        }
     }
 
     fun hasTorch(): Boolean = torchCameraId != null
+
+    fun getTorchState(): Boolean = torchState
 
     fun setTorch(enabled: Boolean) {
         torchCameraId?.let { id ->
@@ -52,6 +67,7 @@ class QuickControlsRepository @Inject constructor(
         try {
             audioManager.ringerMode = mode
         } catch (e: SecurityException) {
+            Log.w(TAG, "Permission denied when setting ringer mode", e)
         }
     }
 
@@ -95,4 +111,49 @@ class QuickControlsRepository @Inject constructor(
     }
 
     fun canWriteSettings(): Boolean = Settings.System.canWrite(context)
+
+    private fun notificationManager() =
+        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+    fun isDndEnabled(): Boolean =
+        notificationManager().currentInterruptionFilter != NotificationManager.INTERRUPTION_FILTER_ALL
+
+    fun isDndPermissionGranted(): Boolean =
+        notificationManager().isNotificationPolicyAccessGranted
+
+    fun toggleDnd() {
+        val nm = notificationManager()
+        if (!nm.isNotificationPolicyAccessGranted) return
+        val next = if (isDndEnabled())
+            NotificationManager.INTERRUPTION_FILTER_ALL
+        else
+            NotificationManager.INTERRUPTION_FILTER_PRIORITY
+        nm.setInterruptionFilter(next)
+    }
+
+    fun openQrScanner() {
+        val candidates = listOf(
+            Intent("coloros.intent.action.CAMERA_SCANNER"),
+            Intent("coloros.intent.action.SCANNER_MAIN_PAGE"),
+            Intent("com.google.zxing.client.android.SCAN").apply {
+                putExtra("SCAN_MODE", "QR_CODE_MODE")
+            },
+            Intent("com.google.android.gms.actions.SCAN_BARCODE"),
+            Intent("android.media.action.IMAGE_CAPTURE")
+        )
+        val pm = context.packageManager
+        for (intent in candidates) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            if (pm.resolveActivity(intent, 0) != null) {
+                context.startActivity(intent)
+                return
+            }
+        }
+    }
+
+    fun showPowerMenu() {
+        TaskBarAccessibilityService.instance?.showPowerMenu()
+    }
+
+    fun canShowPowerMenu(): Boolean = TaskBarAccessibilityService.isRunning()
 }
