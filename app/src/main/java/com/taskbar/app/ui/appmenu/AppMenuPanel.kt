@@ -9,12 +9,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -29,7 +26,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -48,40 +44,22 @@ fun AppMenuPanel(
     val quickControls by viewModel.quickControlsState.collectAsState()
     val context = LocalContext.current
 
-    Box(modifier = modifier) {
-        AnimatedVisibility(
-            visible = menuVisible,
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) {
-                        viewModel.dismissMenu()
-                    }
-            )
-        }
-
-        AnimatedVisibility(
-            visible = menuVisible,
-            enter = slideInVertically(
-                animationSpec = spring(),
-                initialOffsetY = { it }
-            ),
-            exit = slideOutVertically(
-                animationSpec = spring(),
-                targetOffsetY = { it }
-            ),
-            modifier = Modifier.align(Alignment.BottomCenter)
-        ) {
+    AnimatedVisibility(
+        visible = menuVisible,
+        enter = slideInVertically(
+            animationSpec = spring(),
+            initialOffsetY = { it / 4 }
+        ) + fadeIn(),
+        exit = slideOutVertically(
+            animationSpec = spring(),
+            targetOffsetY = { it / 4 }
+        ) + fadeOut(),
+        modifier = modifier
+    ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 6.dp),
+                    .padding(bottom = 4.dp),
                 contentAlignment = Alignment.Center
             ) {
             Surface(
@@ -167,6 +145,5 @@ fun AppMenuPanel(
             }
             }   // Surface
             }   // inner Box (margin wrapper)
-        }       // AnimatedVisibility (slide)
-    }           // outer Box
+    }           // AnimatedVisibility
 }

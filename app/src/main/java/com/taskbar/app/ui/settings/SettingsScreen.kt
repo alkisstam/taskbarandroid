@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.PowerSettingsNew
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -111,6 +112,7 @@ private fun GeneralTab(
 ) {
     val overlayEnabled by viewModel.overlayEnabled.collectAsState()
     val themeMode by viewModel.themeMode.collectAsState()
+    val autoHideInFullscreen by viewModel.autoHideInFullscreen.collectAsState()
     val context = LocalContext.current
 
     Column(
@@ -189,6 +191,27 @@ private fun GeneralTab(
                     onClick = { viewModel.setThemeMode(ThemeMode.SYSTEM) },
                     label = { Text("System") },
                     leadingIcon = { Icon(Icons.Filled.PhoneAndroid, contentDescription = null) }
+                )
+            }
+        }
+
+        SettingsCard(title = "Behaviour") {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text("Auto-hide in Fullscreen", style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        "Hide the taskbar when an app goes fullscreen",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Switch(
+                    checked = autoHideInFullscreen,
+                    onCheckedChange = { viewModel.setAutoHideInFullscreen(it) }
                 )
             }
         }

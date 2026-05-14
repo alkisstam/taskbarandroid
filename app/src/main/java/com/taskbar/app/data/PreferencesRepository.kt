@@ -54,6 +54,7 @@ class PreferencesRepository @Inject constructor(
         private val TASKBAR_POSITION_Y_KEY = floatPreferencesKey("taskbar_position_y")
         private val TASKBAR_WIDTH_KEY = floatPreferencesKey("taskbar_width_fraction")
         private val TASKBAR_HEIGHT_KEY = floatPreferencesKey("taskbar_height_dp")
+        private val AUTO_HIDE_FULLSCREEN_KEY = booleanPreferencesKey("auto_hide_fullscreen")
 
         private fun serializePinnedApps(packages: List<String>): String =
             JSONArray(packages).toString()
@@ -139,6 +140,16 @@ class PreferencesRepository @Inject constructor(
             positionYDp = prefs[PILL_POSITION_Y_KEY] ?: 80f,
             positionXDp = prefs[PILL_POSITION_X_KEY] ?: 16f
         )
+    }
+
+    val autoHideInFullscreen: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[AUTO_HIDE_FULLSCREEN_KEY] ?: false
+    }
+
+    suspend fun setAutoHideInFullscreen(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[AUTO_HIDE_FULLSCREEN_KEY] = enabled
+        }
     }
 
     val taskbarSettings: Flow<TaskbarSettings> = context.dataStore.data.map { prefs ->

@@ -3,11 +3,16 @@ package com.taskbar.app.service
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.KeyguardManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.PixelFormat
 import android.graphics.Rect
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import android.view.Gravity
@@ -92,6 +97,29 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var observersStarted = false
 
+    private val keyguardManager by lazy { getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager }
+
+    private val lockscreenReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            when (intent.action) {
+                Intent.ACTION_SCREEN_OFF -> {
+                    overlayView?.visibility = View.GONE
+                    pillView?.visibility = View.GONE
+                }
+                Intent.ACTION_USER_PRESENT -> {
+                    overlayView?.visibility = View.VISIBLE
+                    pillView?.visibility = View.VISIBLE
+                }
+                Intent.ACTION_SCREEN_ON -> {
+                    if (!keyguardManager.isKeyguardLocked) {
+                        overlayView?.visibility = View.VISIBLE
+                        pillView?.visibility = View.VISIBLE
+                    }
+                }
+            }
+        }
+    }
+
     private lateinit var taskbarViewModel: TaskbarViewModel
     private lateinit var appMenuViewModel: AppMenuViewModel
 
@@ -113,6 +141,12 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
         _windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         createNotificationChannel()
+        val filter = IntentFilter().apply {
+            addAction(Intent.ACTION_SCREEN_OFF)
+            addAction(Intent.ACTION_SCREEN_ON)
+            addAction(Intent.ACTION_USER_PRESENT)
+        }
+        registerReceiver(lockscreenReceiver, filter)
 
         val factory = OverlayViewModelFactory(
             context = this,
@@ -138,6 +172,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             observePillPosition()
             observeOverlayInteractivity()
             observeSearchVisibility()
+            observeFullscreenAutoHide()
         }
         return START_STICKY
     }
@@ -302,7 +337,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 setViewTreeLifecycleOwner(this@OverlayService)
                 setViewTreeViewModelStoreOwner(this@OverlayService)
                 setViewTreeSavedStateRegistryOwner(this@OverlayService)
-                setContent { SearchOverlayContent(appMenuViewModel = appMenuViewModel) }
+                setContent { SearchOverlayContent(appMenuViewModel = appMenuViewModel, onHideTaskbar = taskbarViewModel::hideTaskbar) }
             }
             val wrapper = object : FrameLayout(this) {
                 override fun dispatchKeyEvent(event: KeyEvent): Boolean {
@@ -331,6 +366,30 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 searchView?.visibility = if (searching) View.VISIBLE else View.GONE
             }
         }
+    }
+
+    private fun observeFullscreenAutoHide() {
+        val view = overlayView ?: return
+        val listener = ViewTreeObserver.OnWindowVisibilityChangeListener {
+            if (taskbarViewModel.autoHideInFullscreen.value) {
+                val insets = view.rootWindowInsets
+                val isFullscreen = insets != null &&
+                    !insets.isVisible(android.view.WindowInsets.Type.statusBars())
+                if (isFullscreen) taskbarViewModel.hideTaskbar()
+            }
+        }
+        view.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+            override fun onViewAttachedToWindow(v: View) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    v.viewTreeObserver.addOnWindowVisibilityChangeListener(listener)
+                }
+            }
+            override fun onViewDetachedFromWindow(v: View) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    v.viewTreeObserver.removeOnWindowVisibilityChangeListener(listener)
+                }
+            }
+        })
     }
 
     private fun removeOverlayView() {
@@ -381,6 +440,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+        unregisterReceiver(lockscreenReceiver)
         removeOverlayView()
         serviceScope.cancel()
         _viewModelStore.clear()
@@ -404,14 +464,17 @@ private fun OverlayContent(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.BottomCenter
         ) {
-            if (isTaskbarVisible && !menuVisible) {
+            if (isTaskbarVisible) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .clickable(
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() }
-                        ) { taskbarViewModel.hideTaskbar() }
+                        ) {
+                            if (menuVisible) appMenuViewModel.dismissMenu()
+                            else taskbarViewModel.hideTaskbar()
+                        }
                 )
             }
             Column(modifier = Modifier.wrapContentHeight()) {
@@ -421,7 +484,7 @@ private fun OverlayContent(
                     modifier = Modifier
                 )
                 AnimatedVisibility(
-                    visible = isTaskbarVisible || menuVisible,
+                    visible = isTaskbarVisible,
                     enter = slideInVertically(initialOffsetY = { it }),
                     exit = slideOutVertically(targetOffsetY = { it })
                 ) {
@@ -451,8 +514,8 @@ private fun TriggerPillContent(taskbarViewModel: TaskbarViewModel) {
 }
 
 @Composable
-private fun SearchOverlayContent(appMenuViewModel: AppMenuViewModel) {
+private fun SearchOverlayContent(appMenuViewModel: AppMenuViewModel, onHideTaskbar: () -> Unit) {
     TaskBarTheme {
-        FloatingSearchBar(viewModel = appMenuViewModel)
+        FloatingSearchBar(viewModel = appMenuViewModel, onHideTaskbar = onHideTaskbar)
     }
 }

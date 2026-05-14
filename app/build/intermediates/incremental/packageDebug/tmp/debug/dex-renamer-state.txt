@@ -1,4 +1,4 @@
-#Thu May 14 16:56:35 CEST 2026
+#Thu May 14 17:43:48 CEST 2026
 base.0=/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex
 base.1=/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/build/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex
 base.10=/home/alkis/Documents/Projects/Apps/TaskBarAndroid/app/build/intermediates/global_synthetics_dex/debug/generateDebugGlobalSynthetics/classes.dex

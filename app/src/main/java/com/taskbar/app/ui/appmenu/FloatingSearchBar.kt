@@ -32,20 +32,28 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.taskbar.app.viewmodel.AppMenuViewModel
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FloatingSearchBar(viewModel: AppMenuViewModel) {
+fun FloatingSearchBar(viewModel: AppMenuViewModel, onHideTaskbar: () -> Unit = {}) {
     val searchQuery by viewModel.searchQuery.collectAsState()
     val filteredApps by viewModel.filteredApps.collectAsState()
     val pinnedPackages by viewModel.pinnedPackages.collectAsState()
+    val isSearching by viewModel.isSearching.collectAsState()
     val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
+    LaunchedEffect(isSearching) {
+        if (isSearching) {
+            focusRequester.requestFocus()
+            delay(100)
+            keyboardController?.show()
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -112,7 +120,7 @@ fun FloatingSearchBar(viewModel: AppMenuViewModel) {
                             SearchResultItem(
                                 app = app,
                                 isPinned = pinnedPackages.contains(app.packageName),
-                                onLaunch = { viewModel.launchApp(app.packageName) },
+                                onLaunch = { viewModel.launchApp(app.packageName); onHideTaskbar() },
                                 onPin = {
                                     if (pinnedPackages.contains(app.packageName))
                                         viewModel.unpinApp(app.packageName)

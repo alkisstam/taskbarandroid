@@ -5,12 +5,12 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,6 +21,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
+import androidx.compose.ui.unit.IntOffset
 import com.taskbar.app.data.AppInfo
 import com.taskbar.app.ui.common.AppIconImage
 
@@ -62,17 +65,27 @@ fun PinnedAppItem(
             }
         }
 
-        DropdownMenu(
-            expanded = showMenu,
-            onDismissRequest = { showMenu = false }
-        ) {
-            DropdownMenuItem(
-                text = { Text("Unpin from TaskBar") },
-                onClick = {
-                    onUnpin()
-                    showMenu = false
+        if (showMenu) {
+            Popup(
+                alignment = Alignment.TopCenter,
+                offset = IntOffset(0, -160),
+                onDismissRequest = { showMenu = false },
+                properties = PopupProperties(focusable = true)
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    tonalElevation = 8.dp,
+                    shadowElevation = 8.dp,
+                    modifier = Modifier.width(140.dp)
+                ) {
+                    TextButton(
+                        onClick = { onUnpin(); showMenu = false },
+                        modifier = Modifier.padding(horizontal = 4.dp)
+                    ) {
+                        Text("Unpin from TaskBar", style = MaterialTheme.typography.bodySmall)
+                    }
                 }
-            )
+            }
         }
     }
 }

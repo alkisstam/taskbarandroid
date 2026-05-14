@@ -58,6 +58,9 @@ class TaskbarViewModel @Inject constructor(
     val taskbarSettings: StateFlow<TaskbarSettings> = prefsRepository.taskbarSettings
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), TaskbarSettings())
 
+    val autoHideInFullscreen: StateFlow<Boolean> = prefsRepository.autoHideInFullscreen
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
     private val _isTaskbarVisible = MutableStateFlow(true)
     val isTaskbarVisible: StateFlow<Boolean> = _isTaskbarVisible.asStateFlow()
 
@@ -151,6 +154,12 @@ class TaskbarViewModel @Inject constructor(
     fun saveTaskbarSettings(settings: TaskbarSettings) {
         viewModelScope.launch {
             prefsRepository.saveTaskbarSettings(settings)
+        }
+    }
+
+    fun setAutoHideInFullscreen(enabled: Boolean) {
+        viewModelScope.launch {
+            prefsRepository.setAutoHideInFullscreen(enabled)
         }
     }
 
