@@ -162,5 +162,4 @@ class TaskbarViewModel @Inject constructor(
         context.stopService(intent)
     }
 
-    fun isAccessibilityServiceEnabled(): Boolean = _isAccessibilityEnabled.value
 }

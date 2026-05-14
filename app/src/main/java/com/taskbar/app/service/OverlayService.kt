@@ -90,6 +90,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private var pillView: View? = null
     private var searchView: View? = null
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    private var observersStarted = false
 
     private lateinit var taskbarViewModel: TaskbarViewModel
     private lateinit var appMenuViewModel: AppMenuViewModel
@@ -131,10 +132,13 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         addOverlayView()
         addPillView()
         addSearchView()
-        observeKeyboardVisibility()
-        observePillPosition()
-        observeOverlayInteractivity()
-        observeSearchVisibility()
+        if (!observersStarted) {
+            observersStarted = true
+            observeKeyboardVisibility()
+            observePillPosition()
+            observeOverlayInteractivity()
+            observeSearchVisibility()
+        }
         return START_STICKY
     }
 
@@ -169,8 +173,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 appMenuViewModel.menuVisible,
                 taskbarViewModel.isTaskbarVisible,
                 appMenuViewModel.isSearching
-            ) { values ->
-                Triple(values[0] as Boolean, values[1] as Boolean, values[2] as Boolean)
+            ) { menuOpen, taskbarVisible, searching ->
+                Triple(menuOpen, taskbarVisible, searching)
             }
             .collect { (menuOpen, taskbarVisible, searching) ->
                 val interactive = menuOpen || taskbarVisible
