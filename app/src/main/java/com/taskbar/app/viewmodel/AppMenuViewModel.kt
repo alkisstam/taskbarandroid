@@ -3,6 +3,7 @@ package com.taskbar.app.viewmodel
 import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.taskbar.app.data.AppInfo
@@ -32,6 +33,8 @@ data class QuickControlsState(
     val dndPermissionGranted: Boolean = false,
     val canShowPowerMenu: Boolean = false
 )
+
+private const val TAG = "AppMenuViewModel"
 
 @HiltViewModel
 class AppMenuViewModel @Inject constructor(
@@ -119,7 +122,7 @@ class AppMenuViewModel @Inject constructor(
 
     fun refreshQuickControls() {
         _quickControlsState.value = QuickControlsState(
-            torchOn = _quickControlsState.value.torchOn,
+            torchOn = quickControls.getTorchState(),
             ringerMode = quickControls.getRingerMode(),
             autoRotate = quickControls.isAutoRotateEnabled(),
             autoBrightness = quickControls.isAutoBrightnessEnabled(),
@@ -138,7 +141,7 @@ class AppMenuViewModel @Inject constructor(
             quickControls.setTorch(newState)
             _quickControlsState.value = _quickControlsState.value.copy(torchOn = newState)
         } catch (e: Exception) {
-            // Camera not available
+            Log.w(TAG, "Failed to toggle torch", e)
         }
     }
 
