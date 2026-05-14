@@ -13,7 +13,9 @@ import android.content.IntentFilter
 import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import android.view.KeyEvent
@@ -99,22 +101,29 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private val keyguardManager by lazy { getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager }
 
+    private val handler = Handler(Looper.getMainLooper())
+
     private val lockscreenReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
                 Intent.ACTION_SCREEN_OFF -> {
+                    handler.removeCallbacksAndMessages(null)
                     overlayView?.visibility = View.GONE
                     pillView?.visibility = View.GONE
                 }
                 Intent.ACTION_USER_PRESENT -> {
+                    handler.removeCallbacksAndMessages(null)
                     overlayView?.visibility = View.VISIBLE
                     pillView?.visibility = View.VISIBLE
                 }
                 Intent.ACTION_SCREEN_ON -> {
-                    if (!keyguardManager.isKeyguardLocked) {
-                        overlayView?.visibility = View.VISIBLE
-                        pillView?.visibility = View.VISIBLE
-                    }
+                    // Defer check to let keyguard state stabilize and prevent flicker
+                    handler.postDelayed({
+                        if (!keyguardManager.isKeyguardLocked) {
+                            overlayView?.visibility = View.VISIBLE
+                            pillView?.visibility = View.VISIBLE
+                        }
+                    }, 300)
                 }
             }
         }
@@ -172,7 +181,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             observePillPosition()
             observeOverlayInteractivity()
             observeSearchVisibility()
-            observeFullscreenAutoHide()
         }
         return START_STICKY
     }
@@ -239,6 +247,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             }
             overlayView = composeView
             windowManager.addView(composeView, overlayLayoutParams())
+            attachFullscreenObserver(composeView)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add overlay view", e)
             overlayView = null
@@ -368,28 +377,20 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         }
     }
 
-    private fun observeFullscreenAutoHide() {
-        val view = overlayView ?: return
-        val listener = ViewTreeObserver.OnWindowVisibilityChangeListener {
+    private var fullscreenInsetsListener: View.OnApplyWindowInsetsListener? = null
+
+    private fun attachFullscreenObserver(view: View) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return
+        fullscreenInsetsListener = View.OnApplyWindowInsetsListener { v, insets ->
             if (taskbarViewModel.autoHideInFullscreen.value) {
-                val insets = view.rootWindowInsets
-                val isFullscreen = insets != null &&
-                    !insets.isVisible(android.view.WindowInsets.Type.statusBars())
-                if (isFullscreen) taskbarViewModel.hideTaskbar()
+                val isFullscreen = !insets.isVisible(android.view.WindowInsets.Type.statusBars())
+                if (isFullscreen) {
+                    taskbarViewModel.hideTaskbar()
+                }
             }
+            insets
         }
-        view.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
-            override fun onViewAttachedToWindow(v: View) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    v.viewTreeObserver.addOnWindowVisibilityChangeListener(listener)
-                }
-            }
-            override fun onViewDetachedFromWindow(v: View) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    v.viewTreeObserver.removeOnWindowVisibilityChangeListener(listener)
-                }
-            }
-        })
+        view.setOnApplyWindowInsetsListener(fullscreenInsetsListener)
     }
 
     private fun removeOverlayView() {

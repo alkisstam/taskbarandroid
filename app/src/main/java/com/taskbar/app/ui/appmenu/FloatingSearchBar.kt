@@ -29,6 +29,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -36,7 +37,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.taskbar.app.viewmodel.AppMenuViewModel
-import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,12 +51,11 @@ fun FloatingSearchBar(viewModel: AppMenuViewModel, onHideTaskbar: () -> Unit = {
     LaunchedEffect(isSearching) {
         if (isSearching) {
             focusRequester.requestFocus()
-            delay(100)
-            keyboardController?.show()
         }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
+        // Backdrop scrim to dismiss on tap outside
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -78,6 +77,7 @@ fun FloatingSearchBar(viewModel: AppMenuViewModel, onHideTaskbar: () -> Unit = {
                 tonalElevation = 8.dp,
                 shadowElevation = 8.dp
             ) {
+                // Show keyboard reliably when search field is laid out
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = viewModel::setSearchQuery,
@@ -101,7 +101,11 @@ fun FloatingSearchBar(viewModel: AppMenuViewModel, onHideTaskbar: () -> Unit = {
                     keyboardActions = KeyboardActions(onDone = { viewModel.closeSearch() }),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .focusRequester(focusRequester),
+                        .focusRequester(focusRequester)
+                        .onPlaced {
+                            // Show keyboard once the field is laid out and ready
+                            keyboardController?.show()
+                        },
                     shape = RoundedCornerShape(16.dp)
                 )
             }

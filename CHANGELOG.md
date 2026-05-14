@@ -4,6 +4,16 @@ All notable changes to TaskBar are documented here.
 
 ---
 
+## [1.0.3] - 2026-05-14
+
+### Fixed
+- **Fullscreen auto-hide observer never attached** — `observeFullscreenAutoHide()` was called before `overlayView` existed, causing immediate return. Fixed by attaching via `addOverlayView()` using `OnApplyWindowInsetsListener` (API 30+).
+- **Keyboard showing used arbitrary delay** — replaced `delay(100)` magic number with `.onPlaced { keyboardController?.show() }` for reliable keyboard display once the field is laid out.
+- **Context menu offset hardcoded in pixels** — changed from `IntOffset(0, -160/-180)` to density-aware `with(LocalDensity.current) { 56.dp/64.dp.roundToPx() }` for consistent positioning across screen densities.
+- **Lockscreen flicker race condition** — added 300ms Handler delay for `ACTION_SCREEN_ON` to let keyguard state stabilize, with proper callback cleanup on other events to prevent flicker.
+
+---
+
 ## [1.0.2] - 2026-05-14
 
 ### Added

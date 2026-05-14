@@ -19,11 +19,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
-import androidx.compose.ui.unit.IntOffset
 import com.taskbar.app.data.AppInfo
 import com.taskbar.app.ui.common.AppIconImage
 
@@ -66,9 +67,11 @@ fun PinnedAppItem(
         }
 
         if (showMenu) {
+            val density = LocalDensity.current
+            val yOffset = with(density) { 56.dp.roundToPx() }
             Popup(
                 alignment = Alignment.TopCenter,
-                offset = IntOffset(0, -160),
+                offset = androidx.compose.ui.unit.IntOffset(0, -yOffset),
                 onDismissRequest = { showMenu = false },
                 properties = PopupProperties(focusable = true)
             ) {

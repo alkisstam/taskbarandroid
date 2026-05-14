@@ -31,7 +31,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
@@ -125,9 +125,11 @@ private fun AppGridItem(
         )
 
         if (showMenu) {
+            val density = androidx.compose.ui.platform.LocalDensity.current
+            val yOffset = with(density) { 64.dp.roundToPx() }
             Popup(
                 alignment = Alignment.TopCenter,
-                offset = IntOffset(0, -180),
+                offset = androidx.compose.ui.unit.IntOffset(0, -yOffset),
                 onDismissRequest = { showMenu = false },
                 properties = PopupProperties(focusable = true)
             ) {
