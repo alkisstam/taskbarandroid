@@ -3,7 +3,6 @@ package com.taskbar.app.service
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.KeyguardManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.BroadcastReceiver
@@ -14,9 +13,7 @@ import android.content.res.Configuration
 import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.os.Build
-import android.os.Handler
 import android.os.IBinder
-import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import android.view.KeyEvent
@@ -102,36 +99,25 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var observersStarted = false
 
-    private val keyguardManager by lazy { getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager }
-
-    private val handler = Handler(Looper.getMainLooper())
-
     private val lockscreenReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
                 Intent.ACTION_SCREEN_OFF -> {
-                    handler.removeCallbacksAndMessages(null)
                     overlayView?.visibility = View.GONE
                     pillView?.visibility = View.GONE
                     searchView?.visibility = View.GONE
                     quickStripView?.visibility = View.GONE
+                    setQuickStripInteractive(false)
                 }
                 Intent.ACTION_USER_PRESENT -> {
-                    handler.removeCallbacksAndMessages(null)
                     overlayView?.visibility = View.VISIBLE
                     pillView?.visibility = View.VISIBLE
                     restoreQuickStripVisibility()
                 }
                 Intent.ACTION_SCREEN_ON -> {
-                    handler.removeCallbacksAndMessages(null)
-                    // Defer check to let keyguard state stabilize and prevent flicker
-                    handler.postDelayed({
-                        if (!keyguardManager.isKeyguardLocked) {
-                            overlayView?.visibility = View.VISIBLE
-                            pillView?.visibility = View.VISIBLE
-                            restoreQuickStripVisibility()
-                        }
-                    }, 300)
+                    // ACTION_USER_PRESENT is the authoritative signal for showing the overlay;
+                    // checking isKeyguardLocked here races with face-unlock/smart-lock which
+                    // dismiss the keyguard before the lockscreen UI has gone away.
                 }
                 Intent.ACTION_CONFIGURATION_CHANGED -> {
                     if (taskbarViewModel.autoHideInLandscape.value) {
