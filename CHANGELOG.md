@@ -4,6 +4,18 @@ All notable changes to TaskBar are documented here.
 
 ---
 
+## [1.0.6] - 2026-05-15
+
+### Added
+- **Quick Controls Strip** — a new always-visible panel that appears directly above the taskbar, showing the same quick controls (torch, ringer, rotate, brightness, DND, QR, power) in a horizontal scrollable row. Enable via the new *Quick Controls Strip* toggle in Behaviour settings. The strip is hidden automatically when the app menu or search is open. When enabled, the quick controls column inside the app menu is removed to avoid duplication.
+- **Pinned Apps horizontal row in Settings** — the Pinned Apps card now shows icons in a horizontal scrollable row matching the taskbar layout; long-press and drag any icon to reorder, tap the ✕ badge to unpin.
+
+### Fixed
+- **Broadcast receiver crash on Android 13+** — `registerReceiver` for custom `ACTION_SETTINGS_OPEN` / `ACTION_SETTINGS_CLOSE` actions was missing the required `RECEIVER_NOT_EXPORTED` flag, causing a `SecurityException` on API 33+.
+- **Quick Controls Strip touch passthrough** — strip overlay window now uses `WRAP_CONTENT` height with dynamic `FLAG_NOT_TOUCHABLE` toggling; when hidden the window passes all touches through to the taskbar and pill below.
+
+---
+
 ## [1.0.5] - 2026-05-15
 
 ### Added
