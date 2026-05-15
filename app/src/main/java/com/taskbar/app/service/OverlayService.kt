@@ -120,7 +120,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     handler.removeCallbacksAndMessages(null)
                     overlayView?.visibility = View.VISIBLE
                     pillView?.visibility = View.VISIBLE
-                    quickStripView?.visibility = View.VISIBLE
+                    restoreQuickStripVisibility()
                 }
                 Intent.ACTION_SCREEN_ON -> {
                     handler.removeCallbacksAndMessages(null)
@@ -129,7 +129,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                         if (!keyguardManager.isKeyguardLocked) {
                             overlayView?.visibility = View.VISIBLE
                             pillView?.visibility = View.VISIBLE
-                            quickStripView?.visibility = View.VISIBLE
+                            restoreQuickStripVisibility()
                         }
                     }, 300)
                 }
@@ -265,6 +265,15 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         val view = quickStripView ?: return
         try { windowManager.updateViewLayout(view, quickStripLayoutParams(interactive, quickStripYOffsetDp)) }
         catch (e: Exception) { Log.w(TAG, "Failed to update quick strip layout flags", e) }
+    }
+
+    private fun restoreQuickStripVisibility() {
+        val show = taskbarViewModel.isTaskbarVisible.value &&
+                taskbarViewModel.quickControlsStripEnabled.value &&
+                !appMenuViewModel.menuVisible.value &&
+                !appMenuViewModel.isSearching.value
+        quickStripView?.visibility = if (show) View.VISIBLE else View.GONE
+        setQuickStripInteractive(show)
     }
 
     private fun setOverlayFlags(interactive: Boolean, focusable: Boolean) {
