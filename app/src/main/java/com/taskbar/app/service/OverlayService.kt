@@ -117,6 +117,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     pillView?.visibility = View.VISIBLE
                 }
                 Intent.ACTION_SCREEN_ON -> {
+                    handler.removeCallbacksAndMessages(null)
                     // Defer check to let keyguard state stabilize and prevent flicker
                     handler.postDelayed({
                         if (!keyguardManager.isKeyguardLocked) {
@@ -386,6 +387,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 val isFullscreen = !insets.isVisible(android.view.WindowInsets.Type.statusBars())
                 if (isFullscreen) {
                     taskbarViewModel.hideTaskbar()
+                } else {
+                    taskbarViewModel.showTaskbar()
                 }
             }
             insets
@@ -441,6 +444,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+        observersStarted = false
         unregisterReceiver(lockscreenReceiver)
         removeOverlayView()
         serviceScope.cancel()

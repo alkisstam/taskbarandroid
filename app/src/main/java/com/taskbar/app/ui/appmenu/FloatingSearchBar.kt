@@ -29,7 +29,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -51,6 +50,7 @@ fun FloatingSearchBar(viewModel: AppMenuViewModel, onHideTaskbar: () -> Unit = {
     LaunchedEffect(isSearching) {
         if (isSearching) {
             focusRequester.requestFocus()
+            keyboardController?.show()
         }
     }
 
@@ -101,11 +101,7 @@ fun FloatingSearchBar(viewModel: AppMenuViewModel, onHideTaskbar: () -> Unit = {
                     keyboardActions = KeyboardActions(onDone = { viewModel.closeSearch() }),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .focusRequester(focusRequester)
-                        .onPlaced {
-                            // Show keyboard once the field is laid out and ready
-                            keyboardController?.show()
-                        },
+                        .focusRequester(focusRequester),
                     shape = RoundedCornerShape(16.dp)
                 )
             }
