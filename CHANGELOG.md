@@ -4,6 +4,17 @@ All notable changes to TaskBar are documented here.
 
 ---
 
+## [1.0.4] - 2026-05-15
+
+### Fixed
+- **Fullscreen auto-hide never restored taskbar** — the insets observer only hid the taskbar when fullscreen was detected but never showed it again on exit; added `showTaskbar()` in the non-fullscreen branch.
+- **`ACTION_SCREEN_ON` callback stacking** — rapid screen-on events could queue multiple deferred "show" callbacks; fixed by calling `removeCallbacksAndMessages` before re-posting the delayed runnable.
+- **Search keyboard shown on every layout pass** — `onPlaced` fires on every recomposition, causing `keyboardController.show()` to spam on every keystroke; moved the call into `LaunchedEffect(isSearching)` so it fires once per search open.
+- **`observersStarted` flag not reset on destroy** — flag is now cleared in `onDestroy()` for correctness on service restart.
+- **Unused `DpOffset` import in `PinnedAppItem`** — dead import leftover from the old `DropdownMenu` removed.
+
+---
+
 ## [1.0.3] - 2026-05-14
 
 ### Fixed
