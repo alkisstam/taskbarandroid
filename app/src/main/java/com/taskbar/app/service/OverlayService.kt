@@ -109,6 +109,11 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     // visibility observer must not show the overlay while this is set.
     @Volatile private var overlayHiddenForLockscreen = false
 
+    // Set when ACTION_USER_PRESENT is received so ACTION_SCREEN_ON (which can
+    // arrive after USER_PRESENT on some devices) does not cancel the pending
+    // showOverlay() callback or replace it with an isKeyguardLocked check.
+    @Volatile private var userPresentReceived = false
+
     private fun showOverlay() {
         overlayHiddenForLockscreen = false
         overlayView?.visibility = View.VISIBLE
@@ -121,6 +126,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             when (intent.action) {
                 Intent.ACTION_SCREEN_OFF -> {
                     handler.removeCallbacksAndMessages(null)
+                    userPresentReceived = false
                     overlayHiddenForLockscreen = true
                     overlayView?.visibility = View.GONE
                     pillView?.visibility = View.GONE
@@ -133,9 +139,13 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     // immediately causes the keyboard observer to see the shrinking lockscreen
                     // frame as a keyboard and transiently hide the overlay.
                     handler.removeCallbacksAndMessages(null)
+                    userPresentReceived = true
                     handler.postDelayed({ showOverlay() }, 300)
                 }
                 Intent.ACTION_SCREEN_ON -> {
+                    // Skip if ACTION_USER_PRESENT already fired — on some devices SCREEN_ON
+                    // arrives after USER_PRESENT and would cancel the pending showOverlay().
+                    if (userPresentReceived) return
                     // Fallback for devices where ACTION_USER_PRESENT fires late or not at all
                     // (e.g. no screen lock set). ACTION_USER_PRESENT cancels this if it arrives first.
                     handler.removeCallbacksAndMessages(null)
