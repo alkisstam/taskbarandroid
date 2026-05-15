@@ -10,6 +10,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.res.Configuration
 import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.os.Build
@@ -110,6 +111,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     handler.removeCallbacksAndMessages(null)
                     overlayView?.visibility = View.GONE
                     pillView?.visibility = View.GONE
+                    searchView?.visibility = View.GONE
                 }
                 Intent.ACTION_USER_PRESENT -> {
                     handler.removeCallbacksAndMessages(null)
@@ -125,6 +127,18 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                             pillView?.visibility = View.VISIBLE
                         }
                     }, 300)
+                }
+                Intent.ACTION_CONFIGURATION_CHANGED -> {
+                    if (taskbarViewModel.autoHideInLandscape.value) {
+                        val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+                        if (isLandscape) {
+                            overlayView?.visibility = View.GONE
+                            pillView?.visibility = View.GONE
+                        } else {
+                            overlayView?.visibility = View.VISIBLE
+                            pillView?.visibility = View.VISIBLE
+                        }
+                    }
                 }
             }
         }
@@ -155,6 +169,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             addAction(Intent.ACTION_SCREEN_OFF)
             addAction(Intent.ACTION_SCREEN_ON)
             addAction(Intent.ACTION_USER_PRESENT)
+            addAction(Intent.ACTION_CONFIGURATION_CHANGED)
         }
         registerReceiver(lockscreenReceiver, filter)
 

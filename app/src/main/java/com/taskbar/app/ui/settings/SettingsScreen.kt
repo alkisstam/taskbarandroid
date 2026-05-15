@@ -3,18 +3,27 @@ package com.taskbar.app.ui.settings
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.PhoneAndroid
@@ -45,7 +54,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.taskbar.app.data.AppInfo
 import com.taskbar.app.data.ThemeMode
+import com.taskbar.app.ui.common.AppIconImage
 import com.taskbar.app.viewmodel.TaskbarViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -113,6 +124,7 @@ private fun GeneralTab(
     val overlayEnabled by viewModel.overlayEnabled.collectAsState()
     val themeMode by viewModel.themeMode.collectAsState()
     val autoHideInFullscreen by viewModel.autoHideInFullscreen.collectAsState()
+    val autoHideInLandscape by viewModel.autoHideInLandscape.collectAsState()
     val context = LocalContext.current
 
     Column(
@@ -214,6 +226,24 @@ private fun GeneralTab(
                     onCheckedChange = { viewModel.setAutoHideInFullscreen(it) }
                 )
             }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text("Auto-hide in Landscape", style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        "Hide the taskbar when the device is in landscape",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Switch(
+                    checked = autoHideInLandscape,
+                    onCheckedChange = { viewModel.setAutoHideInLandscape(it) }
+                )
+            }
         }
 
         SettingsCard(title = "Navigation Bar Overlay") {
@@ -258,27 +288,113 @@ private fun GeneralTab(
 @Composable
 private fun PinnedAppsTab(viewModel: TaskbarViewModel) {
     val pinnedApps by viewModel.pinnedApps.collectAsState()
+    val allApps by viewModel.allApps.collectAsState()
+    val pinnedPackages = pinnedApps.map { it.packageName }.toSet()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        SettingsCard(title = "Pinned Apps (${pinnedApps.size})") {
-            if (pinnedApps.isEmpty()) {
-                Text(
-                    text = "No apps pinned yet. Long-press any app in the App Menu to pin it.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            } else {
-                PinnedAppsManager(
-                    viewModel = viewModel,
-                    modifier = Modifier.height((pinnedApps.size * 60).coerceAtMost(400).dp)
+        item {
+            SettingsCard(title = "Pinned Apps (${pinnedApps.size})") {
+                if (pinnedApps.isEmpty()) {
+                    Text(
+                        text = "No apps pinned yet. Tap the + button on any app below to pin it.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                } else {
+                    PinnedAppsManager(
+                        viewModel = viewModel,
+                        modifier = Modifier.height((pinnedApps.size * 60).coerceAtMost(400).dp)
+                    )
+                }
+            }
+        }
+        item {
+            Text(
+                text = "All Apps",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(horizontal = 4.dp)
+            )
+        }
+        val rows = allApps.chunked(4)
+        items(rows) { row ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                row.forEach { app ->
+                    AllAppGridItem(
+                        app = app,
+                        isPinned = app.packageName in pinnedPackages,
+                        onTogglePin = {
+                            if (app.packageName in pinnedPackages)
+                                viewModel.unpinApp(app.packageName)
+                            else
+                                viewModel.pinApp(app.packageName)
+                        },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                repeat(4 - row.size) {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AllAppGridItem(
+    app: AppInfo,
+    isPinned: Boolean,
+    onTogglePin: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.padding(vertical = 4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Box {
+            AppIconImage(
+                icon = app.icon,
+                contentDescription = app.label,
+                modifier = Modifier.size(52.dp)
+            )
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .size(20.dp)
+                    .background(
+                        color = if (isPinned) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.surfaceVariant,
+                        shape = RoundedCornerShape(6.dp)
+                    )
+                    .clickable(onClick = onTogglePin),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = if (isPinned) Icons.Filled.Check else Icons.Filled.Add,
+                    contentDescription = if (isPinned) "Unpin" else "Pin",
+                    tint = if (isPinned) MaterialTheme.colorScheme.onPrimary
+                           else MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(14.dp)
                 )
             }
         }
+        Text(
+            text = app.label,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 1,
+            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 

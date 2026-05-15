@@ -113,7 +113,7 @@ fun PillSettingsScreen(
             SettingsSlider(
                 label = "Width",
                 value = pillSettings.widthDp,
-                valueRange = 2f..120f,
+                valueRange = 2f..220f,
                 unit = "dp",
                 onValueChange = { viewModel.savePillSettings(pillSettings.copy(widthDp = it)) }
             )
@@ -158,7 +158,7 @@ fun PillSettingsScreen(
             ) {
                 Card(
                     modifier = Modifier
-                        .width(pillSettings.widthDp.coerceIn(2f, 120f).dp)
+                        .width(pillSettings.widthDp.coerceIn(2f, 220f).dp)
                         .height(pillSettings.heightDp.coerceIn(2f, 64f).dp),
                     shape = RoundedCornerShape(percent = 50),
                     colors = CardDefaults.cardColors(
