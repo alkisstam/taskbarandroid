@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class QuickControlItemData(
@@ -66,9 +67,6 @@ class AppMenuViewModel @Inject constructor(
 
     val pinnedPackages: StateFlow<List<String>> = prefsRepository.pinnedApps
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-
-    val quickControlsStripEnabled: StateFlow<Boolean> = prefsRepository.quickControlsStripEnabled
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
     private val _menuVisible = MutableStateFlow(false)
     val menuVisible: StateFlow<Boolean> = _menuVisible.asStateFlow()
@@ -188,13 +186,32 @@ class AppMenuViewModel @Inject constructor(
         _menuVisible.value = false
     }
 
+    fun openDndSettings() {
+        val intent = android.content.Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS).apply {
+            addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        context.startActivity(intent)
+    }
+
     fun handleQuickControlAction(id: String) {
         when (id) {
             "torch" -> toggleTorch()
             "ringer" -> cycleRingerMode()
-            "rotate" -> toggleAutoRotate()
-            "brightness" -> toggleAutoBrightness()
-            "dnd" -> toggleDnd()
+            "rotate" -> if (_quickControlsState.value.canWriteSettings) toggleAutoRotate() else {
+                val intent = android.content.Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
+                    data = android.net.Uri.parse("package:${context.packageName}")
+                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(intent)
+            }
+            "brightness" -> if (_quickControlsState.value.canWriteSettings) toggleAutoBrightness() else {
+                val intent = android.content.Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
+                    data = android.net.Uri.parse("package:${context.packageName}")
+                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(intent)
+            }
+            "dnd" -> if (_quickControlsState.value.dndPermissionGranted) toggleDnd() else openDndSettings()
             "qr" -> openQrScanner()
             "power" -> showPowerMenu()
         }

@@ -32,10 +32,12 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.taskbar.app.viewmodel.AppMenuViewModel
+import com.taskbar.app.viewmodel.TaskbarViewModel
 
 @Composable
 fun AppMenuPanel(
     viewModel: AppMenuViewModel,
+    taskbarViewModel: TaskbarViewModel,
     onHideTaskbar: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -43,7 +45,7 @@ fun AppMenuPanel(
     val apps by viewModel.filteredApps.collectAsState()
     val pinnedPackages by viewModel.pinnedPackages.collectAsState()
     val quickControls by viewModel.quickControlsState.collectAsState()
-    val stripEnabled by viewModel.quickControlsStripEnabled.collectAsState()
+    val stripEnabled by taskbarViewModel.quickControlsStripEnabled.collectAsState()
     val context = LocalContext.current
 
     AnimatedVisibility(

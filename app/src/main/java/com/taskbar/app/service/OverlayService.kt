@@ -460,8 +460,11 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     )
                 }
             }
+            val initialSettings = taskbarViewModel.taskbarSettings.value
+            quickStripYOffsetDp = initialSettings.positionYDp + initialSettings.heightDp + 2f
+            composeView.visibility = View.GONE
             quickStripView = composeView
-            windowManager.addView(composeView, quickStripLayoutParams())
+            windowManager.addView(composeView, quickStripLayoutParams(false, quickStripYOffsetDp))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add quick strip view", e)
             quickStripView = null
@@ -615,6 +618,7 @@ private fun OverlayContent(
             Column(modifier = Modifier.wrapContentHeight()) {
                 AppMenuPanel(
                     viewModel = appMenuViewModel,
+                    taskbarViewModel = taskbarViewModel,
                     onHideTaskbar = taskbarViewModel::hideTaskbar,
                     modifier = Modifier
                 )
