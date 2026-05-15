@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,12 +34,11 @@ class TaskbarViewModel @Inject constructor(
     private val prefsRepository: PreferencesRepository
 ) : ViewModel() {
 
-    private val _allApps = MutableStateFlow<List<AppInfo>>(emptyList())
-    val allApps: StateFlow<List<AppInfo>> = _allApps.asStateFlow()
+    val allApps: StateFlow<List<AppInfo>> = appRepository.apps
 
     val pinnedApps: StateFlow<List<AppInfo>> = combine(
         prefsRepository.pinnedApps,
-        _allApps
+        appRepository.apps
     ) { pinnedPackages, apps ->
         val appMap = apps.associateBy { it.packageName }
         pinnedPackages.mapNotNull { pkg -> appMap[pkg] }
@@ -63,9 +61,6 @@ class TaskbarViewModel @Inject constructor(
 
     val autoHideInLandscape: StateFlow<Boolean> = prefsRepository.autoHideInLandscape
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
-
-    val autoHideEnabled: StateFlow<Boolean> = prefsRepository.autoHideEnabled
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
 
     val quickControlsStripEnabled: StateFlow<Boolean> = prefsRepository.quickControlsStripEnabled
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
@@ -93,7 +88,6 @@ class TaskbarViewModel @Inject constructor(
     }
 
     init {
-        loadApps()
         context.contentResolver.registerContentObserver(
             Settings.Secure.getUriFor(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES),
             false,
@@ -113,14 +107,6 @@ class TaskbarViewModel @Inject constructor(
         ) ?: return false
         val componentName = "${context.packageName}/${TaskBarAccessibilityService::class.java.name}"
         return flat.split(':').any { TextUtils.equals(it.trim(), componentName) }
-    }
-
-    private fun loadApps() {
-        viewModelScope.launch {
-            appRepository.getInstalledApps().collect { apps ->
-                _allApps.value = apps
-            }
-        }
     }
 
     fun launchApp(packageName: String) {
@@ -182,12 +168,6 @@ class TaskbarViewModel @Inject constructor(
     fun setAutoHideInLandscape(enabled: Boolean) {
         viewModelScope.launch {
             prefsRepository.setAutoHideInLandscape(enabled)
-        }
-    }
-
-    fun setAutoHideEnabled(enabled: Boolean) {
-        viewModelScope.launch {
-            prefsRepository.setAutoHideEnabled(enabled)
         }
     }
 

@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class QuickControlItemData(
@@ -52,13 +51,12 @@ class AppMenuViewModel @Inject constructor(
     private val quickControls: QuickControlsRepository
 ) : ViewModel() {
 
-    private val _allApps = MutableStateFlow<List<AppInfo>>(emptyList())
-    val allApps: StateFlow<List<AppInfo>> = _allApps.asStateFlow()
+    val allApps: StateFlow<List<AppInfo>> = appRepository.apps
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
-    val filteredApps: StateFlow<List<AppInfo>> = combine(_allApps, _searchQuery) { apps, query ->
+    val filteredApps: StateFlow<List<AppInfo>> = combine(appRepository.apps, _searchQuery) { apps, query ->
         val q = query.trim().lowercase()
         if (q.isEmpty()) apps else apps.filter { it.label.lowercase().contains(q) }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -89,16 +87,7 @@ class AppMenuViewModel @Inject constructor(
     }
 
     init {
-        loadApps()
         refreshQuickControls()
-    }
-
-    private fun loadApps() {
-        viewModelScope.launch {
-            appRepository.getInstalledApps().collect { apps ->
-                _allApps.value = apps
-            }
-        }
     }
 
     fun setSearchQuery(query: String) {

@@ -139,9 +139,12 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                         if (isLandscape) {
                             overlayView?.visibility = View.GONE
                             pillView?.visibility = View.GONE
+                            quickStripView?.visibility = View.GONE
+                            setQuickStripInteractive(false)
                         } else {
                             overlayView?.visibility = View.VISIBLE
                             pillView?.visibility = View.VISIBLE
+                            restoreQuickStripVisibility()
                         }
                     }
                 }
@@ -260,8 +263,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     }
 
     private var quickStripYOffsetDp: Float = 0f
+    private var quickStripInteractive: Boolean = false
 
     private fun setQuickStripInteractive(interactive: Boolean) {
+        quickStripInteractive = interactive
         val view = quickStripView ?: return
         try { windowManager.updateViewLayout(view, quickStripLayoutParams(interactive, quickStripYOffsetDp)) }
         catch (e: Exception) { Log.w(TAG, "Failed to update quick strip layout flags", e) }
@@ -492,11 +497,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             taskbarViewModel.taskbarSettings.collect { settings ->
                 quickStripYOffsetDp = settings.positionYDp + settings.heightDp + 2f
                 val view = quickStripView ?: return@collect
-                val isInteractive = taskbarViewModel.isTaskbarVisible.value &&
-                    taskbarViewModel.quickControlsStripEnabled.value &&
-                    !appMenuViewModel.menuVisible.value &&
-                    !appMenuViewModel.isSearching.value
-                try { windowManager.updateViewLayout(view, quickStripLayoutParams(isInteractive, quickStripYOffsetDp)) }
+                try { windowManager.updateViewLayout(view, quickStripLayoutParams(quickStripInteractive, quickStripYOffsetDp)) }
                 catch (e: Exception) { Log.w(TAG, "Failed to update quick strip position", e) }
             }
         }
