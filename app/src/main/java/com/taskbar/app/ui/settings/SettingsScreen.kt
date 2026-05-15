@@ -17,7 +17,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -313,34 +315,26 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel) {
             }
         }
         item {
-            Text(
-                text = "All Apps",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(horizontal = 4.dp)
-            )
-        }
-        val rows = allApps.chunked(4)
-        items(rows) { row ->
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                row.forEach { app ->
-                    AllAppGridItem(
-                        app = app,
-                        isPinned = app.packageName in pinnedPackages,
-                        onTogglePin = {
-                            if (app.packageName in pinnedPackages)
-                                viewModel.unpinApp(app.packageName)
-                            else
-                                viewModel.pinApp(app.packageName)
-                        },
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-                repeat(4 - row.size) {
-                    Spacer(modifier = Modifier.weight(1f))
+            SettingsCard(title = "All Apps (${allApps.size})") {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(4),
+                    modifier = Modifier.height(400.dp),
+                    contentPadding = PaddingValues(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    items(allApps, key = { it.packageName }) { app ->
+                        AllAppGridItem(
+                            app = app,
+                            isPinned = app.packageName in pinnedPackages,
+                            onTogglePin = {
+                                if (app.packageName in pinnedPackages)
+                                    viewModel.unpinApp(app.packageName)
+                                else
+                                    viewModel.pinApp(app.packageName)
+                            }
+                        )
+                    }
                 }
             }
         }

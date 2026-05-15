@@ -478,13 +478,14 @@ private fun OverlayContent(
     val themeMode by taskbarViewModel.themeMode.collectAsState()
     val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
     val menuVisible by appMenuViewModel.menuVisible.collectAsState()
+    val isSettingsOpen by taskbarViewModel.isSettingsOpen.collectAsState()
 
     TaskBarTheme(themeMode = themeMode) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.BottomCenter
         ) {
-            if (isTaskbarVisible) {
+            if (isTaskbarVisible && !isSettingsOpen) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()

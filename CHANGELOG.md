@@ -7,9 +7,9 @@ All notable changes to TaskBar are documented here.
 ## [1.0.5] - 2026-05-15
 
 ### Added
-- **All Apps grid in Pinned Apps settings** — a scrollable grid of all installed apps appears below the pinned list; each icon has a badge overlay (✓ pinned / + unpinned) to toggle pinning directly from settings.
+- **All Apps grid in Pinned Apps settings** — a 4-column scrollable `LazyVerticalGrid` of all installed apps inside the Pinned Apps tab; each icon has a badge overlay (✓ pinned / + unpinned) to toggle pinning directly from settings.
 - **Auto-hide in Landscape** — new "Behaviour" toggle; hides the overlay and pill when the device rotates to landscape and restores them on portrait.
-- **Taskbar always visible in settings** — the taskbar is force-shown while the TaskBar settings activity is in the foreground and restored when leaving.
+- **Taskbar always visible in settings** — the taskbar is force-shown while the TaskBar settings activity is in the foreground; tapping outside it no longer closes it, and it is restored to normal behaviour when leaving settings.
 
 ### Fixed
 - **Lockscreen: search overlay not hidden** — `searchView` was missing from the `ACTION_SCREEN_OFF` hide logic; it is now hidden alongside the overlay and pill.

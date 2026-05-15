@@ -67,6 +67,11 @@ class TaskbarViewModel @Inject constructor(
     private val _isTaskbarVisible = MutableStateFlow(true)
     val isTaskbarVisible: StateFlow<Boolean> = _isTaskbarVisible.asStateFlow()
 
+    private val _isSettingsOpen = MutableStateFlow(false)
+    val isSettingsOpen: StateFlow<Boolean> = _isSettingsOpen.asStateFlow()
+
+    fun setSettingsOpen(open: Boolean) { _isSettingsOpen.value = open }
+
     private val _isAccessibilityEnabled = MutableStateFlow(checkAccessibilityEnabled())
     val isAccessibilityEnabled: StateFlow<Boolean> = _isAccessibilityEnabled.asStateFlow()
 
@@ -77,7 +82,7 @@ class TaskbarViewModel @Inject constructor(
     }
 
     fun showTaskbar() { _isTaskbarVisible.value = true }
-    fun hideTaskbar() { _isTaskbarVisible.value = false }
+    fun hideTaskbar() { if (!_isSettingsOpen.value) _isTaskbarVisible.value = false }
 
     init {
         loadApps()

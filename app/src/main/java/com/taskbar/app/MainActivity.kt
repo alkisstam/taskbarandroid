@@ -54,12 +54,13 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         hasOverlayPermission = Settings.canDrawOverlays(this)
+        taskbarViewModel.setSettingsOpen(true)
         taskbarViewModel.showTaskbar()
     }
 
     override fun onPause() {
         super.onPause()
-        taskbarViewModel.hideTaskbar()
+        taskbarViewModel.setSettingsOpen(false)
     }
 
     private fun requestOverlayPermission() {
