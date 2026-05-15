@@ -36,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.taskbar.app.viewmodel.QuickControlItemData
 import com.taskbar.app.viewmodel.QuickControlsState
 
 @Composable
@@ -136,6 +137,57 @@ fun QuickControls(
             )
         }
     }
+}
+
+fun QuickControlsState.toItems(): List<QuickControlItemData> {
+    val list = mutableListOf<QuickControlItemData>()
+    if (hasTorch) list += QuickControlItemData(
+        id = "torch", label = "Torch", active = torchOn,
+        icon = if (torchOn) Icons.Filled.FlashlightOn else Icons.Filled.FlashlightOff
+    )
+    val ringerIcon = when (ringerMode) {
+        AudioManager.RINGER_MODE_NORMAL -> Icons.AutoMirrored.Filled.VolumeUp
+        AudioManager.RINGER_MODE_VIBRATE -> Icons.Filled.Vibration
+        else -> Icons.AutoMirrored.Filled.VolumeOff
+    }
+    val ringerLabel = when (ringerMode) {
+        AudioManager.RINGER_MODE_NORMAL -> "Ring"
+        AudioManager.RINGER_MODE_VIBRATE -> "Vibrate"
+        else -> "Silent"
+    }
+    list += QuickControlItemData(id = "ringer", label = ringerLabel, active = ringerMode == AudioManager.RINGER_MODE_NORMAL, icon = ringerIcon)
+    list += QuickControlItemData(
+        id = "rotate", label = "Rotate",
+        active = canWriteSettings && autoRotate,
+        icon = if (autoRotate) Icons.Filled.ScreenRotation else Icons.Filled.ScreenRotationAlt
+    )
+    list += QuickControlItemData(
+        id = "brightness", label = "Bright",
+        active = canWriteSettings && autoBrightness,
+        icon = if (autoBrightness) Icons.Filled.BrightnessAuto else Icons.Filled.BrightnessHigh
+    )
+    list += QuickControlItemData(
+        id = "dnd", label = "DND", active = dndEnabled,
+        icon = if (dndEnabled) Icons.Filled.DoNotDisturb else Icons.Filled.DoNotDisturbOff
+    )
+    list += QuickControlItemData(id = "qr", label = "QR", active = false, icon = Icons.Filled.QrCodeScanner)
+    if (canShowPowerMenu) list += QuickControlItemData(id = "power", label = "Power", active = false, icon = Icons.Filled.PowerSettingsNew)
+    return list
+}
+
+@Composable
+fun QuickControlItem(
+    item: QuickControlItemData,
+    onToggle: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    QuickControlTile(
+        icon = item.icon,
+        label = item.label,
+        active = item.active,
+        onClick = onToggle,
+        modifier = modifier
+    )
 }
 
 @Composable

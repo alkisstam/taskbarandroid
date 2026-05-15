@@ -61,6 +61,7 @@ import com.taskbar.app.data.PreferencesRepository
 import com.taskbar.app.data.QuickControlsRepository
 import com.taskbar.app.ui.appmenu.AppMenuPanel
 import com.taskbar.app.ui.appmenu.FloatingSearchBar
+import com.taskbar.app.ui.taskbar.QuickStripView
 import com.taskbar.app.ui.taskbar.TaskbarView
 import com.taskbar.app.ui.taskbar.TriggerPillView
 import com.taskbar.app.ui.theme.TaskBarTheme
@@ -97,6 +98,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private var overlayView: View? = null
     private var pillView: View? = null
     private var searchView: View? = null
+    private var quickStripView: View? = null
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var observersStarted = false
 
@@ -112,11 +114,13 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     overlayView?.visibility = View.GONE
                     pillView?.visibility = View.GONE
                     searchView?.visibility = View.GONE
+                    quickStripView?.visibility = View.GONE
                 }
                 Intent.ACTION_USER_PRESENT -> {
                     handler.removeCallbacksAndMessages(null)
                     overlayView?.visibility = View.VISIBLE
                     pillView?.visibility = View.VISIBLE
+                    quickStripView?.visibility = View.VISIBLE
                 }
                 Intent.ACTION_SCREEN_ON -> {
                     handler.removeCallbacksAndMessages(null)
@@ -125,6 +129,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                         if (!keyguardManager.isKeyguardLocked) {
                             overlayView?.visibility = View.VISIBLE
                             pillView?.visibility = View.VISIBLE
+                            quickStripView?.visibility = View.VISIBLE
                         }
                     }, 300)
                 }
@@ -202,12 +207,15 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         addOverlayView()
         addPillView()
         addSearchView()
+        addQuickStripView()
         if (!observersStarted) {
             observersStarted = true
             observeKeyboardVisibility()
             observePillPosition()
             observeOverlayInteractivity()
             observeSearchVisibility()
+            observeQuickStripVisibility()
+            observeQuickStripPosition()
         }
         return START_STICKY
     }
@@ -229,6 +237,34 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
             y = 0
         }
+    }
+
+    private fun quickStripLayoutParams(interactive: Boolean = false, yOffsetDp: Float = 0f): WindowManager.LayoutParams {
+        val usingAccessibility = TaskBarAccessibilityService.isRunning()
+        val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                (if (!interactive) WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE else 0) or
+                (if (usingAccessibility) WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS else 0)
+        val density = resources.displayMetrics.density
+        return WindowManager.LayoutParams(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            overlayWindowType,
+            flags,
+            PixelFormat.TRANSLUCENT
+        ).apply {
+            gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+            y = (yOffsetDp * density).toInt()
+        }
+    }
+
+    private var quickStripYOffsetDp: Float = 0f
+
+    private fun setQuickStripInteractive(interactive: Boolean) {
+        val view = quickStripView ?: return
+        try { windowManager.updateViewLayout(view, quickStripLayoutParams(interactive, quickStripYOffsetDp)) }
+        catch (e: Exception) { Log.w(TAG, "Failed to update quick strip layout flags", e) }
     }
 
     private fun setOverlayFlags(interactive: Boolean, focusable: Boolean) {
@@ -396,10 +432,63 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         }
     }
 
+    private fun addQuickStripView() {
+        if (quickStripView != null) return
+        try {
+            val composeView = ComposeView(this).apply {
+                setViewTreeLifecycleOwner(this@OverlayService)
+                setViewTreeViewModelStoreOwner(this@OverlayService)
+                setViewTreeSavedStateRegistryOwner(this@OverlayService)
+                setContent {
+                    QuickStripContent(
+                        taskbarViewModel = taskbarViewModel,
+                        appMenuViewModel = appMenuViewModel
+                    )
+                }
+            }
+            quickStripView = composeView
+            windowManager.addView(composeView, quickStripLayoutParams())
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to add quick strip view", e)
+            quickStripView = null
+        }
+    }
+
     private fun observeSearchVisibility() {
         serviceScope.launch {
             appMenuViewModel.isSearching.collect { searching ->
                 searchView?.visibility = if (searching) View.VISIBLE else View.GONE
+            }
+        }
+    }
+
+    private fun observeQuickStripVisibility() {
+        serviceScope.launch {
+            kotlinx.coroutines.flow.combine(
+                taskbarViewModel.isTaskbarVisible,
+                taskbarViewModel.quickControlsStripEnabled,
+                appMenuViewModel.menuVisible,
+                appMenuViewModel.isSearching
+            ) { taskbarVisible, stripEnabled, menuOpen, searching ->
+                taskbarVisible && stripEnabled && !menuOpen && !searching
+            }.collect { visible ->
+                quickStripView?.visibility = if (visible) View.VISIBLE else View.GONE
+                setQuickStripInteractive(visible)
+            }
+        }
+    }
+
+    private fun observeQuickStripPosition() {
+        serviceScope.launch {
+            taskbarViewModel.taskbarSettings.collect { settings ->
+                quickStripYOffsetDp = settings.positionYDp + settings.heightDp + 2f
+                val view = quickStripView ?: return@collect
+                val isInteractive = taskbarViewModel.isTaskbarVisible.value &&
+                    taskbarViewModel.quickControlsStripEnabled.value &&
+                    !appMenuViewModel.menuVisible.value &&
+                    !appMenuViewModel.isSearching.value
+                try { windowManager.updateViewLayout(view, quickStripLayoutParams(isInteractive, quickStripYOffsetDp)) }
+                catch (e: Exception) { Log.w(TAG, "Failed to update quick strip position", e) }
             }
         }
     }
@@ -434,6 +523,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         searchView?.let {
             try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove search view", e) }
             searchView = null
+        }
+        quickStripView?.let {
+            try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove quick strip view", e) }
+            quickStripView = null
         }
     }
 
@@ -549,5 +642,19 @@ private fun TriggerPillContent(taskbarViewModel: TaskbarViewModel) {
 private fun SearchOverlayContent(appMenuViewModel: AppMenuViewModel, onHideTaskbar: () -> Unit) {
     TaskBarTheme {
         FloatingSearchBar(viewModel = appMenuViewModel, onHideTaskbar = onHideTaskbar)
+    }
+}
+
+@Composable
+private fun QuickStripContent(
+    taskbarViewModel: TaskbarViewModel,
+    appMenuViewModel: AppMenuViewModel
+) {
+    val themeMode by taskbarViewModel.themeMode.collectAsState()
+    TaskBarTheme(themeMode = themeMode) {
+        QuickStripView(
+            taskbarViewModel = taskbarViewModel,
+            appMenuViewModel = appMenuViewModel
+        )
     }
 }

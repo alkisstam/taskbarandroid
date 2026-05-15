@@ -64,6 +64,12 @@ class TaskbarViewModel @Inject constructor(
     val autoHideInLandscape: StateFlow<Boolean> = prefsRepository.autoHideInLandscape
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
+    val autoHideEnabled: StateFlow<Boolean> = prefsRepository.autoHideEnabled
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
+
+    val quickControlsStripEnabled: StateFlow<Boolean> = prefsRepository.quickControlsStripEnabled
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
     private val _isTaskbarVisible = MutableStateFlow(true)
     val isTaskbarVisible: StateFlow<Boolean> = _isTaskbarVisible.asStateFlow()
 
@@ -82,7 +88,9 @@ class TaskbarViewModel @Inject constructor(
     }
 
     fun showTaskbar() { _isTaskbarVisible.value = true }
-    fun hideTaskbar() { if (!_isSettingsOpen.value) _isTaskbarVisible.value = false }
+    fun hideTaskbar() {
+        if (!_isSettingsOpen.value) _isTaskbarVisible.value = false
+    }
 
     init {
         loadApps()
@@ -174,6 +182,18 @@ class TaskbarViewModel @Inject constructor(
     fun setAutoHideInLandscape(enabled: Boolean) {
         viewModelScope.launch {
             prefsRepository.setAutoHideInLandscape(enabled)
+        }
+    }
+
+    fun setAutoHideEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            prefsRepository.setAutoHideEnabled(enabled)
+        }
+    }
+
+    fun setQuickControlsStripEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            prefsRepository.setQuickControlsStripEnabled(enabled)
         }
     }
 

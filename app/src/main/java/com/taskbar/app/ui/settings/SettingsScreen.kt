@@ -16,16 +16,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.PhoneAndroid
@@ -60,6 +66,8 @@ import com.taskbar.app.data.AppInfo
 import com.taskbar.app.data.ThemeMode
 import com.taskbar.app.ui.common.AppIconImage
 import com.taskbar.app.viewmodel.TaskbarViewModel
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -127,6 +135,7 @@ private fun GeneralTab(
     val themeMode by viewModel.themeMode.collectAsState()
     val autoHideInFullscreen by viewModel.autoHideInFullscreen.collectAsState()
     val autoHideInLandscape by viewModel.autoHideInLandscape.collectAsState()
+    val quickControlsStripEnabled by viewModel.quickControlsStripEnabled.collectAsState()
     val context = LocalContext.current
 
     Column(
@@ -246,6 +255,24 @@ private fun GeneralTab(
                     onCheckedChange = { viewModel.setAutoHideInLandscape(it) }
                 )
             }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text("Quick Controls Strip", style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        "Show a quick controls bar above the taskbar",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Switch(
+                    checked = quickControlsStripEnabled,
+                    onCheckedChange = { viewModel.setQuickControlsStripEnabled(it) }
+                )
+            }
         }
 
         SettingsCard(title = "Navigation Bar Overlay") {
@@ -302,15 +329,79 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel) {
             SettingsCard(title = "Pinned Apps (${pinnedApps.size})") {
                 if (pinnedApps.isEmpty()) {
                     Text(
-                        text = "No apps pinned yet. Tap the + button on any app below to pin it.",
+                        text = "No apps pinned yet. Tap + on any app below to pin it.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 } else {
-                    PinnedAppsManager(
-                        viewModel = viewModel,
-                        modifier = Modifier.height((pinnedApps.size * 60).coerceAtMost(400).dp)
-                    )
+                    val lazyListState = rememberLazyListState()
+                    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
+                    val reorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
+                        val pkgs = pinnedApps.map { it.packageName }.toMutableList()
+                        pkgs.add(to.index, pkgs.removeAt(from.index))
+                        viewModel.reorderPinnedApps(pkgs)
+                    }
+                    LazyRow(
+                        state = lazyListState,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(vertical = 4.dp)
+                    ) {
+                        items(pinnedApps, key = { it.packageName }) { app ->
+                            ReorderableItem(reorderableState, key = app.packageName) { isDragging ->
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                                    modifier = Modifier
+                                        .longPressDraggableHandle(
+                                            onDragStarted = {
+                                                haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                                            }
+                                        )
+                                ) {
+                                    Box {
+                                        AppIconImage(
+                                            icon = app.icon,
+                                            contentDescription = app.label,
+                                            modifier = Modifier
+                                                .size(48.dp)
+                                                .then(
+                                                    if (isDragging) Modifier.background(
+                                                        MaterialTheme.colorScheme.primaryContainer,
+                                                        RoundedCornerShape(12.dp)
+                                                    ) else Modifier
+                                                )
+                                        )
+                                        Box(
+                                            modifier = Modifier
+                                                .align(Alignment.TopEnd)
+                                                .size(16.dp)
+                                                .background(
+                                                    color = MaterialTheme.colorScheme.error,
+                                                    shape = CircleShape
+                                                )
+                                                .clickable { viewModel.unpinApp(app.packageName) },
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Filled.Close,
+                                                contentDescription = "Unpin",
+                                                tint = MaterialTheme.colorScheme.onError,
+                                                modifier = Modifier.size(10.dp)
+                                            )
+                                        }
+                                    }
+                                    Text(
+                                        text = app.label,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        maxLines = 1,
+                                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                                        modifier = Modifier.width(48.dp),
+                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

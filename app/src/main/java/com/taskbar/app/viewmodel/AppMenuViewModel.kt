@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
 import android.util.Log
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.taskbar.app.data.AppInfo
@@ -20,6 +21,13 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+data class QuickControlItemData(
+    val id: String,
+    val icon: ImageVector,
+    val label: String,
+    val active: Boolean
+)
 
 data class QuickControlsState(
     val torchOn: Boolean = false,
@@ -60,6 +68,9 @@ class AppMenuViewModel @Inject constructor(
 
     val pinnedPackages: StateFlow<List<String>> = prefsRepository.pinnedApps
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val quickControlsStripEnabled: StateFlow<Boolean> = prefsRepository.quickControlsStripEnabled
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
     private val _menuVisible = MutableStateFlow(false)
     val menuVisible: StateFlow<Boolean> = _menuVisible.asStateFlow()
@@ -186,5 +197,17 @@ class AppMenuViewModel @Inject constructor(
     fun showPowerMenu() {
         quickControls.showPowerMenu()
         _menuVisible.value = false
+    }
+
+    fun handleQuickControlAction(id: String) {
+        when (id) {
+            "torch" -> toggleTorch()
+            "ringer" -> cycleRingerMode()
+            "rotate" -> toggleAutoRotate()
+            "brightness" -> toggleAutoBrightness()
+            "dnd" -> toggleDnd()
+            "qr" -> openQrScanner()
+            "power" -> showPowerMenu()
+        }
     }
 }

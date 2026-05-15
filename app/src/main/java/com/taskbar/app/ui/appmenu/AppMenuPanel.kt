@@ -43,6 +43,7 @@ fun AppMenuPanel(
     val apps by viewModel.filteredApps.collectAsState()
     val pinnedPackages by viewModel.pinnedPackages.collectAsState()
     val quickControls by viewModel.quickControlsState.collectAsState()
+    val stripEnabled by viewModel.quickControlsStripEnabled.collectAsState()
     val context = LocalContext.current
 
     AnimatedVisibility(
@@ -114,34 +115,35 @@ fun AppMenuPanel(
                         onLaunchApp = { pkg -> viewModel.launchApp(pkg); onHideTaskbar() },
                         onPinApp = viewModel::pinApp,
                         onUnpinApp = viewModel::unpinApp,
-                        modifier = Modifier.weight(0.8f)
+                        modifier = if (stripEnabled) Modifier.weight(1f) else Modifier.weight(0.8f)
                     )
 
-                    QuickControls(
-                        state = quickControls,
-                        onToggleTorch = viewModel::toggleTorch,
-                        onCycleRingerMode = viewModel::cycleRingerMode,
-                        onToggleAutoRotate = viewModel::toggleAutoRotate,
-                        onToggleAutoBrightness = viewModel::toggleAutoBrightness,
-                        onRequestWriteSettings = {
-                            val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
-                                data = Uri.parse("package:${context.packageName}")
-                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            }
-                            context.startActivity(intent)
-                        },
-                        onToggleDnd = viewModel::toggleDnd,
-                        onRequestDndPermission = {
-                            val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS).apply {
-                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            }
-                            context.startActivity(intent)
-                        },
-                        onOpenQrScanner = viewModel::openQrScanner,
-                        onShowPowerMenu = viewModel::showPowerMenu,
-                        modifier = Modifier
-                            .weight(0.2f)
-                    )
+                    if (!stripEnabled) {
+                        QuickControls(
+                            state = quickControls,
+                            onToggleTorch = viewModel::toggleTorch,
+                            onCycleRingerMode = viewModel::cycleRingerMode,
+                            onToggleAutoRotate = viewModel::toggleAutoRotate,
+                            onToggleAutoBrightness = viewModel::toggleAutoBrightness,
+                            onRequestWriteSettings = {
+                                val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
+                                    data = Uri.parse("package:${context.packageName}")
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                                context.startActivity(intent)
+                            },
+                            onToggleDnd = viewModel::toggleDnd,
+                            onRequestDndPermission = {
+                                val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS).apply {
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                                context.startActivity(intent)
+                            },
+                            onOpenQrScanner = viewModel::openQrScanner,
+                            onShowPowerMenu = viewModel::showPowerMenu,
+                            modifier = Modifier.weight(0.2f)
+                        )
+                    }
                 }
             }
             }   // Surface
