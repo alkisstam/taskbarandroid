@@ -140,6 +140,13 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                         }
                     }
                 }
+                ACTION_SETTINGS_OPEN -> {
+                    taskbarViewModel.setSettingsOpen(true)
+                    taskbarViewModel.showTaskbar()
+                }
+                ACTION_SETTINGS_CLOSE -> {
+                    taskbarViewModel.setSettingsOpen(false)
+                }
             }
         }
     }
@@ -157,6 +164,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         private const val TAG = "OverlayService"
         private const val NOTIFICATION_ID = 1001
         private const val CHANNEL_ID = "taskbar_overlay_channel"
+        const val ACTION_SETTINGS_OPEN = "com.taskbar.app.ACTION_SETTINGS_OPEN"
+        const val ACTION_SETTINGS_CLOSE = "com.taskbar.app.ACTION_SETTINGS_CLOSE"
     }
 
     override fun onCreate() {
@@ -170,8 +179,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             addAction(Intent.ACTION_SCREEN_ON)
             addAction(Intent.ACTION_USER_PRESENT)
             addAction(Intent.ACTION_CONFIGURATION_CHANGED)
+            addAction(ACTION_SETTINGS_OPEN)
+            addAction(ACTION_SETTINGS_CLOSE)
         }
-        registerReceiver(lockscreenReceiver, filter)
+        registerReceiver(lockscreenReceiver, filter, RECEIVER_NOT_EXPORTED)
 
         val factory = OverlayViewModelFactory(
             context = this,

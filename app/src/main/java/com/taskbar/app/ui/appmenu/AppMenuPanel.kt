@@ -28,6 +28,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.taskbar.app.viewmodel.AppMenuViewModel
@@ -54,7 +55,7 @@ fun AppMenuPanel(
             animationSpec = spring(),
             targetOffsetY = { it / 4 }
         ) + fadeOut(),
-        modifier = modifier
+        modifier = modifier.clipToBounds()
     ) {
             Box(
                 modifier = Modifier
