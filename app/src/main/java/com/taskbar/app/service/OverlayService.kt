@@ -129,8 +129,11 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     setQuickStripInteractive(false)
                 }
                 Intent.ACTION_USER_PRESENT -> {
+                    // Delay matches the lockscreen dismiss animation; calling showOverlay()
+                    // immediately causes the keyboard observer to see the shrinking lockscreen
+                    // frame as a keyboard and transiently hide the overlay.
                     handler.removeCallbacksAndMessages(null)
-                    showOverlay()
+                    handler.postDelayed({ showOverlay() }, 300)
                 }
                 Intent.ACTION_SCREEN_ON -> {
                     // Fallback for devices where ACTION_USER_PRESENT fires late or not at all
