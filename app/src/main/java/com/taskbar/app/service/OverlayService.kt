@@ -3,6 +3,7 @@ package com.taskbar.app.service
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.KeyguardManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.BroadcastReceiver
@@ -13,7 +14,9 @@ import android.content.res.Configuration
 import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import android.view.KeyEvent
@@ -99,10 +102,26 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var observersStarted = false
 
+    private val keyguardManager by lazy { getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager }
+    private val handler = Handler(Looper.getMainLooper())
+
+    // True while the screen is off or the lockscreen is showing; the keyboard
+    // visibility observer must not show the overlay while this is set.
+    @Volatile private var overlayHiddenForLockscreen = false
+
+    private fun showOverlay() {
+        overlayHiddenForLockscreen = false
+        overlayView?.visibility = View.VISIBLE
+        pillView?.visibility = View.VISIBLE
+        restoreQuickStripVisibility()
+    }
+
     private val lockscreenReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
                 Intent.ACTION_SCREEN_OFF -> {
+                    handler.removeCallbacksAndMessages(null)
+                    overlayHiddenForLockscreen = true
                     overlayView?.visibility = View.GONE
                     pillView?.visibility = View.GONE
                     searchView?.visibility = View.GONE
@@ -110,14 +129,18 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     setQuickStripInteractive(false)
                 }
                 Intent.ACTION_USER_PRESENT -> {
-                    overlayView?.visibility = View.VISIBLE
-                    pillView?.visibility = View.VISIBLE
-                    restoreQuickStripVisibility()
+                    handler.removeCallbacksAndMessages(null)
+                    showOverlay()
                 }
                 Intent.ACTION_SCREEN_ON -> {
-                    // ACTION_USER_PRESENT is the authoritative signal for showing the overlay;
-                    // checking isKeyguardLocked here races with face-unlock/smart-lock which
-                    // dismiss the keyguard before the lockscreen UI has gone away.
+                    // Fallback for devices where ACTION_USER_PRESENT fires late or not at all
+                    // (e.g. no screen lock set). ACTION_USER_PRESENT cancels this if it arrives first.
+                    handler.removeCallbacksAndMessages(null)
+                    handler.postDelayed({
+                        if (overlayHiddenForLockscreen && !keyguardManager.isKeyguardLocked) {
+                            showOverlay()
+                        }
+                    }, 300)
                 }
                 Intent.ACTION_CONFIGURATION_CHANGED -> {
                     if (taskbarViewModel.autoHideInLandscape.value) {
@@ -321,6 +344,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         val view = overlayView ?: return
         val layoutListener = ViewTreeObserver.OnGlobalLayoutListener {
             val v = overlayView ?: return@OnGlobalLayoutListener
+            if (overlayHiddenForLockscreen) return@OnGlobalLayoutListener
             val rect = Rect()
             v.getWindowVisibleDisplayFrame(rect)
             val screenHeight = v.rootView?.height ?: return@OnGlobalLayoutListener
