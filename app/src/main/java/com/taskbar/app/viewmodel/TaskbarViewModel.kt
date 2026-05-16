@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -69,6 +70,14 @@ class TaskbarViewModel @Inject constructor(
 
     val surfaceTintColor: StateFlow<Long> = prefsRepository.surfaceTintColor
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0L)
+
+    val onboardingComplete: StateFlow<Boolean?> = prefsRepository.onboardingComplete
+        .map { it as Boolean? }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
+    fun completeOnboarding() {
+        viewModelScope.launch { prefsRepository.setOnboardingComplete() }
+    }
 
     fun setSurfaceTintColor(color: Long) {
         viewModelScope.launch { prefsRepository.setSurfaceTintColor(color) }

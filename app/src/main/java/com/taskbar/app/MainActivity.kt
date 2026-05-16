@@ -9,11 +9,15 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import com.taskbar.app.service.OverlayService
+import com.taskbar.app.ui.onboarding.OnboardingScreen
 import com.taskbar.app.ui.settings.SettingsScreen
 import com.taskbar.app.ui.theme.TaskBarTheme
 import com.taskbar.app.viewmodel.TaskbarViewModel
@@ -40,14 +44,25 @@ class MainActivity : ComponentActivity() {
         setContent {
             val themeMode by taskbarViewModel.themeMode.collectAsState()
             val hasAccessibilityPermission by taskbarViewModel.isAccessibilityEnabled.collectAsState()
+            val onboardingComplete by taskbarViewModel.onboardingComplete.collectAsState()
             TaskBarTheme(themeMode = themeMode) {
-                SettingsScreen(
-                    viewModel = taskbarViewModel,
-                    hasOverlayPermission = hasOverlayPermission,
-                    hasAccessibilityPermission = hasAccessibilityPermission,
-                    onRequestOverlayPermission = ::requestOverlayPermission,
-                    onRequestAccessibilityPermission = ::requestAccessibilityPermission
-                )
+                when (onboardingComplete) {
+                    null -> Box(modifier = Modifier.fillMaxSize())
+                    false -> OnboardingScreen(
+                        hasOverlayPermission = hasOverlayPermission,
+                        hasAccessibilityPermission = hasAccessibilityPermission,
+                        onRequestOverlayPermission = ::requestOverlayPermission,
+                        onRequestAccessibilityPermission = ::requestAccessibilityPermission,
+                        onComplete = taskbarViewModel::completeOnboarding
+                    )
+                    true -> SettingsScreen(
+                        viewModel = taskbarViewModel,
+                        hasOverlayPermission = hasOverlayPermission,
+                        hasAccessibilityPermission = hasAccessibilityPermission,
+                        onRequestOverlayPermission = ::requestOverlayPermission,
+                        onRequestAccessibilityPermission = ::requestAccessibilityPermission
+                    )
+                }
             }
         }
     }

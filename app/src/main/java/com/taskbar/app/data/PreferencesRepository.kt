@@ -61,6 +61,7 @@ class PreferencesRepository @Inject constructor(
         private val AUTO_HIDE_LANDSCAPE_KEY = booleanPreferencesKey("auto_hide_landscape")
         private val QUICK_CONTROLS_STRIP_KEY = booleanPreferencesKey("quick_controls_strip")
         private val TASKBAR_VISIBLE_KEY = booleanPreferencesKey("taskbar_visible")
+        private val ONBOARDING_COMPLETE_KEY = booleanPreferencesKey("onboarding_complete")
 
         private fun serializePinnedApps(packages: List<String>): String =
             JSONArray(packages).toString()
@@ -224,6 +225,16 @@ class PreferencesRepository @Inject constructor(
     suspend fun setTaskbarVisible(visible: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[TASKBAR_VISIBLE_KEY] = visible
+        }
+    }
+
+    val onboardingComplete: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[ONBOARDING_COMPLETE_KEY] ?: false
+    }
+
+    suspend fun setOnboardingComplete() {
+        context.dataStore.edit { prefs ->
+            prefs[ONBOARDING_COMPLETE_KEY] = true
         }
     }
 }
