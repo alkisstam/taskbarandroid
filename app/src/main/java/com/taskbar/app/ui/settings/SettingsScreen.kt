@@ -525,8 +525,10 @@ private val SURFACE_TINT_PRESETS: List<Pair<String, Long>> = listOf(
     "Forest" to 0xFF1B4332,
     "Slate" to 0xFF2D3748,
     "Charcoal" to 0xFF36454F,
-    "Rose" to 0xFF4A1528,
-    "Midnight" to 0xFF0D0D0D
+    "Cream" to 0xFFFFF8E7,
+    "Blush" to 0xFFFFE4E1,
+    "Sky" to 0xFFE3F2FD,
+    "Mint" to 0xFFE8F5E9
 )
 
 @Composable
