@@ -4,6 +4,26 @@ All notable changes to TaskBar are documented here.
 
 ---
 
+## [1.0.7] - 2026-05-16
+
+### Added
+- **Drag-to-reorder on taskbar** — long-press any pinned app icon in the taskbar to drag and reorder it in place. Order is persisted immediately.
+- **Show App Labels toggle** — new toggle in *Design → Taskbar Size & Appearance*; when enabled, the app name is shown below each icon in the taskbar row.
+- **App Shortcuts on long-press** — long-pressing a pinned app now shows its static launcher shortcuts (up to 4) above the *Unpin* option. Tapping a shortcut launches it directly.
+- **Quick Controls auto-refresh** — the quick controls strip and app menu panel now update automatically when ringer mode, auto-rotate, or brightness mode changes at the system level (no manual refresh needed).
+- **Surface Tint Color picker** — a new color swatch row in *General → Theme* applies a uniform background tint to all three UI surfaces simultaneously: taskbar, app menu panel, and quick controls strip. Nine presets including Default (theme color), Navy, Deep Purple, Forest, Slate, Charcoal, Rose, and Midnight.
+
+### Fixed
+- **Long-press popup covered by quick controls strip** — the popup menu that opens on long-press of a pinned app is now shifted upward by an extra `taskbarHeight + 4 dp` when the quick controls strip is enabled, so it always clears the strip.
+- **Icon thread safety** — app icons are now stored as `Bitmap` instead of `Drawable`, loaded once on `Dispatchers.IO`, and rendered synchronously in the UI thread with no conversion step.
+- **App list stale after install/uninstall** — `AppRepository` now registers a `BroadcastReceiver` for `PACKAGE_ADDED`, `PACKAGE_REMOVED`, and `PACKAGE_REPLACED` and reloads the app list automatically.
+- **BootReceiver coroutine leak** — `BootReceiver.onReceive` now uses `goAsync()` with a dedicated coroutine scope, ensuring `PendingResult.finish()` is always called.
+- **Accessibility service starts unconditionally** — `TaskBarAccessibilityService.onServiceConnected` now reads the `overlayEnabled` preference before starting `OverlayService`; the service is no longer started if the user had disabled the overlay.
+- **Unused CAMERA permission** — removed from `AndroidManifest.xml`.
+- **`pinnedPackages` recomputed on every recomposition** — wrapped in `remember(pinnedApps)` to avoid allocating a new `Set` on every frame.
+
+---
+
 ## [1.0.6] - 2026-05-15
 
 ### Added
