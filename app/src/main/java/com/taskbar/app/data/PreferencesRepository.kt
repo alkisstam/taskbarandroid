@@ -40,7 +40,7 @@ data class PillSettings(
 
 @Singleton
 class PreferencesRepository @Inject constructor(
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) {
     companion object {
         private val PINNED_APPS_KEY = stringPreferencesKey("pinned_apps")

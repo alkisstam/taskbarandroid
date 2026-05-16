@@ -32,7 +32,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TaskbarViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val appRepository: AppRepository,
     private val prefsRepository: PreferencesRepository
 ) : ViewModel() {

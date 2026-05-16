@@ -19,7 +19,7 @@ import javax.inject.Singleton
 
 @Singleton
 class AppRepository @Inject constructor(
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 

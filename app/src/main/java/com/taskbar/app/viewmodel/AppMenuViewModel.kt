@@ -47,7 +47,7 @@ private const val TAG = "AppMenuViewModel"
 
 @HiltViewModel
 class AppMenuViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val appRepository: AppRepository,
     private val prefsRepository: PreferencesRepository,
     private val quickControls: QuickControlsRepository

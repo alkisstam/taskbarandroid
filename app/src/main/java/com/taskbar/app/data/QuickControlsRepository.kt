@@ -28,7 +28,7 @@ interface QuickControlsChangeListener {
 
 @Singleton
 class QuickControlsRepository @Inject constructor(
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) {
     private val changeListeners = mutableListOf<QuickControlsChangeListener>()
 
