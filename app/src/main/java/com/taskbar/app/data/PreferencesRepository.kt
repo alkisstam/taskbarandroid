@@ -57,6 +57,7 @@ class PreferencesRepository @Inject constructor(
         private val AUTO_HIDE_FULLSCREEN_KEY = booleanPreferencesKey("auto_hide_fullscreen")
         private val AUTO_HIDE_LANDSCAPE_KEY = booleanPreferencesKey("auto_hide_landscape")
         private val QUICK_CONTROLS_STRIP_KEY = booleanPreferencesKey("quick_controls_strip")
+        private val TASKBAR_VISIBLE_KEY = booleanPreferencesKey("taskbar_visible")
 
         private fun serializePinnedApps(packages: List<String>): String =
             JSONArray(packages).toString()
