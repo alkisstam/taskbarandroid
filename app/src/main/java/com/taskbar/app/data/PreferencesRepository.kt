@@ -25,7 +25,9 @@ enum class PillGesture { SWIPE_UP, SWIPE_DOWN, SWIPE_IN, DOUBLE_TAP }
 data class TaskbarSettings(
     val positionYDp: Float = 0f,
     val widthFraction: Float = 0.9f,
-    val heightDp: Float = 64f
+    val heightDp: Float = 64f,
+    val showLabels: Boolean = false,
+    val tintColor: Long = 0L
 )
 
 data class PillSettings(
@@ -54,6 +56,8 @@ class PreferencesRepository @Inject constructor(
         private val TASKBAR_POSITION_Y_KEY = floatPreferencesKey("taskbar_position_y")
         private val TASKBAR_WIDTH_KEY = floatPreferencesKey("taskbar_width_fraction")
         private val TASKBAR_HEIGHT_KEY = floatPreferencesKey("taskbar_height_dp")
+        private val TASKBAR_SHOW_LABELS_KEY = booleanPreferencesKey("taskbar_show_labels")
+        private val TASKBAR_TINT_COLOR_KEY = stringPreferencesKey("taskbar_tint_color")
         private val AUTO_HIDE_FULLSCREEN_KEY = booleanPreferencesKey("auto_hide_fullscreen")
         private val AUTO_HIDE_LANDSCAPE_KEY = booleanPreferencesKey("auto_hide_landscape")
         private val QUICK_CONTROLS_STRIP_KEY = booleanPreferencesKey("quick_controls_strip")
@@ -177,17 +181,21 @@ class PreferencesRepository @Inject constructor(
 
     val taskbarSettings: Flow<TaskbarSettings> = context.dataStore.data.map { prefs ->
         TaskbarSettings(
-            positionYDp    = prefs[TASKBAR_POSITION_Y_KEY] ?: 0f,
-            widthFraction  = prefs[TASKBAR_WIDTH_KEY]      ?: 0.9f,
-            heightDp       = prefs[TASKBAR_HEIGHT_KEY]     ?: 64f
+            positionYDp   = prefs[TASKBAR_POSITION_Y_KEY]  ?: 0f,
+            widthFraction = prefs[TASKBAR_WIDTH_KEY]       ?: 0.9f,
+            heightDp      = prefs[TASKBAR_HEIGHT_KEY]      ?: 64f,
+            showLabels    = prefs[TASKBAR_SHOW_LABELS_KEY] ?: false,
+            tintColor     = prefs[TASKBAR_TINT_COLOR_KEY]?.toLongOrNull() ?: 0L
         )
     }
 
     suspend fun saveTaskbarSettings(settings: TaskbarSettings) {
         context.dataStore.edit { prefs ->
-            prefs[TASKBAR_POSITION_Y_KEY] = settings.positionYDp
-            prefs[TASKBAR_WIDTH_KEY]      = settings.widthFraction
-            prefs[TASKBAR_HEIGHT_KEY]     = settings.heightDp
+            prefs[TASKBAR_POSITION_Y_KEY]  = settings.positionYDp
+            prefs[TASKBAR_WIDTH_KEY]       = settings.widthFraction
+            prefs[TASKBAR_HEIGHT_KEY]      = settings.heightDp
+            prefs[TASKBAR_SHOW_LABELS_KEY] = settings.showLabels
+            prefs[TASKBAR_TINT_COLOR_KEY]  = settings.tintColor.toString()
         }
     }
 

@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.taskbar.app.data.AppInfo
 import com.taskbar.app.data.AppRepository
 import com.taskbar.app.data.PreferencesRepository
+import com.taskbar.app.data.QuickControlsChangeListener
 import com.taskbar.app.data.QuickControlsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -84,8 +85,18 @@ class AppMenuViewModel @Inject constructor(
         _searchQuery.value = ""
     }
 
+    private val quickControlsChangeListener = object : QuickControlsChangeListener {
+        override fun onQuickControlsChanged() { refreshQuickControls() }
+    }
+
     init {
         refreshQuickControls()
+        quickControls.addChangeListener(quickControlsChangeListener)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        quickControls.removeChangeListener(quickControlsChangeListener)
     }
 
     fun setSearchQuery(query: String) {

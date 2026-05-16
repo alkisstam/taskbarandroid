@@ -22,10 +22,30 @@ import javax.inject.Singleton
 
 private const val TAG = "QuickControlsRepository"
 
+interface QuickControlsChangeListener {
+    fun onQuickControlsChanged()
+}
+
 @Singleton
 class QuickControlsRepository @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
+    private val changeListeners = mutableListOf<QuickControlsChangeListener>()
+
+    fun addChangeListener(listener: QuickControlsChangeListener) { changeListeners.add(listener) }
+    fun removeChangeListener(listener: QuickControlsChangeListener) { changeListeners.remove(listener) }
+    private fun notifyChanged() { changeListeners.forEach { it.onQuickControlsChanged() } }
+
+    private val ringerReceiver = object : android.content.BroadcastReceiver() {
+        override fun onReceive(ctx: android.content.Context, intent: android.content.Intent) {
+            notifyChanged()
+        }
+    }
+
+    private val settingsObserver = object : android.database.ContentObserver(android.os.Handler(android.os.Looper.getMainLooper())) {
+        override fun onChange(selfChange: Boolean) { notifyChanged() }
+    }
+
     private val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
     private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
@@ -41,9 +61,22 @@ class QuickControlsRepository @Inject constructor(
             cameraManager.registerTorchCallback(object : CameraManager.TorchCallback() {
                 override fun onTorchModeChanged(cameraId: String, enabled: Boolean) {
                     if (cameraId == torchCameraId) torchState = enabled
+                    notifyChanged()
                 }
             }, null)
         }
+        context.registerReceiver(
+            ringerReceiver,
+            android.content.IntentFilter(AudioManager.RINGER_MODE_CHANGED_ACTION)
+        )
+        context.contentResolver.registerContentObserver(
+            android.provider.Settings.System.getUriFor(android.provider.Settings.System.ACCELEROMETER_ROTATION),
+            false, settingsObserver
+        )
+        context.contentResolver.registerContentObserver(
+            android.provider.Settings.System.getUriFor(android.provider.Settings.System.SCREEN_BRIGHTNESS_MODE),
+            false, settingsObserver
+        )
     }
 
     fun hasTorch(): Boolean = torchCameraId != null
@@ -132,15 +165,30 @@ class QuickControlsRepository @Inject constructor(
     }
 
     fun openQrScanner() {
-        val candidates = listOf(
-            Intent("coloros.intent.action.CAMERA_SCANNER"),
-            Intent("coloros.intent.action.SCANNER_MAIN_PAGE"),
-            Intent("com.google.zxing.client.android.SCAN").apply {
+        val candidates = buildList {
+            // Oppo / ColorOS
+            add(Intent("coloros.intent.action.CAMERA_SCANNER"))
+            add(Intent("coloros.intent.action.SCANNER_MAIN_PAGE"))
+            // Samsung (One UI — opens camera in QR mode)
+            add(Intent("com.samsung.android.scanner.SCAN_QR_CODE"))
+            add(Intent("com.sec.android.app.camera.BARCODE_SCANNER"))
+            // Xiaomi / MIUI
+            add(Intent("com.xiaomi.scanner.action.SCAN"))
+            // Huawei
+            add(Intent("com.huawei.scanner.action.SCAN_AND_RESULT"))
+            // Standard Android 9+ (API 28+) — works on Pixel and other AOSP-based devices
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                add(Intent("android.media.action.SCAN_BARCODE"))
+            }
+            // ZXing standalone app (user-installed)
+            add(Intent("com.google.zxing.client.android.SCAN").apply {
                 putExtra("SCAN_MODE", "QR_CODE_MODE")
-            },
-            Intent("com.google.android.gms.actions.SCAN_BARCODE"),
-            Intent("android.media.action.IMAGE_CAPTURE")
-        )
+            })
+            // Google Lens as a last resort (widely available)
+            add(Intent(Intent.ACTION_VIEW).apply {
+                setPackage("com.google.ar.lens")
+            })
+        }
         val pm = context.packageManager
         for (intent in candidates) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -149,6 +197,7 @@ class QuickControlsRepository @Inject constructor(
                 return
             }
         }
+        Log.w(TAG, "No QR scanner app found on this device")
     }
 
     fun showPowerMenu() {

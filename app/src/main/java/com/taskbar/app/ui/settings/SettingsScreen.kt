@@ -318,7 +318,7 @@ private fun GeneralTab(
 private fun PinnedAppsTab(viewModel: TaskbarViewModel) {
     val pinnedApps by viewModel.pinnedApps.collectAsState()
     val allApps by viewModel.allApps.collectAsState()
-    val pinnedPackages = pinnedApps.map { it.packageName }.toSet()
+    val pinnedPackages = remember(pinnedApps) { pinnedApps.map { it.packageName }.toSet() }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),

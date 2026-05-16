@@ -21,11 +21,16 @@ class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action != Intent.ACTION_BOOT_COMPLETED) return
 
+        val pendingResult = goAsync()
         CoroutineScope(Dispatchers.IO).launch {
-            val overlayEnabled = prefsRepository.overlayEnabled.first()
-            if (overlayEnabled && Settings.canDrawOverlays(context)) {
-                val serviceIntent = Intent(context, OverlayService::class.java)
-                context.startForegroundService(serviceIntent)
+            try {
+                val overlayEnabled = prefsRepository.overlayEnabled.first()
+                if (overlayEnabled && Settings.canDrawOverlays(context)) {
+                    val serviceIntent = Intent(context, OverlayService::class.java)
+                    context.startForegroundService(serviceIntent)
+                }
+            } finally {
+                pendingResult.finish()
             }
         }
     }

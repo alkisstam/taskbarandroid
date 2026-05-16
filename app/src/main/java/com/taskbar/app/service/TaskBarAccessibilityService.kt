@@ -3,10 +3,24 @@ package com.taskbar.app.service
 import android.accessibilityservice.AccessibilityService
 import android.content.Context
 import android.content.Intent
+import android.provider.Settings
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
+import com.taskbar.app.data.PreferencesRepository
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class TaskBarAccessibilityService : AccessibilityService() {
+
+    @Inject lateinit var prefsRepository: PreferencesRepository
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     val accessibilityWindowManager: WindowManager by lazy {
         getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -14,8 +28,13 @@ class TaskBarAccessibilityService : AccessibilityService() {
 
     override fun onServiceConnected() {
         instance = this
-        val intent = Intent(this, OverlayService::class.java)
-        startForegroundService(intent)
+        scope.launch {
+            val overlayEnabled = prefsRepository.overlayEnabled.first()
+            if (overlayEnabled && Settings.canDrawOverlays(this@TaskBarAccessibilityService)) {
+                val intent = Intent(this@TaskBarAccessibilityService, OverlayService::class.java)
+                startForegroundService(intent)
+            }
+        }
     }
 
     fun showPowerMenu() {
@@ -28,6 +47,7 @@ class TaskBarAccessibilityService : AccessibilityService() {
 
     override fun onDestroy() {
         instance = null
+        scope.cancel()
         super.onDestroy()
     }
 

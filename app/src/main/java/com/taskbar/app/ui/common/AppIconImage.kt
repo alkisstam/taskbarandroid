@@ -1,30 +1,34 @@
 package com.taskbar.app.ui.common
 
-import android.graphics.drawable.Drawable
+import android.graphics.Bitmap
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.core.graphics.drawable.toBitmap
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun AppIconImage(
-    icon: Drawable,
+    icon: Bitmap,
     contentDescription: String?,
     modifier: Modifier = Modifier
 ) {
-    val bitmap = produceState<ImageBitmap?>(initialValue = null, key1 = icon) {
-        value = withContext(Dispatchers.Default) { icon.toBitmap().asImageBitmap() }
-    }
-    bitmap.value?.let {
-        Image(
-            bitmap = it,
-            contentDescription = contentDescription,
-            modifier = modifier
-        )
-    }
+    Image(
+        bitmap = icon.asImageBitmap(),
+        contentDescription = contentDescription,
+        modifier = modifier
+    )
+}
+
+@Composable
+fun AppIconPlaceholder(modifier: Modifier = Modifier) {
+    androidx.compose.foundation.layout.Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+    )
 }

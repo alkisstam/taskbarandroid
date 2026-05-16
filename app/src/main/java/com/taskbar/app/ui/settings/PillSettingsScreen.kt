@@ -3,8 +3,11 @@ package com.taskbar.app.ui.settings
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,7 +15,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -29,7 +36,9 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -203,6 +212,30 @@ fun PillSettingsScreen(
                 unit = "dp",
                 onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(heightDp = it)) }
             )
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text("Show App Labels", style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        "Show app name below each icon in the taskbar",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                androidx.compose.material3.Switch(
+                    checked = taskbarSettings.showLabels,
+                    onCheckedChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(showLabels = it)) }
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            TintColorPicker(
+                currentColor = taskbarSettings.tintColor,
+                onColorSelected = { viewModel.saveTaskbarSettings(taskbarSettings.copy(tintColor = it)) }
+            )
         }
     }
 }
@@ -312,6 +345,64 @@ private fun SettingsSlider(
             onValueChangeFinished = { onValueChange(localValue) },
             valueRange = valueRange
         )
+    }
+}
+
+private val TINT_PRESETS: List<Pair<String, Long>> = listOf(
+    "Default" to 0L,
+    "Black" to 0xFF1A1A2E,
+    "Navy" to 0xFF16213E,
+    "Deep Purple" to 0xFF2D1B69,
+    "Forest" to 0xFF1B4332,
+    "Slate" to 0xFF2D3748,
+    "Charcoal" to 0xFF36454F,
+    "Rose" to 0xFF4A1528,
+    "Midnight" to 0xFF0D0D0D
+)
+
+@Composable
+private fun TintColorPicker(
+    currentColor: Long,
+    onColorSelected: (Long) -> Unit
+) {
+    Column {
+        Text("Taskbar Tint Color", style = MaterialTheme.typography.bodyMedium)
+        Text(
+            "Custom background color for the taskbar",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(TINT_PRESETS) { (label, colorValue) ->
+                val isSelected = currentColor == colorValue
+                val displayColor = if (colorValue == 0L)
+                    MaterialTheme.colorScheme.surface
+                else
+                    Color(colorValue)
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .background(displayColor, CircleShape)
+                            .then(
+                                if (isSelected) Modifier.border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                                else Modifier
+                            )
+                            .clickable { onColorSelected(colorValue) }
+                    )
+                    Text(
+                        label,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = if (isSelected) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
     }
 }
 
