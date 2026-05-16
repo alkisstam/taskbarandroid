@@ -146,12 +146,15 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     // Skip if ACTION_USER_PRESENT already fired — on some devices SCREEN_ON
                     // arrives after USER_PRESENT and would cancel the pending showOverlay().
                     if (userPresentReceived) return
-                    // Fallback for devices where ACTION_USER_PRESENT fires late or not at all
-                    // (e.g. no screen lock set). ACTION_USER_PRESENT cancels this if it arrives first.
                     handler.removeCallbacksAndMessages(null)
                     handler.postDelayed({
-                        if (overlayHiddenForLockscreen && !keyguardManager.isKeyguardLocked) {
-                            showOverlay()
+                        if (overlayHiddenForLockscreen) {
+                            // Always restore the pill so the handle is visible on the lockscreen,
+                            // matching the AOD behaviour where SCREEN_OFF never fires.
+                            pillView?.visibility = View.VISIBLE
+                            if (!keyguardManager.isKeyguardLocked) {
+                                showOverlay()
+                            }
                         }
                     }, 300)
                 }
