@@ -28,4 +28,5 @@
     <string name="search_apps">Search apps…</string>
     <string name="accessibility_service_description">Allows TaskBar to display above the system navigation bar</string>
     <string name="accessibility_service_label">TaskBar Overlay</string>
+    <string name="accessibility_service_summary">Draws the taskbar above the navigation bar. No screen content is read or transmitted.</string>
 </resources>

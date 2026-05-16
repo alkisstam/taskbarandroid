@@ -5,8 +5,6 @@
 -keep class javax.inject.** { *; }
 -keep class * extends dagger.hilt.android.internal.managers.ViewComponentManager$FragmentContextWrapper
 
-# Keep Compose-related classes
--keep class androidx.compose.** { *; }
 -keep class kotlin.Metadata { *; }
 
 # Keep DataStore generated classes
