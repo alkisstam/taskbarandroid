@@ -141,8 +141,8 @@ fun AppMenuPanel(
                                 }
                                 context.startActivity(intent)
                             },
-                            onOpenQrScanner = viewModel::openQrScanner,
-                            onShowPowerMenu = viewModel::showPowerMenu,
+                            onOpenQrScanner = { viewModel.openQrScanner(); onHideTaskbar() },
+                            onShowPowerMenu = { viewModel.showPowerMenu(); onHideTaskbar() },
                             modifier = Modifier.weight(0.2f)
                         )
                     }

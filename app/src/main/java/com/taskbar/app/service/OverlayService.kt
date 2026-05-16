@@ -488,7 +488,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 setContent {
                     QuickStripContent(
                         taskbarViewModel = taskbarViewModel,
-                        appMenuViewModel = appMenuViewModel
+                        appMenuViewModel = appMenuViewModel,
+                        onHideTaskbar = taskbarViewModel::hideTaskbar
                     )
                 }
             }
@@ -694,13 +695,15 @@ private fun SearchOverlayContent(appMenuViewModel: AppMenuViewModel, onHideTaskb
 @Composable
 private fun QuickStripContent(
     taskbarViewModel: TaskbarViewModel,
-    appMenuViewModel: AppMenuViewModel
+    appMenuViewModel: AppMenuViewModel,
+    onHideTaskbar: () -> Unit = {}
 ) {
     val themeMode by taskbarViewModel.themeMode.collectAsState()
     TaskBarTheme(themeMode = themeMode) {
         QuickStripView(
             taskbarViewModel = taskbarViewModel,
-            appMenuViewModel = appMenuViewModel
+            appMenuViewModel = appMenuViewModel,
+            onHideTaskbar = onHideTaskbar
         )
     }
 }

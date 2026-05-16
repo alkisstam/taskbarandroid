@@ -24,6 +24,7 @@ import com.taskbar.app.viewmodel.TaskbarViewModel
 fun QuickStripView(
     taskbarViewModel: TaskbarViewModel,
     appMenuViewModel: AppMenuViewModel,
+    onHideTaskbar: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
@@ -49,7 +50,10 @@ fun QuickStripView(
                 items(quickControls.toItems()) { item ->
                     QuickControlItem(
                         item = item,
-                        onToggle = { appMenuViewModel.handleQuickControlAction(item.id) }
+                        onToggle = {
+                            appMenuViewModel.handleQuickControlAction(item.id)
+                            if (item.id == "qr" || item.id == "power") onHideTaskbar()
+                        }
                     )
                 }
             }
