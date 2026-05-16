@@ -45,10 +45,6 @@ class PreferencesRepository @Inject constructor(
         private val PINNED_APPS_KEY = stringPreferencesKey("pinned_apps")
         private val THEME_MODE_KEY = stringPreferencesKey("theme_mode")
         private val OVERLAY_ENABLED_KEY = booleanPreferencesKey("overlay_enabled")
-        private val TORCH_ENABLED_KEY = booleanPreferencesKey("torch_enabled")
-        private val RING_MODE_ENABLED_KEY = booleanPreferencesKey("ring_mode_enabled")
-        private val AUTO_ROTATE_ENABLED_KEY = booleanPreferencesKey("auto_rotate_enabled")
-        private val AUTO_BRIGHTNESS_ENABLED_KEY = booleanPreferencesKey("auto_brightness_enabled")
         private val PILL_GESTURE_KEY = stringPreferencesKey("pill_gesture")
         private val PILL_WIDTH_KEY = floatPreferencesKey("pill_width")
         private val PILL_HEIGHT_KEY = floatPreferencesKey("pill_height")
@@ -58,7 +54,9 @@ class PreferencesRepository @Inject constructor(
         private val TASKBAR_POSITION_Y_KEY = floatPreferencesKey("taskbar_position_y")
         private val TASKBAR_WIDTH_KEY = floatPreferencesKey("taskbar_width_fraction")
         private val TASKBAR_HEIGHT_KEY = floatPreferencesKey("taskbar_height_dp")
-        private val TASKBAR_VISIBLE_KEY = booleanPreferencesKey("taskbar_visible")
+        private val AUTO_HIDE_FULLSCREEN_KEY = booleanPreferencesKey("auto_hide_fullscreen")
+        private val AUTO_HIDE_LANDSCAPE_KEY = booleanPreferencesKey("auto_hide_landscape")
+        private val QUICK_CONTROLS_STRIP_KEY = booleanPreferencesKey("quick_controls_strip")
 
         private fun serializePinnedApps(packages: List<String>): String =
             JSONArray(packages).toString()
@@ -144,6 +142,36 @@ class PreferencesRepository @Inject constructor(
             positionYDp = prefs[PILL_POSITION_Y_KEY] ?: 80f,
             positionXDp = prefs[PILL_POSITION_X_KEY] ?: 16f
         )
+    }
+
+    val autoHideInFullscreen: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[AUTO_HIDE_FULLSCREEN_KEY] ?: false
+    }
+
+    suspend fun setAutoHideInFullscreen(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[AUTO_HIDE_FULLSCREEN_KEY] = enabled
+        }
+    }
+
+    val autoHideInLandscape: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[AUTO_HIDE_LANDSCAPE_KEY] ?: false
+    }
+
+    suspend fun setAutoHideInLandscape(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[AUTO_HIDE_LANDSCAPE_KEY] = enabled
+        }
+    }
+
+    val quickControlsStripEnabled: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[QUICK_CONTROLS_STRIP_KEY] ?: false
+    }
+
+    suspend fun setQuickControlsStripEnabled(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[QUICK_CONTROLS_STRIP_KEY] = enabled
+        }
     }
 
     val taskbarSettings: Flow<TaskbarSettings> = context.dataStore.data.map { prefs ->

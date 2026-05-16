@@ -9,12 +9,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -29,16 +26,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.taskbar.app.viewmodel.AppMenuViewModel
+import com.taskbar.app.viewmodel.TaskbarViewModel
 
 @Composable
 fun AppMenuPanel(
     viewModel: AppMenuViewModel,
+    taskbarViewModel: TaskbarViewModel,
     onHideTaskbar: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -46,42 +45,25 @@ fun AppMenuPanel(
     val apps by viewModel.filteredApps.collectAsState()
     val pinnedPackages by viewModel.pinnedPackages.collectAsState()
     val quickControls by viewModel.quickControlsState.collectAsState()
+    val stripEnabled by taskbarViewModel.quickControlsStripEnabled.collectAsState()
     val context = LocalContext.current
 
-    Box(modifier = modifier) {
-        AnimatedVisibility(
-            visible = menuVisible,
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) {
-                        viewModel.dismissMenu()
-                    }
-            )
-        }
-
-        AnimatedVisibility(
-            visible = menuVisible,
-            enter = slideInVertically(
-                animationSpec = spring(),
-                initialOffsetY = { it }
-            ),
-            exit = slideOutVertically(
-                animationSpec = spring(),
-                targetOffsetY = { it }
-            ),
-            modifier = Modifier.align(Alignment.BottomCenter)
-        ) {
+    AnimatedVisibility(
+        visible = menuVisible,
+        enter = slideInVertically(
+            animationSpec = spring(),
+            initialOffsetY = { it / 4 }
+        ) + fadeIn(),
+        exit = slideOutVertically(
+            animationSpec = spring(),
+            targetOffsetY = { it / 4 }
+        ) + fadeOut(),
+        modifier = modifier.clipToBounds()
+    ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 6.dp),
+                    .padding(bottom = 4.dp),
                 contentAlignment = Alignment.Center
             ) {
             Surface(
@@ -135,38 +117,38 @@ fun AppMenuPanel(
                         onLaunchApp = { pkg -> viewModel.launchApp(pkg); onHideTaskbar() },
                         onPinApp = viewModel::pinApp,
                         onUnpinApp = viewModel::unpinApp,
-                        modifier = Modifier.weight(0.8f)
+                        modifier = if (stripEnabled) Modifier.weight(1f) else Modifier.weight(0.8f)
                     )
 
-                    QuickControls(
-                        state = quickControls,
-                        onToggleTorch = viewModel::toggleTorch,
-                        onCycleRingerMode = viewModel::cycleRingerMode,
-                        onToggleAutoRotate = viewModel::toggleAutoRotate,
-                        onToggleAutoBrightness = viewModel::toggleAutoBrightness,
-                        onRequestWriteSettings = {
-                            val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
-                                data = Uri.parse("package:${context.packageName}")
-                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            }
-                            context.startActivity(intent)
-                        },
-                        onToggleDnd = viewModel::toggleDnd,
-                        onRequestDndPermission = {
-                            val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS).apply {
-                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            }
-                            context.startActivity(intent)
-                        },
-                        onOpenQrScanner = viewModel::openQrScanner,
-                        onShowPowerMenu = viewModel::showPowerMenu,
-                        modifier = Modifier
-                            .weight(0.2f)
-                    )
+                    if (!stripEnabled) {
+                        QuickControls(
+                            state = quickControls,
+                            onToggleTorch = viewModel::toggleTorch,
+                            onCycleRingerMode = viewModel::cycleRingerMode,
+                            onToggleAutoRotate = viewModel::toggleAutoRotate,
+                            onToggleAutoBrightness = viewModel::toggleAutoBrightness,
+                            onRequestWriteSettings = {
+                                val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
+                                    data = Uri.parse("package:${context.packageName}")
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                                context.startActivity(intent)
+                            },
+                            onToggleDnd = viewModel::toggleDnd,
+                            onRequestDndPermission = {
+                                val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS).apply {
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                                context.startActivity(intent)
+                            },
+                            onOpenQrScanner = viewModel::openQrScanner,
+                            onShowPowerMenu = viewModel::showPowerMenu,
+                            modifier = Modifier.weight(0.2f)
+                        )
+                    }
                 }
             }
             }   // Surface
             }   // inner Box (margin wrapper)
-        }       // AnimatedVisibility (slide)
-    }           // outer Box
+    }           // AnimatedVisibility
 }

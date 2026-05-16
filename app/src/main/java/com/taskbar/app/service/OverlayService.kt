@@ -3,15 +3,20 @@ package com.taskbar.app.service
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.KeyguardManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.res.Configuration
 import android.graphics.PixelFormat
 import android.graphics.Rect
+import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import android.view.KeyEvent
@@ -56,6 +61,7 @@ import com.taskbar.app.data.PreferencesRepository
 import com.taskbar.app.data.QuickControlsRepository
 import com.taskbar.app.ui.appmenu.AppMenuPanel
 import com.taskbar.app.ui.appmenu.FloatingSearchBar
+import com.taskbar.app.ui.taskbar.QuickStripView
 import com.taskbar.app.ui.taskbar.TaskbarView
 import com.taskbar.app.ui.taskbar.TriggerPillView
 import com.taskbar.app.ui.theme.TaskBarTheme
@@ -92,7 +98,88 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private var overlayView: View? = null
     private var pillView: View? = null
     private var searchView: View? = null
+    private var quickStripView: View? = null
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    private var observersStarted = false
+
+    private val keyguardManager by lazy { getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager }
+    private val handler = Handler(Looper.getMainLooper())
+
+    // True while the screen is off or the lockscreen is showing; the keyboard
+    // visibility observer must not show the overlay while this is set.
+    @Volatile private var overlayHiddenForLockscreen = false
+
+    // Set when ACTION_USER_PRESENT is received so ACTION_SCREEN_ON (which can
+    // arrive after USER_PRESENT on some devices) does not cancel the pending
+    // showOverlay() callback or replace it with an isKeyguardLocked check.
+    @Volatile private var userPresentReceived = false
+
+    private fun showOverlay() {
+        overlayHiddenForLockscreen = false
+        overlayView?.visibility = View.VISIBLE
+        pillView?.visibility = View.VISIBLE
+        restoreQuickStripVisibility()
+    }
+
+    private val lockscreenReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            when (intent.action) {
+                Intent.ACTION_SCREEN_OFF -> {
+                    handler.removeCallbacksAndMessages(null)
+                    userPresentReceived = false
+                    overlayHiddenForLockscreen = true
+                    overlayView?.visibility = View.GONE
+                    pillView?.visibility = View.GONE
+                    searchView?.visibility = View.GONE
+                    quickStripView?.visibility = View.GONE
+                    setQuickStripInteractive(false)
+                }
+                Intent.ACTION_USER_PRESENT -> {
+                    // Delay matches the lockscreen dismiss animation; calling showOverlay()
+                    // immediately causes the keyboard observer to see the shrinking lockscreen
+                    // frame as a keyboard and transiently hide the overlay.
+                    handler.removeCallbacksAndMessages(null)
+                    userPresentReceived = true
+                    handler.postDelayed({ showOverlay() }, 300)
+                }
+                Intent.ACTION_SCREEN_ON -> {
+                    // Skip if ACTION_USER_PRESENT already fired — on some devices SCREEN_ON
+                    // arrives after USER_PRESENT and would cancel the pending showOverlay().
+                    if (userPresentReceived) return
+                    // Fallback for devices where ACTION_USER_PRESENT fires late or not at all
+                    // (e.g. no screen lock set). ACTION_USER_PRESENT cancels this if it arrives first.
+                    handler.removeCallbacksAndMessages(null)
+                    handler.postDelayed({
+                        if (overlayHiddenForLockscreen && !keyguardManager.isKeyguardLocked) {
+                            showOverlay()
+                        }
+                    }, 300)
+                }
+                Intent.ACTION_CONFIGURATION_CHANGED -> {
+                    if (taskbarViewModel.autoHideInLandscape.value) {
+                        val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+                        if (isLandscape) {
+                            overlayView?.visibility = View.GONE
+                            pillView?.visibility = View.GONE
+                            quickStripView?.visibility = View.GONE
+                            setQuickStripInteractive(false)
+                        } else {
+                            overlayView?.visibility = View.VISIBLE
+                            pillView?.visibility = View.VISIBLE
+                            restoreQuickStripVisibility()
+                        }
+                    }
+                }
+                ACTION_SETTINGS_OPEN -> {
+                    taskbarViewModel.setSettingsOpen(true)
+                    taskbarViewModel.showTaskbar()
+                }
+                ACTION_SETTINGS_CLOSE -> {
+                    taskbarViewModel.setSettingsOpen(false)
+                }
+            }
+        }
+    }
 
     // Restores overlay visibility after lock screen unlock, in case the keyboard-detection
     // listener set the overlay to GONE during PIN entry and it was never restored.
@@ -115,6 +202,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         private const val TAG = "OverlayService"
         private const val NOTIFICATION_ID = 1001
         private const val CHANNEL_ID = "taskbar_overlay_channel"
+        const val ACTION_SETTINGS_OPEN = "com.taskbar.app.ACTION_SETTINGS_OPEN"
+        const val ACTION_SETTINGS_CLOSE = "com.taskbar.app.ACTION_SETTINGS_CLOSE"
     }
 
     override fun onCreate() {
@@ -123,6 +212,15 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
         _windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         createNotificationChannel()
+        val filter = IntentFilter().apply {
+            addAction(Intent.ACTION_SCREEN_OFF)
+            addAction(Intent.ACTION_SCREEN_ON)
+            addAction(Intent.ACTION_USER_PRESENT)
+            addAction(Intent.ACTION_CONFIGURATION_CHANGED)
+            addAction(ACTION_SETTINGS_OPEN)
+            addAction(ACTION_SETTINGS_CLOSE)
+        }
+        registerReceiver(lockscreenReceiver, filter, RECEIVER_NOT_EXPORTED)
 
         val factory = OverlayViewModelFactory(
             context = this,
@@ -143,10 +241,16 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         addOverlayView()
         addPillView()
         addSearchView()
-        observeKeyboardVisibility()
-        observePillPosition()
-        observeOverlayInteractivity()
-        observeSearchVisibility()
+        addQuickStripView()
+        if (!observersStarted) {
+            observersStarted = true
+            observeKeyboardVisibility()
+            observePillPosition()
+            observeOverlayInteractivity()
+            observeSearchVisibility()
+            observeQuickStripVisibility()
+            observeQuickStripPosition()
+        }
         return START_STICKY
     }
 
@@ -169,6 +273,45 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         }
     }
 
+    private fun quickStripLayoutParams(interactive: Boolean = false, yOffsetDp: Float = 0f): WindowManager.LayoutParams {
+        val usingAccessibility = TaskBarAccessibilityService.isRunning()
+        val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                (if (!interactive) WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE else 0) or
+                (if (usingAccessibility) WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS else 0)
+        val density = resources.displayMetrics.density
+        return WindowManager.LayoutParams(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            overlayWindowType,
+            flags,
+            PixelFormat.TRANSLUCENT
+        ).apply {
+            gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+            y = (yOffsetDp * density).toInt()
+        }
+    }
+
+    private var quickStripYOffsetDp: Float = 0f
+    private var quickStripInteractive: Boolean = false
+
+    private fun setQuickStripInteractive(interactive: Boolean) {
+        quickStripInteractive = interactive
+        val view = quickStripView ?: return
+        try { windowManager.updateViewLayout(view, quickStripLayoutParams(interactive, quickStripYOffsetDp)) }
+        catch (e: Exception) { Log.w(TAG, "Failed to update quick strip layout flags", e) }
+    }
+
+    private fun restoreQuickStripVisibility() {
+        val show = taskbarViewModel.isTaskbarVisible.value &&
+                taskbarViewModel.quickControlsStripEnabled.value &&
+                !appMenuViewModel.menuVisible.value &&
+                !appMenuViewModel.isSearching.value
+        quickStripView?.visibility = if (show) View.VISIBLE else View.GONE
+        setQuickStripInteractive(show)
+    }
+
     private fun setOverlayFlags(interactive: Boolean, focusable: Boolean) {
         val view = overlayView ?: return
         try { windowManager.updateViewLayout(view, overlayLayoutParams(interactive, focusable)) }
@@ -181,8 +324,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 appMenuViewModel.menuVisible,
                 taskbarViewModel.isTaskbarVisible,
                 appMenuViewModel.isSearching
-            ) { values ->
-                Triple(values[0] as Boolean, values[1] as Boolean, values[2] as Boolean)
+            ) { menuOpen, taskbarVisible, searching ->
+                Triple(menuOpen, taskbarVisible, searching)
             }
             .collect { (menuOpen, taskbarVisible, searching) ->
                 val interactive = menuOpen || taskbarVisible
@@ -212,6 +355,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             }
             overlayView = composeView
             windowManager.addView(composeView, overlayLayoutParams())
+            attachFullscreenObserver(composeView)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add overlay view", e)
             overlayView = null
@@ -222,6 +366,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         val view = overlayView ?: return
         val layoutListener = ViewTreeObserver.OnGlobalLayoutListener {
             val v = overlayView ?: return@OnGlobalLayoutListener
+            if (overlayHiddenForLockscreen) return@OnGlobalLayoutListener
             val rect = Rect()
             v.getWindowVisibleDisplayFrame(rect)
             val screenHeight = v.rootView?.height ?: return@OnGlobalLayoutListener
@@ -310,7 +455,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 setViewTreeLifecycleOwner(this@OverlayService)
                 setViewTreeViewModelStoreOwner(this@OverlayService)
                 setViewTreeSavedStateRegistryOwner(this@OverlayService)
-                setContent { SearchOverlayContent(appMenuViewModel = appMenuViewModel) }
+                setContent { SearchOverlayContent(appMenuViewModel = appMenuViewModel, onHideTaskbar = taskbarViewModel::hideTaskbar) }
             }
             val wrapper = object : FrameLayout(this) {
                 override fun dispatchKeyEvent(event: KeyEvent): Boolean {
@@ -333,12 +478,82 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         }
     }
 
+    private fun addQuickStripView() {
+        if (quickStripView != null) return
+        try {
+            val composeView = ComposeView(this).apply {
+                setViewTreeLifecycleOwner(this@OverlayService)
+                setViewTreeViewModelStoreOwner(this@OverlayService)
+                setViewTreeSavedStateRegistryOwner(this@OverlayService)
+                setContent {
+                    QuickStripContent(
+                        taskbarViewModel = taskbarViewModel,
+                        appMenuViewModel = appMenuViewModel
+                    )
+                }
+            }
+            val initialSettings = taskbarViewModel.taskbarSettings.value
+            quickStripYOffsetDp = initialSettings.positionYDp + initialSettings.heightDp + 2f
+            composeView.visibility = View.GONE
+            quickStripView = composeView
+            windowManager.addView(composeView, quickStripLayoutParams(false, quickStripYOffsetDp))
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to add quick strip view", e)
+            quickStripView = null
+        }
+    }
+
     private fun observeSearchVisibility() {
         serviceScope.launch {
             appMenuViewModel.isSearching.collect { searching ->
                 searchView?.visibility = if (searching) View.VISIBLE else View.GONE
             }
         }
+    }
+
+    private fun observeQuickStripVisibility() {
+        serviceScope.launch {
+            kotlinx.coroutines.flow.combine(
+                taskbarViewModel.isTaskbarVisible,
+                taskbarViewModel.quickControlsStripEnabled,
+                appMenuViewModel.menuVisible,
+                appMenuViewModel.isSearching
+            ) { taskbarVisible, stripEnabled, menuOpen, searching ->
+                taskbarVisible && stripEnabled && !menuOpen && !searching
+            }.collect { visible ->
+                quickStripView?.visibility = if (visible) View.VISIBLE else View.GONE
+                setQuickStripInteractive(visible)
+            }
+        }
+    }
+
+    private fun observeQuickStripPosition() {
+        serviceScope.launch {
+            taskbarViewModel.taskbarSettings.collect { settings ->
+                quickStripYOffsetDp = settings.positionYDp + settings.heightDp + 2f
+                val view = quickStripView ?: return@collect
+                try { windowManager.updateViewLayout(view, quickStripLayoutParams(quickStripInteractive, quickStripYOffsetDp)) }
+                catch (e: Exception) { Log.w(TAG, "Failed to update quick strip position", e) }
+            }
+        }
+    }
+
+    private var fullscreenInsetsListener: View.OnApplyWindowInsetsListener? = null
+
+    private fun attachFullscreenObserver(view: View) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return
+        fullscreenInsetsListener = View.OnApplyWindowInsetsListener { v, insets ->
+            if (taskbarViewModel.autoHideInFullscreen.value) {
+                val isFullscreen = !insets.isVisible(android.view.WindowInsets.Type.statusBars())
+                if (isFullscreen) {
+                    taskbarViewModel.hideTaskbar()
+                } else {
+                    taskbarViewModel.showTaskbar()
+                }
+            }
+            insets
+        }
+        view.setOnApplyWindowInsetsListener(fullscreenInsetsListener)
     }
 
     private fun removeOverlayView() {
@@ -353,6 +568,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         searchView?.let {
             try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove search view", e) }
             searchView = null
+        }
+        quickStripView?.let {
+            try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove quick strip view", e) }
+            quickStripView = null
         }
     }
 
@@ -389,7 +608,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-        try { unregisterReceiver(userPresentReceiver) } catch (e: Exception) { Log.w(TAG, "Failed to unregister userPresentReceiver", e) }
+        observersStarted = false
+        unregisterReceiver(lockscreenReceiver)
         removeOverlayView()
         serviceScope.cancel()
         _viewModelStore.clear()
@@ -407,30 +627,35 @@ private fun OverlayContent(
     val themeMode by taskbarViewModel.themeMode.collectAsState()
     val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
     val menuVisible by appMenuViewModel.menuVisible.collectAsState()
+    val isSettingsOpen by taskbarViewModel.isSettingsOpen.collectAsState()
 
     TaskBarTheme(themeMode = themeMode) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.BottomCenter
         ) {
-            if (isTaskbarVisible && !menuVisible) {
+            if (isTaskbarVisible && !isSettingsOpen) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .clickable(
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() }
-                        ) { taskbarViewModel.hideTaskbar() }
+                        ) {
+                            if (menuVisible) appMenuViewModel.dismissMenu()
+                            else taskbarViewModel.hideTaskbar()
+                        }
                 )
             }
             Column(modifier = Modifier.wrapContentHeight()) {
                 AppMenuPanel(
                     viewModel = appMenuViewModel,
+                    taskbarViewModel = taskbarViewModel,
                     onHideTaskbar = taskbarViewModel::hideTaskbar,
                     modifier = Modifier
                 )
                 AnimatedVisibility(
-                    visible = isTaskbarVisible || menuVisible,
+                    visible = isTaskbarVisible,
                     enter = slideInVertically(initialOffsetY = { it }),
                     exit = slideOutVertically(targetOffsetY = { it })
                 ) {
@@ -460,8 +685,22 @@ private fun TriggerPillContent(taskbarViewModel: TaskbarViewModel) {
 }
 
 @Composable
-private fun SearchOverlayContent(appMenuViewModel: AppMenuViewModel) {
+private fun SearchOverlayContent(appMenuViewModel: AppMenuViewModel, onHideTaskbar: () -> Unit) {
     TaskBarTheme {
-        FloatingSearchBar(viewModel = appMenuViewModel)
+        FloatingSearchBar(viewModel = appMenuViewModel, onHideTaskbar = onHideTaskbar)
+    }
+}
+
+@Composable
+private fun QuickStripContent(
+    taskbarViewModel: TaskbarViewModel,
+    appMenuViewModel: AppMenuViewModel
+) {
+    val themeMode by taskbarViewModel.themeMode.collectAsState()
+    TaskBarTheme(themeMode = themeMode) {
+        QuickStripView(
+            taskbarViewModel = taskbarViewModel,
+            appMenuViewModel = appMenuViewModel
+        )
     }
 }

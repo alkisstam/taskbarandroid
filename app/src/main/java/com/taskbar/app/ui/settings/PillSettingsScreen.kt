@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.SwipeDown
+import androidx.compose.material.icons.filled.SwipeRight
 import androidx.compose.material.icons.filled.SwipeUp
 import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material3.Card
@@ -32,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -89,7 +91,7 @@ fun PillSettingsScreen(
                 GestureOption(
                     label = "Swipe In",
                     description = "Swipe inward (right) on the pill",
-                    icon = { Icon(Icons.Filled.SwipeUp, contentDescription = null) },
+                    icon = { Icon(Icons.Filled.SwipeRight, contentDescription = null) },
                     selected = pillSettings.gesture == PillGesture.SWIPE_IN,
                     onClick = { viewModel.savePillSettings(pillSettings.copy(gesture = PillGesture.SWIPE_IN)) }
                 )
@@ -111,7 +113,7 @@ fun PillSettingsScreen(
             SettingsSlider(
                 label = "Width",
                 value = pillSettings.widthDp,
-                valueRange = 2f..120f,
+                valueRange = 2f..220f,
                 unit = "dp",
                 onValueChange = { viewModel.savePillSettings(pillSettings.copy(widthDp = it)) }
             )
@@ -156,7 +158,7 @@ fun PillSettingsScreen(
             ) {
                 Card(
                     modifier = Modifier
-                        .width(pillSettings.widthDp.coerceIn(2f, 120f).dp)
+                        .width(pillSettings.widthDp.coerceIn(2f, 220f).dp)
                         .height(pillSettings.heightDp.coerceIn(2f, 64f).dp),
                     shape = RoundedCornerShape(percent = 50),
                     colors = CardDefaults.cardColors(
@@ -291,6 +293,7 @@ private fun SettingsSlider(
     displayTransform: (Float) -> String = { "${it.toInt()} $unit" },
     onValueChange: (Float) -> Unit
 ) {
+    var localValue by remember(value) { mutableFloatStateOf(value) }
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -298,14 +301,15 @@ private fun SettingsSlider(
         ) {
             Text(label, style = MaterialTheme.typography.bodyMedium)
             Text(
-                displayTransform(value),
+                displayTransform(localValue),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.primary
             )
         }
         Slider(
-            value = value,
-            onValueChange = onValueChange,
+            value = localValue,
+            onValueChange = { localValue = it },
+            onValueChangeFinished = { onValueChange(localValue) },
             valueRange = valueRange
         )
     }

@@ -10,14 +10,15 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,7 +31,10 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import com.taskbar.app.data.AppInfo
 import com.taskbar.app.ui.common.AppIconImage
 
@@ -120,19 +124,32 @@ private fun AppGridItem(
             modifier = Modifier.fillMaxWidth()
         )
 
-        DropdownMenu(
-            expanded = showMenu,
-            onDismissRequest = { showMenu = false }
-        ) {
-            DropdownMenuItem(
-                text = {
-                    Text(if (isPinned) "Unpin from TaskBar" else "Pin to TaskBar")
-                },
-                onClick = {
-                    onPin()
-                    showMenu = false
+        if (showMenu) {
+            val density = androidx.compose.ui.platform.LocalDensity.current
+            val yOffset = with(density) { 64.dp.roundToPx() }
+            Popup(
+                alignment = Alignment.TopCenter,
+                offset = androidx.compose.ui.unit.IntOffset(0, -yOffset),
+                onDismissRequest = { showMenu = false },
+                properties = PopupProperties(focusable = true)
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    tonalElevation = 8.dp,
+                    shadowElevation = 8.dp,
+                    modifier = Modifier.width(140.dp)
+                ) {
+                    TextButton(
+                        onClick = { onPin(); showMenu = false },
+                        modifier = Modifier.padding(horizontal = 4.dp)
+                    ) {
+                        Text(
+                            if (isPinned) "Unpin from TaskBar" else "Pin to TaskBar",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
                 }
-            )
+            }
         }
     }
 }

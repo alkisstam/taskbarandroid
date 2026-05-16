@@ -13,6 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.taskbar.app.service.OverlayService
 import com.taskbar.app.ui.settings.SettingsScreen
 import com.taskbar.app.ui.theme.TaskBarTheme
 import com.taskbar.app.viewmodel.TaskbarViewModel
@@ -51,9 +52,19 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        sendBroadcast(Intent(OverlayService.ACTION_SETTINGS_OPEN))
+    }
+
     override fun onResume() {
         super.onResume()
         hasOverlayPermission = Settings.canDrawOverlays(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        sendBroadcast(Intent(OverlayService.ACTION_SETTINGS_CLOSE))
     }
 
     private fun requestOverlayPermission() {

@@ -102,17 +102,26 @@ private fun SwipePill(
     onExpand: () -> Unit,
     direction: SwipeDir
 ) {
+    var firedThisGesture by remember { mutableStateOf(false) }
     PillShape(
         pillSettings = pillSettings,
         modifier = Modifier.pointerInput(direction) {
-            detectDragGestures { _, dragAmount ->
-                val triggered = when (direction) {
-                    SwipeDir.UP   -> dragAmount.y < -Constants.SWIPE_TRIGGER_THRESHOLD_PX && abs(dragAmount.y) > abs(dragAmount.x)
-                    SwipeDir.DOWN -> dragAmount.y > Constants.SWIPE_TRIGGER_THRESHOLD_PX  && abs(dragAmount.y) > abs(dragAmount.x)
-                    SwipeDir.IN   -> dragAmount.x > Constants.SWIPE_TRIGGER_THRESHOLD_PX  && abs(dragAmount.x) > abs(dragAmount.y)
+            detectDragGestures(
+                onDragStart = { firedThisGesture = false },
+                onDrag = { _, dragAmount ->
+                    if (!firedThisGesture) {
+                        val triggered = when (direction) {
+                            SwipeDir.UP   -> dragAmount.y < -Constants.SWIPE_TRIGGER_THRESHOLD_PX && abs(dragAmount.y) > abs(dragAmount.x)
+                            SwipeDir.DOWN -> dragAmount.y > Constants.SWIPE_TRIGGER_THRESHOLD_PX  && abs(dragAmount.y) > abs(dragAmount.x)
+                            SwipeDir.IN   -> dragAmount.x > Constants.SWIPE_TRIGGER_THRESHOLD_PX  && abs(dragAmount.x) > abs(dragAmount.y)
+                        }
+                        if (triggered) {
+                            firedThisGesture = true
+                            onExpand()
+                        }
+                    }
                 }
-                if (triggered) onExpand()
-            }
+            )
         }
     )
 }

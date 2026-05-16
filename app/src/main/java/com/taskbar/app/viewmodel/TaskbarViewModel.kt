@@ -36,12 +36,11 @@ class TaskbarViewModel @Inject constructor(
     private val prefsRepository: PreferencesRepository
 ) : ViewModel() {
 
-    private val _allApps = MutableStateFlow<List<AppInfo>>(emptyList())
-    val allApps: StateFlow<List<AppInfo>> = _allApps.asStateFlow()
+    val allApps: StateFlow<List<AppInfo>> = appRepository.apps
 
     val pinnedApps: StateFlow<List<AppInfo>> = combine(
         prefsRepository.pinnedApps,
-        _allApps
+        appRepository.apps
     ) { pinnedPackages, apps ->
         val appMap = apps.associateBy { it.packageName }
         pinnedPackages.mapNotNull { pkg -> appMap[pkg] }
@@ -59,8 +58,22 @@ class TaskbarViewModel @Inject constructor(
     val taskbarSettings: StateFlow<TaskbarSettings> = prefsRepository.taskbarSettings
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), TaskbarSettings())
 
+    val autoHideInFullscreen: StateFlow<Boolean> = prefsRepository.autoHideInFullscreen
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
+    val autoHideInLandscape: StateFlow<Boolean> = prefsRepository.autoHideInLandscape
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
+    val quickControlsStripEnabled: StateFlow<Boolean> = prefsRepository.quickControlsStripEnabled
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     private val _isTaskbarVisible = MutableStateFlow(true)
     val isTaskbarVisible: StateFlow<Boolean> = _isTaskbarVisible.asStateFlow()
+
+    private val _isSettingsOpen = MutableStateFlow(false)
+    val isSettingsOpen: StateFlow<Boolean> = _isSettingsOpen.asStateFlow()
+
+    fun setSettingsOpen(open: Boolean) { _isSettingsOpen.value = open }
 
     private val _isAccessibilityEnabled = MutableStateFlow(checkAccessibilityEnabled())
     val isAccessibilityEnabled: StateFlow<Boolean> = _isAccessibilityEnabled.asStateFlow()
@@ -71,21 +84,12 @@ class TaskbarViewModel @Inject constructor(
         }
     }
 
-    fun showTaskbar() {
-        _isTaskbarVisible.value = true
-        viewModelScope.launch { prefsRepository.setTaskbarVisible(true) }
-    }
-
+    fun showTaskbar() { _isTaskbarVisible.value = true }
     fun hideTaskbar() {
-        _isTaskbarVisible.value = false
-        viewModelScope.launch { prefsRepository.setTaskbarVisible(false) }
+        if (!_isSettingsOpen.value) _isTaskbarVisible.value = false
     }
 
     init {
-        viewModelScope.launch {
-            _isTaskbarVisible.value = prefsRepository.taskbarVisible.first()
-        }
-        loadApps()
         context.contentResolver.registerContentObserver(
             Settings.Secure.getUriFor(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES),
             false,
@@ -105,14 +109,6 @@ class TaskbarViewModel @Inject constructor(
         ) ?: return false
         val componentName = "${context.packageName}/${TaskBarAccessibilityService::class.java.name}"
         return flat.split(':').any { TextUtils.equals(it.trim(), componentName) }
-    }
-
-    private fun loadApps() {
-        viewModelScope.launch {
-            appRepository.getInstalledApps().collect { apps ->
-                _allApps.value = apps
-            }
-        }
     }
 
     fun launchApp(packageName: String) {
@@ -165,6 +161,24 @@ class TaskbarViewModel @Inject constructor(
         }
     }
 
+    fun setAutoHideInFullscreen(enabled: Boolean) {
+        viewModelScope.launch {
+            prefsRepository.setAutoHideInFullscreen(enabled)
+        }
+    }
+
+    fun setAutoHideInLandscape(enabled: Boolean) {
+        viewModelScope.launch {
+            prefsRepository.setAutoHideInLandscape(enabled)
+        }
+    }
+
+    fun setQuickControlsStripEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            prefsRepository.setQuickControlsStripEnabled(enabled)
+        }
+    }
+
     fun stopOverlay() {
         viewModelScope.launch {
             prefsRepository.setOverlayEnabled(false)
@@ -173,5 +187,4 @@ class TaskbarViewModel @Inject constructor(
         context.stopService(intent)
     }
 
-    fun isAccessibilityServiceEnabled(): Boolean = _isAccessibilityEnabled.value
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
 import android.util.Log
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.taskbar.app.data.AppInfo
@@ -20,6 +21,13 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+data class QuickControlItemData(
+    val id: String,
+    val icon: ImageVector,
+    val label: String,
+    val active: Boolean
+)
 
 data class QuickControlsState(
     val torchOn: Boolean = false,
@@ -44,13 +52,12 @@ class AppMenuViewModel @Inject constructor(
     private val quickControls: QuickControlsRepository
 ) : ViewModel() {
 
-    private val _allApps = MutableStateFlow<List<AppInfo>>(emptyList())
-    val allApps: StateFlow<List<AppInfo>> = _allApps.asStateFlow()
+    val allApps: StateFlow<List<AppInfo>> = appRepository.apps
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
-    val filteredApps: StateFlow<List<AppInfo>> = combine(_allApps, _searchQuery) { apps, query ->
+    val filteredApps: StateFlow<List<AppInfo>> = combine(appRepository.apps, _searchQuery) { apps, query ->
         val q = query.trim().lowercase()
         if (q.isEmpty()) apps else apps.filter { it.label.lowercase().contains(q) }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -78,16 +85,7 @@ class AppMenuViewModel @Inject constructor(
     }
 
     init {
-        loadApps()
         refreshQuickControls()
-    }
-
-    private fun loadApps() {
-        viewModelScope.launch {
-            appRepository.getInstalledApps().collect { apps ->
-                _allApps.value = apps
-            }
-        }
     }
 
     fun setSearchQuery(query: String) {
@@ -186,5 +184,36 @@ class AppMenuViewModel @Inject constructor(
     fun showPowerMenu() {
         quickControls.showPowerMenu()
         _menuVisible.value = false
+    }
+
+    fun openDndSettings() {
+        val intent = android.content.Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS).apply {
+            addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        context.startActivity(intent)
+    }
+
+    fun handleQuickControlAction(id: String) {
+        when (id) {
+            "torch" -> toggleTorch()
+            "ringer" -> cycleRingerMode()
+            "rotate" -> if (_quickControlsState.value.canWriteSettings) toggleAutoRotate() else {
+                val intent = android.content.Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
+                    data = android.net.Uri.parse("package:${context.packageName}")
+                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(intent)
+            }
+            "brightness" -> if (_quickControlsState.value.canWriteSettings) toggleAutoBrightness() else {
+                val intent = android.content.Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
+                    data = android.net.Uri.parse("package:${context.packageName}")
+                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(intent)
+            }
+            "dnd" -> if (_quickControlsState.value.dndPermissionGranted) toggleDnd() else openDndSettings()
+            "qr" -> openQrScanner()
+            "power" -> showPowerMenu()
+        }
     }
 }
