@@ -23,17 +23,17 @@ enum class ThemeMode { LIGHT, DARK, SYSTEM }
 enum class PillGesture { SWIPE_UP, SWIPE_DOWN, SWIPE_IN, DOUBLE_TAP }
 
 data class TaskbarSettings(
-    val positionYDp: Float = 0f,
+    val positionYDp: Float = 20f,
     val widthFraction: Float = 0.9f,
-    val heightDp: Float = 64f,
+    val heightDp: Float = 70f,
     val showLabels: Boolean = false
 )
 
 data class PillSettings(
     val gesture: PillGesture = PillGesture.SWIPE_UP,
-    val widthDp: Float = 48f,
-    val heightDp: Float = 32f,
-    val alpha: Float = 0.75f,
+    val widthDp: Float = 10f,
+    val heightDp: Float = 60f,
+    val alpha: Float = 0.60f,
     val positionYDp: Float = 80f,
     val positionXDp: Float = 16f
 )
@@ -140,9 +140,9 @@ class PreferencesRepository @Inject constructor(
                 "DOUBLE_TAP" -> PillGesture.DOUBLE_TAP
                 else          -> PillGesture.SWIPE_UP
             },
-            widthDp     = prefs[PILL_WIDTH_KEY]      ?: 48f,
-            heightDp    = prefs[PILL_HEIGHT_KEY]     ?: 32f,
-            alpha       = prefs[PILL_ALPHA_KEY]      ?: 0.75f,
+            widthDp     = prefs[PILL_WIDTH_KEY]      ?: 10f,
+            heightDp    = prefs[PILL_HEIGHT_KEY]     ?: 60f,
+            alpha       = prefs[PILL_ALPHA_KEY]      ?: 0.60f,
             positionYDp = prefs[PILL_POSITION_Y_KEY] ?: 80f,
             positionXDp = prefs[PILL_POSITION_X_KEY] ?: 16f
         )
@@ -190,9 +190,9 @@ class PreferencesRepository @Inject constructor(
 
     val taskbarSettings: Flow<TaskbarSettings> = context.dataStore.data.map { prefs ->
         TaskbarSettings(
-            positionYDp   = prefs[TASKBAR_POSITION_Y_KEY]  ?: 0f,
+            positionYDp   = prefs[TASKBAR_POSITION_Y_KEY]  ?: 20f,
             widthFraction = prefs[TASKBAR_WIDTH_KEY]       ?: 0.9f,
-            heightDp      = prefs[TASKBAR_HEIGHT_KEY]      ?: 64f,
+            heightDp      = prefs[TASKBAR_HEIGHT_KEY]      ?: 70f,
             showLabels    = prefs[TASKBAR_SHOW_LABELS_KEY] ?: false
         )
     }

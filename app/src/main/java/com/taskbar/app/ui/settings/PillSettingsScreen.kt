@@ -122,7 +122,7 @@ fun PillSettingsScreen(
             SettingsSlider(
                 label = "Height",
                 value = pillSettings.heightDp,
-                valueRange = 2f..64f,
+                valueRange = 2f..120f,
                 unit = "dp",
                 onValueChange = { viewModel.savePillSettings(pillSettings.copy(heightDp = it)) }
             )
