@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.taskbar.app.viewmodel.AppMenuViewModel
@@ -37,7 +38,12 @@ fun TaskbarView(
     val pinnedApps by taskbarViewModel.pinnedApps.collectAsState()
     val menuVisible by appMenuViewModel.menuVisible.collectAsState()
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
+    val quickStripEnabled by taskbarViewModel.quickControlsStripEnabled.collectAsState()
     val haptic = LocalHapticFeedback.current
+    val density = LocalDensity.current
+    val quickStripExtraOffsetPx = if (quickStripEnabled)
+        with(density) { (taskbarSettings.heightDp + 4f).dp.roundToPx() }
+    else 0
 
     val surfaceColor = if (taskbarSettings.tintColor != 0L)
         Color(taskbarSettings.tintColor)
@@ -92,6 +98,7 @@ fun TaskbarView(
                                 app = app,
                                 showLabel = taskbarSettings.showLabels,
                                 isDragging = isDragging,
+                                extraPopupBottomOffsetPx = quickStripExtraOffsetPx,
                                 dragModifier = Modifier.longPressDraggableHandle(
                                     onDragStarted = {
                                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)

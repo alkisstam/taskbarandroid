@@ -43,6 +43,7 @@ fun PinnedAppItem(
     app: AppInfo,
     showLabel: Boolean = false,
     isDragging: Boolean = false,
+    extraPopupBottomOffsetPx: Int = 0,
     dragModifier: Modifier = Modifier,
     onLaunch: () -> Unit,
     onUnpin: () -> Unit,
@@ -99,7 +100,7 @@ fun PinnedAppItem(
         }
 
         if (showMenu) {
-            val yOffsetPx = -itemHeightPx
+            val yOffsetPx = -(itemHeightPx + extraPopupBottomOffsetPx)
             Popup(
                 alignment = Alignment.TopCenter,
                 offset = IntOffset(0, yOffsetPx),
