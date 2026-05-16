@@ -200,4 +200,14 @@ class PreferencesRepository @Inject constructor(
             prefs[PILL_POSITION_X_KEY]   = settings.positionXDp
         }
     }
+
+    val taskbarVisible: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[TASKBAR_VISIBLE_KEY] ?: true
+    }
+
+    suspend fun setTaskbarVisible(visible: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[TASKBAR_VISIBLE_KEY] = visible
+        }
+    }
 }
