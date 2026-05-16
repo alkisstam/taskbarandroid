@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.taskbar.app.viewmodel.AppMenuViewModel
@@ -46,6 +47,8 @@ fun AppMenuPanel(
     val pinnedPackages by viewModel.pinnedPackages.collectAsState()
     val quickControls by viewModel.quickControlsState.collectAsState()
     val stripEnabled by taskbarViewModel.quickControlsStripEnabled.collectAsState()
+    val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
+    val panelColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
     val context = LocalContext.current
 
     AnimatedVisibility(
@@ -71,8 +74,8 @@ fun AppMenuPanel(
                     .fillMaxWidth(0.9f)
                     .wrapContentHeight(),
                 shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 20.dp, bottomEnd = 20.dp),
-                color = MaterialTheme.colorScheme.surface,
-                tonalElevation = 4.dp,
+                color = panelColor,
+                tonalElevation = if (surfaceTintColor != 0L) 0.dp else 4.dp,
                 shadowElevation = 8.dp
             ) {
             Column(

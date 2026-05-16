@@ -58,8 +58,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.foundation.border
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.taskbar.app.data.AppInfo
@@ -133,6 +135,7 @@ private fun GeneralTab(
 ) {
     val overlayEnabled by viewModel.overlayEnabled.collectAsState()
     val themeMode by viewModel.themeMode.collectAsState()
+    val surfaceTintColor by viewModel.surfaceTintColor.collectAsState()
     val autoHideInFullscreen by viewModel.autoHideInFullscreen.collectAsState()
     val autoHideInLandscape by viewModel.autoHideInLandscape.collectAsState()
     val quickControlsStripEnabled by viewModel.quickControlsStripEnabled.collectAsState()
@@ -216,6 +219,11 @@ private fun GeneralTab(
                     leadingIcon = { Icon(Icons.Filled.PhoneAndroid, contentDescription = null) }
                 )
             }
+            Spacer(modifier = Modifier.height(12.dp))
+            SurfaceTintColorPicker(
+                currentColor = surfaceTintColor,
+                onColorSelected = { viewModel.setSurfaceTintColor(it) }
+            )
         }
 
         SettingsCard(title = "Behaviour") {
@@ -505,6 +513,64 @@ internal fun SettingsCard(
                 color = MaterialTheme.colorScheme.primary
             )
             content()
+        }
+    }
+}
+
+private val SURFACE_TINT_PRESETS: List<Pair<String, Long>> = listOf(
+    "Default" to 0L,
+    "Black" to 0xFF1A1A2E,
+    "Navy" to 0xFF16213E,
+    "Deep Purple" to 0xFF2D1B69,
+    "Forest" to 0xFF1B4332,
+    "Slate" to 0xFF2D3748,
+    "Charcoal" to 0xFF36454F,
+    "Rose" to 0xFF4A1528,
+    "Midnight" to 0xFF0D0D0D
+)
+
+@Composable
+private fun SurfaceTintColorPicker(
+    currentColor: Long,
+    onColorSelected: (Long) -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Text("Surface Tint Color", style = MaterialTheme.typography.bodyMedium)
+        Text(
+            "Applies to the taskbar, app menu, and quick controls strip",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(SURFACE_TINT_PRESETS) { (label, colorValue) ->
+                val isSelected = currentColor == colorValue
+                val displayColor = if (colorValue == 0L)
+                    MaterialTheme.colorScheme.surface
+                else
+                    Color(colorValue)
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .background(displayColor, CircleShape)
+                            .then(
+                                if (isSelected) Modifier.border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                                else Modifier
+                            )
+                            .clickable { onColorSelected(colorValue) }
+                    )
+                    Text(
+                        label,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = if (isSelected) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
         }
     }
 }

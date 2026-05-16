@@ -14,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.taskbar.app.ui.appmenu.QuickControlItem
 import com.taskbar.app.ui.appmenu.toItems
@@ -28,7 +29,9 @@ fun QuickStripView(
     modifier: Modifier = Modifier
 ) {
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
+    val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
     val quickControls by appMenuViewModel.quickControlsState.collectAsState()
+    val stripColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
 
     Box(
         modifier = modifier.fillMaxWidth(),
@@ -39,8 +42,8 @@ fun QuickStripView(
                 .fillMaxWidth(0.76f)
                 .height(taskbarSettings.heightDp.dp),
             shape = RoundedCornerShape(16.dp),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 3.dp,
+            color = stripColor,
+            tonalElevation = if (surfaceTintColor != 0L) 0.dp else 3.dp,
             shadowElevation = 8.dp
         ) {
             LazyRow(

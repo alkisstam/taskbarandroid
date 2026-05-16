@@ -39,14 +39,15 @@ fun TaskbarView(
     val menuVisible by appMenuViewModel.menuVisible.collectAsState()
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
     val quickStripEnabled by taskbarViewModel.quickControlsStripEnabled.collectAsState()
+    val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
     val haptic = LocalHapticFeedback.current
     val density = LocalDensity.current
     val quickStripExtraOffsetPx = if (quickStripEnabled)
         with(density) { (taskbarSettings.heightDp + 4f).dp.roundToPx() }
     else 0
 
-    val surfaceColor = if (taskbarSettings.tintColor != 0L)
-        Color(taskbarSettings.tintColor)
+    val surfaceColor = if (surfaceTintColor != 0L)
+        Color(surfaceTintColor)
     else
         MaterialTheme.colorScheme.surface
 

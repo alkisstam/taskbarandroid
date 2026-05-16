@@ -67,6 +67,13 @@ class TaskbarViewModel @Inject constructor(
     val quickControlsStripEnabled: StateFlow<Boolean> = prefsRepository.quickControlsStripEnabled
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
+    val surfaceTintColor: StateFlow<Long> = prefsRepository.surfaceTintColor
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0L)
+
+    fun setSurfaceTintColor(color: Long) {
+        viewModelScope.launch { prefsRepository.setSurfaceTintColor(color) }
+    }
+
     private val _isTaskbarVisible = MutableStateFlow(true)
     val isTaskbarVisible: StateFlow<Boolean> = _isTaskbarVisible.asStateFlow()
 
