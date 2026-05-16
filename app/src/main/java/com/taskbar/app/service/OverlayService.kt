@@ -5,7 +5,10 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.os.IBinder
@@ -91,6 +94,14 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private var searchView: View? = null
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
+    // Restores overlay visibility after lock screen unlock, in case the keyboard-detection
+    // listener set the overlay to GONE during PIN entry and it was never restored.
+    private val userPresentReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            overlayView?.visibility = View.VISIBLE
+        }
+    }
+
     private lateinit var taskbarViewModel: TaskbarViewModel
     private lateinit var appMenuViewModel: AppMenuViewModel
 
@@ -128,6 +139,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         startForeground(NOTIFICATION_ID, buildNotification())
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
+        registerReceiver(userPresentReceiver, IntentFilter(Intent.ACTION_USER_PRESENT))
         addOverlayView()
         addPillView()
         addSearchView()
@@ -377,6 +389,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+        try { unregisterReceiver(userPresentReceiver) } catch (e: Exception) { Log.w(TAG, "Failed to unregister userPresentReceiver", e) }
         removeOverlayView()
         serviceScope.cancel()
         _viewModelStore.clear()

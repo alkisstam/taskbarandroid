@@ -58,6 +58,7 @@ class PreferencesRepository @Inject constructor(
         private val TASKBAR_POSITION_Y_KEY = floatPreferencesKey("taskbar_position_y")
         private val TASKBAR_WIDTH_KEY = floatPreferencesKey("taskbar_width_fraction")
         private val TASKBAR_HEIGHT_KEY = floatPreferencesKey("taskbar_height_dp")
+        private val TASKBAR_VISIBLE_KEY = booleanPreferencesKey("taskbar_visible")
 
         private fun serializePinnedApps(packages: List<String>): String =
             JSONArray(packages).toString()
@@ -169,6 +170,16 @@ class PreferencesRepository @Inject constructor(
             prefs[PILL_ALPHA_KEY]        = settings.alpha
             prefs[PILL_POSITION_Y_KEY]   = settings.positionYDp
             prefs[PILL_POSITION_X_KEY]   = settings.positionXDp
+        }
+    }
+
+    val taskbarVisible: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[TASKBAR_VISIBLE_KEY] ?: true
+    }
+
+    suspend fun setTaskbarVisible(visible: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[TASKBAR_VISIBLE_KEY] = visible
         }
     }
 }

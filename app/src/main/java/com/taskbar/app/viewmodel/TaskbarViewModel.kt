@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -70,10 +71,20 @@ class TaskbarViewModel @Inject constructor(
         }
     }
 
-    fun showTaskbar() { _isTaskbarVisible.value = true }
-    fun hideTaskbar() { _isTaskbarVisible.value = false }
+    fun showTaskbar() {
+        _isTaskbarVisible.value = true
+        viewModelScope.launch { prefsRepository.setTaskbarVisible(true) }
+    }
+
+    fun hideTaskbar() {
+        _isTaskbarVisible.value = false
+        viewModelScope.launch { prefsRepository.setTaskbarVisible(false) }
+    }
 
     init {
+        viewModelScope.launch {
+            _isTaskbarVisible.value = prefsRepository.taskbarVisible.first()
+        }
         loadApps()
         context.contentResolver.registerContentObserver(
             Settings.Secure.getUriFor(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES),
