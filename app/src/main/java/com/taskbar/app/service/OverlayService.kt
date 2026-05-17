@@ -227,7 +227,11 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             addAction(ACTION_SETTINGS_OPEN)
             addAction(ACTION_SETTINGS_CLOSE)
         }
-        registerReceiver(lockscreenReceiver, filter, RECEIVER_NOT_EXPORTED)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(lockscreenReceiver, filter, RECEIVER_NOT_EXPORTED)
+        } else {
+            registerReceiver(lockscreenReceiver, filter)
+        }
 
         val factory = OverlayViewModelFactory(
             context = this,
@@ -244,7 +248,11 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         startForeground(NOTIFICATION_ID, buildNotification())
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
-        registerReceiver(userPresentReceiver, IntentFilter(Intent.ACTION_USER_PRESENT))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(userPresentReceiver, IntentFilter(Intent.ACTION_USER_PRESENT), RECEIVER_NOT_EXPORTED)
+        } else {
+            registerReceiver(userPresentReceiver, IntentFilter(Intent.ACTION_USER_PRESENT))
+        }
         addOverlayView()
         addPillView()
         addSearchView()
@@ -783,6 +791,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         observersStarted = false
         unregisterReceiver(lockscreenReceiver)
+        try { unregisterReceiver(userPresentReceiver) } catch (e: Exception) { }
         removeOverlayView()
         serviceScope.cancel()
         _viewModelStore.clear()

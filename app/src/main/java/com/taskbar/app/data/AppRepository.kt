@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.core.graphics.drawable.toBitmap
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
@@ -13,6 +14,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -40,7 +42,20 @@ class AppRepository @Inject constructor(
             addAction(Intent.ACTION_PACKAGE_REPLACED)
             addDataScheme("package")
         }
-        context.registerReceiver(packageReceiver, filter)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(packageReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            context.registerReceiver(packageReceiver, filter)
+        }
+    }
+
+    fun cleanup() {
+        try {
+            context.unregisterReceiver(packageReceiver)
+        } catch (e: Exception) {
+            // Receiver may not be registered
+        }
+        scope.cancel()
     }
 
     private fun loadApps() {
@@ -63,4 +78,8 @@ class AppRepository @Inject constructor(
 
     fun getLaunchIntent(packageName: String): Intent? =
         context.packageManager.getLaunchIntentForPackage(packageName)
+
+    protected fun finalize() {
+        cleanup()
+    }
 }

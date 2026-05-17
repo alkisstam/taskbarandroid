@@ -86,10 +86,18 @@ private fun DoubleTapPill(pillSettings: PillSettings, onExpand: () -> Unit) {
                         delay(Constants.DOUBLE_TAP_WINDOW_MS)
                         tapCount = 0
                     }
-                } else if (tapCount >= 2) {
+                } else if (tapCount == 2) {
                     tapJob?.cancel()
                     tapCount = 0
                     onExpand()
+                } else {
+                    // Reset on 3rd+ tap within window - start fresh
+                    tapJob?.cancel()
+                    tapCount = 1
+                    tapJob = scope.launch {
+                        delay(Constants.DOUBLE_TAP_WINDOW_MS)
+                        tapCount = 0
+                    }
                 }
             }
         }

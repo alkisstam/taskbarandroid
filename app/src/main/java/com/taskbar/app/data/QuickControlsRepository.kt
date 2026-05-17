@@ -6,6 +6,7 @@ import android.content.Intent
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.media.AudioManager
+import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import com.taskbar.app.service.TaskBarAccessibilityService
@@ -65,10 +66,18 @@ class QuickControlsRepository @Inject constructor(
                 }
             }, null)
         }
-        context.registerReceiver(
-            ringerReceiver,
-            android.content.IntentFilter(AudioManager.RINGER_MODE_CHANGED_ACTION)
-        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(
+                ringerReceiver,
+                android.content.IntentFilter(AudioManager.RINGER_MODE_CHANGED_ACTION),
+                Context.RECEIVER_NOT_EXPORTED
+            )
+        } else {
+            context.registerReceiver(
+                ringerReceiver,
+                android.content.IntentFilter(AudioManager.RINGER_MODE_CHANGED_ACTION)
+            )
+        }
         context.contentResolver.registerContentObserver(
             android.provider.Settings.System.getUriFor(android.provider.Settings.System.ACCELEROMETER_ROTATION),
             false, settingsObserver
@@ -223,9 +232,29 @@ class QuickControlsRepository @Inject constructor(
         Log.w(TAG, "No QR scanner app found on this device")
     }
 
-    fun showPowerMenu() {
-        TaskBarAccessibilityService.instance?.showPowerMenu()
+    fun showPowerMenu(): Boolean {
+        val instance = TaskBarAccessibilityService.instance
+        return if (instance != null) {
+            instance.showPowerMenu()
+            true
+        } else {
+            Log.w(TAG, "Cannot show power menu - accessibility service not running")
+            false
+        }
     }
 
     fun canShowPowerMenu(): Boolean = TaskBarAccessibilityService.isRunning()
+
+    fun cleanup() {
+        try {
+            context.unregisterReceiver(ringerReceiver)
+        } catch (e: Exception) {
+            // Receiver may not be registered
+        }
+        context.contentResolver.unregisterContentObserver(settingsObserver)
+    }
+
+    protected fun finalize() {
+        cleanup()
+    }
 }
