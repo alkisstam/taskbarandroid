@@ -161,18 +161,19 @@ class QuickControlsRepository @Inject constructor(
     }
 
     fun setBrightness(value: Int) {
-        if (Settings.System.canWrite(context)) {
+        if (!Settings.System.canWrite(context)) return
+        if (isAutoBrightnessEnabled()) {
             Settings.System.putInt(
                 context.contentResolver,
                 Settings.System.SCREEN_BRIGHTNESS_MODE,
                 Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL
             )
-            Settings.System.putInt(
-                context.contentResolver,
-                Settings.System.SCREEN_BRIGHTNESS,
-                value.coerceIn(1, 255)
-            )
         }
+        Settings.System.putInt(
+            context.contentResolver,
+            Settings.System.SCREEN_BRIGHTNESS,
+            value.coerceIn(1, 255)
+        )
     }
 
     fun canWriteSettings(): Boolean = Settings.System.canWrite(context)
@@ -254,7 +255,4 @@ class QuickControlsRepository @Inject constructor(
         context.contentResolver.unregisterContentObserver(settingsObserver)
     }
 
-    protected fun finalize() {
-        cleanup()
-    }
 }

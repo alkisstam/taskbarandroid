@@ -188,14 +188,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         }
     }
 
-    // Restores overlay visibility after lock screen unlock, in case the keyboard-detection
-    // listener set the overlay to GONE during PIN entry and it was never restored.
-    private val userPresentReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            overlayView?.visibility = View.VISIBLE
-        }
-    }
-
     private lateinit var taskbarViewModel: TaskbarViewModel
     private lateinit var appMenuViewModel: AppMenuViewModel
 
@@ -248,11 +240,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         startForeground(NOTIFICATION_ID, buildNotification())
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(userPresentReceiver, IntentFilter(Intent.ACTION_USER_PRESENT), RECEIVER_NOT_EXPORTED)
-        } else {
-            registerReceiver(userPresentReceiver, IntentFilter(Intent.ACTION_USER_PRESENT))
-        }
         addOverlayView()
         addPillView()
         addSearchView()
@@ -791,7 +778,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         observersStarted = false
         unregisterReceiver(lockscreenReceiver)
-        try { unregisterReceiver(userPresentReceiver) } catch (e: Exception) { }
         removeOverlayView()
         serviceScope.cancel()
         _viewModelStore.clear()

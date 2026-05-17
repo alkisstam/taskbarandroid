@@ -168,7 +168,7 @@ fun BrightnessPanel(
     val maxBrightness = 255
     var trackHeightPx by remember { mutableFloatStateOf(1f) }
     var isDragging by remember { mutableStateOf(false) }
-    var localCurrent by remember(brightnessLevel) { mutableIntStateOf(brightnessLevel) }
+    var localCurrent by remember { mutableIntStateOf(brightnessLevel) }
     SideEffect { if (!isDragging) localCurrent = brightnessLevel }
     val fraction = localCurrent.toFloat() / maxBrightness
     var dragAccumulator by remember { mutableFloatStateOf(0f) }

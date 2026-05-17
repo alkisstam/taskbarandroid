@@ -79,7 +79,4 @@ class AppRepository @Inject constructor(
     fun getLaunchIntent(packageName: String): Intent? =
         context.packageManager.getLaunchIntentForPackage(packageName)
 
-    protected fun finalize() {
-        cleanup()
-    }
 }
