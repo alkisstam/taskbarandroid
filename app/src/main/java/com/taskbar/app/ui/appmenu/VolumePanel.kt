@@ -79,10 +79,17 @@ private fun VolumeSliderColumn(
 ) {
     var trackHeightPx by remember { mutableFloatStateOf(1f) }
     val fraction = if (stream.max > 0) stream.current.toFloat() / stream.max else 0f
+    var dragAccumulator by remember(stream.streamType) { mutableFloatStateOf(0f) }
     val draggableState = rememberDraggableState { delta ->
-        val change = -(delta / trackHeightPx) * stream.max
-        val newVal = (stream.current + change).toInt().coerceIn(0, stream.max)
-        if (newVal != stream.current) onVolumeChange(newVal)
+        if (stream.max <= 0) return@rememberDraggableState
+        val pxPerStep = trackHeightPx / stream.max
+        dragAccumulator -= delta
+        val steps = (dragAccumulator / pxPerStep).toInt()
+        if (steps != 0) {
+            dragAccumulator -= steps * pxPerStep
+            val newVal = (stream.current + steps).coerceIn(0, stream.max)
+            if (newVal != stream.current) onVolumeChange(newVal)
+        }
     }
 
     Column(
