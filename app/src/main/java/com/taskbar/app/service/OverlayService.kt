@@ -613,6 +613,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             val initialSettings = taskbarViewModel.taskbarSettings.value
             volumePanelYOffsetDp = initialSettings.positionYDp + initialSettings.heightDp * 2 + 10f
             val composeView = ComposeView(this).apply {
+                setBackgroundColor(android.graphics.Color.TRANSPARENT)
                 setViewTreeLifecycleOwner(this@OverlayService)
                 setViewTreeViewModelStoreOwner(this@OverlayService)
                 setViewTreeSavedStateRegistryOwner(this@OverlayService)

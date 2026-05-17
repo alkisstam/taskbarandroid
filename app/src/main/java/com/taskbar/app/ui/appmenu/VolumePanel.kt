@@ -26,8 +26,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -78,7 +80,10 @@ private fun VolumeSliderColumn(
     onVolumeChange: (Int) -> Unit
 ) {
     var trackHeightPx by remember { mutableFloatStateOf(1f) }
-    val fraction = if (stream.max > 0) stream.current.toFloat() / stream.max else 0f
+    // Local current tracks volume immediately on drag; SideEffect syncs external changes.
+    var localCurrent by remember(stream.streamType) { mutableIntStateOf(stream.current) }
+    SideEffect { localCurrent = stream.current }
+    val fraction = if (stream.max > 0) localCurrent.toFloat() / stream.max else 0f
     var dragAccumulator by remember(stream.streamType) { mutableFloatStateOf(0f) }
     val draggableState = rememberDraggableState { delta ->
         if (stream.max <= 0) return@rememberDraggableState
@@ -87,8 +92,11 @@ private fun VolumeSliderColumn(
         val steps = (dragAccumulator / pxPerStep).toInt()
         if (steps != 0) {
             dragAccumulator -= steps * pxPerStep
-            val newVal = (stream.current + steps).coerceIn(0, stream.max)
-            if (newVal != stream.current) onVolumeChange(newVal)
+            val newVal = (localCurrent + steps).coerceIn(0, stream.max)
+            if (newVal != localCurrent) {
+                localCurrent = newVal
+                onVolumeChange(newVal)
+            }
         }
     }
 
@@ -123,7 +131,8 @@ private fun VolumeSliderColumn(
                 .onSizeChanged { trackHeightPx = it.height.toFloat() }
                 .draggable(
                     state = draggableState,
-                    orientation = Orientation.Vertical
+                    orientation = Orientation.Vertical,
+                    onDragStarted = { dragAccumulator = 0f }
                 ),
             contentAlignment = Alignment.BottomCenter
         ) {
