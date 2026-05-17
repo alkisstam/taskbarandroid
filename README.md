@@ -103,25 +103,3 @@ viewmodel/
   TaskbarViewModel         (@HiltViewModel – overlay, theme, tint, pinned apps, pill/taskbar settings)
   AppMenuViewModel         (@HiltViewModel – app search, quick controls, menu state)
 ```
-
-## Changelog
-
-### 1.0.8 (versionCode 9)
-- **New Controls tab** in Settings with master Quick Controls toggle, per-control enable/disable, and drag-to-reorder active controls list
-- **Quick Controls master toggle**: turning it off hides both the strip and the app-menu column and greys out all Controls sub-settings
-- **Unified control list**: strip and All Apps panel column render the same controls in the same order as configured in the Controls tab
-- **Quick Controls Strip layout**: fixed 70 dp height, flexible min-width (shrinks with fewer active controls), 2 dp spacing between icons
-- **Volume panel**: refactored to a separate overlay window so it never shifts the strip; custom vertical pill-sliders (40 dp wide) with correct rounded corners; outside-tap dismiss; Ring slider always visible regardless of ringer mode
-- Moved Quick Controls Strip toggle from General tab to Controls tab
-- Fixed volume slider locking mid-drag (stale AudioManager read resetting local state during gesture)
-- Fixed volume slider accumulator leak between drag sessions
-
-### 1.0.7 (versionCode 8)
-- Volume quick control with 4-stream panel (Media, Ring, Notification, Alarm)
-- Ring slider hidden when ringer is Vibrate or Silent
-- DND toggle with permission prompt
-- QR Scanner shortcut
-- Power menu shortcut (requires Accessibility Service)
-- Surface Tint Color presets (9 swatches)
-- Auto-hide in Landscape
-- Boot autostart
