@@ -2,13 +2,17 @@ package com.taskbar.app.ui.appmenu
 
 import android.media.AudioManager
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,15 +23,17 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.dp
 
 data class VolumeStreamInfo(
@@ -71,9 +77,17 @@ private fun VolumeSliderColumn(
     stream: VolumeStreamInfo,
     onVolumeChange: (Int) -> Unit
 ) {
+    var trackHeightPx by remember { mutableFloatStateOf(1f) }
+    val fraction = if (stream.max > 0) stream.current.toFloat() / stream.max else 0f
+    val draggableState = rememberDraggableState { delta ->
+        val change = -(delta / trackHeightPx) * stream.max
+        val newVal = (stream.current + change).toInt().coerceIn(0, stream.max)
+        if (newVal != stream.current) onVolumeChange(newVal)
+    }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         Box(
             modifier = Modifier
@@ -93,22 +107,27 @@ private fun VolumeSliderColumn(
         }
         Box(
             modifier = Modifier
-                .width(52.dp)
-                .height(140.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Slider(
-                value = stream.current.toFloat(),
-                onValueChange = { v -> onVolumeChange(v.toInt()) },
-                valueRange = 0f..stream.max.toFloat(),
-                modifier = Modifier
-                    .requiredWidth(140.dp)
-                    .rotate(-90f),
-                colors = SliderDefaults.colors(
-                    thumbColor = MaterialTheme.colorScheme.primary,
-                    activeTrackColor = MaterialTheme.colorScheme.primary,
-                    inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                .width(44.dp)
+                .height(140.dp)
+                .background(
+                    MaterialTheme.colorScheme.surfaceVariant,
+                    RoundedCornerShape(22.dp)
                 )
+                .onSizeChanged { trackHeightPx = it.height.toFloat() }
+                .draggable(
+                    state = draggableState,
+                    orientation = Orientation.Vertical
+                ),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(fraction)
+                    .background(
+                        MaterialTheme.colorScheme.primary,
+                        RoundedCornerShape(22.dp)
+                    )
             )
         }
         Text(
