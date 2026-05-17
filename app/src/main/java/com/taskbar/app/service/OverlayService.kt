@@ -99,6 +99,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private var pillView: View? = null
     private var searchView: View? = null
     private var quickStripView: View? = null
+    private var volumePanelView: View? = null
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var observersStarted = false
 
@@ -245,6 +246,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         addPillView()
         addSearchView()
         addQuickStripView()
+        addVolumePanelView()
         if (!observersStarted) {
             observersStarted = true
             observeKeyboardVisibility()
@@ -253,6 +255,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             observeSearchVisibility()
             observeQuickStripVisibility()
             observeQuickStripPosition()
+            observeVolumePanelVisibility()
         }
         return START_STICKY
     }
@@ -298,6 +301,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private var quickStripYOffsetDp: Float = 0f
     private var quickStripInteractive: Boolean = false
+    private var volumePanelYOffsetDp: Float = 0f
 
     private fun setQuickStripInteractive(interactive: Boolean) {
         quickStripInteractive = interactive
@@ -313,6 +317,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 !appMenuViewModel.isSearching.value
         quickStripView?.visibility = if (show) View.VISIBLE else View.GONE
         setQuickStripInteractive(show)
+        if (!show) appMenuViewModel.dismissVolumePanel()
     }
 
     private fun setOverlayFlags(interactive: Boolean, focusable: Boolean) {
@@ -535,9 +540,67 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         serviceScope.launch {
             taskbarViewModel.taskbarSettings.collect { settings ->
                 quickStripYOffsetDp = settings.positionYDp + settings.heightDp + 2f
+                volumePanelYOffsetDp = settings.positionYDp + settings.heightDp * 2 + 10f
                 val view = quickStripView ?: return@collect
                 try { windowManager.updateViewLayout(view, quickStripLayoutParams(quickStripInteractive, quickStripYOffsetDp)) }
                 catch (e: Exception) { Log.w(TAG, "Failed to update quick strip position", e) }
+            }
+        }
+    }
+
+    private fun volumePanelLayoutParams(yOffsetDp: Float): WindowManager.LayoutParams {
+        val usingAccessibility = TaskBarAccessibilityService.isRunning()
+        val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                (if (usingAccessibility) WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS else 0)
+        val density = resources.displayMetrics.density
+        return WindowManager.LayoutParams(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            overlayWindowType,
+            flags,
+            PixelFormat.TRANSLUCENT
+        ).apply {
+            gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+            y = (yOffsetDp * density).toInt()
+        }
+    }
+
+    private fun addVolumePanelView() {
+        if (volumePanelView != null) return
+        try {
+            val initialSettings = taskbarViewModel.taskbarSettings.value
+            volumePanelYOffsetDp = initialSettings.positionYDp + initialSettings.heightDp * 2 + 10f
+            val composeView = ComposeView(this).apply {
+                setViewTreeLifecycleOwner(this@OverlayService)
+                setViewTreeViewModelStoreOwner(this@OverlayService)
+                setViewTreeSavedStateRegistryOwner(this@OverlayService)
+                setContent {
+                    VolumePanelContent(
+                        taskbarViewModel = taskbarViewModel,
+                        appMenuViewModel = appMenuViewModel
+                    )
+                }
+            }
+            composeView.visibility = View.GONE
+            volumePanelView = composeView
+            windowManager.addView(composeView, volumePanelLayoutParams(volumePanelYOffsetDp))
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to add volume panel view", e)
+            volumePanelView = null
+        }
+    }
+
+    private fun observeVolumePanelVisibility() {
+        serviceScope.launch {
+            appMenuViewModel.volumePanelVisible.collect { visible ->
+                volumePanelView?.visibility = if (visible) View.VISIBLE else View.GONE
+                if (visible) {
+                    val view = volumePanelView ?: return@collect
+                    try { windowManager.updateViewLayout(view, volumePanelLayoutParams(volumePanelYOffsetDp)) }
+                    catch (e: Exception) { Log.w(TAG, "Failed to update volume panel position", e) }
+                }
             }
         }
     }
@@ -576,6 +639,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         quickStripView?.let {
             try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove quick strip view", e) }
             quickStripView = null
+        }
+        volumePanelView?.let {
+            try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove volume panel view", e) }
+            volumePanelView = null
         }
     }
 
@@ -707,6 +774,22 @@ private fun QuickStripContent(
             taskbarViewModel = taskbarViewModel,
             appMenuViewModel = appMenuViewModel,
             onHideTaskbar = onHideTaskbar
+        )
+    }
+}
+
+@Composable
+private fun VolumePanelContent(
+    taskbarViewModel: TaskbarViewModel,
+    appMenuViewModel: AppMenuViewModel
+) {
+    val themeMode by taskbarViewModel.themeMode.collectAsState()
+    TaskBarTheme(themeMode = themeMode) {
+        com.taskbar.app.ui.appmenu.VolumePanel(
+            streams = appMenuViewModel.getVolumeStreams(),
+            onVolumeChange = { streamType, value ->
+                appMenuViewModel.setStreamVolume(streamType, value)
+            }
         )
     }
 }
