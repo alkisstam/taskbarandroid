@@ -1,5 +1,5 @@
 ---
-auto_execution_mode: 0
+auto_execution_mode: 2
 description: Review code changes for bugs, security issues, and improvements
 ---
 You are a senior software engineer performing a thorough code review to identify potential bugs.
