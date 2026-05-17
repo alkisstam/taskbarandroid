@@ -33,6 +33,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.BrightnessHigh
+import androidx.compose.material.icons.filled.BrightnessMedium
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DarkMode
@@ -45,6 +46,7 @@ import androidx.compose.material.icons.filled.PowerSettingsNew
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.ScreenRotationAlt
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Switch
@@ -56,15 +58,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -495,8 +501,9 @@ private fun ControlsTab(viewModel: TaskbarViewModel) {
             Triple("torch",      "Torch",      Icons.Filled.FlashlightOn),
             Triple("ringer",     "Ringer",     Icons.AutoMirrored.Filled.VolumeUp),
             Triple("rotate",     "Rotate",     Icons.Filled.ScreenRotationAlt),
-            Triple("brightness", "Brightness", Icons.Filled.BrightnessHigh),
-            Triple("dnd",        "DND",        Icons.Filled.DoNotDisturbOff),
+            Triple("brightness",        "Auto-Brightness", Icons.Filled.BrightnessHigh),
+            Triple("brightness_slider",  "Brightness",      Icons.Filled.BrightnessMedium),
+            Triple("dnd",               "DND",             Icons.Filled.DoNotDisturbOff),
             Triple("qr",         "QR",         Icons.Filled.QrCodeScanner),
             Triple("power",      "Power",      Icons.Filled.PowerSettingsNew),
             Triple("volume",     "Volume",     Icons.Filled.Tune)
@@ -727,10 +734,10 @@ private val SURFACE_TINT_PRESETS: List<Pair<String, Long>> = listOf(
     "Black" to 0xFF1A1A2E,
     "Navy" to 0xFF16213E,
     "Deep Purple" to 0xFF2D1B69,
-    "Forest" to 0xFF1B4332,
     "Slate" to 0xFF2D3748,
     "Charcoal" to 0xFF36454F,
     "Cream" to 0xFFFFF8E7,
+    "Sand" to 0xFFFFF3E0,
     "Blush" to 0xFFFFE4E1,
     "Sky" to 0xFFE3F2FD,
     "Mint" to 0xFFE8F5E9
@@ -741,6 +748,8 @@ private fun SurfaceTintColorPicker(
     currentColor: Long,
     onColorSelected: (Long) -> Unit
 ) {
+    var showCustomPicker by remember { mutableStateOf(false) }
+
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text("Surface Tint Color", style = MaterialTheme.typography.bodyMedium)
         Text(
@@ -749,7 +758,10 @@ private fun SurfaceTintColorPicker(
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(modifier = Modifier.height(4.dp))
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.Top
+        ) {
             items(SURFACE_TINT_PRESETS) { (label, colorValue) ->
                 val isSelected = currentColor == colorValue
                 val displayColor = if (colorValue == 0L)
@@ -778,6 +790,122 @@ private fun SurfaceTintColorPicker(
                     )
                 }
             }
+            item {
+                val isCustomSelected = SURFACE_TINT_PRESETS.none { it.second == currentColor }
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .background(
+                                if (isCustomSelected) Color(currentColor) else MaterialTheme.colorScheme.surfaceVariant,
+                                CircleShape
+                            )
+                            .then(
+                                if (isCustomSelected) Modifier.border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                                else Modifier
+                            )
+                            .clickable { showCustomPicker = true },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (!isCustomSelected) {
+                            Text("+", style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    }
+                    Text(
+                        "Custom",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = if (isCustomSelected) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
         }
     }
+
+    if (showCustomPicker) {
+        CustomColorPickerDialog(
+            initialColor = if (SURFACE_TINT_PRESETS.none { it.second == currentColor } && currentColor != 0L)
+                currentColor else 0xFF808080L,
+            onDismiss = { showCustomPicker = false },
+            onConfirm = { color ->
+                onColorSelected(color)
+                showCustomPicker = false
+            }
+        )
+    }
+}
+
+@Composable
+private fun CustomColorPickerDialog(
+    initialColor: Long,
+    onDismiss: () -> Unit,
+    onConfirm: (Long) -> Unit
+) {
+    var r by remember { mutableFloatStateOf(((initialColor shr 16) and 0xFF).toFloat()) }
+    var g by remember { mutableFloatStateOf(((initialColor shr 8) and 0xFF).toFloat()) }
+    var b by remember { mutableFloatStateOf((initialColor and 0xFF).toFloat()) }
+    val previewColor = Color(
+        red = r / 255f,
+        green = g / 255f,
+        blue = b / 255f
+    )
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Custom Color") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .background(previewColor, RoundedCornerShape(12.dp))
+                        .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
+                )
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text("R: ${r.toInt()}", style = MaterialTheme.typography.labelMedium)
+                    Slider(
+                        value = r,
+                        onValueChange = { r = it },
+                        valueRange = 0f..255f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text("G: ${g.toInt()}", style = MaterialTheme.typography.labelMedium)
+                    Slider(
+                        value = g,
+                        onValueChange = { g = it },
+                        valueRange = 0f..255f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text("B: ${b.toInt()}", style = MaterialTheme.typography.labelMedium)
+                    Slider(
+                        value = b,
+                        onValueChange = { b = it },
+                        valueRange = 0f..255f,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                val color = (0xFF000000L) or
+                    (r.toLong().coerceIn(0, 255) shl 16) or
+                    (g.toLong().coerceIn(0, 255) shl 8) or
+                    b.toLong().coerceIn(0, 255)
+                onConfirm(color)
+            }) { Text("Apply") }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel") }
+        }
+    )
 }

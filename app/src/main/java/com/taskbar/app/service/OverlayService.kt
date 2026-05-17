@@ -60,6 +60,7 @@ import com.taskbar.app.util.Constants
 import com.taskbar.app.data.PreferencesRepository
 import com.taskbar.app.data.QuickControlsRepository
 import com.taskbar.app.ui.appmenu.AppMenuPanel
+import com.taskbar.app.ui.appmenu.BrightnessPanel
 import com.taskbar.app.ui.appmenu.FloatingSearchBar
 import com.taskbar.app.ui.taskbar.QuickStripView
 import com.taskbar.app.ui.taskbar.TaskbarView
@@ -100,6 +101,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private var searchView: View? = null
     private var quickStripView: View? = null
     private var volumePanelView: View? = null
+    private var brightnessPanelView: View? = null
     private var volumeScrimView: View? = null
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var observersStarted = false
@@ -249,6 +251,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         addQuickStripView()
         addVolumeScrimView()
         addVolumePanelView()
+        addBrightnessPanelView()
         if (!observersStarted) {
             observersStarted = true
             observeKeyboardVisibility()
@@ -258,6 +261,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             observeQuickStripVisibility()
             observeQuickStripPosition()
             observeVolumePanelVisibility()
+            observeBrightnessPanelVisibility()
         }
         return START_STICKY
     }
@@ -320,7 +324,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 !appMenuViewModel.isSearching.value
         quickStripView?.visibility = if (show) View.VISIBLE else View.GONE
         setQuickStripInteractive(show)
-        if (!show) appMenuViewModel.dismissVolumePanel()
+        if (!show) {
+            appMenuViewModel.dismissVolumePanel()
+            appMenuViewModel.dismissBrightnessPanel()
+        }
     }
 
     private fun setOverlayFlags(interactive: Boolean, focusable: Boolean) {
@@ -596,7 +603,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         try {
             val view = android.view.View(this).apply {
                 setBackgroundColor(android.graphics.Color.TRANSPARENT)
-                setOnClickListener { appMenuViewModel.dismissVolumePanel() }
+                setOnClickListener {
+                    appMenuViewModel.dismissVolumePanel()
+                    appMenuViewModel.dismissBrightnessPanel()
+                }
             }
             view.visibility = View.GONE
             volumeScrimView = view
@@ -633,15 +643,57 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         }
     }
 
+    private fun addBrightnessPanelView() {
+        if (brightnessPanelView != null) return
+        try {
+            val initialSettings = taskbarViewModel.taskbarSettings.value
+            val yOffset = initialSettings.positionYDp + initialSettings.heightDp * 2 + 10f
+            val composeView = ComposeView(this).apply {
+                setBackgroundColor(android.graphics.Color.TRANSPARENT)
+                setViewTreeLifecycleOwner(this@OverlayService)
+                setViewTreeViewModelStoreOwner(this@OverlayService)
+                setViewTreeSavedStateRegistryOwner(this@OverlayService)
+                setContent {
+                    BrightnessPanelContent(
+                        taskbarViewModel = taskbarViewModel,
+                        appMenuViewModel = appMenuViewModel
+                    )
+                }
+            }
+            composeView.visibility = View.GONE
+            brightnessPanelView = composeView
+            windowManager.addView(composeView, volumePanelLayoutParams(yOffset))
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to add brightness panel view", e)
+            brightnessPanelView = null
+        }
+    }
+
     private fun observeVolumePanelVisibility() {
         serviceScope.launch {
             appMenuViewModel.volumePanelVisible.collect { visible ->
-                volumeScrimView?.visibility = if (visible) View.VISIBLE else View.GONE
+                if (visible) volumeScrimView?.visibility = View.VISIBLE
+                else if (!appMenuViewModel.brightnessPanelVisible.value) volumeScrimView?.visibility = View.GONE
                 volumePanelView?.visibility = if (visible) View.VISIBLE else View.GONE
                 if (visible) {
                     val view = volumePanelView ?: return@collect
                     try { windowManager.updateViewLayout(view, volumePanelLayoutParams(volumePanelYOffsetDp)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update volume panel position", e) }
+                }
+            }
+        }
+    }
+
+    private fun observeBrightnessPanelVisibility() {
+        serviceScope.launch {
+            appMenuViewModel.brightnessPanelVisible.collect { visible ->
+                if (visible) volumeScrimView?.visibility = View.VISIBLE
+                else if (!appMenuViewModel.volumePanelVisible.value) volumeScrimView?.visibility = View.GONE
+                brightnessPanelView?.visibility = if (visible) View.VISIBLE else View.GONE
+                if (visible) {
+                    val view = brightnessPanelView ?: return@collect
+                    try { windowManager.updateViewLayout(view, volumePanelLayoutParams(volumePanelYOffsetDp)) }
+                    catch (e: Exception) { Log.w(TAG, "Failed to update brightness panel position", e) }
                 }
             }
         }
@@ -685,6 +737,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         volumePanelView?.let {
             try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove volume panel view", e) }
             volumePanelView = null
+        }
+        brightnessPanelView?.let {
+            try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove brightness panel view", e) }
+            brightnessPanelView = null
         }
         volumeScrimView?.let {
             try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove volume scrim view", e) }
@@ -836,6 +892,23 @@ private fun VolumePanelContent(
             streams = streams,
             onVolumeChange = { streamType, value ->
                 appMenuViewModel.setStreamVolume(streamType, value)
+            }
+        )
+    }
+}
+
+@Composable
+private fun BrightnessPanelContent(
+    taskbarViewModel: TaskbarViewModel,
+    appMenuViewModel: AppMenuViewModel
+) {
+    val themeMode by taskbarViewModel.themeMode.collectAsState()
+    val brightnessLevel by appMenuViewModel.brightnessLevel.collectAsState()
+    TaskBarTheme(themeMode = themeMode) {
+        BrightnessPanel(
+            brightnessLevel = brightnessLevel,
+            onBrightnessChange = { value ->
+                appMenuViewModel.setBrightnessLevel(value)
             }
         )
     }

@@ -143,6 +143,29 @@ class QuickControlsRepository @Inject constructor(
         }
     }
 
+    fun getBrightness(): Int {
+        return try {
+            Settings.System.getInt(context.contentResolver, Settings.System.SCREEN_BRIGHTNESS)
+        } catch (e: Settings.SettingNotFoundException) {
+            128
+        }
+    }
+
+    fun setBrightness(value: Int) {
+        if (Settings.System.canWrite(context)) {
+            Settings.System.putInt(
+                context.contentResolver,
+                Settings.System.SCREEN_BRIGHTNESS_MODE,
+                Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL
+            )
+            Settings.System.putInt(
+                context.contentResolver,
+                Settings.System.SCREEN_BRIGHTNESS,
+                value.coerceIn(1, 255)
+            )
+        }
+    }
+
     fun canWriteSettings(): Boolean = Settings.System.canWrite(context)
 
     private fun notificationManager() =

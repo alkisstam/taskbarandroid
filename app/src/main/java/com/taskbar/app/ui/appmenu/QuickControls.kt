@@ -14,6 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrightnessAuto
 import androidx.compose.material.icons.filled.BrightnessHigh
+import androidx.compose.material.icons.filled.BrightnessMedium
 import androidx.compose.material.icons.filled.DoNotDisturb
 import androidx.compose.material.icons.filled.DoNotDisturbOff
 import androidx.compose.material.icons.filled.FlashlightOff
@@ -89,9 +90,11 @@ fun QuickControlsState.toItems(
         "rotate" to QuickControlItemData(id = "rotate", label = "Rotate",
             active = canWriteSettings && autoRotate,
             icon = if (autoRotate) Icons.Filled.ScreenRotation else Icons.Filled.ScreenRotationAlt),
-        "brightness" to QuickControlItemData(id = "brightness", label = "Bright",
+        "brightness" to QuickControlItemData(id = "brightness", label = "Auto-Bright",
             active = canWriteSettings && autoBrightness,
             icon = if (autoBrightness) Icons.Filled.BrightnessAuto else Icons.Filled.BrightnessHigh),
+        "brightness_slider" to QuickControlItemData(id = "brightness_slider", label = "Bright",
+            active = false, icon = Icons.Filled.BrightnessMedium),
         "dnd" to QuickControlItemData(id = "dnd", label = "DND", active = dndEnabled,
             icon = if (dndEnabled) Icons.Filled.DoNotDisturb else Icons.Filled.DoNotDisturbOff),
         "qr" to QuickControlItemData(id = "qr", label = "QR", active = false, icon = Icons.Filled.QrCodeScanner),

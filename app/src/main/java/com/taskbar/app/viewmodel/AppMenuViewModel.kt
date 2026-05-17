@@ -80,6 +80,12 @@ class AppMenuViewModel @Inject constructor(
     private val _volumePanelVisible = MutableStateFlow(false)
     val volumePanelVisible: StateFlow<Boolean> = _volumePanelVisible.asStateFlow()
 
+    private val _brightnessPanelVisible = MutableStateFlow(false)
+    val brightnessPanelVisible: StateFlow<Boolean> = _brightnessPanelVisible.asStateFlow()
+
+    private val _brightnessLevel = MutableStateFlow(128)
+    val brightnessLevel: StateFlow<Int> = _brightnessLevel.asStateFlow()
+
     private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
     private val _volumeStreams = MutableStateFlow<List<VolumeStreamInfo>>(emptyList())
@@ -91,12 +97,37 @@ class AppMenuViewModel @Inject constructor(
 
     fun toggleVolumePanel() {
         val nowVisible = !_volumePanelVisible.value
-        if (nowVisible) refreshVolumeStreams()
+        if (nowVisible) {
+            refreshVolumeStreams()
+            _brightnessPanelVisible.value = false
+        }
         _volumePanelVisible.value = nowVisible
     }
 
     fun dismissVolumePanel() {
         _volumePanelVisible.value = false
+    }
+
+    fun toggleBrightnessPanel() {
+        val nowVisible = !_brightnessPanelVisible.value
+        if (nowVisible) {
+            _brightnessLevel.value = quickControls.getBrightness()
+            _volumePanelVisible.value = false
+        }
+        _brightnessPanelVisible.value = nowVisible
+    }
+
+    fun dismissBrightnessPanel() {
+        _brightnessPanelVisible.value = false
+    }
+
+    fun setBrightnessLevel(value: Int) {
+        try {
+            quickControls.setBrightness(value)
+            _brightnessLevel.value = value
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to set brightness", e)
+        }
     }
 
     fun setStreamVolume(streamType: Int, value: Int) {
@@ -243,6 +274,13 @@ class AppMenuViewModel @Inject constructor(
             "torch" -> toggleTorch()
             "ringer" -> cycleRingerMode()
             "rotate" -> if (_quickControlsState.value.canWriteSettings) toggleAutoRotate() else {
+                val intent = android.content.Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
+                    data = android.net.Uri.parse("package:${context.packageName}")
+                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(intent)
+            }
+            "brightness_slider" -> if (_quickControlsState.value.canWriteSettings) toggleBrightnessPanel() else {
                 val intent = android.content.Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
                     data = android.net.Uri.parse("package:${context.packageName}")
                     addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)

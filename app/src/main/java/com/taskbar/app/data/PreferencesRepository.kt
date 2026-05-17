@@ -66,7 +66,7 @@ class PreferencesRepository @Inject constructor(
         private val TASKBAR_VISIBLE_KEY = booleanPreferencesKey("taskbar_visible")
         private val ONBOARDING_COMPLETE_KEY = booleanPreferencesKey("onboarding_complete")
 
-        val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness", "dnd", "qr", "power", "volume")
+        val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness", "brightness_slider", "dnd", "qr", "power", "volume")
 
         private fun serializeStringList(list: List<String>): String = JSONArray(list).toString()
         private fun deserializeStringList(stored: String): List<String> =

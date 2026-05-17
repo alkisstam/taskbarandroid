@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Alarm
+import androidx.compose.material.icons.filled.BrightnessHigh
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
@@ -155,6 +156,102 @@ private fun VolumeSliderColumn(
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurface
         )
+    }
+}
+
+@Composable
+fun BrightnessPanel(
+    brightnessLevel: Int,
+    onBrightnessChange: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val maxBrightness = 255
+    var trackHeightPx by remember { mutableFloatStateOf(1f) }
+    var isDragging by remember { mutableStateOf(false) }
+    var localCurrent by remember(brightnessLevel) { mutableIntStateOf(brightnessLevel) }
+    SideEffect { if (!isDragging) localCurrent = brightnessLevel }
+    val fraction = localCurrent.toFloat() / maxBrightness
+    var dragAccumulator by remember { mutableFloatStateOf(0f) }
+    val draggableState = rememberDraggableState { delta ->
+        val pxPerStep = trackHeightPx / maxBrightness
+        dragAccumulator -= delta
+        val steps = (dragAccumulator / pxPerStep).toInt()
+        if (steps != 0) {
+            dragAccumulator -= steps * pxPerStep
+            val newVal = (localCurrent + steps).coerceIn(1, maxBrightness)
+            if (newVal != localCurrent) {
+                localCurrent = newVal
+                onBrightnessChange(newVal)
+            }
+        }
+    }
+
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(20.dp),
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = 6.dp,
+        shadowElevation = 12.dp
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.Bottom
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .background(
+                            MaterialTheme.colorScheme.surfaceVariant,
+                            RoundedCornerShape(8.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.BrightnessHigh,
+                        contentDescription = "Brightness",
+                        modifier = Modifier.size(18.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .width(40.dp)
+                        .height(140.dp)
+                        .background(
+                            MaterialTheme.colorScheme.surfaceVariant,
+                            RoundedCornerShape(20.dp)
+                        )
+                        .onSizeChanged { trackHeightPx = it.height.toFloat() }
+                        .draggable(
+                            state = draggableState,
+                            orientation = Orientation.Vertical,
+                            onDragStarted = { isDragging = true; dragAccumulator = 0f },
+                            onDragStopped = { isDragging = false }
+                        ),
+                    contentAlignment = Alignment.BottomCenter
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(fraction)
+                            .background(
+                                MaterialTheme.colorScheme.primary,
+                                RoundedCornerShape(20.dp)
+                            )
+                    )
+                }
+                Text(
+                    text = "Bright",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+        }
     }
 }
 

@@ -7,14 +7,18 @@ All notable changes to TaskBar are documented here.
 ## [1.0.8] - 2026-05-17
 
 ### Added
-- **Controls tab** — new fourth tab in Settings replacing the old Controls section in General. Contains the Quick Controls master toggle, the Controls Strip sub-toggle, a reorderable *Active Controls* list (long-press to drag), and per-control enable/disable switches for all eight controls (Torch, Ringer, Rotate, Brightness, DND, QR, Power, Volume). Order configured here is shared by both the strip and the app-menu column.
+- **Controls tab** — new fourth tab in Settings replacing the old Controls section in General. Contains the Quick Controls master toggle, the Controls Strip sub-toggle, a reorderable *Active Controls* list (long-press to drag), and per-control enable/disable switches for all nine controls (Torch, Ringer, Rotate, Auto-Brightness, Brightness, DND, QR, Power, Volume). Order configured here is shared by both the strip and the app-menu column.
 - **Quick Controls master toggle** — single switch that disables the strip and the app-menu column simultaneously and greys out all Controls sub-settings when off. Toggle immediately applies without needing to reopen the panel.
 - **Volume panel** — separate `WindowManager` overlay window containing four vertical pill-sliders (Media, Ring, Notification, Alarm). Opens above the quick-controls strip when the Volume tile is tapped; dismissed by tapping anywhere outside. Ring slider is always shown regardless of ringer mode.
+- **Brightness panel** — separate `WindowManager` overlay window with a single vertical brightness pill-slider (0–255). Opens when the *Brightness* tile is tapped; dismissed by tapping anywhere outside. Automatically switches the device to manual brightness mode on first drag.
+- **Custom color picker** — a *Custom…* swatch at the end of the Surface Tint preset row opens a dialog with R, G, B sliders (0–255 each) and a live preview swatch, letting the user set any arbitrary color as the surface tint.
 
 ### Changed
 - **Quick Controls Strip layout** — fixed 70 dp height (was dynamic), flexible min-width that shrinks when fewer controls are active, 2 dp spacing between icon tiles.
 - **Volume slider width** — narrowed from 44 dp to 40 dp (corner radius 22 dp → 20 dp).
 - **Controls Strip toggle** — moved from the General tab to the Controls tab.
+- **Auto-Brightness tile label** — renamed from *Bright* to *Auto-Bright* to distinguish it from the new Brightness slider tile.
+- **Surface Tint preset "Forest" removed** — replaced with *Sand* (`#FFF3E0`, a warm light tone).
 
 ### Fixed
 - **Volume slider locks mid-drag** — `SideEffect` that synced `localCurrent` from the ViewModel fired during active drag gestures; if `AudioManager.getStreamVolume` returned the pre-write value (async flush), it reset `localCurrent` and froze the slider. Fixed by guarding the sync with an `isDragging` flag set in `onDragStarted` / `onDragStopped`.
