@@ -2,7 +2,7 @@
 
 A system-overlay taskbar for Android that renders above all other apps — including the system navigation bar when the Accessibility Service is enabled.
 
-**Current version:** 1.0.7 (versionCode 8)
+**Current version:** 1.0.8 (versionCode 9)
 
 ## Features
 
@@ -20,10 +20,10 @@ A system-overlay taskbar for Android that renders above all other apps — inclu
 ### App Menu
 - **App Menu** – floating panel that slides up from above the taskbar:
   - 3-column scrollable app grid
-  - Quick Controls column: Torch, Ring mode cycle (Normal/Vibrate/Silent), Auto-rotate, Auto-brightness, DND, QR Scanner, Power menu
+  - Quick Controls column: shows enabled controls in user-configured order (mirrors the strip configuration)
   - Full-screen app search
   - Long-press any app to pin/unpin from the taskbar
-- **Quick Controls Strip** – an always-visible horizontal row that sits directly above the taskbar (enable in *General → Behaviour*); auto-refreshes on system ringer/rotation/brightness changes. When enabled, the quick controls column is removed from the app menu to avoid duplication.
+- **Quick Controls Strip** – an always-visible horizontal row that sits directly above the taskbar; fixed 70 dp height, flexible width, 2 dp icon spacing. When the strip is enabled, the quick controls column is hidden from the app menu to avoid duplication.
 
 ### Pinned Apps
 - Launch pinned apps directly from the taskbar
@@ -43,7 +43,12 @@ A system-overlay taskbar for Android that renders above all other apps — inclu
 - **Boot autostart** – re-enables the overlay on reboot (if permissions were granted)
 
 ### Settings
-- Three-tab settings screen: **General**, **Pinned Apps**, **Design**
+- Four-tab settings screen: **General**, **Pinned Apps**, **Controls**, **Design**
+- **Controls** tab:
+  - **Quick Controls** master toggle – disables the strip and the app-menu column in one tap; greys out all sub-settings when off
+  - **Controls Strip** toggle – show/hide the strip independently of the app-menu column
+  - **Active Controls** – reorderable list (long-press drag) of currently enabled controls; order is shared between strip and app-menu column
+  - **Available Controls** – per-control enable/disable switches (Torch, Ringer, Rotate, Brightness, DND, QR, Power, Volume)
 - **Design** tab has three collapsible sections: Trigger Gesture, Pill Size & Appearance, Taskbar Size & Appearance
 
 ## Requirements
@@ -98,3 +103,23 @@ viewmodel/
   TaskbarViewModel         (@HiltViewModel – overlay, theme, tint, pinned apps, pill/taskbar settings)
   AppMenuViewModel         (@HiltViewModel – app search, quick controls, menu state)
 ```
+
+## Changelog
+
+### 1.0.8 (versionCode 9)
+- **New Controls tab** in Settings with master Quick Controls toggle, per-control enable/disable, and drag-to-reorder active controls list
+- **Quick Controls master toggle**: turning it off hides both the strip and the app-menu column and greys out all Controls sub-settings
+- **Unified control list**: strip and All Apps panel column render the same controls in the same order as configured in the Controls tab
+- **Quick Controls Strip layout**: fixed 70 dp height, flexible min-width (shrinks with fewer active controls), 2 dp spacing between icons
+- **Volume panel**: refactored to a separate overlay window so it never shifts the strip; custom vertical pill-sliders with correct rounded corners; outside-tap dismiss
+- Moved Quick Controls Strip toggle from General tab to Controls tab
+
+### 1.0.7 (versionCode 8)
+- Volume quick control with 4-stream panel (Media, Ring, Notification, Alarm)
+- Ring slider hidden when ringer is Vibrate or Silent
+- DND toggle with permission prompt
+- QR Scanner shortcut
+- Power menu shortcut (requires Accessibility Service)
+- Surface Tint Color presets (9 swatches)
+- Auto-hide in Landscape
+- Boot autostart
