@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
 import android.util.Log
+import com.taskbar.app.ui.appmenu.VolumeStreamInfo
+import com.taskbar.app.ui.appmenu.buildVolumeStreams
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -74,6 +76,30 @@ class AppMenuViewModel @Inject constructor(
 
     private val _isSearching = MutableStateFlow(false)
     val isSearching: StateFlow<Boolean> = _isSearching.asStateFlow()
+
+    private val _volumePanelVisible = MutableStateFlow(false)
+    val volumePanelVisible: StateFlow<Boolean> = _volumePanelVisible.asStateFlow()
+
+    private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+
+    fun toggleVolumePanel() {
+        _volumePanelVisible.value = !_volumePanelVisible.value
+    }
+
+    fun dismissVolumePanel() {
+        _volumePanelVisible.value = false
+    }
+
+    fun getVolumeStreams(): List<VolumeStreamInfo> =
+        buildVolumeStreams(audioManager, _quickControlsState.value.ringerMode)
+
+    fun setStreamVolume(streamType: Int, value: Int) {
+        try {
+            audioManager.setStreamVolume(streamType, value, 0)
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to set stream volume", e)
+        }
+    }
 
     fun openSearch() {
         _isSearching.value = true
@@ -206,6 +232,7 @@ class AppMenuViewModel @Inject constructor(
 
     fun handleQuickControlAction(id: String) {
         when (id) {
+            "volume" -> toggleVolumePanel()
             "torch" -> toggleTorch()
             "ringer" -> cycleRingerMode()
             "rotate" -> if (_quickControlsState.value.canWriteSettings) toggleAutoRotate() else {

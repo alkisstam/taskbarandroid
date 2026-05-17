@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.ScreenRotationAlt
 import androidx.compose.material.icons.filled.Vibration
 import androidx.compose.material.icons.automirrored.filled.VolumeOff
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -172,6 +173,7 @@ fun QuickControlsState.toItems(): List<QuickControlItemData> {
     )
     list += QuickControlItemData(id = "qr", label = "QR", active = false, icon = Icons.Filled.QrCodeScanner)
     if (canShowPowerMenu) list += QuickControlItemData(id = "power", label = "Power", active = false, icon = Icons.Filled.PowerSettingsNew)
+    list += QuickControlItemData(id = "volume", label = "Volume", active = false, icon = Icons.Filled.Tune)
     return list
 }
 
