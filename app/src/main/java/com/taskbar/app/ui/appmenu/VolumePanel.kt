@@ -20,7 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.VolumeUp
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -167,7 +167,7 @@ fun buildVolumeStreams(audioManager: AudioManager, ringerMode: Int): List<Volume
         streams += VolumeStreamInfo(
             streamType = AudioManager.STREAM_RING,
             label = "Ring",
-            icon = Icons.Filled.VolumeUp,
+            icon = Icons.AutoMirrored.Filled.VolumeUp,
             current = audioManager.getStreamVolume(AudioManager.STREAM_RING),
             max = audioManager.getStreamMaxVolume(AudioManager.STREAM_RING)
         )
