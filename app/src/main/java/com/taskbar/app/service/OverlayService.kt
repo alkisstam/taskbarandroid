@@ -314,6 +314,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private fun restoreQuickStripVisibility() {
         val show = taskbarViewModel.isTaskbarVisible.value &&
+                taskbarViewModel.quickControlsEnabled.value &&
                 taskbarViewModel.quickControlsStripEnabled.value &&
                 !appMenuViewModel.menuVisible.value &&
                 !appMenuViewModel.isSearching.value
@@ -526,11 +527,17 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         serviceScope.launch {
             kotlinx.coroutines.flow.combine(
                 taskbarViewModel.isTaskbarVisible,
+                taskbarViewModel.quickControlsEnabled,
                 taskbarViewModel.quickControlsStripEnabled,
                 appMenuViewModel.menuVisible,
                 appMenuViewModel.isSearching
-            ) { taskbarVisible, stripEnabled, menuOpen, searching ->
-                taskbarVisible && stripEnabled && !menuOpen && !searching
+            ) { values ->
+                val taskbarVisible = values[0] as Boolean
+                val controlsEnabled = values[1] as Boolean
+                val stripEnabled = values[2] as Boolean
+                val menuOpen = values[3] as Boolean
+                val searching = values[4] as Boolean
+                taskbarVisible && controlsEnabled && stripEnabled && !menuOpen && !searching
             }.collect { visible ->
                 quickStripView?.visibility = if (visible) View.VISIBLE else View.GONE
                 setQuickStripInteractive(visible)
