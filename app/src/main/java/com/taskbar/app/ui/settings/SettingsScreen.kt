@@ -28,6 +28,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.draw.alpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Add
@@ -484,6 +485,7 @@ private fun AllAppGridItem(
 
 @Composable
 private fun ControlsTab(viewModel: TaskbarViewModel) {
+    val quickControlsEnabled by viewModel.quickControlsEnabled.collectAsState()
     val quickControlsStripEnabled by viewModel.quickControlsStripEnabled.collectAsState()
     val controlsOrder by viewModel.controlsOrder.collectAsState()
     val controlsDisabledIds by viewModel.controlsDisabledIds.collectAsState()
@@ -512,7 +514,32 @@ private fun ControlsTab(viewModel: TaskbarViewModel) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
-            SettingsCard(title = "Quick Controls Strip") {
+            SettingsCard(title = "Quick Controls") {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text("Enable Quick Controls", style = MaterialTheme.typography.bodyLarge)
+                        Text(
+                            "Show quick controls in the strip or apps panel",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Switch(
+                        checked = quickControlsEnabled,
+                        onCheckedChange = { viewModel.setQuickControlsEnabled(it) }
+                    )
+                }
+            }
+        }
+
+        item {
+            SettingsCard(title = "Quick Controls Strip",
+                modifier = Modifier.alpha(if (quickControlsEnabled) 1f else 0.38f)
+            ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -528,6 +555,7 @@ private fun ControlsTab(viewModel: TaskbarViewModel) {
                     }
                     Switch(
                         checked = quickControlsStripEnabled,
+                        enabled = quickControlsEnabled,
                         onCheckedChange = { viewModel.setQuickControlsStripEnabled(it) }
                     )
                 }
@@ -535,7 +563,10 @@ private fun ControlsTab(viewModel: TaskbarViewModel) {
         }
 
         item {
-            SettingsCard(title = "Active Controls (long-press to reorder)") {
+            SettingsCard(
+                title = "Active Controls (long-press to reorder)",
+                modifier = Modifier.alpha(if (quickControlsEnabled) 1f else 0.38f)
+            ) {
                 if (activeIds.isEmpty()) {
                     Text(
                         "No controls enabled. Enable some below.",
@@ -613,7 +644,10 @@ private fun ControlsTab(viewModel: TaskbarViewModel) {
         }
 
         item {
-            SettingsCard(title = "Available Controls") {
+            SettingsCard(
+                title = "Available Controls",
+                modifier = Modifier.alpha(if (quickControlsEnabled) 1f else 0.38f)
+            ) {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     controlMeta.forEach { meta ->
                         val id = meta.first
@@ -639,6 +673,7 @@ private fun ControlsTab(viewModel: TaskbarViewModel) {
                             )
                             Switch(
                                 checked = enabled,
+                                enabled = quickControlsEnabled,
                                 onCheckedChange = { checked ->
                                     val newDisabled = controlsDisabledIds.toMutableSet()
                                     if (checked) {
@@ -663,10 +698,11 @@ private fun ControlsTab(viewModel: TaskbarViewModel) {
 @Composable
 internal fun SettingsCard(
     title: String,
+    modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant

@@ -60,6 +60,7 @@ class PreferencesRepository @Inject constructor(
         private val AUTO_HIDE_FULLSCREEN_KEY = booleanPreferencesKey("auto_hide_fullscreen")
         private val AUTO_HIDE_LANDSCAPE_KEY = booleanPreferencesKey("auto_hide_landscape")
         private val QUICK_CONTROLS_STRIP_KEY = booleanPreferencesKey("quick_controls_strip")
+        private val QUICK_CONTROLS_ENABLED_KEY = booleanPreferencesKey("quick_controls_enabled")
         private val CONTROLS_ORDER_KEY = stringPreferencesKey("controls_order")
         private val CONTROLS_DISABLED_KEY = stringPreferencesKey("controls_disabled_ids")
         private val TASKBAR_VISIBLE_KEY = booleanPreferencesKey("taskbar_visible")
@@ -185,6 +186,16 @@ class PreferencesRepository @Inject constructor(
     suspend fun setQuickControlsStripEnabled(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[QUICK_CONTROLS_STRIP_KEY] = enabled
+        }
+    }
+
+    val quickControlsEnabled: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[QUICK_CONTROLS_ENABLED_KEY] ?: true
+    }
+
+    suspend fun setQuickControlsEnabled(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[QUICK_CONTROLS_ENABLED_KEY] = enabled
         }
     }
 

@@ -43,17 +43,12 @@ import com.taskbar.app.viewmodel.QuickControlsState
 @Composable
 fun QuickControls(
     state: QuickControlsState,
-    onToggleTorch: () -> Unit,
-    onCycleRingerMode: () -> Unit,
-    onToggleAutoRotate: () -> Unit,
-    onToggleAutoBrightness: () -> Unit,
-    onRequestWriteSettings: () -> Unit,
-    onToggleDnd: () -> Unit,
-    onRequestDndPermission: () -> Unit,
-    onOpenQrScanner: () -> Unit,
-    onShowPowerMenu: () -> Unit,
+    onAction: (String) -> Unit,
+    order: List<String> = com.taskbar.app.data.PreferencesRepository.ALL_CONTROL_IDS,
+    disabledIds: Set<String> = emptySet(),
     modifier: Modifier = Modifier
 ) {
+    val items = state.toItems(order, disabledIds)
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
@@ -61,80 +56,12 @@ fun QuickControls(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        if (state.hasTorch) {
+        items.forEach { item ->
             QuickControlTile(
-                icon = if (state.torchOn) Icons.Filled.FlashlightOn else Icons.Filled.FlashlightOff,
-                label = "Torch",
-                active = state.torchOn,
-                onClick = onToggleTorch
-            )
-        }
-
-        val ringerIcon = when (state.ringerMode) {
-            AudioManager.RINGER_MODE_NORMAL -> Icons.AutoMirrored.Filled.VolumeUp
-            AudioManager.RINGER_MODE_VIBRATE -> Icons.Filled.Vibration
-            else -> Icons.AutoMirrored.Filled.VolumeOff
-        }
-        val ringerLabel = when (state.ringerMode) {
-            AudioManager.RINGER_MODE_NORMAL -> "Ring"
-            AudioManager.RINGER_MODE_VIBRATE -> "Vibrate"
-            else -> "Silent"
-        }
-        QuickControlTile(
-            icon = ringerIcon,
-            label = ringerLabel,
-            active = state.ringerMode == AudioManager.RINGER_MODE_NORMAL,
-            onClick = onCycleRingerMode
-        )
-
-        if (!state.canWriteSettings) {
-            QuickControlTile(
-                icon = Icons.Filled.ScreenRotation,
-                label = "Rotate",
-                active = false,
-                onClick = onRequestWriteSettings
-            )
-            QuickControlTile(
-                icon = Icons.Filled.BrightnessAuto,
-                label = "Bright",
-                active = false,
-                onClick = onRequestWriteSettings
-            )
-        } else {
-            QuickControlTile(
-                icon = if (state.autoRotate) Icons.Filled.ScreenRotation else Icons.Filled.ScreenRotationAlt,
-                label = "Rotate",
-                active = state.autoRotate,
-                onClick = onToggleAutoRotate
-            )
-            QuickControlTile(
-                icon = if (state.autoBrightness) Icons.Filled.BrightnessAuto else Icons.Filled.BrightnessHigh,
-                label = "Bright",
-                active = state.autoBrightness,
-                onClick = onToggleAutoBrightness
-            )
-        }
-
-        QuickControlTile(
-            icon = if (state.dndEnabled) Icons.Filled.DoNotDisturb else Icons.Filled.DoNotDisturbOff,
-            label = "DND",
-            active = state.dndEnabled,
-            onClick = if (state.dndPermissionGranted) onToggleDnd else onRequestDndPermission
-        )
-
-        QuickControlTile(
-            icon = Icons.Filled.QrCodeScanner,
-            label = "QR",
-            active = false,
-            onClick = onOpenQrScanner
-        )
-
-        if (state.canShowPowerMenu) {
-            QuickControlTile(
-                icon = Icons.Filled.PowerSettingsNew,
-                label = "Power",
-                active = false,
-                onClick = onShowPowerMenu
+                icon = item.icon,
+                label = item.label,
+                active = item.active,
+                onClick = { onAction(item.id) }
             )
         }
     }

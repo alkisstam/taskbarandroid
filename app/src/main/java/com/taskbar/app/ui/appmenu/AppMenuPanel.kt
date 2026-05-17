@@ -1,8 +1,5 @@
 package com.taskbar.app.ui.appmenu
 
-import android.content.Intent
-import android.net.Uri
-import android.provider.Settings
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
@@ -30,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.taskbar.app.viewmodel.AppMenuViewModel
 import com.taskbar.app.viewmodel.TaskbarViewModel
@@ -47,9 +43,11 @@ fun AppMenuPanel(
     val pinnedPackages by viewModel.pinnedPackages.collectAsState()
     val quickControls by viewModel.quickControlsState.collectAsState()
     val stripEnabled by taskbarViewModel.quickControlsStripEnabled.collectAsState()
+    val quickControlsEnabled by taskbarViewModel.quickControlsEnabled.collectAsState()
+    val controlsOrder by taskbarViewModel.controlsOrder.collectAsState()
+    val controlsDisabledIds by taskbarViewModel.controlsDisabledIds.collectAsState()
     val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
     val panelColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
-    val context = LocalContext.current
 
     AnimatedVisibility(
         visible = menuVisible,
@@ -114,38 +112,25 @@ fun AppMenuPanel(
                         .fillMaxWidth()
                         .height(320.dp)
                 ) {
+                    val showControlsColumn = quickControlsEnabled && !stripEnabled
                     AppGrid(
                         apps = apps,
                         pinnedPackages = pinnedPackages,
                         onLaunchApp = { pkg -> viewModel.launchApp(pkg); onHideTaskbar() },
                         onPinApp = viewModel::pinApp,
                         onUnpinApp = viewModel::unpinApp,
-                        modifier = if (stripEnabled) Modifier.weight(1f) else Modifier.weight(0.8f)
+                        modifier = if (showControlsColumn) Modifier.weight(0.8f) else Modifier.weight(1f)
                     )
 
-                    if (!stripEnabled) {
+                    if (showControlsColumn) {
                         QuickControls(
                             state = quickControls,
-                            onToggleTorch = viewModel::toggleTorch,
-                            onCycleRingerMode = viewModel::cycleRingerMode,
-                            onToggleAutoRotate = viewModel::toggleAutoRotate,
-                            onToggleAutoBrightness = viewModel::toggleAutoBrightness,
-                            onRequestWriteSettings = {
-                                val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
-                                    data = Uri.parse("package:${context.packageName}")
-                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                }
-                                context.startActivity(intent)
+                            order = controlsOrder,
+                            disabledIds = controlsDisabledIds,
+                            onAction = { id ->
+                                viewModel.handleQuickControlAction(id)
+                                if (id == "qr" || id == "power") onHideTaskbar()
                             },
-                            onToggleDnd = viewModel::toggleDnd,
-                            onRequestDndPermission = {
-                                val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS).apply {
-                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                }
-                                context.startActivity(intent)
-                            },
-                            onOpenQrScanner = { viewModel.openQrScanner(); onHideTaskbar() },
-                            onShowPowerMenu = { viewModel.showPowerMenu(); onHideTaskbar() },
                             modifier = Modifier.weight(0.2f)
                         )
                     }
