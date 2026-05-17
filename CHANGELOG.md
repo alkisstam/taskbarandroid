@@ -4,6 +4,19 @@ All notable changes to TaskBar are documented here.
 
 ---
 
+## [1.0.9] - 2026-05-17
+
+### Changed
+- **Brightness tile merged with Auto-Brightness** — the separate *Auto-Bright* tile is removed. The brightness slider panel now has a tappable icon at the top of the slider that toggles auto-brightness on/off. The icon shows `BrightnessAuto` (primary-tinted, highlighted) when auto is on and `BrightnessHigh` (muted) when manual; the slider track dims to 40 % opacity while auto-brightness is active. Dragging the slider while auto is on automatically switches the device to manual mode.
+
+### Fixed
+- **Brightness slider stutters on drag** — `localCurrent` state was keyed on `brightnessLevel`, so every `onBrightnessChange` callback triggered a `remember` re-evaluation that snapped `localCurrent` back mid-drag. Fixed by using a stable key (no key), matching the `VolumeSliderColumn` pattern.
+- **`userPresentReceiver` registered on every `onStartCommand` call** — with `START_STICKY` the service can be restarted, calling `onStartCommand` again and adding a second registration of the same receiver with no guard. The receiver was also redundant: `lockscreenReceiver` already handles `ACTION_USER_PRESENT` via `showOverlay()`. Removed `userPresentReceiver` entirely.
+- **`setBrightness` triggered brightness-mode content observer on every drag tick** — the method unconditionally wrote `SCREEN_BRIGHTNESS_MODE_MANUAL` before each brightness write. When the device was already in manual mode this was a no-op value-wise, but some Android builds still notify observers on the write. Fixed by only writing the mode when transitioning from auto.
+- **`finalize()` used for resource cleanup in `@Singleton` classes** — `AppRepository` and `QuickControlsRepository` defined `finalize()` as a fallback to call `cleanup()`. Hilt keeps a strong reference to `@Singleton` objects for the entire process lifetime, so `finalize()` is never invoked in practice. Removed; `cleanup()` must be called from an explicit lifecycle hook.
+
+---
+
 ## [1.0.8] - 2026-05-17
 
 ### Added
