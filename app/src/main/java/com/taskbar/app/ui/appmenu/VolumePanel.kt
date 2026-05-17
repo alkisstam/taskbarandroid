@@ -24,10 +24,6 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -75,43 +71,38 @@ private fun VolumeSliderColumn(
     stream: VolumeStreamInfo,
     onVolumeChange: (Int) -> Unit
 ) {
-    var localValue by remember(stream.current) { mutableFloatStateOf(stream.current.toFloat()) }
-
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(6.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Box(
             modifier = Modifier
-                .width(52.dp)
-                .height(160.dp),
+                .size(32.dp)
+                .background(
+                    MaterialTheme.colorScheme.surfaceVariant,
+                    RoundedCornerShape(8.dp)
+                ),
             contentAlignment = Alignment.Center
         ) {
-            Box(
-                modifier = Modifier
-                    .size(28.dp)
-                    .background(
-                        MaterialTheme.colorScheme.surfaceVariant,
-                        RoundedCornerShape(8.dp)
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = stream.icon,
-                    contentDescription = stream.label,
-                    modifier = Modifier.size(18.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+            Icon(
+                imageVector = stream.icon,
+                contentDescription = stream.label,
+                modifier = Modifier.size(18.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        Box(
+            modifier = Modifier
+                .width(52.dp)
+                .height(140.dp),
+            contentAlignment = Alignment.Center
+        ) {
             Slider(
-                value = localValue,
-                onValueChange = { v ->
-                    localValue = v
-                    onVolumeChange(v.toInt())
-                },
+                value = stream.current.toFloat(),
+                onValueChange = { v -> onVolumeChange(v.toInt()) },
                 valueRange = 0f..stream.max.toFloat(),
                 modifier = Modifier
-                    .requiredWidth(160.dp)
+                    .requiredWidth(140.dp)
                     .rotate(-90f),
                 colors = SliderDefaults.colors(
                     thumbColor = MaterialTheme.colorScheme.primary,

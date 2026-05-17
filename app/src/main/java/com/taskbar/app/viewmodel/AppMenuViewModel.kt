@@ -82,20 +82,27 @@ class AppMenuViewModel @Inject constructor(
 
     private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
+    private val _volumeStreams = MutableStateFlow<List<VolumeStreamInfo>>(emptyList())
+    val volumeStreams: StateFlow<List<VolumeStreamInfo>> = _volumeStreams.asStateFlow()
+
+    private fun refreshVolumeStreams() {
+        _volumeStreams.value = buildVolumeStreams(audioManager, _quickControlsState.value.ringerMode)
+    }
+
     fun toggleVolumePanel() {
-        _volumePanelVisible.value = !_volumePanelVisible.value
+        val nowVisible = !_volumePanelVisible.value
+        if (nowVisible) refreshVolumeStreams()
+        _volumePanelVisible.value = nowVisible
     }
 
     fun dismissVolumePanel() {
         _volumePanelVisible.value = false
     }
 
-    fun getVolumeStreams(): List<VolumeStreamInfo> =
-        buildVolumeStreams(audioManager, _quickControlsState.value.ringerMode)
-
     fun setStreamVolume(streamType: Int, value: Int) {
         try {
             audioManager.setStreamVolume(streamType, value, 0)
+            refreshVolumeStreams()
         } catch (e: Exception) {
             Log.w(TAG, "Failed to set stream volume", e)
         }

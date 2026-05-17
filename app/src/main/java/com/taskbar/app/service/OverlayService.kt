@@ -822,9 +822,10 @@ private fun VolumePanelContent(
     appMenuViewModel: AppMenuViewModel
 ) {
     val themeMode by taskbarViewModel.themeMode.collectAsState()
+    val streams by appMenuViewModel.volumeStreams.collectAsState()
     TaskBarTheme(themeMode = themeMode) {
         com.taskbar.app.ui.appmenu.VolumePanel(
-            streams = appMenuViewModel.getVolumeStreams(),
+            streams = streams,
             onVolumeChange = { streamType, value ->
                 appMenuViewModel.setStreamVolume(streamType, value)
             }
