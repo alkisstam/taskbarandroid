@@ -68,6 +68,12 @@ class TaskbarViewModel @Inject constructor(
     val quickControlsStripEnabled: StateFlow<Boolean> = prefsRepository.quickControlsStripEnabled
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
+    val controlsOrder: StateFlow<List<String>> = prefsRepository.controlsOrder
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), com.taskbar.app.data.PreferencesRepository.ALL_CONTROL_IDS)
+
+    val controlsDisabledIds: StateFlow<Set<String>> = prefsRepository.controlsDisabledIds
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet())
+
     val surfaceTintColor: StateFlow<Long> = prefsRepository.surfaceTintColor
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0L)
 
@@ -192,6 +198,18 @@ class TaskbarViewModel @Inject constructor(
     fun setQuickControlsStripEnabled(enabled: Boolean) {
         viewModelScope.launch {
             prefsRepository.setQuickControlsStripEnabled(enabled)
+        }
+    }
+
+    fun saveControlsOrder(order: List<String>) {
+        viewModelScope.launch {
+            prefsRepository.saveControlsOrder(order)
+        }
+    }
+
+    fun saveControlsDisabledIds(ids: Set<String>) {
+        viewModelScope.launch {
+            prefsRepository.saveControlsDisabledIds(ids)
         }
     }
 

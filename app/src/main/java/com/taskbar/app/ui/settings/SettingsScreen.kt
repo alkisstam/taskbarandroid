@@ -29,13 +29,21 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.BrightnessHigh
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.DoNotDisturbOff
+import androidx.compose.material.icons.filled.DragHandle
+import androidx.compose.material.icons.filled.FlashlightOn
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.PowerSettingsNew
+import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.ScreenRotationAlt
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Switch
@@ -56,6 +64,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.border
@@ -82,7 +91,7 @@ fun SettingsScreen(
     modifier: Modifier = Modifier
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
-    val tabs = listOf("General", "Pinned Apps", "Design")
+    val tabs = listOf("General", "Pinned Apps", "Controls", "Design")
 
     Scaffold(
         topBar = {
@@ -119,7 +128,8 @@ fun SettingsScreen(
                     onRequestAccessibilityPermission = onRequestAccessibilityPermission
                 )
                 1 -> PinnedAppsTab(viewModel = viewModel)
-                2 -> PillSettingsScreen(viewModel = viewModel)
+                2 -> ControlsTab(viewModel = viewModel)
+                3 -> PillSettingsScreen(viewModel = viewModel)
             }
         }
     }
@@ -138,7 +148,6 @@ private fun GeneralTab(
     val surfaceTintColor by viewModel.surfaceTintColor.collectAsState()
     val autoHideInFullscreen by viewModel.autoHideInFullscreen.collectAsState()
     val autoHideInLandscape by viewModel.autoHideInLandscape.collectAsState()
-    val quickControlsStripEnabled by viewModel.quickControlsStripEnabled.collectAsState()
     val context = LocalContext.current
 
     Column(
@@ -261,24 +270,6 @@ private fun GeneralTab(
                 Switch(
                     checked = autoHideInLandscape,
                     onCheckedChange = { viewModel.setAutoHideInLandscape(it) }
-                )
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text("Quick Controls Strip", style = MaterialTheme.typography.bodyLarge)
-                    Text(
-                        "Show a quick controls bar above the taskbar",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                Switch(
-                    checked = quickControlsStripEnabled,
-                    onCheckedChange = { viewModel.setQuickControlsStripEnabled(it) }
                 )
             }
         }
@@ -488,6 +479,184 @@ private fun AllAppGridItem(
             textAlign = androidx.compose.ui.text.style.TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
+    }
+}
+
+@Composable
+private fun ControlsTab(viewModel: TaskbarViewModel) {
+    val quickControlsStripEnabled by viewModel.quickControlsStripEnabled.collectAsState()
+    val controlsOrder by viewModel.controlsOrder.collectAsState()
+    val controlsDisabledIds by viewModel.controlsDisabledIds.collectAsState()
+
+    val controlMeta = remember {
+        listOf(
+            Triple("torch",      "Torch",      Icons.Filled.FlashlightOn),
+            Triple("ringer",     "Ringer",     Icons.AutoMirrored.Filled.VolumeUp),
+            Triple("rotate",     "Rotate",     Icons.Filled.ScreenRotationAlt),
+            Triple("brightness", "Brightness", Icons.Filled.BrightnessHigh),
+            Triple("dnd",        "DND",        Icons.Filled.DoNotDisturbOff),
+            Triple("qr",         "QR",         Icons.Filled.QrCodeScanner),
+            Triple("power",      "Power",      Icons.Filled.PowerSettingsNew),
+            Triple("volume",     "Volume",     Icons.Filled.Tune)
+        )
+    }
+    val metaMap = remember(controlMeta) { controlMeta.associateBy { it.first } }
+
+    val activeIds = remember(controlsOrder, controlsDisabledIds) {
+        controlsOrder.filter { it !in controlsDisabledIds }
+    }
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        item {
+            SettingsCard(title = "Quick Controls Strip") {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text("Enable Controls Strip", style = MaterialTheme.typography.bodyLarge)
+                        Text(
+                            "Show quick controls above the taskbar",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Switch(
+                        checked = quickControlsStripEnabled,
+                        onCheckedChange = { viewModel.setQuickControlsStripEnabled(it) }
+                    )
+                }
+            }
+        }
+
+        item {
+            SettingsCard(title = "Active Controls (long-press to reorder)") {
+                if (activeIds.isEmpty()) {
+                    Text(
+                        "No controls enabled. Enable some below.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                } else {
+                    val lazyListState = rememberLazyListState()
+                    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
+                    val reorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
+                        val newOrder = controlsOrder.toMutableList()
+                        val fromId = activeIds[from.index]
+                        val toId = activeIds[to.index]
+                        val fromGlobal = newOrder.indexOf(fromId)
+                        val toGlobal = newOrder.indexOf(toId)
+                        if (fromGlobal >= 0 && toGlobal >= 0) {
+                            newOrder.add(toGlobal, newOrder.removeAt(fromGlobal))
+                            viewModel.saveControlsOrder(newOrder)
+                        }
+                    }
+                    LazyColumn(
+                        state = lazyListState,
+                        modifier = Modifier.height((activeIds.size * 56).dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        userScrollEnabled = false
+                    ) {
+                        items(activeIds, key = { it }) { id ->
+                            ReorderableItem(reorderableState, key = id) { isDragging ->
+                                val meta = metaMap[id] ?: return@ReorderableItem
+                                val label = meta.second
+                                val icon = meta.third
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(
+                                            if (isDragging) MaterialTheme.colorScheme.primaryContainer
+                                            else MaterialTheme.colorScheme.surface,
+                                            RoundedCornerShape(8.dp)
+                                        )
+                                        .padding(horizontal = 8.dp, vertical = 10.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = icon,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(20.dp),
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                    Text(
+                                        label,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    Icon(
+                                        imageVector = Icons.Filled.DragHandle,
+                                        contentDescription = "Drag to reorder",
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier
+                                            .size(20.dp)
+                                            .longPressDraggableHandle(
+                                                onDragStarted = {
+                                                    haptic.performHapticFeedback(
+                                                        androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress
+                                                    )
+                                                }
+                                            )
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        item {
+            SettingsCard(title = "Available Controls") {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    controlMeta.forEach { meta ->
+                        val id = meta.first
+                        val label = meta.second
+                        val icon = meta.third
+                        val enabled = id !in controlsDisabledIds
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Icon(
+                                imageVector = icon,
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp),
+                                tint = if (enabled) MaterialTheme.colorScheme.primary
+                                       else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                label,
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.weight(1f)
+                            )
+                            Switch(
+                                checked = enabled,
+                                onCheckedChange = { checked ->
+                                    val newDisabled = controlsDisabledIds.toMutableSet()
+                                    if (checked) {
+                                        newDisabled.remove(id)
+                                        if (id !in controlsOrder) {
+                                            viewModel.saveControlsOrder(controlsOrder + id)
+                                        }
+                                    } else {
+                                        newDisabled.add(id)
+                                    }
+                                    viewModel.saveControlsDisabledIds(newDisabled)
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

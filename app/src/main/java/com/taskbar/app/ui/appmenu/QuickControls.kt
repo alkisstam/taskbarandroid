@@ -140,12 +140,10 @@ fun QuickControls(
     }
 }
 
-fun QuickControlsState.toItems(): List<QuickControlItemData> {
-    val list = mutableListOf<QuickControlItemData>()
-    if (hasTorch) list += QuickControlItemData(
-        id = "torch", label = "Torch", active = torchOn,
-        icon = if (torchOn) Icons.Filled.FlashlightOn else Icons.Filled.FlashlightOff
-    )
+fun QuickControlsState.toItems(
+    order: List<String> = com.taskbar.app.data.PreferencesRepository.ALL_CONTROL_IDS,
+    disabledIds: Set<String> = emptySet()
+): List<QuickControlItemData> {
     val ringerIcon = when (ringerMode) {
         AudioManager.RINGER_MODE_NORMAL -> Icons.AutoMirrored.Filled.VolumeUp
         AudioManager.RINGER_MODE_VIBRATE -> Icons.Filled.Vibration
@@ -156,25 +154,28 @@ fun QuickControlsState.toItems(): List<QuickControlItemData> {
         AudioManager.RINGER_MODE_VIBRATE -> "Vibrate"
         else -> "Silent"
     }
-    list += QuickControlItemData(id = "ringer", label = ringerLabel, active = ringerMode == AudioManager.RINGER_MODE_NORMAL, icon = ringerIcon)
-    list += QuickControlItemData(
-        id = "rotate", label = "Rotate",
-        active = canWriteSettings && autoRotate,
-        icon = if (autoRotate) Icons.Filled.ScreenRotation else Icons.Filled.ScreenRotationAlt
+    val all = mapOf(
+        "torch" to QuickControlItemData(id = "torch", label = "Torch", active = torchOn,
+            icon = if (torchOn) Icons.Filled.FlashlightOn else Icons.Filled.FlashlightOff),
+        "ringer" to QuickControlItemData(id = "ringer", label = ringerLabel,
+            active = ringerMode == AudioManager.RINGER_MODE_NORMAL, icon = ringerIcon),
+        "rotate" to QuickControlItemData(id = "rotate", label = "Rotate",
+            active = canWriteSettings && autoRotate,
+            icon = if (autoRotate) Icons.Filled.ScreenRotation else Icons.Filled.ScreenRotationAlt),
+        "brightness" to QuickControlItemData(id = "brightness", label = "Bright",
+            active = canWriteSettings && autoBrightness,
+            icon = if (autoBrightness) Icons.Filled.BrightnessAuto else Icons.Filled.BrightnessHigh),
+        "dnd" to QuickControlItemData(id = "dnd", label = "DND", active = dndEnabled,
+            icon = if (dndEnabled) Icons.Filled.DoNotDisturb else Icons.Filled.DoNotDisturbOff),
+        "qr" to QuickControlItemData(id = "qr", label = "QR", active = false, icon = Icons.Filled.QrCodeScanner),
+        "power" to QuickControlItemData(id = "power", label = "Power", active = false, icon = Icons.Filled.PowerSettingsNew),
+        "volume" to QuickControlItemData(id = "volume", label = "Volume", active = false, icon = Icons.Filled.Tune)
     )
-    list += QuickControlItemData(
-        id = "brightness", label = "Bright",
-        active = canWriteSettings && autoBrightness,
-        icon = if (autoBrightness) Icons.Filled.BrightnessAuto else Icons.Filled.BrightnessHigh
-    )
-    list += QuickControlItemData(
-        id = "dnd", label = "DND", active = dndEnabled,
-        icon = if (dndEnabled) Icons.Filled.DoNotDisturb else Icons.Filled.DoNotDisturbOff
-    )
-    list += QuickControlItemData(id = "qr", label = "QR", active = false, icon = Icons.Filled.QrCodeScanner)
-    if (canShowPowerMenu) list += QuickControlItemData(id = "power", label = "Power", active = false, icon = Icons.Filled.PowerSettingsNew)
-    list += QuickControlItemData(id = "volume", label = "Volume", active = false, icon = Icons.Filled.Tune)
-    return list
+    val effectiveOrder = order.ifEmpty { com.taskbar.app.data.PreferencesRepository.ALL_CONTROL_IDS }
+    return effectiveOrder
+        .filter { id -> id !in disabledIds }
+        .filter { id -> id != "power" || canShowPowerMenu }
+        .mapNotNull { id -> all[id] }
 }
 
 @Composable

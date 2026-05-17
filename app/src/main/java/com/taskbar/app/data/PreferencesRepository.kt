@@ -60,8 +60,17 @@ class PreferencesRepository @Inject constructor(
         private val AUTO_HIDE_FULLSCREEN_KEY = booleanPreferencesKey("auto_hide_fullscreen")
         private val AUTO_HIDE_LANDSCAPE_KEY = booleanPreferencesKey("auto_hide_landscape")
         private val QUICK_CONTROLS_STRIP_KEY = booleanPreferencesKey("quick_controls_strip")
+        private val CONTROLS_ORDER_KEY = stringPreferencesKey("controls_order")
+        private val CONTROLS_DISABLED_KEY = stringPreferencesKey("controls_disabled_ids")
         private val TASKBAR_VISIBLE_KEY = booleanPreferencesKey("taskbar_visible")
         private val ONBOARDING_COMPLETE_KEY = booleanPreferencesKey("onboarding_complete")
+
+        val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness", "dnd", "qr", "power", "volume")
+
+        private fun serializeStringList(list: List<String>): String = JSONArray(list).toString()
+        private fun deserializeStringList(stored: String): List<String> =
+            try { val a = JSONArray(stored); List(a.length()) { a.getString(it) } }
+            catch (e: JSONException) { emptyList() }
 
         private fun serializePinnedApps(packages: List<String>): String =
             JSONArray(packages).toString()
@@ -225,6 +234,31 @@ class PreferencesRepository @Inject constructor(
     suspend fun setTaskbarVisible(visible: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[TASKBAR_VISIBLE_KEY] = visible
+        }
+    }
+
+    val controlsOrder: Flow<List<String>> = context.dataStore.data.map { prefs ->
+        prefs[CONTROLS_ORDER_KEY]
+            ?.let { deserializeStringList(it) }
+            ?.takeIf { it.isNotEmpty() }
+            ?: ALL_CONTROL_IDS
+    }
+
+    suspend fun saveControlsOrder(order: List<String>) {
+        context.dataStore.edit { prefs ->
+            prefs[CONTROLS_ORDER_KEY] = serializeStringList(order)
+        }
+    }
+
+    val controlsDisabledIds: Flow<Set<String>> = context.dataStore.data.map { prefs ->
+        prefs[CONTROLS_DISABLED_KEY]
+            ?.let { deserializeStringList(it).toSet() }
+            ?: emptySet()
+    }
+
+    suspend fun saveControlsDisabledIds(ids: Set<String>) {
+        context.dataStore.edit { prefs ->
+            prefs[CONTROLS_DISABLED_KEY] = serializeStringList(ids.toList())
         }
     }
 
