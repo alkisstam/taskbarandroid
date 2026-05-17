@@ -2,16 +2,13 @@ package com.taskbar.app.ui.appmenu
 
 import android.media.AudioManager
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,6 +19,8 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,10 +30,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.dp
 
 data class VolumeStreamInfo(
@@ -78,8 +75,7 @@ private fun VolumeSliderColumn(
     stream: VolumeStreamInfo,
     onVolumeChange: (Int) -> Unit
 ) {
-    var trackHeightPx by remember { mutableFloatStateOf(1f) }
-    val fraction = if (stream.max > 0) stream.current.toFloat() / stream.max else 0f
+    var localValue by remember(stream.current) { mutableFloatStateOf(stream.current.toFloat()) }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -87,35 +83,15 @@ private fun VolumeSliderColumn(
     ) {
         Box(
             modifier = Modifier
-                .width(48.dp)
-                .height(160.dp)
-                .clip(RoundedCornerShape(24.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant)
-                .onSizeChanged { trackHeightPx = it.height.toFloat() }
-                .pointerInput(stream.max) {
-                    detectVerticalDragGestures { _, dragAmount ->
-                        val delta = -(dragAmount / trackHeightPx) * stream.max
-                        val newVal = (stream.current + delta).toInt().coerceIn(0, stream.max)
-                        onVolumeChange(newVal)
-                    }
-                },
-            contentAlignment = Alignment.BottomCenter
+                .width(52.dp)
+                .height(160.dp),
+            contentAlignment = Alignment.Center
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(fraction)
-                    .background(
-                        MaterialTheme.colorScheme.primary,
-                        RoundedCornerShape(24.dp)
-                    )
-            )
-            Box(
-                modifier = Modifier
-                    .padding(bottom = 8.dp)
                     .size(28.dp)
                     .background(
-                        MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
+                        MaterialTheme.colorScheme.surfaceVariant,
                         RoundedCornerShape(8.dp)
                     ),
                 contentAlignment = Alignment.Center
@@ -124,9 +100,25 @@ private fun VolumeSliderColumn(
                     imageVector = stream.icon,
                     contentDescription = stream.label,
                     modifier = Modifier.size(18.dp),
-                    tint = MaterialTheme.colorScheme.onSurface
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+            Slider(
+                value = localValue,
+                onValueChange = { v ->
+                    localValue = v
+                    onVolumeChange(v.toInt())
+                },
+                valueRange = 0f..stream.max.toFloat(),
+                modifier = Modifier
+                    .requiredWidth(160.dp)
+                    .rotate(-90f),
+                colors = SliderDefaults.colors(
+                    thumbColor = MaterialTheme.colorScheme.primary,
+                    activeTrackColor = MaterialTheme.colorScheme.primary,
+                    inactiveTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                )
+            )
         }
         Text(
             text = stream.label,

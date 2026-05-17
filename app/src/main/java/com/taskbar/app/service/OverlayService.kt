@@ -100,6 +100,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private var searchView: View? = null
     private var quickStripView: View? = null
     private var volumePanelView: View? = null
+    private var volumeScrimView: View? = null
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var observersStarted = false
 
@@ -246,6 +247,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         addPillView()
         addSearchView()
         addQuickStripView()
+        addVolumeScrimView()
         addVolumePanelView()
         if (!observersStarted) {
             observersStarted = true
@@ -550,8 +552,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private fun volumePanelLayoutParams(yOffsetDp: Float): WindowManager.LayoutParams {
         val usingAccessibility = TaskBarAccessibilityService.isRunning()
-        val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+        val flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                 (if (usingAccessibility) WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS else 0)
         val density = resources.displayMetrics.density
@@ -564,6 +565,38 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         ).apply {
             gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
             y = (yOffsetDp * density).toInt()
+        }
+    }
+
+    private fun volumeScrimLayoutParams(): WindowManager.LayoutParams {
+        val usingAccessibility = TaskBarAccessibilityService.isRunning()
+        val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                (if (usingAccessibility) WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS else 0)
+        return WindowManager.LayoutParams(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.MATCH_PARENT,
+            overlayWindowType,
+            flags,
+            PixelFormat.TRANSLUCENT
+        ).apply {
+            gravity = Gravity.TOP or Gravity.START
+        }
+    }
+
+    private fun addVolumeScrimView() {
+        if (volumeScrimView != null) return
+        try {
+            val view = android.view.View(this).apply {
+                setBackgroundColor(android.graphics.Color.TRANSPARENT)
+                setOnClickListener { appMenuViewModel.dismissVolumePanel() }
+            }
+            view.visibility = View.GONE
+            volumeScrimView = view
+            windowManager.addView(view, volumeScrimLayoutParams())
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to add volume scrim view", e)
+            volumeScrimView = null
         }
     }
 
@@ -595,6 +628,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private fun observeVolumePanelVisibility() {
         serviceScope.launch {
             appMenuViewModel.volumePanelVisible.collect { visible ->
+                volumeScrimView?.visibility = if (visible) View.VISIBLE else View.GONE
                 volumePanelView?.visibility = if (visible) View.VISIBLE else View.GONE
                 if (visible) {
                     val view = volumePanelView ?: return@collect
@@ -643,6 +677,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         volumePanelView?.let {
             try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove volume panel view", e) }
             volumePanelView = null
+        }
+        volumeScrimView?.let {
+            try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove volume scrim view", e) }
+            volumeScrimView = null
         }
     }
 
