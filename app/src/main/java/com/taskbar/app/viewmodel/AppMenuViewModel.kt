@@ -86,7 +86,7 @@ class AppMenuViewModel @Inject constructor(
     val volumeStreams: StateFlow<List<VolumeStreamInfo>> = _volumeStreams.asStateFlow()
 
     private fun refreshVolumeStreams() {
-        _volumeStreams.value = buildVolumeStreams(audioManager, _quickControlsState.value.ringerMode)
+        _volumeStreams.value = buildVolumeStreams(audioManager)
     }
 
     fun toggleVolumePanel() {

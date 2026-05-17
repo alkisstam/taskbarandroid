@@ -30,6 +30,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -80,9 +81,11 @@ private fun VolumeSliderColumn(
     onVolumeChange: (Int) -> Unit
 ) {
     var trackHeightPx by remember { mutableFloatStateOf(1f) }
-    // Local current tracks volume immediately on drag; SideEffect syncs external changes.
+    var isDragging by remember { mutableStateOf(false) }
     var localCurrent by remember(stream.streamType) { mutableIntStateOf(stream.current) }
-    SideEffect { localCurrent = stream.current }
+    // Only sync from ViewModel when not dragging; syncing mid-drag resets localCurrent
+    // if the AudioManager hasn't flushed the write yet (returns the old value).
+    SideEffect { if (!isDragging) localCurrent = stream.current }
     val fraction = if (stream.max > 0) localCurrent.toFloat() / stream.max else 0f
     var dragAccumulator by remember(stream.streamType) { mutableFloatStateOf(0f) }
     val draggableState = rememberDraggableState { delta ->
@@ -122,17 +125,18 @@ private fun VolumeSliderColumn(
         }
         Box(
             modifier = Modifier
-                .width(44.dp)
+                .width(40.dp)
                 .height(140.dp)
                 .background(
                     MaterialTheme.colorScheme.surfaceVariant,
-                    RoundedCornerShape(22.dp)
+                    RoundedCornerShape(20.dp)
                 )
                 .onSizeChanged { trackHeightPx = it.height.toFloat() }
                 .draggable(
                     state = draggableState,
                     orientation = Orientation.Vertical,
-                    onDragStarted = { dragAccumulator = 0f }
+                    onDragStarted = { isDragging = true; dragAccumulator = 0f },
+                    onDragStopped = { isDragging = false }
                 ),
             contentAlignment = Alignment.BottomCenter
         ) {
@@ -142,7 +146,7 @@ private fun VolumeSliderColumn(
                     .fillMaxHeight(fraction)
                     .background(
                         MaterialTheme.colorScheme.primary,
-                        RoundedCornerShape(22.dp)
+                        RoundedCornerShape(20.dp)
                     )
             )
         }
@@ -154,7 +158,7 @@ private fun VolumeSliderColumn(
     }
 }
 
-fun buildVolumeStreams(audioManager: AudioManager, ringerMode: Int): List<VolumeStreamInfo> {
+fun buildVolumeStreams(audioManager: AudioManager): List<VolumeStreamInfo> {
     val streams = mutableListOf<VolumeStreamInfo>()
     streams += VolumeStreamInfo(
         streamType = AudioManager.STREAM_MUSIC,
@@ -163,15 +167,13 @@ fun buildVolumeStreams(audioManager: AudioManager, ringerMode: Int): List<Volume
         current = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC),
         max = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
     )
-    if (ringerMode == AudioManager.RINGER_MODE_NORMAL) {
-        streams += VolumeStreamInfo(
-            streamType = AudioManager.STREAM_RING,
-            label = "Ring",
-            icon = Icons.AutoMirrored.Filled.VolumeUp,
-            current = audioManager.getStreamVolume(AudioManager.STREAM_RING),
-            max = audioManager.getStreamMaxVolume(AudioManager.STREAM_RING)
-        )
-    }
+    streams += VolumeStreamInfo(
+        streamType = AudioManager.STREAM_RING,
+        label = "Ring",
+        icon = Icons.AutoMirrored.Filled.VolumeUp,
+        current = audioManager.getStreamVolume(AudioManager.STREAM_RING),
+        max = audioManager.getStreamMaxVolume(AudioManager.STREAM_RING)
+    )
     streams += VolumeStreamInfo(
         streamType = AudioManager.STREAM_NOTIFICATION,
         label = "Notif",
