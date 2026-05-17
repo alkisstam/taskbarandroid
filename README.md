@@ -111,8 +111,10 @@ viewmodel/
 - **Quick Controls master toggle**: turning it off hides both the strip and the app-menu column and greys out all Controls sub-settings
 - **Unified control list**: strip and All Apps panel column render the same controls in the same order as configured in the Controls tab
 - **Quick Controls Strip layout**: fixed 70 dp height, flexible min-width (shrinks with fewer active controls), 2 dp spacing between icons
-- **Volume panel**: refactored to a separate overlay window so it never shifts the strip; custom vertical pill-sliders with correct rounded corners; outside-tap dismiss
+- **Volume panel**: refactored to a separate overlay window so it never shifts the strip; custom vertical pill-sliders (40 dp wide) with correct rounded corners; outside-tap dismiss; Ring slider always visible regardless of ringer mode
 - Moved Quick Controls Strip toggle from General tab to Controls tab
+- Fixed volume slider locking mid-drag (stale AudioManager read resetting local state during gesture)
+- Fixed volume slider accumulator leak between drag sessions
 
 ### 1.0.7 (versionCode 8)
 - Volume quick control with 4-stream panel (Media, Ring, Notification, Alarm)
