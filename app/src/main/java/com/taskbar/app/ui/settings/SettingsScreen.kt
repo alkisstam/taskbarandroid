@@ -32,7 +32,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.BrightnessHigh
 import androidx.compose.material.icons.filled.BrightnessMedium
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -501,7 +500,6 @@ private fun ControlsTab(viewModel: TaskbarViewModel) {
             Triple("torch",      "Torch",      Icons.Filled.FlashlightOn),
             Triple("ringer",     "Ringer",     Icons.AutoMirrored.Filled.VolumeUp),
             Triple("rotate",     "Rotate",     Icons.Filled.ScreenRotationAlt),
-            Triple("brightness",        "Auto-Brightness", Icons.Filled.BrightnessHigh),
             Triple("brightness_slider",  "Brightness",      Icons.Filled.BrightnessMedium),
             Triple("dnd",               "DND",             Icons.Filled.DoNotDisturbOff),
             Triple("qr",         "QR",         Icons.Filled.QrCodeScanner),

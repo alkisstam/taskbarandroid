@@ -2,6 +2,7 @@ package com.taskbar.app.ui.appmenu
 
 import android.media.AudioManager
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Alarm
+import androidx.compose.material.icons.filled.BrightnessAuto
 import androidx.compose.material.icons.filled.BrightnessHigh
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Notifications
@@ -36,6 +38,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.dp
@@ -163,6 +167,8 @@ private fun VolumeSliderColumn(
 fun BrightnessPanel(
     brightnessLevel: Int,
     onBrightnessChange: (Int) -> Unit,
+    autoBrightnessEnabled: Boolean,
+    onAutoBrightnessToggle: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val maxBrightness = 255
@@ -206,22 +212,26 @@ fun BrightnessPanel(
                     modifier = Modifier
                         .size(32.dp)
                         .background(
-                            MaterialTheme.colorScheme.surfaceVariant,
+                            if (autoBrightnessEnabled) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                            else MaterialTheme.colorScheme.surfaceVariant,
                             RoundedCornerShape(8.dp)
-                        ),
+                        )
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable { onAutoBrightnessToggle() },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.BrightnessHigh,
-                        contentDescription = "Brightness",
+                        imageVector = if (autoBrightnessEnabled) Icons.Filled.BrightnessAuto else Icons.Filled.BrightnessHigh,
+                        contentDescription = if (autoBrightnessEnabled) "Disable auto brightness" else "Enable auto brightness",
                         modifier = Modifier.size(18.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = if (autoBrightnessEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 Box(
                     modifier = Modifier
                         .width(40.dp)
                         .height(140.dp)
+                        .alpha(if (autoBrightnessEnabled) 0.4f else 1f)
                         .background(
                             MaterialTheme.colorScheme.surfaceVariant,
                             RoundedCornerShape(20.dp)

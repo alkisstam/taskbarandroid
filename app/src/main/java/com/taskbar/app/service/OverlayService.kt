@@ -899,12 +899,13 @@ private fun BrightnessPanelContent(
 ) {
     val themeMode by taskbarViewModel.themeMode.collectAsState()
     val brightnessLevel by appMenuViewModel.brightnessLevel.collectAsState()
+    val quickControlsState by appMenuViewModel.quickControlsState.collectAsState()
     TaskBarTheme(themeMode = themeMode) {
         BrightnessPanel(
             brightnessLevel = brightnessLevel,
-            onBrightnessChange = { value ->
-                appMenuViewModel.setBrightnessLevel(value)
-            }
+            onBrightnessChange = { value -> appMenuViewModel.setBrightnessLevel(value) },
+            autoBrightnessEnabled = quickControlsState.autoBrightness,
+            onAutoBrightnessToggle = { appMenuViewModel.toggleAutoBrightness() }
         )
     }
 }

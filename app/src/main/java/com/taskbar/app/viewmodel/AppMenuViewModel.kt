@@ -287,13 +287,6 @@ class AppMenuViewModel @Inject constructor(
                 }
                 context.startActivity(intent)
             }
-            "brightness" -> if (_quickControlsState.value.canWriteSettings) toggleAutoBrightness() else {
-                val intent = android.content.Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
-                    data = android.net.Uri.parse("package:${context.packageName}")
-                    addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-                }
-                context.startActivity(intent)
-            }
             "dnd" -> if (_quickControlsState.value.dndPermissionGranted) toggleDnd() else openDndSettings()
             "qr" -> openQrScanner()
             "power" -> showPowerMenu()
