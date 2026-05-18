@@ -14,7 +14,7 @@ val keystoreProperties = Properties().apply {
 }
 
 android {
-    namespace = "com.taskbar.app"
+    namespace = "com.alkisstam.taskbar"
     compileSdk = 35
 
     signingConfigs {
@@ -27,7 +27,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.taskbar.app"
+        applicationId = "com.alkisstam.taskbar"
         minSdk = 26
         targetSdk = 35
         versionCode = 10

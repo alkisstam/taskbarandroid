@@ -7,4 +7,4 @@
     android:description="@string/accessibility_service_description"
     android:summary="@string/accessibility_service_summary"
     android:notificationTimeout="100"
-    android:settingsActivity="com.taskbar.app.MainActivity" />
+    android:settingsActivity="com.alkisstam.taskbar.MainActivity" />
