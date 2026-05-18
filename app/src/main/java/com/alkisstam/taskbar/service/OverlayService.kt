@@ -110,20 +110,12 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private val keyguardManager by lazy { getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager }
     private val handler = Handler(Looper.getMainLooper())
 
-    // True while the screen is off or the lockscreen is showing; the keyboard
-    // visibility observer must not show the overlay while this is set.
-    @Volatile private var overlayHiddenForLockscreen = false
-
-    // Set when ACTION_USER_PRESENT is received so ACTION_SCREEN_ON (which can
-    // arrive after USER_PRESENT on some devices) does not cancel the pending
-    // showOverlay() callback or replace it with an isKeyguardLocked check.
-    @Volatile private var userPresentReceived = false
-
     // After showOverlay() the lockscreen dismiss animation may still be playing.
     // The keyboard observer must not treat the shrinking lockscreen frame as a
     // keyboard during this window.
     private val OVERLAY_SHOW_GRACE_MS = 600L
     @Volatile private var overlayShowTime = 0L
+    @Volatile private var overlayHiddenForLockscreen = false
 
     private fun showOverlay() {
         overlayHiddenForLockscreen = false
@@ -131,19 +123,22 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
         // Check if views were removed from WindowManager during screen off/lock
         // and re-add them if necessary (similar to sidebar project approach)
-        if (overlayView?.windowToken == null) {
-            addOverlayView()
-        }
-        if (pillView?.windowToken == null) {
-            addPillView()
-        }
-        if (quickStripView?.windowToken == null) {
-            addQuickStripView()
-        }
+        if (overlayView?.windowToken == null) addOverlayView()
+        if (pillView?.windowToken == null) addPillView()
+        if (quickStripView?.windowToken == null) addQuickStripView()
 
         overlayView?.visibility = View.VISIBLE
         pillView?.visibility = View.VISIBLE
         restoreQuickStripVisibility()
+    }
+
+    private fun hideOverlay() {
+        overlayHiddenForLockscreen = true
+        overlayView?.visibility = View.GONE
+        pillView?.visibility = View.GONE
+        searchView?.visibility = View.GONE
+        quickStripView?.visibility = View.GONE
+        setQuickStripInteractive(false)
     }
 
     private val lockscreenReceiver = object : BroadcastReceiver() {
@@ -151,39 +146,23 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             when (intent.action) {
                 Intent.ACTION_SCREEN_OFF -> {
                     handler.removeCallbacksAndMessages(null)
-                    userPresentReceived = false
-                    overlayHiddenForLockscreen = true
-                    overlayView?.visibility = View.GONE
-                    pillView?.visibility = View.GONE
-                    searchView?.visibility = View.GONE
-                    quickStripView?.visibility = View.GONE
-                    setQuickStripInteractive(false)
+                    hideOverlay()
                 }
                 Intent.ACTION_USER_PRESENT -> {
                     // Delay matches the lockscreen dismiss animation; calling showOverlay()
                     // immediately causes the keyboard observer to see the shrinking lockscreen
                     // frame as a keyboard and transiently hide the overlay.
                     handler.removeCallbacksAndMessages(null)
-                    userPresentReceived = true
                     handler.postDelayed({ showOverlay() }, 300)
                 }
                 Intent.ACTION_SCREEN_ON -> {
-                    // Skip if ACTION_USER_PRESENT already fired — on some devices SCREEN_ON
-                    // arrives after USER_PRESENT and would cancel the pending showOverlay().
-                    if (userPresentReceived) return
                     handler.removeCallbacksAndMessages(null)
                     handler.postDelayed({
-                        if (overlayHiddenForLockscreen) {
-                            // Always restore the pill so the handle is visible on the lockscreen,
-                            // matching the AOD behaviour where SCREEN_OFF never fires.
-                            // Check if view was removed from WindowManager and re-add if needed.
-                            if (pillView?.windowToken == null) {
-                                addPillView()
-                            }
-                            pillView?.visibility = View.VISIBLE
-                            if (!keyguardManager.isKeyguardLocked) {
-                                showOverlay()
-                            }
+                        // Show pill if locked (lockscreen visible), full overlay if unlocked
+                        if (pillView?.windowToken == null) addPillView()
+                        pillView?.visibility = View.VISIBLE
+                        if (!keyguardManager.isKeyguardLocked) {
+                            showOverlay()
                         }
                     }, 300)
                 }
