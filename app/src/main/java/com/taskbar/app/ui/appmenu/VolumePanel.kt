@@ -62,7 +62,7 @@ fun VolumePanel(
         modifier = modifier,
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.surface,
-        shadowElevation = 12.dp
+        tonalElevation = 3.dp
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
@@ -131,10 +131,8 @@ private fun VolumeSliderColumn(
             modifier = Modifier
                 .width(40.dp)
                 .height(140.dp)
-                .background(
-                    MaterialTheme.colorScheme.surfaceVariant,
-                    RoundedCornerShape(20.dp)
-                )
+                .clip(RoundedCornerShape(20.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
                 .onSizeChanged { trackHeightPx = it.height.toFloat() }
                 .draggable(
                     state = draggableState,
@@ -148,10 +146,7 @@ private fun VolumeSliderColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(fraction)
-                    .background(
-                        MaterialTheme.colorScheme.primary,
-                        RoundedCornerShape(20.dp)
-                    )
+                    .background(MaterialTheme.colorScheme.primary)
             )
         }
         Text(
@@ -195,7 +190,7 @@ fun BrightnessPanel(
         modifier = modifier,
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.surface,
-        shadowElevation = 12.dp
+        tonalElevation = 3.dp
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
@@ -230,10 +225,8 @@ fun BrightnessPanel(
                         .width(40.dp)
                         .height(140.dp)
                         .alpha(if (autoBrightnessEnabled) 0.4f else 1f)
-                        .background(
-                            MaterialTheme.colorScheme.surfaceVariant,
-                            RoundedCornerShape(20.dp)
-                        )
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
                         .onSizeChanged { trackHeightPx = it.height.toFloat() }
                         .draggable(
                             state = draggableState,
@@ -247,10 +240,7 @@ fun BrightnessPanel(
                         modifier = Modifier
                             .fillMaxWidth()
                             .fillMaxHeight(fraction)
-                            .background(
-                                MaterialTheme.colorScheme.primary,
-                                RoundedCornerShape(20.dp)
-                            )
+                            .background(MaterialTheme.colorScheme.primary)
                     )
                 }
                 Text(
