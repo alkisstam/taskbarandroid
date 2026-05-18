@@ -1,6 +1,14 @@
 # Changelog
 
-All notable changes to TaskBar are documented here.
+All notable changes to Floating Dock are documented here.
+
+---
+
+## [1.1.0] - 2026-05-18
+
+### Changed
+- **App renamed to Floating Dock** — rebranded from "TaskBar" to "Floating Dock" for better distinction on app stores.
+- **Package name changed** — new package name is `com.alkisstam.taskbar` (previously `com.taskbar.app`).
 
 ---
 

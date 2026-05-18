@@ -1,8 +1,8 @@
-# TaskBar – Android
+# Floating Dock
 
-A system-overlay taskbar for Android that renders above all other apps — including the system navigation bar when the Accessibility Service is enabled.
+A system-overlay dock for Android that renders above all other apps — including the system navigation bar when the Accessibility Service is enabled.
 
-**Current version:** 1.0.8 (versionCode 9)
+**Current version:** 1.0.9 (versionCode 10)
 
 ## Features
 
@@ -14,7 +14,7 @@ A system-overlay taskbar for Android that renders above all other apps — inclu
 - **Navigation bar overlay** – enable the Accessibility Service to draw the taskbar *above* the system navigation bar
 
 ### Trigger Pill
-- **Trigger pill** – a small draggable pill that reveals the taskbar on swipe-up, swipe-down, swipe-in, or double-tap
+- **Trigger pill** – a small draggable pill that reveals the dock on swipe-up, swipe-down, swipe-in, or double-tap
   - Configurable size, opacity, and screen position
 
 ### App Menu
@@ -22,11 +22,11 @@ A system-overlay taskbar for Android that renders above all other apps — inclu
   - 3-column scrollable app grid
   - Quick Controls column: shows enabled controls in user-configured order (mirrors the strip configuration)
   - Full-screen app search
-  - Long-press any app to pin/unpin from the taskbar
+  - Long-press any app to pin/unpin from the dock
 - **Quick Controls Strip** – an always-visible horizontal row that sits directly above the taskbar; fixed 70 dp height, flexible width, 2 dp icon spacing. When the strip is enabled, the quick controls column is hidden from the app menu to avoid duplication.
 
 ### Pinned Apps
-- Launch pinned apps directly from the taskbar
+- Launch pinned apps directly from the dock
 - **Long-press shortcuts** – long-pressing a pinned app shows its launcher shortcuts (up to 4) plus an *Unpin* option
 - Manage pinned apps in *Settings → Pinned Apps* tab with drag-to-reorder and tap-to-unpin
 
@@ -63,13 +63,13 @@ A system-overlay taskbar for Android that renders above all other apps — inclu
 2. Let Gradle sync complete
 3. Run on a physical device (overlay doesn't work on emulators without extra setup)
 4. On first launch, grant **"Draw over other apps"** and optionally **"Modify system settings"**
-5. To draw above the navigation bar, enable **TaskBar Overlay** in *Settings → Accessibility*
+5. To draw above the navigation bar, enable **Floating Dock Overlay** in *Settings → Accessibility*
 
 ## Permissions
 
 | Permission | Purpose |
 |---|---|
-| `SYSTEM_ALERT_WINDOW` | Draw the taskbar above all other apps |
+| `SYSTEM_ALERT_WINDOW` | Draw the dock above all other apps |
 | `QUERY_ALL_PACKAGES` | List all installed apps |
 | `FOREGROUND_SERVICE` | Keep the overlay service alive in the background |
 | `FOREGROUND_SERVICE_SPECIAL_USE` | Required for special-use foreground service type (Android 14+) |
