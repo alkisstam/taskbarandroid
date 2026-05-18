@@ -128,6 +128,19 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private fun showOverlay() {
         overlayHiddenForLockscreen = false
         overlayShowTime = System.currentTimeMillis()
+
+        // Check if views were removed from WindowManager during screen off/lock
+        // and re-add them if necessary (similar to sidebar project approach)
+        if (overlayView?.windowToken == null) {
+            addOverlayView()
+        }
+        if (pillView?.windowToken == null) {
+            addPillView()
+        }
+        if (quickStripView?.windowToken == null) {
+            addQuickStripView()
+        }
+
         overlayView?.visibility = View.VISIBLE
         pillView?.visibility = View.VISIBLE
         restoreQuickStripVisibility()
@@ -163,6 +176,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                         if (overlayHiddenForLockscreen) {
                             // Always restore the pill so the handle is visible on the lockscreen,
                             // matching the AOD behaviour where SCREEN_OFF never fires.
+                            // Check if view was removed from WindowManager and re-add if needed.
+                            if (pillView?.windowToken == null) {
+                                addPillView()
+                            }
                             pillView?.visibility = View.VISIBLE
                             if (!keyguardManager.isKeyguardLocked) {
                                 showOverlay()
