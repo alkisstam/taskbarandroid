@@ -118,8 +118,15 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     // showOverlay() callback or replace it with an isKeyguardLocked check.
     @Volatile private var userPresentReceived = false
 
+    // After showOverlay() the lockscreen dismiss animation may still be playing.
+    // The keyboard observer must not treat the shrinking lockscreen frame as a
+    // keyboard during this window.
+    private val OVERLAY_SHOW_GRACE_MS = 600L
+    @Volatile private var overlayShowTime = 0L
+
     private fun showOverlay() {
         overlayHiddenForLockscreen = false
+        overlayShowTime = System.currentTimeMillis()
         overlayView?.visibility = View.VISIBLE
         pillView?.visibility = View.VISIBLE
         restoreQuickStripVisibility()
@@ -380,6 +387,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         val layoutListener = ViewTreeObserver.OnGlobalLayoutListener {
             val v = overlayView ?: return@OnGlobalLayoutListener
             if (overlayHiddenForLockscreen) return@OnGlobalLayoutListener
+            if (System.currentTimeMillis() - overlayShowTime < OVERLAY_SHOW_GRACE_MS) return@OnGlobalLayoutListener
             val rect = Rect()
             v.getWindowVisibleDisplayFrame(rect)
             val screenHeight = v.rootView?.height ?: return@OnGlobalLayoutListener
