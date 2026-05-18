@@ -62,7 +62,6 @@ fun VolumePanel(
         modifier = modifier,
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 6.dp,
         shadowElevation = 12.dp
     ) {
         Row(
@@ -196,7 +195,6 @@ fun BrightnessPanel(
         modifier = modifier,
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 6.dp,
         shadowElevation = 12.dp
     ) {
         Row(
