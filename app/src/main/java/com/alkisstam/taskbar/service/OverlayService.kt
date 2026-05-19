@@ -383,7 +383,20 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 if (isFullscreen) taskbarViewModel.hideTaskbar() else taskbarViewModel.showTaskbar()
             }
             if (!overlayHiddenForLockscreen) {
-                v.visibility = if (insets.isVisible(WindowInsetsCompat.Type.ime())) View.GONE else View.VISIBLE
+                if (insets.isVisible(WindowInsetsCompat.Type.ime())) {
+                    // Make non-interactive so keyboard receives touches, but keep VISIBLE.
+                    // Setting GONE would prevent the insets listener from firing on a GONE
+                    // root view, permanently losing the overlay (deadlock).
+                    setOverlayFlags(interactive = false, focusable = false)
+                } else {
+                    val menuOpen = appMenuViewModel.menuVisible.value
+                    val taskbarVisible = taskbarViewModel.isTaskbarVisible.value
+                    val searching = appMenuViewModel.isSearching.value
+                    setOverlayFlags(
+                        interactive = menuOpen || taskbarVisible,
+                        focusable = menuOpen && !searching
+                    )
+                }
             }
             insets
         }
