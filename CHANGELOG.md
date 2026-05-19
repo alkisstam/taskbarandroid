@@ -4,6 +4,19 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.1.2] - 2026-05-19
+
+### Added
+- **Search Enter-to-Launch** — Press the Enter/Go key while searching to instantly launch the top search result app.
+- **Screenshot quick control** — New control tile to take a screenshot via Accessibility Service (Android 9+). Only shown when Accessibility Service is enabled.
+- **Lock Screen quick control** — New control tile to lock the device screen via Accessibility Service (Android 9+). Only shown when Accessibility Service is enabled.
+
+### Changed
+- **Enhanced onboarding permissions** — Added optional permission requests for "Modify System Settings" (required for brightness and auto-rotate controls) and "Do Not Disturb Access" (required for DND control) during first-time setup.
+- **Accessibility Service description updated** — Now mentions screenshot and lock screen capabilities.
+
+---
+
 ## [1.1.1] - 2026-05-19
 
 ### Fixed
