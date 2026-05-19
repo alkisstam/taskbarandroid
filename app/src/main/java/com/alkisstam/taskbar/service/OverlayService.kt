@@ -117,9 +117,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
         // Check if views were removed from WindowManager during screen off/lock
         // and re-add them if necessary (similar to sidebar project approach)
-        if (overlayView?.windowToken == null) addOverlayView()
-        if (pillView?.windowToken == null) addPillView()
-        if (quickStripView?.windowToken == null) addQuickStripView()
+        // Use isAttachedToWindow for more reliable state detection than windowToken
+        if (overlayView?.isAttachedToWindow != true) addOverlayView()
+        if (pillView?.isAttachedToWindow != true) addPillView()
+        if (quickStripView?.isAttachedToWindow != true) addQuickStripView()
 
         overlayView?.visibility = View.VISIBLE
         pillView?.visibility = View.VISIBLE
@@ -149,9 +150,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     handler.removeCallbacksAndMessages(null)
                     handler.postDelayed({
                         // Ensure views are re-added if they were removed during screen off
-                        if (overlayView?.windowToken == null) addOverlayView()
-                        if (pillView?.windowToken == null) addPillView()
-                        if (quickStripView?.windowToken == null) addQuickStripView()
+                        // Use isAttachedToWindow for more reliable state detection
+                        if (overlayView?.isAttachedToWindow != true) addOverlayView()
+                        if (pillView?.isAttachedToWindow != true) addPillView()
+                        if (quickStripView?.isAttachedToWindow != true) addQuickStripView()
                         showOverlay()
                     }, 300)
                 }
@@ -159,7 +161,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     handler.removeCallbacksAndMessages(null)
                     handler.postDelayed({
                         // Show pill if locked (lockscreen visible), full overlay if unlocked
-                        if (pillView?.windowToken == null) addPillView()
+                        // Use isAttachedToWindow for more reliable state detection
+                        if (pillView?.isAttachedToWindow != true) addPillView()
                         pillView?.visibility = View.VISIBLE
                         if (!keyguardManager.isKeyguardLocked) {
                             showOverlay()
@@ -401,8 +404,11 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     val menuOpen = appMenuViewModel.menuVisible.value
                     val taskbarVisible = taskbarViewModel.isTaskbarVisible.value
                     val searching = appMenuViewModel.isSearching.value
+                    val controlsEnabled = taskbarViewModel.quickControlsEnabled.value
+                    val stripEnabled = taskbarViewModel.quickControlsStripEnabled.value
+                    val stripVisible = taskbarVisible && controlsEnabled && stripEnabled && !menuOpen && !searching
                     setOverlayFlags(
-                        interactive = menuOpen || taskbarVisible,
+                        interactive = menuOpen || taskbarVisible || stripVisible,
                         focusable = menuOpen && !searching
                     )
                 }
