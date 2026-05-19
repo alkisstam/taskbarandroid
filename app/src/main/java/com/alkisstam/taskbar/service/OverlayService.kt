@@ -20,7 +20,6 @@ import android.util.Log
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
-import android.view.ViewTreeObserver
 import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.core.view.ViewCompat
@@ -111,16 +110,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private val keyguardManager by lazy { getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager }
     private val handler = Handler(Looper.getMainLooper())
 
-    // After showOverlay() the lockscreen dismiss animation may still be playing.
-    // The keyboard observer must not treat the shrinking lockscreen frame as a
-    // keyboard during this window.
-    private val OVERLAY_SHOW_GRACE_MS = 600L
-    @Volatile private var overlayShowTime = 0L
     @Volatile private var overlayHiddenForLockscreen = false
 
     private fun showOverlay() {
         overlayHiddenForLockscreen = false
-        overlayShowTime = System.currentTimeMillis()
 
         // Check if views were removed from WindowManager during screen off/lock
         // and re-add them if necessary (similar to sidebar project approach)
@@ -373,38 +366,26 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             }
             overlayView = composeView
             windowManager.addView(composeView, overlayLayoutParams())
-            attachFullscreenObserver(composeView)
-            attachKeyboardObserver(composeView)
+            attachInsetsListener(composeView)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add overlay view", e)
             overlayView = null
         }
     }
 
-    private fun attachKeyboardObserver(view: View) {
-        // Use the IME inset type instead of the legacy frame-size heuristic.
-        // getWindowVisibleDisplayFrame() measures any shrinkage of the visible window
-        // area, which also fires during lock screen dismissal animations and nav bar
-        // transitions — causing false positives that leave the overlay permanently GONE.
-        // WindowInsetsCompat.Type.ime() only reports the actual software keyboard.
-        val layoutListener = ViewTreeObserver.OnGlobalLayoutListener {
-            val v = overlayView ?: return@OnGlobalLayoutListener
-            if (overlayHiddenForLockscreen) return@OnGlobalLayoutListener
-            if (System.currentTimeMillis() - overlayShowTime < OVERLAY_SHOW_GRACE_MS) return@OnGlobalLayoutListener
-            val imeVisible = ViewCompat.getRootWindowInsets(v)
-                ?.isVisible(WindowInsetsCompat.Type.ime()) ?: false
-            v.visibility = if (imeVisible) View.GONE else View.VISIBLE
-        }
-        view.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
-            override fun onViewAttachedToWindow(v: View) {
-                v.viewTreeObserver.addOnGlobalLayoutListener(layoutListener)
+    private fun attachInsetsListener(view: View) {
+        // ViewCompat.setOnApplyWindowInsetsListener is dispatched from ViewRootImpl even
+        // when the view is GONE, so the overlay can self-heal after the keyboard closes
+        // rather than staying stuck in GONE state (the OnGlobalLayoutListener deadlock).
+        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+            if (taskbarViewModel.autoHideInFullscreen.value) {
+                val isFullscreen = !insets.isVisible(WindowInsetsCompat.Type.statusBars())
+                if (isFullscreen) taskbarViewModel.hideTaskbar() else taskbarViewModel.showTaskbar()
             }
-            override fun onViewDetachedFromWindow(v: View) {
-                v.viewTreeObserver.removeOnGlobalLayoutListener(layoutListener)
+            if (!overlayHiddenForLockscreen) {
+                v.visibility = if (insets.isVisible(WindowInsetsCompat.Type.ime())) View.GONE else View.VISIBLE
             }
-        })
-        if (view.isAttachedToWindow) {
-            view.viewTreeObserver.addOnGlobalLayoutListener(layoutListener)
+            insets
         }
     }
 
@@ -712,24 +693,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 }
             }
         }
-    }
-
-    private var fullscreenInsetsListener: View.OnApplyWindowInsetsListener? = null
-
-    private fun attachFullscreenObserver(view: View) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return
-        fullscreenInsetsListener = View.OnApplyWindowInsetsListener { v, insets ->
-            if (taskbarViewModel.autoHideInFullscreen.value) {
-                val isFullscreen = !insets.isVisible(android.view.WindowInsets.Type.statusBars())
-                if (isFullscreen) {
-                    taskbarViewModel.hideTaskbar()
-                } else {
-                    taskbarViewModel.showTaskbar()
-                }
-            }
-            insets
-        }
-        view.setOnApplyWindowInsetsListener(fullscreenInsetsListener)
     }
 
     private fun removeOverlayView() {
