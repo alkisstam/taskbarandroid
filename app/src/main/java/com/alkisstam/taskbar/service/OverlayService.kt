@@ -254,7 +254,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         addBrightnessPanelView()
         if (!observersStarted) {
             observersStarted = true
-            observeKeyboardVisibility()
             observePillPosition()
             observeOverlayInteractivity()
             observeSearchVisibility()
@@ -357,7 +356,9 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     }
 
     private fun addOverlayView() {
-        if (overlayView != null) return
+        if (overlayView?.isAttachedToWindow == true) return
+        overlayView?.let { runCatching { windowManager.removeView(it) } }
+        overlayView = null
         try {
             val composeView = ComposeView(this).apply {
                 setViewTreeLifecycleOwner(this@OverlayService)
@@ -373,14 +374,14 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             overlayView = composeView
             windowManager.addView(composeView, overlayLayoutParams())
             attachFullscreenObserver(composeView)
+            attachKeyboardObserver(composeView)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add overlay view", e)
             overlayView = null
         }
     }
 
-    private fun observeKeyboardVisibility() {
-        val view = overlayView ?: return
+    private fun attachKeyboardObserver(view: View) {
         // Use the IME inset type instead of the legacy frame-size heuristic.
         // getWindowVisibleDisplayFrame() measures any shrinkage of the visible window
         // area, which also fires during lock screen dismissal animations and nav bar
@@ -426,7 +427,9 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     }
 
     private fun addPillView() {
-        if (pillView != null) return
+        if (pillView?.isAttachedToWindow == true) return
+        pillView?.let { runCatching { windowManager.removeView(it) } }
+        pillView = null
         try {
             val composeView = ComposeView(this).apply {
                 setViewTreeLifecycleOwner(this@OverlayService)
@@ -469,7 +472,9 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     }
 
     private fun addSearchView() {
-        if (searchView != null) return
+        if (searchView?.isAttachedToWindow == true) return
+        searchView?.let { runCatching { windowManager.removeView(it) } }
+        searchView = null
         try {
             val composeView = ComposeView(this).apply {
                 setViewTreeLifecycleOwner(this@OverlayService)
@@ -499,7 +504,9 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     }
 
     private fun addQuickStripView() {
-        if (quickStripView != null) return
+        if (quickStripView?.isAttachedToWindow == true) return
+        quickStripView?.let { runCatching { windowManager.removeView(it) } }
+        quickStripView = null
         try {
             val composeView = ComposeView(this).apply {
                 setViewTreeLifecycleOwner(this@OverlayService)
@@ -601,7 +608,9 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     }
 
     private fun addVolumeScrimView() {
-        if (volumeScrimView != null) return
+        if (volumeScrimView?.isAttachedToWindow == true) return
+        volumeScrimView?.let { runCatching { windowManager.removeView(it) } }
+        volumeScrimView = null
         try {
             val view = android.view.View(this).apply {
                 setBackgroundColor(android.graphics.Color.TRANSPARENT)
@@ -620,7 +629,9 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     }
 
     private fun addVolumePanelView() {
-        if (volumePanelView != null) return
+        if (volumePanelView?.isAttachedToWindow == true) return
+        volumePanelView?.let { runCatching { windowManager.removeView(it) } }
+        volumePanelView = null
         try {
             val initialSettings = taskbarViewModel.taskbarSettings.value
             volumePanelYOffsetDp = initialSettings.positionYDp + initialSettings.heightDp * 2 + 10f
@@ -646,7 +657,9 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     }
 
     private fun addBrightnessPanelView() {
-        if (brightnessPanelView != null) return
+        if (brightnessPanelView?.isAttachedToWindow == true) return
+        brightnessPanelView?.let { runCatching { windowManager.removeView(it) } }
+        brightnessPanelView = null
         try {
             val initialSettings = taskbarViewModel.taskbarSettings.value
             val yOffset = initialSettings.positionYDp + initialSettings.heightDp * 2 + 10f
