@@ -744,9 +744,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         serviceScope.launch {
             kotlinx.coroutines.flow.combine(
                 appMenuViewModel.mediaState,
-                taskbarViewModel.musicPanelEnabled
-            ) { state, enabled ->
-                enabled && state.isPlaying
+                taskbarViewModel.musicPanelEnabled,
+                taskbarViewModel.isTaskbarVisible
+            ) { state, enabled, taskbarVisible ->
+                enabled && state.hasSession && taskbarVisible
             }.collect { show ->
                 musicPanelView?.visibility = if (show) View.VISIBLE else View.GONE
             }
