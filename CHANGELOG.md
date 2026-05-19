@@ -4,6 +4,17 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.1.1] - 2026-05-19
+
+### Fixed
+- **Lockscreen unlock not showing taskbar** — simplified `ACTION_SCREEN_OFF` / `ACTION_SCREEN_ON` / `ACTION_USER_PRESENT` handling to match sidebar project approach. Previously setting `visibility = GONE` during screen off caused WindowManager to remove views on some Android versions; now just ensures views exist on screen-on and lets insets listener manage visibility.
+- **Quick strip not closing on outside tap** — `observeOverlayInteractivity()` and `attachInsetsListener()` now correctly include quick strip visibility in interactivity calculations.
+- **Volume/Brightness scrim race condition** — combined separate `observeVolumePanelVisibility()` and `observeBrightnessPanelVisibility()` into single atomic `observeVolumeAndBrightnessPanels()` using `combine()` to prevent conflicting scrim visibility updates.
+- **Overlay tile rapid-toggle race condition** — added `Mutex` to `OverlayTileService.onClick()` to prevent state corruption on rapid tile taps.
+- **Repository resource leak** — `AppRepository` and `QuickControlsRepository` cleanup now called in `OverlayService.onDestroy()`.
+
+---
+
 ## [1.1.0] - 2026-05-18
 
 ### Changed
