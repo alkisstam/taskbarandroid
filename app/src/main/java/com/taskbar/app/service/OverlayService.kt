@@ -12,8 +12,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Configuration
 import android.graphics.PixelFormat
-import android.graphics.Rect
-import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
@@ -24,6 +22,8 @@ import android.view.View
 import android.view.ViewTreeObserver
 import android.view.WindowManager
 import android.widget.FrameLayout
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -364,15 +364,17 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private fun observeKeyboardVisibility() {
         val view = overlayView ?: return
+        // Use the IME inset type instead of the legacy frame-size heuristic.
+        // getWindowVisibleDisplayFrame() measures any shrinkage of the visible window
+        // area, which also fires during lock screen dismissal animations and nav bar
+        // transitions — causing false positives that leave the overlay permanently GONE.
+        // WindowInsetsCompat.Type.ime() only reports the actual software keyboard.
         val layoutListener = ViewTreeObserver.OnGlobalLayoutListener {
             val v = overlayView ?: return@OnGlobalLayoutListener
             if (overlayHiddenForLockscreen) return@OnGlobalLayoutListener
-            val rect = Rect()
-            v.getWindowVisibleDisplayFrame(rect)
-            val screenHeight = v.rootView?.height ?: return@OnGlobalLayoutListener
-            val keypadHeight = screenHeight - rect.bottom
-            val keyboardVisible = keypadHeight > screenHeight * Constants.KEYBOARD_VISIBLE_THRESHOLD
-            v.visibility = if (keyboardVisible) View.GONE else View.VISIBLE
+            val imeVisible = ViewCompat.getRootWindowInsets(v)
+                ?.isVisible(WindowInsetsCompat.Type.ime()) ?: false
+            v.visibility = if (imeVisible) View.GONE else View.VISIBLE
         }
         view.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
             override fun onViewAttachedToWindow(v: View) {
