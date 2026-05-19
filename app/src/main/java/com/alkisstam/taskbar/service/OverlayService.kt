@@ -147,7 +147,13 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     // immediately causes the keyboard observer to see the shrinking lockscreen
                     // frame as a keyboard and transiently hide the overlay.
                     handler.removeCallbacksAndMessages(null)
-                    handler.postDelayed({ showOverlay() }, 300)
+                    handler.postDelayed({
+                        // Ensure views are re-added if they were removed during screen off
+                        if (overlayView?.windowToken == null) addOverlayView()
+                        if (pillView?.windowToken == null) addPillView()
+                        if (quickStripView?.windowToken == null) addQuickStripView()
+                        showOverlay()
+                    }, 300)
                 }
                 Intent.ACTION_SCREEN_ON -> {
                     handler.removeCallbacksAndMessages(null)
@@ -332,14 +338,17 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             kotlinx.coroutines.flow.combine(
                 appMenuViewModel.menuVisible,
                 taskbarViewModel.isTaskbarVisible,
-                appMenuViewModel.isSearching
-            ) { menuOpen, taskbarVisible, searching ->
-                Triple(menuOpen, taskbarVisible, searching)
+                appMenuViewModel.isSearching,
+                // Also consider quick strip visibility for interactivity
+                taskbarViewModel.quickControlsEnabled,
+                taskbarViewModel.quickControlsStripEnabled
+            ) { menuOpen, taskbarVisible, searching, controlsEnabled, stripEnabled ->
+                val stripVisible = taskbarVisible && controlsEnabled && stripEnabled && !menuOpen && !searching
+                Triple(menuOpen || taskbarVisible || stripVisible, menuOpen && !searching, stripVisible)
             }
-            .collect { (menuOpen, taskbarVisible, searching) ->
-                val interactive = menuOpen || taskbarVisible
+            .collect { (interactive, focusable, stripVisible) ->
                 if (interactive) {
-                    setOverlayFlags(interactive = true, focusable = menuOpen && !searching)
+                    setOverlayFlags(interactive = true, focusable = focusable)
                 } else {
                     kotlinx.coroutines.delay(Constants.OVERLAY_HIDE_DEBOUNCE_MS)
                     setOverlayFlags(interactive = false, focusable = false)
