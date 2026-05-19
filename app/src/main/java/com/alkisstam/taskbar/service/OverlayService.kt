@@ -129,45 +129,33 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private fun hideOverlay() {
         overlayHiddenForLockscreen = true
-        overlayView?.visibility = View.GONE
-        pillView?.visibility = View.GONE
-        searchView?.visibility = View.GONE
-        quickStripView?.visibility = View.GONE
-        setQuickStripInteractive(false)
+        // Note: We intentionally do NOT set visibility to GONE here.
+        // Setting views to GONE during screen off can cause WindowManager
+        // to remove them on some Android versions/OEM skins, leading to
+        // re-add race conditions on unlock. Just track the lockscreen state
+        // and let the insets listener handle visibility when appropriate.
+        // See: SidebarOverlayService for reference implementation.
     }
 
     private val lockscreenReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
                 Intent.ACTION_SCREEN_OFF -> {
-                    handler.removeCallbacksAndMessages(null)
-                    hideOverlay()
+                    // Just track that screen is off - don't manipulate visibility
+                    // to avoid WindowManager issues on some Android versions
+                    overlayHiddenForLockscreen = true
                 }
-                Intent.ACTION_USER_PRESENT -> {
-                    // Delay matches the lockscreen dismiss animation; calling showOverlay()
-                    // immediately causes the keyboard observer to see the shrinking lockscreen
-                    // frame as a keyboard and transiently hide the overlay.
-                    handler.removeCallbacksAndMessages(null)
-                    handler.postDelayed({
-                        // Ensure views are re-added if they were removed during screen off
-                        // Use isAttachedToWindow for more reliable state detection
+                Intent.ACTION_USER_PRESENT, Intent.ACTION_SCREEN_ON -> {
+                    // Simplified: just ensure views exist, let insets listener manage visibility
+                    // This matches the sidebar project approach that works reliably
+                    overlayHiddenForLockscreen = false
+                    Handler(Looper.getMainLooper()).post {
                         if (overlayView?.isAttachedToWindow != true) addOverlayView()
                         if (pillView?.isAttachedToWindow != true) addPillView()
                         if (quickStripView?.isAttachedToWindow != true) addQuickStripView()
-                        showOverlay()
-                    }, 300)
-                }
-                Intent.ACTION_SCREEN_ON -> {
-                    handler.removeCallbacksAndMessages(null)
-                    handler.postDelayed({
-                        // Show pill if locked (lockscreen visible), full overlay if unlocked
-                        // Use isAttachedToWindow for more reliable state detection
-                        if (pillView?.isAttachedToWindow != true) addPillView()
-                        pillView?.visibility = View.VISIBLE
-                        if (!keyguardManager.isKeyguardLocked) {
-                            showOverlay()
-                        }
-                    }, 300)
+                        // Trigger a refresh of visibility based on current state
+                        restoreQuickStripVisibility()
+                    }
                 }
                 Intent.ACTION_CONFIGURATION_CHANGED -> {
                     if (taskbarViewModel.autoHideInLandscape.value) {
