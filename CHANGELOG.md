@@ -4,6 +4,16 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.1.3] - 2026-05-19
+
+### Added
+- **Music Panel** — a pill-shaped floating card that appears above the taskbar when media is playing or paused. Shows album art, track title, artist, and previous/play-pause/next transport controls. Visible whenever a media session is active in the system notifications (persists while paused, hides when the notification is cleared). Appears only when the taskbar is triggered and dismisses with it on outside tap. Requires Notification Access (one-time grant). Enable/disable toggle and permission button available in General settings.
+
+### Fixed
+- **Screenshot and Lock Screen controls missing from Controls tab** — both controls appeared in the quick strip but were not listed in the Controls tab in Taskbar Settings, making them impossible to reorder or disable.
+
+---
+
 ## [1.1.2] - 2026-05-19
 
 ### Added
