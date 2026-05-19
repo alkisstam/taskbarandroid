@@ -84,6 +84,9 @@ class TaskbarViewModel @Inject constructor(
         .map { it as Boolean? }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
+    val musicPanelEnabled: StateFlow<Boolean> = prefsRepository.musicPanelEnabled
+        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
     fun completeOnboarding() {
         viewModelScope.launch { prefsRepository.setOnboardingComplete() }
     }
@@ -219,6 +222,12 @@ class TaskbarViewModel @Inject constructor(
     fun saveControlsDisabledIds(ids: Set<String>) {
         viewModelScope.launch {
             prefsRepository.saveControlsDisabledIds(ids)
+        }
+    }
+
+    fun setMusicPanelEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            prefsRepository.setMusicPanelEnabled(enabled)
         }
     }
 

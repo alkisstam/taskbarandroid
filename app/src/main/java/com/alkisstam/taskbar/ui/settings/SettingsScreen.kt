@@ -282,6 +282,8 @@ private fun GeneralTab(
             }
         }
 
+        MusicPanelSettingsCard(viewModel = viewModel, context = context)
+
         SettingsCard(title = "Navigation Bar Overlay") {
             if (!hasAccessibilityPermission) {
                 Text(
@@ -316,6 +318,60 @@ private fun GeneralTab(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Manage Write Settings (Auto-rotate / Brightness)")
+            }
+        }
+    }
+}
+
+@Composable
+private fun MusicPanelSettingsCard(viewModel: TaskbarViewModel, context: android.content.Context) {
+    val musicPanelEnabled by viewModel.musicPanelEnabled.collectAsState()
+    val notificationAccessGranted = remember {
+        val enabled = android.provider.Settings.Secure.getString(
+            context.contentResolver,
+            "enabled_notification_listeners"
+        ) ?: ""
+        val component = "${context.packageName}/com.alkisstam.taskbar.service.MediaListenerService"
+        enabled.split(":").any { it.trim() == component }
+    }
+
+    SettingsCard(title = "Music Panel") {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text("Show Music Panel", style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    "Floats above the taskbar when media is playing",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(
+                checked = musicPanelEnabled,
+                onCheckedChange = { viewModel.setMusicPanelEnabled(it) }
+            )
+        }
+        if (!notificationAccessGranted) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Requires Notification Access to read track info and control playback.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = {
+                    context.startActivity(
+                        android.content.Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
+                            .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                    )
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Grant Notification Access")
             }
         }
     }

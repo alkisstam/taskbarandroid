@@ -1,0 +1,30 @@
+package com.alkisstam.taskbar.service
+
+import android.content.ComponentName
+import android.service.notification.NotificationListenerService
+import android.util.Log
+import com.alkisstam.taskbar.data.MediaRepository
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+
+private const val TAG = "MediaListenerService"
+
+@AndroidEntryPoint
+class MediaListenerService : NotificationListenerService() {
+
+    @Inject lateinit var mediaRepository: MediaRepository
+
+    override fun onListenerConnected() {
+        super.onListenerConnected()
+        Log.d(TAG, "Listener connected")
+        mediaRepository.onListenerConnected(
+            ComponentName(this, MediaListenerService::class.java)
+        )
+    }
+
+    override fun onListenerDisconnected() {
+        super.onListenerDisconnected()
+        Log.d(TAG, "Listener disconnected")
+        mediaRepository.onListenerDisconnected()
+    }
+}

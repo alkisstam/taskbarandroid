@@ -11,6 +11,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.AppRepository
+import com.alkisstam.taskbar.data.MediaRepository
+import com.alkisstam.taskbar.data.MediaState
 import com.alkisstam.taskbar.data.PreferencesRepository
 import com.alkisstam.taskbar.data.QuickControlsChangeListener
 import com.alkisstam.taskbar.data.QuickControlsRepository
@@ -54,7 +56,8 @@ class AppMenuViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val appRepository: AppRepository,
     private val prefsRepository: PreferencesRepository,
-    private val quickControls: QuickControlsRepository
+    private val quickControls: QuickControlsRepository,
+    private val mediaRepository: MediaRepository
 ) : ViewModel() {
 
     val allApps: StateFlow<List<AppInfo>> = appRepository.apps
@@ -84,6 +87,8 @@ class AppMenuViewModel @Inject constructor(
 
     private val _brightnessPanelVisible = MutableStateFlow(false)
     val brightnessPanelVisible: StateFlow<Boolean> = _brightnessPanelVisible.asStateFlow()
+
+    val mediaState: StateFlow<MediaState> = mediaRepository.mediaState
 
     private val _brightnessLevel = MutableStateFlow(128)
     val brightnessLevel: StateFlow<Int> = _brightnessLevel.asStateFlow()
@@ -122,6 +127,10 @@ class AppMenuViewModel @Inject constructor(
     fun dismissBrightnessPanel() {
         _brightnessPanelVisible.value = false
     }
+
+    fun playPause() { mediaRepository.playPause() }
+    fun nextTrack() { mediaRepository.next() }
+    fun prevTrack() { mediaRepository.prev() }
 
     fun setBrightnessLevel(value: Int) {
         try {

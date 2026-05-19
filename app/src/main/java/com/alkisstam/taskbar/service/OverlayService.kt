@@ -57,11 +57,13 @@ import com.alkisstam.taskbar.MainActivity
 import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.AppRepository
 import com.alkisstam.taskbar.util.Constants
+import com.alkisstam.taskbar.data.MediaRepository
 import com.alkisstam.taskbar.data.PreferencesRepository
 import com.alkisstam.taskbar.data.QuickControlsRepository
 import com.alkisstam.taskbar.ui.appmenu.AppMenuPanel
 import com.alkisstam.taskbar.ui.appmenu.BrightnessPanel
 import com.alkisstam.taskbar.ui.appmenu.FloatingSearchBar
+import com.alkisstam.taskbar.ui.appmenu.MusicPanel
 import com.alkisstam.taskbar.ui.appmenu.VolumePanel
 import com.alkisstam.taskbar.ui.taskbar.QuickStripView
 import com.alkisstam.taskbar.ui.taskbar.TaskbarView
@@ -83,6 +85,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     @Inject lateinit var appRepository: AppRepository
     @Inject lateinit var prefsRepository: PreferencesRepository
     @Inject lateinit var quickControlsRepository: QuickControlsRepository
+    @Inject lateinit var mediaRepository: MediaRepository
 
     private val lifecycleRegistry = LifecycleRegistry(this)
     override val lifecycle: Lifecycle get() = lifecycleRegistry
@@ -104,6 +107,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private var volumePanelView: View? = null
     private var brightnessPanelView: View? = null
     private var volumeScrimView: View? = null
+    private var musicPanelView: View? = null
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var observersStarted = false
 
@@ -224,7 +228,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             context = this,
             appRepository = appRepository,
             prefsRepository = prefsRepository,
-            quickControlsRepository = quickControlsRepository
+            quickControlsRepository = quickControlsRepository,
+            mediaRepository = mediaRepository
         )
         val provider = ViewModelProvider(this, factory)
         taskbarViewModel = provider[TaskbarViewModel::class.java]
@@ -242,6 +247,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         addVolumeScrimView()
         addVolumePanelView()
         addBrightnessPanelView()
+        addMusicPanelView()
         if (!observersStarted) {
             observersStarted = true
             observePillPosition()
@@ -250,6 +256,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             observeQuickStripVisibility()
             observeQuickStripPosition()
             observeVolumeAndBrightnessPanels()
+            observeMusicPanelVisibility()
         }
         return START_STICKY
     }
@@ -296,6 +303,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private var quickStripYOffsetDp: Float = 0f
     private var quickStripInteractive: Boolean = false
     private var volumePanelYOffsetDp: Float = 0f
+    private var musicPanelYOffsetDp: Float = 0f
 
     private fun setQuickStripInteractive(interactive: Boolean) {
         quickStripInteractive = interactive
@@ -563,9 +571,13 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             taskbarViewModel.taskbarSettings.collect { settings ->
                 quickStripYOffsetDp = settings.positionYDp + settings.heightDp + 2f
                 volumePanelYOffsetDp = settings.positionYDp + settings.heightDp * 2 + 10f
+                musicPanelYOffsetDp = settings.positionYDp + settings.heightDp + 80f
                 val view = quickStripView ?: return@collect
                 try { windowManager.updateViewLayout(view, quickStripLayoutParams(quickStripInteractive, quickStripYOffsetDp)) }
                 catch (e: Exception) { Log.w(TAG, "Failed to update quick strip position", e) }
+                val musicView = musicPanelView ?: return@collect
+                try { windowManager.updateViewLayout(musicView, musicPanelLayoutParams(musicPanelYOffsetDp)) }
+                catch (e: Exception) { Log.w(TAG, "Failed to update music panel position", e) }
             }
         }
     }
@@ -681,6 +693,66 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         }
     }
 
+    private fun musicPanelLayoutParams(yOffsetDp: Float): WindowManager.LayoutParams {
+        val usingAccessibility = TaskBarAccessibilityService.isRunning()
+        val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                (if (usingAccessibility) WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS else 0)
+        val density = resources.displayMetrics.density
+        return WindowManager.LayoutParams(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            overlayWindowType,
+            flags,
+            PixelFormat.TRANSLUCENT
+        ).apply {
+            gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+            y = (yOffsetDp * density).toInt()
+        }
+    }
+
+    private fun addMusicPanelView() {
+        if (musicPanelView?.isAttachedToWindow == true) return
+        musicPanelView?.let { runCatching { windowManager.removeView(it) } }
+        musicPanelView = null
+        try {
+            val initialSettings = taskbarViewModel.taskbarSettings.value
+            musicPanelYOffsetDp = initialSettings.positionYDp + initialSettings.heightDp + 80f
+            val composeView = ComposeView(this).apply {
+                setBackgroundColor(android.graphics.Color.TRANSPARENT)
+                setViewTreeLifecycleOwner(this@OverlayService)
+                setViewTreeViewModelStoreOwner(this@OverlayService)
+                setViewTreeSavedStateRegistryOwner(this@OverlayService)
+                setContent {
+                    MusicPanelContent(
+                        taskbarViewModel = taskbarViewModel,
+                        appMenuViewModel = appMenuViewModel
+                    )
+                }
+            }
+            composeView.visibility = View.GONE
+            musicPanelView = composeView
+            windowManager.addView(composeView, musicPanelLayoutParams(musicPanelYOffsetDp))
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to add music panel view", e)
+            musicPanelView = null
+        }
+    }
+
+    private fun observeMusicPanelVisibility() {
+        serviceScope.launch {
+            kotlinx.coroutines.flow.combine(
+                appMenuViewModel.mediaState,
+                taskbarViewModel.musicPanelEnabled
+            ) { state, enabled ->
+                enabled && state.isPlaying
+            }.collect { show ->
+                musicPanelView?.visibility = if (show) View.VISIBLE else View.GONE
+            }
+        }
+    }
+
     private fun observeVolumeAndBrightnessPanels() {
         serviceScope.launch {
             kotlinx.coroutines.flow.combine(
@@ -739,6 +811,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         volumeScrimView?.let {
             try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove volume scrim view", e) }
             volumeScrimView = null
+        }
+        musicPanelView?.let {
+            try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove music panel view", e) }
+            musicPanelView = null
         }
     }
 
@@ -907,6 +983,23 @@ private fun BrightnessPanelContent(
             onBrightnessChange = { value -> appMenuViewModel.setBrightnessLevel(value) },
             autoBrightnessEnabled = quickControlsState.autoBrightness,
             onAutoBrightnessToggle = { appMenuViewModel.toggleAutoBrightness() }
+        )
+    }
+}
+
+@Composable
+private fun MusicPanelContent(
+    taskbarViewModel: TaskbarViewModel,
+    appMenuViewModel: AppMenuViewModel
+) {
+    val themeMode by taskbarViewModel.themeMode.collectAsState()
+    val mediaState by appMenuViewModel.mediaState.collectAsState()
+    TaskBarTheme(themeMode = themeMode) {
+        MusicPanel(
+            mediaState = mediaState,
+            onPlayPause = appMenuViewModel::playPause,
+            onNext = appMenuViewModel::nextTrack,
+            onPrev = appMenuViewModel::prevTrack
         )
     }
 }

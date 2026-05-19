@@ -65,6 +65,7 @@ class PreferencesRepository @Inject constructor(
         private val CONTROLS_DISABLED_KEY = stringPreferencesKey("controls_disabled_ids")
         private val TASKBAR_VISIBLE_KEY = booleanPreferencesKey("taskbar_visible")
         private val ONBOARDING_COMPLETE_KEY = booleanPreferencesKey("onboarding_complete")
+        private val MUSIC_PANEL_ENABLED_KEY = booleanPreferencesKey("music_panel_enabled")
 
         val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen")
 
@@ -286,6 +287,16 @@ class PreferencesRepository @Inject constructor(
     suspend fun setOnboardingComplete() {
         context.dataStore.edit { prefs ->
             prefs[ONBOARDING_COMPLETE_KEY] = true
+        }
+    }
+
+    val musicPanelEnabled: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[MUSIC_PANEL_ENABLED_KEY] ?: true
+    }
+
+    suspend fun setMusicPanelEnabled(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[MUSIC_PANEL_ENABLED_KEY] = enabled
         }
     }
 }
