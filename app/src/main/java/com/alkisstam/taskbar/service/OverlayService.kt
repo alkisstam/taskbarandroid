@@ -259,8 +259,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             observeSearchVisibility()
             observeQuickStripVisibility()
             observeQuickStripPosition()
-            observeVolumePanelVisibility()
-            observeBrightnessPanelVisibility()
+            observeVolumeAndBrightnessPanels()
         }
         return START_STICKY
     }
@@ -671,28 +670,28 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         }
     }
 
-    private fun observeVolumePanelVisibility() {
+    private fun observeVolumeAndBrightnessPanels() {
         serviceScope.launch {
-            appMenuViewModel.volumePanelVisible.collect { visible ->
-                if (visible) volumeScrimView?.visibility = View.VISIBLE
-                else if (!appMenuViewModel.brightnessPanelVisible.value) volumeScrimView?.visibility = View.GONE
-                volumePanelView?.visibility = if (visible) View.VISIBLE else View.GONE
-                if (visible) {
+            kotlinx.coroutines.flow.combine(
+                appMenuViewModel.volumePanelVisible,
+                appMenuViewModel.brightnessPanelVisible
+            ) { volumeVisible, brightnessVisible ->
+                Pair(volumeVisible, brightnessVisible)
+            }.collect { (volumeVisible, brightnessVisible) ->
+                // Manage scrim visibility atomically based on either panel being visible
+                volumeScrimView?.visibility = if (volumeVisible || brightnessVisible) View.VISIBLE else View.GONE
+
+                // Update volume panel
+                volumePanelView?.visibility = if (volumeVisible) View.VISIBLE else View.GONE
+                if (volumeVisible) {
                     val view = volumePanelView ?: return@collect
                     try { windowManager.updateViewLayout(view, volumePanelLayoutParams(volumePanelYOffsetDp)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update volume panel position", e) }
                 }
-            }
-        }
-    }
 
-    private fun observeBrightnessPanelVisibility() {
-        serviceScope.launch {
-            appMenuViewModel.brightnessPanelVisible.collect { visible ->
-                if (visible) volumeScrimView?.visibility = View.VISIBLE
-                else if (!appMenuViewModel.volumePanelVisible.value) volumeScrimView?.visibility = View.GONE
-                brightnessPanelView?.visibility = if (visible) View.VISIBLE else View.GONE
-                if (visible) {
+                // Update brightness panel
+                brightnessPanelView?.visibility = if (brightnessVisible) View.VISIBLE else View.GONE
+                if (brightnessVisible) {
                     val view = brightnessPanelView ?: return@collect
                     try { windowManager.updateViewLayout(view, volumePanelLayoutParams(volumePanelYOffsetDp)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update brightness panel position", e) }
@@ -788,6 +787,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         removeOverlayView()
         serviceScope.cancel()
         _viewModelStore.clear()
+        appRepository.cleanup()
+        quickControlsRepository.cleanup()
         super.onDestroy()
     }
 

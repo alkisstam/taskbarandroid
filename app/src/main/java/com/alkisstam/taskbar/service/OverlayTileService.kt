@@ -13,6 +13,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -21,6 +23,7 @@ class OverlayTileService : TileService() {
     @Inject lateinit var prefsRepository: PreferencesRepository
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    private val toggleMutex = Mutex()
 
     override fun onStartListening() {
         super.onStartListening()
@@ -33,15 +36,17 @@ class OverlayTileService : TileService() {
     override fun onClick() {
         super.onClick()
         scope.launch {
-            val currentlyEnabled = prefsRepository.overlayEnabled.first()
-            if (currentlyEnabled) {
-                prefsRepository.setOverlayEnabled(false)
-                stopService(Intent(this@OverlayTileService, OverlayService::class.java))
-                updateTile(false)
-            } else {
-                prefsRepository.setOverlayEnabled(true)
-                startForegroundService(Intent(this@OverlayTileService, OverlayService::class.java))
-                updateTile(true)
+            toggleMutex.withLock {
+                val currentlyEnabled = prefsRepository.overlayEnabled.first()
+                if (currentlyEnabled) {
+                    prefsRepository.setOverlayEnabled(false)
+                    stopService(Intent(this@OverlayTileService, OverlayService::class.java))
+                    updateTile(false)
+                } else {
+                    prefsRepository.setOverlayEnabled(true)
+                    startForegroundService(Intent(this@OverlayTileService, OverlayService::class.java))
+                    updateTile(true)
+                }
             }
         }
     }
