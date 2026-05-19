@@ -246,6 +246,30 @@ class QuickControlsRepository @Inject constructor(
 
     fun canShowPowerMenu(): Boolean = TaskBarAccessibilityService.isRunning()
 
+    fun takeScreenshot(): Boolean {
+        val instance = TaskBarAccessibilityService.instance
+        return if (instance != null) {
+            instance.takeScreenshot()
+        } else {
+            Log.w(TAG, "Cannot take screenshot - accessibility service not running")
+            false
+        }
+    }
+
+    fun canTakeScreenshot(): Boolean = TaskBarAccessibilityService.isRunning()
+
+    fun lockScreen(): Boolean {
+        val instance = TaskBarAccessibilityService.instance
+        return if (instance != null) {
+            instance.lockScreen()
+        } else {
+            Log.w(TAG, "Cannot lock screen - accessibility service not running")
+            false
+        }
+    }
+
+    fun canLockScreen(): Boolean = TaskBarAccessibilityService.isRunning()
+
     fun cleanup() {
         try {
             context.unregisterReceiver(ringerReceiver)

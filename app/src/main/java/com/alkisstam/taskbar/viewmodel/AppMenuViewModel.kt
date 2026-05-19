@@ -42,7 +42,9 @@ data class QuickControlsState(
     val canSetSilent: Boolean = false,
     val dndEnabled: Boolean = false,
     val dndPermissionGranted: Boolean = false,
-    val canShowPowerMenu: Boolean = false
+    val canShowPowerMenu: Boolean = false,
+    val canTakeScreenshot: Boolean = false,
+    val canLockScreen: Boolean = false
 )
 
 private const val TAG = "AppMenuViewModel"
@@ -204,7 +206,9 @@ class AppMenuViewModel @Inject constructor(
             canSetSilent = quickControls.canSetSilent(),
             dndEnabled = quickControls.isDndEnabled(),
             dndPermissionGranted = quickControls.isDndPermissionGranted(),
-            canShowPowerMenu = quickControls.canShowPowerMenu()
+            canShowPowerMenu = quickControls.canShowPowerMenu(),
+            canTakeScreenshot = quickControls.canTakeScreenshot(),
+            canLockScreen = quickControls.canLockScreen()
         )
     }
 
@@ -261,6 +265,14 @@ class AppMenuViewModel @Inject constructor(
         _menuVisible.value = false
     }
 
+    fun takeScreenshot() {
+        quickControls.takeScreenshot()
+    }
+
+    fun lockScreen() {
+        quickControls.lockScreen()
+    }
+
     fun openDndSettings() {
         val intent = android.content.Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS).apply {
             addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -290,6 +302,8 @@ class AppMenuViewModel @Inject constructor(
             "dnd" -> if (_quickControlsState.value.dndPermissionGranted) toggleDnd() else openDndSettings()
             "qr" -> openQrScanner()
             "power" -> showPowerMenu()
+            "screenshot" -> takeScreenshot()
+            "lockscreen" -> lockScreen()
         }
     }
 }

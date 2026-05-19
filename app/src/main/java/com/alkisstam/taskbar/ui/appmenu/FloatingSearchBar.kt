@@ -97,8 +97,17 @@ fun FloatingSearchBar(viewModel: AppMenuViewModel, onHideTaskbar: () -> Unit = {
                         { Icon(Icons.Filled.Search, contentDescription = null) }
                     },
                     singleLine = true,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions(onDone = { viewModel.closeSearch() }),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),
+                    keyboardActions = KeyboardActions(
+                        onGo = {
+                            // Launch the top search result if any
+                            val apps = filteredApps
+                            if (apps.isNotEmpty()) {
+                                viewModel.launchApp(apps.first().packageName)
+                                onHideTaskbar()
+                            }
+                        }
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
                         .focusRequester(focusRequester),

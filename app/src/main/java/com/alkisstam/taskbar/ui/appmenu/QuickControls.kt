@@ -25,6 +25,8 @@ import androidx.compose.material.icons.filled.Vibration
 import androidx.compose.material.icons.automirrored.filled.VolumeOff
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -95,12 +97,16 @@ fun QuickControlsState.toItems(
             icon = if (dndEnabled) Icons.Filled.DoNotDisturb else Icons.Filled.DoNotDisturbOff),
         "qr" to QuickControlItemData(id = "qr", label = "QR", active = false, icon = Icons.Filled.QrCodeScanner),
         "power" to QuickControlItemData(id = "power", label = "Power", active = false, icon = Icons.Filled.PowerSettingsNew),
-        "volume" to QuickControlItemData(id = "volume", label = "Volume", active = false, icon = Icons.Filled.Tune)
+        "volume" to QuickControlItemData(id = "volume", label = "Volume", active = false, icon = Icons.Filled.Tune),
+        "screenshot" to QuickControlItemData(id = "screenshot", label = "Screenshot", active = false, icon = Icons.Filled.PhotoCamera),
+        "lockscreen" to QuickControlItemData(id = "lockscreen", label = "Lock", active = false, icon = Icons.Filled.Lock)
     )
     val effectiveOrder = order.ifEmpty { PreferencesRepository.ALL_CONTROL_IDS }
     return effectiveOrder
         .filter { id -> id !in disabledIds }
         .filter { id -> id != "power" || canShowPowerMenu }
+        .filter { id -> id != "screenshot" || canTakeScreenshot }
+        .filter { id -> id != "lockscreen" || canLockScreen }
         .mapNotNull { id -> all[id] }
 }
 

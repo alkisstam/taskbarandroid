@@ -17,6 +17,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.Accessibility
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -34,8 +36,12 @@ import androidx.compose.ui.unit.dp
 fun OnboardingScreen(
     hasOverlayPermission: Boolean,
     hasAccessibilityPermission: Boolean,
+    hasWriteSettingsPermission: Boolean,
+    hasNotificationPolicyPermission: Boolean,
     onRequestOverlayPermission: () -> Unit,
     onRequestAccessibilityPermission: () -> Unit,
+    onRequestWriteSettingsPermission: () -> Unit,
+    onRequestNotificationPolicyPermission: () -> Unit,
     onComplete: () -> Unit
 ) {
     Scaffold { paddingValues ->
@@ -87,9 +93,39 @@ fun OnboardingScreen(
                     )
                 },
                 title = "Accessibility Service",
-                description = "Optional. Lets the overlay draw above the system navigation bar.",
+                description = "Optional. Enables screenshots, lock screen, and drawing above the navigation bar.",
                 granted = hasAccessibilityPermission,
                 onGrant = onRequestAccessibilityPermission
+            )
+
+            PermissionCard(
+                icon = {
+                    Icon(
+                        Icons.Filled.Settings,
+                        contentDescription = null,
+                        modifier = Modifier.size(28.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                },
+                title = "Modify System Settings",
+                description = "Optional. Required for brightness and auto-rotate quick controls.",
+                granted = hasWriteSettingsPermission,
+                onGrant = onRequestWriteSettingsPermission
+            )
+
+            PermissionCard(
+                icon = {
+                    Icon(
+                        Icons.Filled.Notifications,
+                        contentDescription = null,
+                        modifier = Modifier.size(28.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                },
+                title = "Do Not Disturb Access",
+                description = "Optional. Required for the DND quick control tile.",
+                granted = hasNotificationPolicyPermission,
+                onGrant = onRequestNotificationPolicyPermission
             )
 
             Spacer(modifier = Modifier.weight(1f))

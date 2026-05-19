@@ -29,6 +29,8 @@ class MainActivity : ComponentActivity() {
     private val taskbarViewModel: TaskbarViewModel by viewModels()
 
     private var hasOverlayPermission by mutableStateOf(false)
+    private var hasWriteSettingsPermission by mutableStateOf(false)
+    private var hasNotificationPolicyPermission by mutableStateOf(false)
 
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -40,6 +42,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         hasOverlayPermission = Settings.canDrawOverlays(this)
+        hasWriteSettingsPermission = Settings.System.canWrite(this)
+        hasNotificationPolicyPermission = getNotificationPolicyAccess()
 
         setContent {
             val themeMode by taskbarViewModel.themeMode.collectAsState()
@@ -51,8 +55,12 @@ class MainActivity : ComponentActivity() {
                     false -> OnboardingScreen(
                         hasOverlayPermission = hasOverlayPermission,
                         hasAccessibilityPermission = hasAccessibilityPermission,
+                        hasWriteSettingsPermission = hasWriteSettingsPermission,
+                        hasNotificationPolicyPermission = hasNotificationPolicyPermission,
                         onRequestOverlayPermission = ::requestOverlayPermission,
                         onRequestAccessibilityPermission = ::requestAccessibilityPermission,
+                        onRequestWriteSettingsPermission = ::requestWriteSettingsPermission,
+                        onRequestNotificationPolicyPermission = ::requestNotificationPolicyPermission,
                         onComplete = taskbarViewModel::completeOnboarding
                     )
                     true -> SettingsScreen(
@@ -75,6 +83,13 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         hasOverlayPermission = Settings.canDrawOverlays(this)
+        hasWriteSettingsPermission = Settings.System.canWrite(this)
+        hasNotificationPolicyPermission = getNotificationPolicyAccess()
+    }
+
+    private fun getNotificationPolicyAccess(): Boolean {
+        val nm = getSystemService(NOTIFICATION_SERVICE) as android.app.NotificationManager
+        return nm.isNotificationPolicyAccessGranted
     }
 
     override fun onStop() {
@@ -92,5 +107,18 @@ class MainActivity : ComponentActivity() {
 
     private fun requestAccessibilityPermission() {
         permissionLauncher.launch(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+    }
+
+    private fun requestWriteSettingsPermission() {
+        val intent = Intent(
+            Settings.ACTION_MANAGE_WRITE_SETTINGS,
+            Uri.parse("package:$packageName")
+        )
+        permissionLauncher.launch(intent)
+    }
+
+    private fun requestNotificationPolicyPermission() {
+        val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+        permissionLauncher.launch(intent)
     }
 }
