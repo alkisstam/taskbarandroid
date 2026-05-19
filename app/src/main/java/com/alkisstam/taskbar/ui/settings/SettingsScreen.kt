@@ -40,6 +40,8 @@ import androidx.compose.material.icons.filled.DoNotDisturbOff
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.FlashlightOn
 import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.PowerSettingsNew
 import androidx.compose.material.icons.filled.QrCodeScanner
@@ -504,7 +506,9 @@ private fun ControlsTab(viewModel: TaskbarViewModel) {
             Triple("dnd",               "DND",             Icons.Filled.DoNotDisturbOff),
             Triple("qr",         "QR",         Icons.Filled.QrCodeScanner),
             Triple("power",      "Power",      Icons.Filled.PowerSettingsNew),
-            Triple("volume",     "Volume",     Icons.Filled.Tune)
+            Triple("volume",     "Volume",     Icons.Filled.Tune),
+            Triple("screenshot", "Screenshot", Icons.Filled.PhotoCamera),
+            Triple("lockscreen", "Lock",       Icons.Filled.Lock)
         )
     }
     val metaMap = remember(controlMeta) { controlMeta.associateBy { it.first } }
