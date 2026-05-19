@@ -17,7 +17,6 @@
 
     <uses-feature android:name="android.hardware.camera.flash" android:required="false" />
     <uses-feature android:name="android.hardware.type.pc" android:required="false" />
-    <uses-feature android:name="android.hardware.type.watch" android:required="false" />
     <uses-feature android:name="android.hardware.type.automotive" android:required="false" />
 
     <application
