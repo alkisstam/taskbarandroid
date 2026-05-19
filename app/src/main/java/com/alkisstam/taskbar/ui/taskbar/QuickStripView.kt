@@ -63,7 +63,7 @@ fun QuickStripView(
                         item = item,
                         onToggle = {
                             appMenuViewModel.handleQuickControlAction(item.id)
-                            if (item.id == "qr" || item.id == "power") onHideTaskbar()
+                            if (item.id in listOf("qr", "power", "screenshot", "lockscreen")) onHideTaskbar()
                         }
                     )
                 }

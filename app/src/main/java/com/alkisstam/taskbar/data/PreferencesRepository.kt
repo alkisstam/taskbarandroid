@@ -249,10 +249,16 @@ class PreferencesRepository @Inject constructor(
     }
 
     val controlsOrder: Flow<List<String>> = context.dataStore.data.map { prefs ->
-        prefs[CONTROLS_ORDER_KEY]
+        val saved = prefs[CONTROLS_ORDER_KEY]
             ?.let { deserializeStringList(it) }
             ?.takeIf { it.isNotEmpty() }
-            ?: ALL_CONTROL_IDS
+        if (saved == null) {
+            ALL_CONTROL_IDS
+        } else {
+            // Merge any new control IDs that were added in app updates
+            val newIds = ALL_CONTROL_IDS.filter { it !in saved }
+            if (newIds.isNotEmpty()) saved + newIds else saved
+        }
     }
 
     suspend fun saveControlsOrder(order: List<String>) {
