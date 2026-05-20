@@ -5,6 +5,7 @@ import android.content.pm.LauncherApps
 import android.content.pm.ShortcutInfo
 import android.os.Process
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -110,7 +111,9 @@ fun PinnedAppItem(
                     shape = RoundedCornerShape(12.dp),
                     tonalElevation = 8.dp,
                     shadowElevation = 8.dp,
-                    modifier = Modifier.width(140.dp)
+                    modifier = Modifier
+                        .width(140.dp)
+                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
                 ) {
                     Column {
                         shortcuts.forEach { shortcut ->

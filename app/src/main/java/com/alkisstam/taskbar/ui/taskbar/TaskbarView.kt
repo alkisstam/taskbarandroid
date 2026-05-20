@@ -49,13 +49,17 @@ fun TaskbarView(
     val musicPanelVisible by appMenuViewModel.musicPanelVisible.collectAsState()
     val screenWidthDp = LocalConfiguration.current.screenWidthDp
 
-    val quickStripExtraOffsetPx = if (quickStripEnabled)
-        with(density) { (taskbarSettings.heightDp + 4f).dp.roundToPx() }
-    else 0
-    val musicPanelExtraOffsetPx = if (musicPanelEnabled && musicPanelVisible)
-        with(density) { 150f.dp.roundToPx() }
-    else 0
-    val totalPopupOffsetPx = quickStripExtraOffsetPx + musicPanelExtraOffsetPx
+    // Extra offset so the popup clears whichever panel is highest above the taskbar.
+    // Strip: 70dp tall, gap 2dp → top at +72dp. Music panel: ~70dp tall.
+    //   strip only → 76dp; music+strip → 154dp; music only → 82dp.
+    val totalPopupOffsetPx = with(density) {
+        when {
+            musicPanelEnabled && musicPanelVisible && quickStripEnabled -> 154f.dp.roundToPx()
+            musicPanelEnabled && musicPanelVisible -> 82f.dp.roundToPx()
+            quickStripEnabled -> 76f.dp.roundToPx()
+            else -> 0
+        }
+    }
 
     val surfaceColor = if (surfaceTintColor != 0L)
         Color(surfaceTintColor)
