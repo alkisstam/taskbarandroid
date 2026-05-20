@@ -183,8 +183,17 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 ACTION_SETTINGS_CLOSE -> {
                     taskbarViewModel.setSettingsOpen(false)
                 }
+                ACTION_DISMISS_ALL -> {
+                    if (this@OverlayService::appMenuViewModel.isInitialized) dismissAll()
+                }
             }
         }
+    }
+
+    private fun dismissAll() {
+        appMenuViewModel.dismissMenu()
+        appMenuViewModel.dismissMusicPanel()
+        taskbarViewModel.hideTaskbar()
     }
 
     private lateinit var taskbarViewModel: TaskbarViewModel
@@ -202,6 +211,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         private const val CHANNEL_ID = "taskbar_overlay_channel"
         const val ACTION_SETTINGS_OPEN = "com.alkisstam.taskbar.ACTION_SETTINGS_OPEN"
         const val ACTION_SETTINGS_CLOSE = "com.alkisstam.taskbar.ACTION_SETTINGS_CLOSE"
+        const val ACTION_DISMISS_ALL = "com.alkisstam.taskbar.DISMISS_ALL"
     }
 
     override fun onCreate() {
@@ -217,6 +227,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             addAction(Intent.ACTION_CONFIGURATION_CHANGED)
             addAction(ACTION_SETTINGS_OPEN)
             addAction(ACTION_SETTINGS_CLOSE)
+            addAction(ACTION_DISMISS_ALL)
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(lockscreenReceiver, filter, RECEIVER_NOT_EXPORTED)
@@ -373,9 +384,22 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     )
                 }
             }
-            overlayView = composeView
-            windowManager.addView(composeView, overlayLayoutParams())
-            attachInsetsListener(composeView)
+            val wrapper = object : FrameLayout(this) {
+                override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+                    if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+                        dismissAll()
+                        return true
+                    }
+                    return super.dispatchKeyEvent(event)
+                }
+            }
+            wrapper.setViewTreeLifecycleOwner(this@OverlayService)
+            wrapper.setViewTreeViewModelStoreOwner(this@OverlayService)
+            wrapper.setViewTreeSavedStateRegistryOwner(this@OverlayService)
+            wrapper.addView(composeView)
+            overlayView = wrapper
+            windowManager.addView(wrapper, overlayLayoutParams())
+            attachInsetsListener(wrapper)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add overlay view", e)
             overlayView = null

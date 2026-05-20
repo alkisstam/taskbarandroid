@@ -113,7 +113,7 @@ fun PinnedAppItem(
                     shadowElevation = 8.dp,
                     modifier = Modifier
                         .width(140.dp)
-                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(12.dp))
+                        .border(1.dp, MaterialTheme.colorScheme.error, RoundedCornerShape(12.dp))
                 ) {
                     Column {
                         shortcuts.forEach { shortcut ->
