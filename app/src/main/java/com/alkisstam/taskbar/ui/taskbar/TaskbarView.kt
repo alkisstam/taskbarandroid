@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -21,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
@@ -42,9 +45,17 @@ fun TaskbarView(
     val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
     val haptic = LocalHapticFeedback.current
     val density = LocalDensity.current
+    val musicPanelEnabled by taskbarViewModel.musicPanelEnabled.collectAsState()
+    val musicPanelVisible by appMenuViewModel.musicPanelVisible.collectAsState()
+    val screenWidthDp = LocalConfiguration.current.screenWidthDp
+
     val quickStripExtraOffsetPx = if (quickStripEnabled)
         with(density) { (taskbarSettings.heightDp + 4f).dp.roundToPx() }
     else 0
+    val musicPanelExtraOffsetPx = if (musicPanelEnabled && musicPanelVisible)
+        with(density) { 150f.dp.roundToPx() }
+    else 0
+    val totalPopupOffsetPx = quickStripExtraOffsetPx + musicPanelExtraOffsetPx
 
     val surfaceColor = if (surfaceTintColor != 0L)
         Color(surfaceTintColor)
@@ -66,7 +77,8 @@ fun TaskbarView(
     ) {
         Surface(
             modifier = Modifier
-                .fillMaxWidth(taskbarSettings.widthFraction)
+                .wrapContentWidth()
+                .widthIn(max = (screenWidthDp * 0.95f).dp)
                 .height(taskbarSettings.heightDp.dp),
             shape = RoundedCornerShape(16.dp),
             color = surfaceColor,
@@ -75,7 +87,6 @@ fun TaskbarView(
         ) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .padding(horizontal = 8.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
@@ -89,7 +100,7 @@ fun TaskbarView(
 
                 LazyRow(
                     state = lazyListState,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.wrapContentWidth(),
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -99,7 +110,7 @@ fun TaskbarView(
                                 app = app,
                                 showLabel = taskbarSettings.showLabels,
                                 isDragging = isDragging,
-                                extraPopupBottomOffsetPx = quickStripExtraOffsetPx,
+                                extraPopupBottomOffsetPx = totalPopupOffsetPx,
                                 dragModifier = Modifier.longPressDraggableHandle(
                                     onDragStarted = {
                                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)

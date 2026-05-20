@@ -38,10 +38,12 @@ fun OnboardingScreen(
     hasAccessibilityPermission: Boolean,
     hasWriteSettingsPermission: Boolean,
     hasNotificationPolicyPermission: Boolean,
+    hasNotificationsPermission: Boolean,
     onRequestOverlayPermission: () -> Unit,
     onRequestAccessibilityPermission: () -> Unit,
     onRequestWriteSettingsPermission: () -> Unit,
     onRequestNotificationPolicyPermission: () -> Unit,
+    onRequestNotificationsPermission: () -> Unit,
     onComplete: () -> Unit
 ) {
     Scaffold { paddingValues ->
@@ -126,6 +128,21 @@ fun OnboardingScreen(
                 description = "Optional. Required for the DND quick control tile.",
                 granted = hasNotificationPolicyPermission,
                 onGrant = onRequestNotificationPolicyPermission
+            )
+
+            PermissionCard(
+                icon = {
+                    Icon(
+                        Icons.Filled.Notifications,
+                        contentDescription = null,
+                        modifier = Modifier.size(28.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                },
+                title = "Notifications",
+                description = "Optional. Required for the music panel to access media sessions.",
+                granted = hasNotificationsPermission,
+                onGrant = onRequestNotificationsPermission
             )
 
             Spacer(modifier = Modifier.weight(1f))

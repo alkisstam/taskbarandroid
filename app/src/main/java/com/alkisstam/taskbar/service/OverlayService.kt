@@ -244,10 +244,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         addPillView()
         addSearchView()
         addQuickStripView()
+        addMusicPanelView()
         addVolumeScrimView()
         addVolumePanelView()
         addBrightnessPanelView()
-        addMusicPanelView()
         if (!observersStarted) {
             observersStarted = true
             observePillPosition()

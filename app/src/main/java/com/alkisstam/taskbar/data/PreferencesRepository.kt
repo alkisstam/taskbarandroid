@@ -291,7 +291,7 @@ class PreferencesRepository @Inject constructor(
     }
 
     val musicPanelEnabled: Flow<Boolean> = context.dataStore.data.map { prefs ->
-        prefs[MUSIC_PANEL_ENABLED_KEY] ?: true
+        prefs[MUSIC_PANEL_ENABLED_KEY] ?: false
     }
 
     suspend fun setMusicPanelEnabled(enabled: Boolean) {

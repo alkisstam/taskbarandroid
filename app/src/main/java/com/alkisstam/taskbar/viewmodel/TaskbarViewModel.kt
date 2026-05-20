@@ -85,7 +85,7 @@ class TaskbarViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
     val musicPanelEnabled: StateFlow<Boolean> = prefsRepository.musicPanelEnabled
-        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     fun completeOnboarding() {
         viewModelScope.launch { prefsRepository.setOnboardingComplete() }

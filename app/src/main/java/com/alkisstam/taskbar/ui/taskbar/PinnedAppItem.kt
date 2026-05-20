@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
@@ -111,7 +110,7 @@ fun PinnedAppItem(
                     shape = RoundedCornerShape(12.dp),
                     tonalElevation = 8.dp,
                     shadowElevation = 8.dp,
-                    modifier = Modifier.widthIn(min = 160.dp, max = 220.dp)
+                    modifier = Modifier.width(140.dp)
                 ) {
                     Column {
                         shortcuts.forEach { shortcut ->

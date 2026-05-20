@@ -1,7 +1,10 @@
 package com.alkisstam.taskbar
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.ComponentActivity
@@ -31,6 +34,7 @@ class MainActivity : ComponentActivity() {
     private var hasOverlayPermission by mutableStateOf(false)
     private var hasWriteSettingsPermission by mutableStateOf(false)
     private var hasNotificationPolicyPermission by mutableStateOf(false)
+    private var hasNotificationsPermission by mutableStateOf(false)
 
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -38,12 +42,17 @@ class MainActivity : ComponentActivity() {
         hasOverlayPermission = Settings.canDrawOverlays(this)
     }
 
+    private val notificationsPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted -> hasNotificationsPermission = granted }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         hasOverlayPermission = Settings.canDrawOverlays(this)
         hasWriteSettingsPermission = Settings.System.canWrite(this)
         hasNotificationPolicyPermission = getNotificationPolicyAccess()
+        hasNotificationsPermission = getNotificationsPermission()
 
         setContent {
             val themeMode by taskbarViewModel.themeMode.collectAsState()
@@ -57,10 +66,12 @@ class MainActivity : ComponentActivity() {
                         hasAccessibilityPermission = hasAccessibilityPermission,
                         hasWriteSettingsPermission = hasWriteSettingsPermission,
                         hasNotificationPolicyPermission = hasNotificationPolicyPermission,
+                        hasNotificationsPermission = hasNotificationsPermission,
                         onRequestOverlayPermission = ::requestOverlayPermission,
                         onRequestAccessibilityPermission = ::requestAccessibilityPermission,
                         onRequestWriteSettingsPermission = ::requestWriteSettingsPermission,
                         onRequestNotificationPolicyPermission = ::requestNotificationPolicyPermission,
+                        onRequestNotificationsPermission = ::requestNotificationsPermission,
                         onComplete = taskbarViewModel::completeOnboarding
                     )
                     true -> SettingsScreen(
@@ -85,11 +96,23 @@ class MainActivity : ComponentActivity() {
         hasOverlayPermission = Settings.canDrawOverlays(this)
         hasWriteSettingsPermission = Settings.System.canWrite(this)
         hasNotificationPolicyPermission = getNotificationPolicyAccess()
+        hasNotificationsPermission = getNotificationsPermission()
     }
 
     private fun getNotificationPolicyAccess(): Boolean {
         val nm = getSystemService(NOTIFICATION_SERVICE) as android.app.NotificationManager
         return nm.isNotificationPolicyAccessGranted
+    }
+
+    private fun getNotificationsPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+        else true
+    }
+
+    private fun requestNotificationsPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            notificationsPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
     }
 
     override fun onStop() {

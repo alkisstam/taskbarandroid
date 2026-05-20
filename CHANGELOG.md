@@ -4,6 +4,19 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.1.5] - 2026-05-20
+
+### Changed
+- **Taskbar width** — now auto-sizes to fit pinned apps (capped at 95% of screen width). The manual width slider has been removed from Design settings.
+- **Long-press popup** — narrowed to 140dp. When the controls strip and/or music panel are visible, the popup positions itself above them.
+- **Volume/brightness sliders** — now draw on top of the music panel instead of behind it.
+- **Music panel** — disabled by default on fresh installs.
+
+### Added
+- **Notifications permission** — added to the onboarding screen alongside the other permission cards (required on Android 13+ for music panel media session access).
+
+---
+
 ## [1.1.4] - 2026-05-20
 
 ### Changed

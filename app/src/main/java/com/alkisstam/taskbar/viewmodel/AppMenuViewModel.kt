@@ -322,7 +322,7 @@ class AppMenuViewModel @Inject constructor(
             "dnd" -> if (_quickControlsState.value.dndPermissionGranted) toggleDnd() else openDndSettings()
             "qr" -> openQrScanner()
             "power" -> showPowerMenu()
-            "screenshot" -> takeScreenshot()
+            "screenshot" -> viewModelScope.launch { kotlinx.coroutines.delay(700); takeScreenshot() }
             "lockscreen" -> lockScreen()
         }
     }
