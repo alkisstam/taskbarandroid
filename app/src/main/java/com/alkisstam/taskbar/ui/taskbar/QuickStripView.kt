@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -23,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.ui.appmenu.QuickControlItem
 import com.alkisstam.taskbar.ui.appmenu.toItems
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
+import com.alkisstam.taskbar.viewmodel.QuickControlItemData
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 
 @Composable
@@ -36,6 +39,8 @@ fun QuickStripView(
     val quickControls by appMenuViewModel.quickControlsState.collectAsState()
     val controlsOrder by taskbarViewModel.controlsOrder.collectAsState()
     val controlsDisabledIds by taskbarViewModel.controlsDisabledIds.collectAsState()
+    val musicPanelEnabled by taskbarViewModel.musicPanelEnabled.collectAsState()
+    val musicPanelVisible by appMenuViewModel.musicPanelVisible.collectAsState()
     val stripColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
     val screenWidthDp = LocalConfiguration.current.screenWidthDp.dp
 
@@ -58,6 +63,19 @@ fun QuickStripView(
                 horizontalArrangement = Arrangement.spacedBy(2.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                if (musicPanelEnabled) {
+                    item {
+                        QuickControlItem(
+                            item = QuickControlItemData(
+                                id = "music",
+                                label = "Music",
+                                active = musicPanelVisible,
+                                icon = Icons.Filled.MusicNote
+                            ),
+                            onToggle = { appMenuViewModel.toggleMusicPanel() }
+                        )
+                    }
+                }
                 items(quickControls.toItems(controlsOrder, controlsDisabledIds)) { item ->
                     QuickControlItem(
                         item = item,

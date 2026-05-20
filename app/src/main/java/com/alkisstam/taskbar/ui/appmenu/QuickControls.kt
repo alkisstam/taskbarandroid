@@ -27,6 +27,7 @@ import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -48,6 +49,9 @@ fun QuickControls(
     onAction: (String) -> Unit,
     order: List<String> = PreferencesRepository.ALL_CONTROL_IDS,
     disabledIds: Set<String> = emptySet(),
+    showMusicIcon: Boolean = false,
+    musicPanelActive: Boolean = false,
+    onMusicToggle: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val items = state.toItems(order, disabledIds)
@@ -58,6 +62,14 @@ fun QuickControls(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
+        if (showMusicIcon) {
+            QuickControlTile(
+                icon = Icons.Filled.MusicNote,
+                label = "Music",
+                active = musicPanelActive,
+                onClick = onMusicToggle
+            )
+        }
         items.forEach { item ->
             QuickControlTile(
                 icon = item.icon,

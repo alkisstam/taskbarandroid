@@ -24,6 +24,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -74,7 +76,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.border
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -98,8 +102,9 @@ fun SettingsScreen(
     onRequestAccessibilityPermission: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var selectedTab by remember { mutableIntStateOf(0) }
     val tabs = listOf("General", "Pinned Apps", "Controls", "Design")
+    val pagerState = rememberPagerState(pageCount = { tabs.size })
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -117,27 +122,29 @@ fun SettingsScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            TabRow(selectedTabIndex = selectedTab) {
+            TabRow(selectedTabIndex = pagerState.currentPage) {
                 tabs.forEachIndexed { index, title ->
                     Tab(
-                        selected = selectedTab == index,
-                        onClick = { selectedTab = index },
+                        selected = pagerState.currentPage == index,
+                        onClick = { coroutineScope.launch { pagerState.animateScrollToPage(index) } },
                         text = { Text(title) }
                     )
                 }
             }
 
-            when (selectedTab) {
-                0 -> GeneralTab(
-                    viewModel = viewModel,
-                    hasOverlayPermission = hasOverlayPermission,
-                    hasAccessibilityPermission = hasAccessibilityPermission,
-                    onRequestOverlayPermission = onRequestOverlayPermission,
-                    onRequestAccessibilityPermission = onRequestAccessibilityPermission
-                )
-                1 -> PinnedAppsTab(viewModel = viewModel)
-                2 -> ControlsTab(viewModel = viewModel)
-                3 -> PillSettingsScreen(viewModel = viewModel)
+            HorizontalPager(state = pagerState) { page ->
+                when (page) {
+                    0 -> GeneralTab(
+                        viewModel = viewModel,
+                        hasOverlayPermission = hasOverlayPermission,
+                        hasAccessibilityPermission = hasAccessibilityPermission,
+                        onRequestOverlayPermission = onRequestOverlayPermission,
+                        onRequestAccessibilityPermission = onRequestAccessibilityPermission
+                    )
+                    1 -> PinnedAppsTab(viewModel = viewModel)
+                    2 -> ControlsTab(viewModel = viewModel)
+                    3 -> PillSettingsScreen(viewModel = viewModel)
+                }
             }
         }
     }

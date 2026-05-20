@@ -47,6 +47,8 @@ fun AppMenuPanel(
     val controlsOrder by taskbarViewModel.controlsOrder.collectAsState()
     val controlsDisabledIds by taskbarViewModel.controlsDisabledIds.collectAsState()
     val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
+    val musicPanelEnabled by taskbarViewModel.musicPanelEnabled.collectAsState()
+    val musicPanelVisible by viewModel.musicPanelVisible.collectAsState()
     val panelColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
 
     AnimatedVisibility(
@@ -127,9 +129,13 @@ fun AppMenuPanel(
                             state = quickControls,
                             order = controlsOrder,
                             disabledIds = controlsDisabledIds,
+                            showMusicIcon = musicPanelEnabled,
+                            musicPanelActive = musicPanelVisible,
+                            onMusicToggle = viewModel::toggleMusicPanel,
                             onAction = { id ->
                                 viewModel.handleQuickControlAction(id)
-                                if (id == "qr" || id == "power") onHideTaskbar()
+                                if (id in listOf("qr", "power", "screenshot", "lockscreen")) onHideTaskbar()
+                                if (id in listOf("screenshot", "lockscreen")) viewModel.dismissMenu()
                             },
                             modifier = Modifier.weight(0.2f)
                         )

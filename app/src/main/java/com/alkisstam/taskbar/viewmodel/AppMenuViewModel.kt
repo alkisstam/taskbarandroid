@@ -88,6 +88,9 @@ class AppMenuViewModel @Inject constructor(
     private val _brightnessPanelVisible = MutableStateFlow(false)
     val brightnessPanelVisible: StateFlow<Boolean> = _brightnessPanelVisible.asStateFlow()
 
+    private val _musicPanelVisible = MutableStateFlow(false)
+    val musicPanelVisible: StateFlow<Boolean> = _musicPanelVisible.asStateFlow()
+
     val mediaState: StateFlow<MediaState> = mediaRepository.mediaState
 
     private val _brightnessLevel = MutableStateFlow(128)
@@ -126,6 +129,14 @@ class AppMenuViewModel @Inject constructor(
 
     fun dismissBrightnessPanel() {
         _brightnessPanelVisible.value = false
+    }
+
+    fun toggleMusicPanel() {
+        _musicPanelVisible.value = !_musicPanelVisible.value
+    }
+
+    fun dismissMusicPanel() {
+        _musicPanelVisible.value = false
     }
 
     fun playPause() { mediaRepository.playPause() }

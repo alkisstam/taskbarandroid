@@ -255,6 +255,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             observeSearchVisibility()
             observeQuickStripVisibility()
             observeQuickStripPosition()
+            observeMusicPanelPosition()
             observeVolumeAndBrightnessPanels()
             observeMusicPanelVisibility()
         }
@@ -571,12 +572,31 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             taskbarViewModel.taskbarSettings.collect { settings ->
                 quickStripYOffsetDp = settings.positionYDp + settings.heightDp + 2f
                 volumePanelYOffsetDp = settings.positionYDp + settings.heightDp * 2 + 10f
-                musicPanelYOffsetDp = settings.positionYDp + settings.heightDp + 80f
                 val view = quickStripView ?: return@collect
                 try { windowManager.updateViewLayout(view, quickStripLayoutParams(quickStripInteractive, quickStripYOffsetDp)) }
                 catch (e: Exception) { Log.w(TAG, "Failed to update quick strip position", e) }
-                val musicView = musicPanelView ?: return@collect
-                try { windowManager.updateViewLayout(musicView, musicPanelLayoutParams(musicPanelYOffsetDp)) }
+            }
+        }
+    }
+
+    private fun observeMusicPanelPosition() {
+        serviceScope.launch {
+            kotlinx.coroutines.flow.combine(
+                taskbarViewModel.taskbarSettings,
+                taskbarViewModel.quickControlsStripEnabled,
+                taskbarViewModel.quickControlsEnabled,
+                appMenuViewModel.menuVisible
+            ) { settings, stripEnabled, controlsEnabled, menuOpen ->
+                val stripActive = stripEnabled && controlsEnabled
+                when {
+                    menuOpen -> settings.positionYDp + settings.heightDp + 390f
+                    stripActive -> settings.positionYDp + settings.heightDp + 80f
+                    else -> settings.positionYDp + settings.heightDp + 8f
+                }
+            }.collect { yOffset ->
+                musicPanelYOffsetDp = yOffset
+                val view = musicPanelView ?: return@collect
+                try { windowManager.updateViewLayout(view, musicPanelLayoutParams(musicPanelYOffsetDp)) }
                 catch (e: Exception) { Log.w(TAG, "Failed to update music panel position", e) }
             }
         }
@@ -745,9 +765,16 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             kotlinx.coroutines.flow.combine(
                 appMenuViewModel.mediaState,
                 taskbarViewModel.musicPanelEnabled,
-                taskbarViewModel.isTaskbarVisible
-            ) { state, enabled, taskbarVisible ->
-                enabled && state.hasSession && taskbarVisible
+                taskbarViewModel.isTaskbarVisible,
+                appMenuViewModel.musicPanelVisible,
+                appMenuViewModel.isSearching
+            ) { values ->
+                val state = values[0] as com.alkisstam.taskbar.data.MediaState
+                val enabled = values[1] as Boolean
+                val taskbarVisible = values[2] as Boolean
+                val userVisible = values[3] as Boolean
+                val searching = values[4] as Boolean
+                enabled && state.hasSession && taskbarVisible && userVisible && !searching
             }.collect { show ->
                 musicPanelView?.visibility = if (show) View.VISIBLE else View.GONE
             }
