@@ -4,6 +4,13 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.1.6] - 2026-05-20
+
+### Changed
+- **Taskbar icons** — long press now drags to reorder directly. The long-press popup (shortcuts + unpin) has been removed; use the apps panel to pin or unpin apps.
+
+---
+
 ## [1.1.5] - 2026-05-20
 
 ### Changed
