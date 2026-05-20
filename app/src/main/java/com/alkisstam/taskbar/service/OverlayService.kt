@@ -589,7 +589,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             ) { settings, stripEnabled, controlsEnabled, menuOpen ->
                 val stripActive = stripEnabled && controlsEnabled
                 when {
-                    menuOpen -> settings.positionYDp + settings.heightDp + 390f
+                    menuOpen -> settings.positionYDp + settings.heightDp + 420f
                     stripActive -> settings.positionYDp + settings.heightDp + 80f
                     else -> settings.positionYDp + settings.heightDp + 8f
                 }
