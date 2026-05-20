@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
@@ -41,12 +40,8 @@ fun TaskbarView(
     val pinnedApps by taskbarViewModel.pinnedApps.collectAsState()
     val menuVisible by appMenuViewModel.menuVisible.collectAsState()
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
-    val quickStripEnabled by taskbarViewModel.quickControlsStripEnabled.collectAsState()
     val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
     val haptic = LocalHapticFeedback.current
-    val density = LocalDensity.current
-    val musicPanelEnabled by taskbarViewModel.musicPanelEnabled.collectAsState()
-    val musicPanelVisible by appMenuViewModel.musicPanelVisible.collectAsState()
     val screenWidthDp = LocalConfiguration.current.screenWidthDp
 
     val surfaceColor = if (surfaceTintColor != 0L)
@@ -102,7 +97,6 @@ fun TaskbarView(
                                 app = app,
                                 showLabel = taskbarSettings.showLabels,
                                 isDragging = isDragging,
-                                extraPopupBottomOffsetPx = 0,
                                 dragModifier = Modifier.longPressDraggableHandle(
                                     onDragStarted = {
                                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -111,8 +105,7 @@ fun TaskbarView(
                                 onLaunch = {
                                     taskbarViewModel.launchApp(app.packageName)
                                     taskbarViewModel.hideTaskbar()
-                                },
-                                onUnpin = { taskbarViewModel.unpinApp(app.packageName) }
+                                }
                             )
                         }
                     }
