@@ -4,6 +4,18 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.1.4] - 2026-05-20
+
+### Changed
+- **Music Panel** — no longer auto-shows when media plays. A Music toggle icon now appears first in the controls strip (or in the apps panel controls column when the strip is off), visible whenever the Music Panel is enabled in settings. Tap it to show or hide the panel.
+- **Music Panel position** — dynamically repositions: floats above the controls strip when strip is on, above the taskbar when strip is off, and above the apps panel when the apps panel is open. Hides automatically when search is triggered.
+- **Screenshot / Lock Screen from apps panel** — tapping either control now dismisses the apps panel and hides the taskbar automatically (previously only worked from the strip).
+
+### Added
+- **Swipe to change Settings tabs** — swipe horizontally across the Settings screen to switch between General, Pinned Apps, Controls, and Design tabs.
+
+---
+
 ## [1.1.3] - 2026-05-19
 
 ### Added
