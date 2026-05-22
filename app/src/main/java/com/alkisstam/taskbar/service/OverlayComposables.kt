@@ -1,0 +1,168 @@
+package com.alkisstam.taskbar.service
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import com.alkisstam.taskbar.ui.appmenu.AppMenuPanel
+import com.alkisstam.taskbar.ui.appmenu.BrightnessPanel
+import com.alkisstam.taskbar.ui.appmenu.FloatingSearchBar
+import com.alkisstam.taskbar.ui.appmenu.MusicPanel
+import com.alkisstam.taskbar.ui.appmenu.VolumePanel
+import com.alkisstam.taskbar.ui.taskbar.QuickStripView
+import com.alkisstam.taskbar.ui.taskbar.TaskbarView
+import com.alkisstam.taskbar.ui.taskbar.TriggerPillView
+import com.alkisstam.taskbar.ui.theme.TaskBarTheme
+import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
+import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
+
+@Composable
+internal fun OverlayContent(
+    taskbarViewModel: TaskbarViewModel,
+    appMenuViewModel: AppMenuViewModel
+) {
+    val themeMode by taskbarViewModel.themeMode.collectAsState()
+    val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
+    val menuVisible by appMenuViewModel.menuVisible.collectAsState()
+    val isSettingsOpen by taskbarViewModel.isSettingsOpen.collectAsState()
+
+    TaskBarTheme(themeMode = themeMode) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            if (isTaskbarVisible && !isSettingsOpen) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) {
+                            if (menuVisible) appMenuViewModel.dismissMenu()
+                            else taskbarViewModel.hideTaskbar()
+                        }
+                )
+            }
+            Column(modifier = Modifier.wrapContentHeight()) {
+                AppMenuPanel(
+                    viewModel = appMenuViewModel,
+                    taskbarViewModel = taskbarViewModel,
+                    onHideTaskbar = taskbarViewModel::hideTaskbar,
+                    modifier = Modifier
+                )
+                AnimatedVisibility(
+                    visible = isTaskbarVisible,
+                    enter = slideInVertically(initialOffsetY = { it }),
+                    exit = slideOutVertically(targetOffsetY = { it })
+                ) {
+                    TaskbarView(
+                        taskbarViewModel = taskbarViewModel,
+                        appMenuViewModel = appMenuViewModel
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+internal fun TriggerPillContent(taskbarViewModel: TaskbarViewModel) {
+    val themeMode by taskbarViewModel.themeMode.collectAsState()
+    val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
+    val pillSettings by taskbarViewModel.pillSettings.collectAsState()
+
+    TaskBarTheme(themeMode = themeMode) {
+        TriggerPillView(
+            isCollapsed = !isTaskbarVisible,
+            pillSettings = pillSettings,
+            onExpand = { taskbarViewModel.showTaskbar() }
+        )
+    }
+}
+
+@Composable
+internal fun SearchOverlayContent(appMenuViewModel: AppMenuViewModel, onHideTaskbar: () -> Unit) {
+    TaskBarTheme {
+        FloatingSearchBar(viewModel = appMenuViewModel, onHideTaskbar = onHideTaskbar)
+    }
+}
+
+@Composable
+internal fun QuickStripContent(
+    taskbarViewModel: TaskbarViewModel,
+    appMenuViewModel: AppMenuViewModel,
+    onHideTaskbar: () -> Unit = {}
+) {
+    val themeMode by taskbarViewModel.themeMode.collectAsState()
+    TaskBarTheme(themeMode = themeMode) {
+        QuickStripView(
+            taskbarViewModel = taskbarViewModel,
+            appMenuViewModel = appMenuViewModel,
+            onHideTaskbar = onHideTaskbar
+        )
+    }
+}
+
+@Composable
+internal fun VolumePanelContent(
+    taskbarViewModel: TaskbarViewModel,
+    appMenuViewModel: AppMenuViewModel
+) {
+    val themeMode by taskbarViewModel.themeMode.collectAsState()
+    val streams by appMenuViewModel.volumeStreams.collectAsState()
+    TaskBarTheme(themeMode = themeMode) {
+        VolumePanel(
+            streams = streams,
+            onVolumeChange = { streamType, value ->
+                appMenuViewModel.setStreamVolume(streamType, value)
+            }
+        )
+    }
+}
+
+@Composable
+internal fun BrightnessPanelContent(
+    taskbarViewModel: TaskbarViewModel,
+    appMenuViewModel: AppMenuViewModel
+) {
+    val themeMode by taskbarViewModel.themeMode.collectAsState()
+    val brightnessLevel by appMenuViewModel.brightnessLevel.collectAsState()
+    val quickControlsState by appMenuViewModel.quickControlsState.collectAsState()
+    TaskBarTheme(themeMode = themeMode) {
+        BrightnessPanel(
+            brightnessLevel = brightnessLevel,
+            onBrightnessChange = { value -> appMenuViewModel.setBrightnessLevel(value) },
+            autoBrightnessEnabled = quickControlsState.autoBrightness,
+            onAutoBrightnessToggle = { appMenuViewModel.toggleAutoBrightness() }
+        )
+    }
+}
+
+@Composable
+internal fun MusicPanelContent(
+    taskbarViewModel: TaskbarViewModel,
+    appMenuViewModel: AppMenuViewModel
+) {
+    val themeMode by taskbarViewModel.themeMode.collectAsState()
+    val mediaState by appMenuViewModel.mediaState.collectAsState()
+    TaskBarTheme(themeMode = themeMode) {
+        MusicPanel(
+            mediaState = mediaState,
+            onPlayPause = appMenuViewModel::playPause,
+            onNext = appMenuViewModel::nextTrack,
+            onPrev = appMenuViewModel::prevTrack
+        )
+    }
+}

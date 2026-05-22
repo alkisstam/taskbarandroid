@@ -11,36 +11,19 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Configuration
-import android.graphics.PixelFormat
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
-import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.app.NotificationCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
@@ -56,19 +39,10 @@ import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.alkisstam.taskbar.MainActivity
 import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.AppRepository
-import com.alkisstam.taskbar.util.Constants
 import com.alkisstam.taskbar.data.MediaRepository
 import com.alkisstam.taskbar.data.PreferencesRepository
 import com.alkisstam.taskbar.data.QuickControlsRepository
-import com.alkisstam.taskbar.ui.appmenu.AppMenuPanel
-import com.alkisstam.taskbar.ui.appmenu.BrightnessPanel
-import com.alkisstam.taskbar.ui.appmenu.FloatingSearchBar
-import com.alkisstam.taskbar.ui.appmenu.MusicPanel
-import com.alkisstam.taskbar.ui.appmenu.VolumePanel
-import com.alkisstam.taskbar.ui.taskbar.QuickStripView
-import com.alkisstam.taskbar.ui.taskbar.TaskbarView
-import com.alkisstam.taskbar.ui.taskbar.TriggerPillView
-import com.alkisstam.taskbar.ui.theme.TaskBarTheme
+import com.alkisstam.taskbar.util.Constants
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -118,14 +92,9 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private fun showOverlay() {
         overlayHiddenForLockscreen = false
-
-        // Check if views were removed from WindowManager during screen off/lock
-        // and re-add them if necessary (similar to sidebar project approach)
-        // Use isAttachedToWindow for more reliable state detection than windowToken
         if (overlayView?.isAttachedToWindow != true) addOverlayView()
         if (pillView?.isAttachedToWindow != true) addPillView()
         if (quickStripView?.isAttachedToWindow != true) addQuickStripView()
-
         overlayView?.visibility = View.VISIBLE
         pillView?.visibility = View.VISIBLE
         restoreQuickStripVisibility()
@@ -133,31 +102,22 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private fun hideOverlay() {
         overlayHiddenForLockscreen = true
-        // Note: We intentionally do NOT set visibility to GONE here.
-        // Setting views to GONE during screen off can cause WindowManager
-        // to remove them on some Android versions/OEM skins, leading to
-        // re-add race conditions on unlock. Just track the lockscreen state
-        // and let the insets listener handle visibility when appropriate.
-        // See: SidebarOverlayService for reference implementation.
+        // Setting views to GONE during screen off can cause WindowManager to remove them on some
+        // Android versions/OEM skins. Track the state and let the insets listener handle visibility.
     }
 
     private val lockscreenReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
                 Intent.ACTION_SCREEN_OFF -> {
-                    // Just track that screen is off - don't manipulate visibility
-                    // to avoid WindowManager issues on some Android versions
                     overlayHiddenForLockscreen = true
                 }
                 Intent.ACTION_USER_PRESENT, Intent.ACTION_SCREEN_ON -> {
-                    // Simplified: just ensure views exist, let insets listener manage visibility
-                    // This matches the sidebar project approach that works reliably
                     overlayHiddenForLockscreen = false
                     Handler(Looper.getMainLooper()).post {
                         if (overlayView?.isAttachedToWindow != true) addOverlayView()
                         if (pillView?.isAttachedToWindow != true) addPillView()
                         if (quickStripView?.isAttachedToWindow != true) addQuickStripView()
-                        // Trigger a refresh of visibility based on current state
                         restoreQuickStripVisibility()
                     }
                 }
@@ -186,6 +146,9 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 ACTION_DISMISS_ALL -> {
                     if (this@OverlayService::appMenuViewModel.isInitialized) dismissAll()
                 }
+                ACTION_ACCESSIBILITY_CHANGED -> {
+                    Handler(Looper.getMainLooper()).post { refreshAllViews() }
+                }
             }
         }
     }
@@ -199,12 +162,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private lateinit var taskbarViewModel: TaskbarViewModel
     private lateinit var appMenuViewModel: AppMenuViewModel
 
-    private val overlayWindowType: Int
-        get() = if (TaskBarAccessibilityService.isRunning())
-            WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
-        else
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-
     companion object {
         private const val TAG = "OverlayService"
         private const val NOTIFICATION_ID = 1001
@@ -212,6 +169,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         const val ACTION_SETTINGS_OPEN = "com.alkisstam.taskbar.ACTION_SETTINGS_OPEN"
         const val ACTION_SETTINGS_CLOSE = "com.alkisstam.taskbar.ACTION_SETTINGS_CLOSE"
         const val ACTION_DISMISS_ALL = "com.alkisstam.taskbar.DISMISS_ALL"
+        const val ACTION_ACCESSIBILITY_CHANGED = "com.alkisstam.taskbar.ACCESSIBILITY_CHANGED"
     }
 
     override fun onCreate() {
@@ -228,6 +186,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             addAction(ACTION_SETTINGS_OPEN)
             addAction(ACTION_SETTINGS_CLOSE)
             addAction(ACTION_DISMISS_ALL)
+            addAction(ACTION_ACCESSIBILITY_CHANGED)
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(lockscreenReceiver, filter, RECEIVER_NOT_EXPORTED)
@@ -248,7 +207,15 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startForeground(NOTIFICATION_ID, buildNotification())
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            startForeground(
+                NOTIFICATION_ID,
+                buildNotification(),
+                android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+            )
+        } else {
+            startForeground(NOTIFICATION_ID, buildNotification())
+        }
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
         addOverlayView()
@@ -273,44 +240,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         return START_STICKY
     }
 
-    private fun overlayLayoutParams(interactive: Boolean = true, focusable: Boolean = false): WindowManager.LayoutParams {
-        val usingAccessibility = TaskBarAccessibilityService.isRunning()
-        val flags = (if (!focusable) WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE else 0) or
-                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                (if (!interactive) WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE else 0) or
-                (if (usingAccessibility) WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS else 0)
-        return WindowManager.LayoutParams(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT,
-            overlayWindowType,
-            flags,
-            PixelFormat.TRANSLUCENT
-        ).apply {
-            gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-            y = 0
-        }
-    }
-
-    private fun quickStripLayoutParams(interactive: Boolean = false, yOffsetDp: Float = 0f): WindowManager.LayoutParams {
-        val usingAccessibility = TaskBarAccessibilityService.isRunning()
-        val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                (if (!interactive) WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE else 0) or
-                (if (usingAccessibility) WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS else 0)
-        val density = resources.displayMetrics.density
-        return WindowManager.LayoutParams(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            overlayWindowType,
-            flags,
-            PixelFormat.TRANSLUCENT
-        ).apply {
-            gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-            y = (yOffsetDp * density).toInt()
-        }
-    }
+    // region Quick strip state
 
     private var quickStripYOffsetDp: Float = 0f
     private var quickStripInteractive: Boolean = false
@@ -344,20 +274,23 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         catch (e: Exception) { Log.w(TAG, "Failed to update overlay layout flags", e) }
     }
 
+    // endregion
+
+    // region Observers
+
     private fun observeOverlayInteractivity() {
         serviceScope.launch {
             kotlinx.coroutines.flow.combine(
                 appMenuViewModel.menuVisible,
                 taskbarViewModel.isTaskbarVisible,
                 appMenuViewModel.isSearching,
-                // Also consider quick strip visibility for interactivity
                 taskbarViewModel.quickControlsEnabled,
                 taskbarViewModel.quickControlsStripEnabled
             ) { menuOpen, taskbarVisible, searching, controlsEnabled, stripEnabled ->
                 val stripVisible = taskbarVisible && controlsEnabled && stripEnabled && !menuOpen && !searching
                 Triple(menuOpen || taskbarVisible || stripVisible, menuOpen && !searching, stripVisible)
             }
-            .collect { (interactive, focusable, stripVisible) ->
+            .collect { (interactive, focusable, _) ->
                 if (interactive) {
                     setOverlayFlags(interactive = true, focusable = focusable)
                 } else {
@@ -368,114 +301,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         }
     }
 
-    private fun addOverlayView() {
-        if (overlayView?.isAttachedToWindow == true) return
-        overlayView?.let { runCatching { windowManager.removeView(it) } }
-        overlayView = null
-        try {
-            val composeView = ComposeView(this).apply {
-                setViewTreeLifecycleOwner(this@OverlayService)
-                setViewTreeViewModelStoreOwner(this@OverlayService)
-                setViewTreeSavedStateRegistryOwner(this@OverlayService)
-                setContent {
-                    OverlayContent(
-                        taskbarViewModel = taskbarViewModel,
-                        appMenuViewModel = appMenuViewModel
-                    )
-                }
-            }
-            val wrapper = object : FrameLayout(this) {
-                override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-                    if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
-                        dismissAll()
-                        return true
-                    }
-                    return super.dispatchKeyEvent(event)
-                }
-            }
-            wrapper.setViewTreeLifecycleOwner(this@OverlayService)
-            wrapper.setViewTreeViewModelStoreOwner(this@OverlayService)
-            wrapper.setViewTreeSavedStateRegistryOwner(this@OverlayService)
-            wrapper.addView(composeView)
-            overlayView = wrapper
-            windowManager.addView(wrapper, overlayLayoutParams())
-            attachInsetsListener(wrapper)
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to add overlay view", e)
-            overlayView = null
-        }
-    }
-
-    private fun attachInsetsListener(view: View) {
-        // ViewCompat.setOnApplyWindowInsetsListener is dispatched from ViewRootImpl even
-        // when the view is GONE, so the overlay can self-heal after the keyboard closes
-        // rather than staying stuck in GONE state (the OnGlobalLayoutListener deadlock).
-        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
-            if (taskbarViewModel.autoHideInFullscreen.value) {
-                val isFullscreen = !insets.isVisible(WindowInsetsCompat.Type.statusBars())
-                if (isFullscreen) taskbarViewModel.hideTaskbar() else taskbarViewModel.showTaskbar()
-            }
-            if (!overlayHiddenForLockscreen) {
-                if (insets.isVisible(WindowInsetsCompat.Type.ime())) {
-                    // Make non-interactive so keyboard receives touches, but keep VISIBLE.
-                    // Setting GONE would prevent the insets listener from firing on a GONE
-                    // root view, permanently losing the overlay (deadlock).
-                    setOverlayFlags(interactive = false, focusable = false)
-                } else {
-                    val menuOpen = appMenuViewModel.menuVisible.value
-                    val taskbarVisible = taskbarViewModel.isTaskbarVisible.value
-                    val searching = appMenuViewModel.isSearching.value
-                    val controlsEnabled = taskbarViewModel.quickControlsEnabled.value
-                    val stripEnabled = taskbarViewModel.quickControlsStripEnabled.value
-                    val stripVisible = taskbarVisible && controlsEnabled && stripEnabled && !menuOpen && !searching
-                    setOverlayFlags(
-                        interactive = menuOpen || taskbarVisible || stripVisible,
-                        focusable = menuOpen && !searching
-                    )
-                }
-            }
-            insets
-        }
-    }
-
-    private fun pillLayoutParams(positionXDp: Float = 16f, positionYDp: Float = 80f): WindowManager.LayoutParams {
-        val usingAccessibility = TaskBarAccessibilityService.isRunning()
-        val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
-                (if (usingAccessibility) WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS else 0)
-        return WindowManager.LayoutParams(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            overlayWindowType,
-            flags,
-            PixelFormat.TRANSLUCENT
-        ).apply {
-            gravity = Gravity.BOTTOM or Gravity.START
-            x = (positionXDp * resources.displayMetrics.density).toInt()
-            y = (positionYDp * resources.displayMetrics.density).toInt()
-        }
-    }
-
-    private fun addPillView() {
-        if (pillView?.isAttachedToWindow == true) return
-        pillView?.let { runCatching { windowManager.removeView(it) } }
-        pillView = null
-        try {
-            val composeView = ComposeView(this).apply {
-                setViewTreeLifecycleOwner(this@OverlayService)
-                setViewTreeViewModelStoreOwner(this@OverlayService)
-                setViewTreeSavedStateRegistryOwner(this@OverlayService)
-                setContent { TriggerPillContent(taskbarViewModel = taskbarViewModel) }
-            }
-            pillView = composeView
-            val initial = taskbarViewModel.pillSettings.value
-            windowManager.addView(composeView, pillLayoutParams(initial.positionXDp, initial.positionYDp))
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to add pill view", e)
-            pillView = null
-        }
-    }
-
     private fun observePillPosition() {
         serviceScope.launch {
             taskbarViewModel.pillSettings.collect { settings ->
@@ -483,81 +308,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 try { windowManager.updateViewLayout(view, pillLayoutParams(settings.positionXDp, settings.positionYDp)) }
                 catch (e: Exception) { Log.w(TAG, "Failed to update pill position", e) }
             }
-        }
-    }
-
-    private fun searchLayoutParams(): WindowManager.LayoutParams {
-        val usingAccessibility = TaskBarAccessibilityService.isRunning()
-        val flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                (if (usingAccessibility) WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS else 0)
-        return WindowManager.LayoutParams(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT,
-            overlayWindowType,
-            flags,
-            PixelFormat.TRANSLUCENT
-        ).apply {
-            gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-        }
-    }
-
-    private fun addSearchView() {
-        if (searchView?.isAttachedToWindow == true) return
-        searchView?.let { runCatching { windowManager.removeView(it) } }
-        searchView = null
-        try {
-            val composeView = ComposeView(this).apply {
-                setViewTreeLifecycleOwner(this@OverlayService)
-                setViewTreeViewModelStoreOwner(this@OverlayService)
-                setViewTreeSavedStateRegistryOwner(this@OverlayService)
-                setContent { SearchOverlayContent(appMenuViewModel = appMenuViewModel, onHideTaskbar = taskbarViewModel::hideTaskbar) }
-            }
-            val wrapper = object : FrameLayout(this) {
-                override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-                    if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
-                        appMenuViewModel.closeSearch()
-                        return true
-                    }
-                    return super.dispatchKeyEvent(event)
-                }
-            }
-            wrapper.setViewTreeLifecycleOwner(this@OverlayService)
-            wrapper.setViewTreeViewModelStoreOwner(this@OverlayService)
-            wrapper.setViewTreeSavedStateRegistryOwner(this@OverlayService)
-            wrapper.addView(composeView)
-            searchView = wrapper
-            windowManager.addView(wrapper, searchLayoutParams())
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to add search view", e)
-            searchView = null
-        }
-    }
-
-    private fun addQuickStripView() {
-        if (quickStripView?.isAttachedToWindow == true) return
-        quickStripView?.let { runCatching { windowManager.removeView(it) } }
-        quickStripView = null
-        try {
-            val composeView = ComposeView(this).apply {
-                setViewTreeLifecycleOwner(this@OverlayService)
-                setViewTreeViewModelStoreOwner(this@OverlayService)
-                setViewTreeSavedStateRegistryOwner(this@OverlayService)
-                setContent {
-                    QuickStripContent(
-                        taskbarViewModel = taskbarViewModel,
-                        appMenuViewModel = appMenuViewModel,
-                        onHideTaskbar = taskbarViewModel::hideTaskbar
-                    )
-                }
-            }
-            val initialSettings = taskbarViewModel.taskbarSettings.value
-            quickStripYOffsetDp = initialSettings.positionYDp + initialSettings.heightDp + 2f
-            composeView.visibility = View.GONE
-            quickStripView = composeView
-            windowManager.addView(composeView, quickStripLayoutParams(false, quickStripYOffsetDp))
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to add quick strip view", e)
-            quickStripView = null
         }
     }
 
@@ -626,37 +376,205 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         }
     }
 
-    private fun volumePanelLayoutParams(yOffsetDp: Float): WindowManager.LayoutParams {
-        val usingAccessibility = TaskBarAccessibilityService.isRunning()
-        val flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                (if (usingAccessibility) WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS else 0)
-        val density = resources.displayMetrics.density
-        return WindowManager.LayoutParams(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            overlayWindowType,
-            flags,
-            PixelFormat.TRANSLUCENT
-        ).apply {
-            gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-            y = (yOffsetDp * density).toInt()
+    private fun observeMusicPanelVisibility() {
+        serviceScope.launch {
+            kotlinx.coroutines.flow.combine(
+                appMenuViewModel.mediaState,
+                taskbarViewModel.musicPanelEnabled,
+                taskbarViewModel.isTaskbarVisible,
+                appMenuViewModel.musicPanelVisible,
+                appMenuViewModel.isSearching
+            ) { values ->
+                val state = values[0] as com.alkisstam.taskbar.data.MediaState
+                val enabled = values[1] as Boolean
+                val taskbarVisible = values[2] as Boolean
+                val userVisible = values[3] as Boolean
+                val searching = values[4] as Boolean
+                enabled && state.hasSession && taskbarVisible && userVisible && !searching
+            }.collect { show ->
+                musicPanelView?.visibility = if (show) View.VISIBLE else View.GONE
+            }
         }
     }
 
-    private fun volumeScrimLayoutParams(): WindowManager.LayoutParams {
-        val usingAccessibility = TaskBarAccessibilityService.isRunning()
-        val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                (if (usingAccessibility) WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS else 0)
-        return WindowManager.LayoutParams(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT,
-            overlayWindowType,
-            flags,
-            PixelFormat.TRANSLUCENT
-        ).apply {
-            gravity = Gravity.TOP or Gravity.START
+    private fun observeVolumeAndBrightnessPanels() {
+        serviceScope.launch {
+            kotlinx.coroutines.flow.combine(
+                appMenuViewModel.volumePanelVisible,
+                appMenuViewModel.brightnessPanelVisible
+            ) { volumeVisible, brightnessVisible ->
+                Pair(volumeVisible, brightnessVisible)
+            }.collect { (volumeVisible, brightnessVisible) ->
+                volumeScrimView?.visibility = if (volumeVisible || brightnessVisible) View.VISIBLE else View.GONE
+
+                volumePanelView?.visibility = if (volumeVisible) View.VISIBLE else View.GONE
+                if (volumeVisible) {
+                    val view = volumePanelView ?: return@collect
+                    try { windowManager.updateViewLayout(view, volumePanelLayoutParams(volumePanelYOffsetDp)) }
+                    catch (e: Exception) { Log.w(TAG, "Failed to update volume panel position", e) }
+                }
+
+                brightnessPanelView?.visibility = if (brightnessVisible) View.VISIBLE else View.GONE
+                if (brightnessVisible) {
+                    val view = brightnessPanelView ?: return@collect
+                    try { windowManager.updateViewLayout(view, volumePanelLayoutParams(volumePanelYOffsetDp)) }
+                    catch (e: Exception) { Log.w(TAG, "Failed to update brightness panel position", e) }
+                }
+            }
+        }
+    }
+
+    // endregion
+
+    // region Add views
+
+    private fun addOverlayView() {
+        if (overlayView?.isAttachedToWindow == true) return
+        overlayView?.let { runCatching { windowManager.removeView(it) } }
+        overlayView = null
+        try {
+            val composeView = ComposeView(this).apply {
+                setViewTreeLifecycleOwner(this@OverlayService)
+                setViewTreeViewModelStoreOwner(this@OverlayService)
+                setViewTreeSavedStateRegistryOwner(this@OverlayService)
+                setContent {
+                    OverlayContent(
+                        taskbarViewModel = taskbarViewModel,
+                        appMenuViewModel = appMenuViewModel
+                    )
+                }
+            }
+            val wrapper = object : FrameLayout(this) {
+                override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+                    if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+                        dismissAll()
+                        return true
+                    }
+                    return super.dispatchKeyEvent(event)
+                }
+            }
+            wrapper.setViewTreeLifecycleOwner(this@OverlayService)
+            wrapper.setViewTreeViewModelStoreOwner(this@OverlayService)
+            wrapper.setViewTreeSavedStateRegistryOwner(this@OverlayService)
+            wrapper.addView(composeView)
+            overlayView = wrapper
+            windowManager.addView(wrapper, overlayLayoutParams())
+            attachInsetsListener(wrapper)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to add overlay view", e)
+            overlayView = null
+        }
+    }
+
+    private fun attachInsetsListener(view: View) {
+        // ViewCompat.setOnApplyWindowInsetsListener is dispatched from ViewRootImpl even when the
+        // view is GONE, so the overlay can self-heal after the keyboard closes rather than staying
+        // stuck in GONE state (the OnGlobalLayoutListener deadlock).
+        ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
+            if (taskbarViewModel.autoHideInFullscreen.value) {
+                val isFullscreen = !insets.isVisible(WindowInsetsCompat.Type.statusBars())
+                if (isFullscreen) taskbarViewModel.hideTaskbar() else taskbarViewModel.showTaskbar()
+            }
+            if (!overlayHiddenForLockscreen) {
+                if (insets.isVisible(WindowInsetsCompat.Type.ime())) {
+                    // Make non-interactive so keyboard receives touches, but keep VISIBLE.
+                    // Setting GONE prevents the insets listener from firing, permanently losing
+                    // the overlay (deadlock).
+                    setOverlayFlags(interactive = false, focusable = false)
+                } else {
+                    val menuOpen = appMenuViewModel.menuVisible.value
+                    val taskbarVisible = taskbarViewModel.isTaskbarVisible.value
+                    val searching = appMenuViewModel.isSearching.value
+                    val controlsEnabled = taskbarViewModel.quickControlsEnabled.value
+                    val stripEnabled = taskbarViewModel.quickControlsStripEnabled.value
+                    val stripVisible = taskbarVisible && controlsEnabled && stripEnabled && !menuOpen && !searching
+                    setOverlayFlags(
+                        interactive = menuOpen || taskbarVisible || stripVisible,
+                        focusable = menuOpen && !searching
+                    )
+                }
+            }
+            insets
+        }
+    }
+
+    private fun addPillView() {
+        if (pillView?.isAttachedToWindow == true) return
+        pillView?.let { runCatching { windowManager.removeView(it) } }
+        pillView = null
+        try {
+            val composeView = ComposeView(this).apply {
+                setViewTreeLifecycleOwner(this@OverlayService)
+                setViewTreeViewModelStoreOwner(this@OverlayService)
+                setViewTreeSavedStateRegistryOwner(this@OverlayService)
+                setContent { TriggerPillContent(taskbarViewModel = taskbarViewModel) }
+            }
+            pillView = composeView
+            val initial = taskbarViewModel.pillSettings.value
+            windowManager.addView(composeView, pillLayoutParams(initial.positionXDp, initial.positionYDp))
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to add pill view", e)
+            pillView = null
+        }
+    }
+
+    private fun addSearchView() {
+        if (searchView?.isAttachedToWindow == true) return
+        searchView?.let { runCatching { windowManager.removeView(it) } }
+        searchView = null
+        try {
+            val composeView = ComposeView(this).apply {
+                setViewTreeLifecycleOwner(this@OverlayService)
+                setViewTreeViewModelStoreOwner(this@OverlayService)
+                setViewTreeSavedStateRegistryOwner(this@OverlayService)
+                setContent { SearchOverlayContent(appMenuViewModel = appMenuViewModel, onHideTaskbar = taskbarViewModel::hideTaskbar) }
+            }
+            val wrapper = object : FrameLayout(this) {
+                override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+                    if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+                        appMenuViewModel.closeSearch()
+                        return true
+                    }
+                    return super.dispatchKeyEvent(event)
+                }
+            }
+            wrapper.setViewTreeLifecycleOwner(this@OverlayService)
+            wrapper.setViewTreeViewModelStoreOwner(this@OverlayService)
+            wrapper.setViewTreeSavedStateRegistryOwner(this@OverlayService)
+            wrapper.addView(composeView)
+            searchView = wrapper
+            windowManager.addView(wrapper, searchLayoutParams())
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to add search view", e)
+            searchView = null
+        }
+    }
+
+    private fun addQuickStripView() {
+        if (quickStripView?.isAttachedToWindow == true) return
+        quickStripView?.let { runCatching { windowManager.removeView(it) } }
+        quickStripView = null
+        try {
+            val composeView = ComposeView(this).apply {
+                setViewTreeLifecycleOwner(this@OverlayService)
+                setViewTreeViewModelStoreOwner(this@OverlayService)
+                setViewTreeSavedStateRegistryOwner(this@OverlayService)
+                setContent {
+                    QuickStripContent(
+                        taskbarViewModel = taskbarViewModel,
+                        appMenuViewModel = appMenuViewModel,
+                        onHideTaskbar = taskbarViewModel::hideTaskbar
+                    )
+                }
+            }
+            val initialSettings = taskbarViewModel.taskbarSettings.value
+            quickStripYOffsetDp = initialSettings.positionYDp + initialSettings.heightDp + 2f
+            composeView.visibility = View.GONE
+            quickStripView = composeView
+            windowManager.addView(composeView, quickStripLayoutParams(false, quickStripYOffsetDp))
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to add quick strip view", e)
+            quickStripView = null
         }
     }
 
@@ -737,25 +655,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         }
     }
 
-    private fun musicPanelLayoutParams(yOffsetDp: Float): WindowManager.LayoutParams {
-        val usingAccessibility = TaskBarAccessibilityService.isRunning()
-        val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                (if (usingAccessibility) WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS else 0)
-        val density = resources.displayMetrics.density
-        return WindowManager.LayoutParams(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            overlayWindowType,
-            flags,
-            PixelFormat.TRANSLUCENT
-        ).apply {
-            gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-            y = (yOffsetDp * density).toInt()
-        }
-    }
-
     private fun addMusicPanelView() {
         if (musicPanelView?.isAttachedToWindow == true) return
         musicPanelView?.let { runCatching { windowManager.removeView(it) } }
@@ -784,56 +683,9 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         }
     }
 
-    private fun observeMusicPanelVisibility() {
-        serviceScope.launch {
-            kotlinx.coroutines.flow.combine(
-                appMenuViewModel.mediaState,
-                taskbarViewModel.musicPanelEnabled,
-                taskbarViewModel.isTaskbarVisible,
-                appMenuViewModel.musicPanelVisible,
-                appMenuViewModel.isSearching
-            ) { values ->
-                val state = values[0] as com.alkisstam.taskbar.data.MediaState
-                val enabled = values[1] as Boolean
-                val taskbarVisible = values[2] as Boolean
-                val userVisible = values[3] as Boolean
-                val searching = values[4] as Boolean
-                enabled && state.hasSession && taskbarVisible && userVisible && !searching
-            }.collect { show ->
-                musicPanelView?.visibility = if (show) View.VISIBLE else View.GONE
-            }
-        }
-    }
+    // endregion
 
-    private fun observeVolumeAndBrightnessPanels() {
-        serviceScope.launch {
-            kotlinx.coroutines.flow.combine(
-                appMenuViewModel.volumePanelVisible,
-                appMenuViewModel.brightnessPanelVisible
-            ) { volumeVisible, brightnessVisible ->
-                Pair(volumeVisible, brightnessVisible)
-            }.collect { (volumeVisible, brightnessVisible) ->
-                // Manage scrim visibility atomically based on either panel being visible
-                volumeScrimView?.visibility = if (volumeVisible || brightnessVisible) View.VISIBLE else View.GONE
-
-                // Update volume panel
-                volumePanelView?.visibility = if (volumeVisible) View.VISIBLE else View.GONE
-                if (volumeVisible) {
-                    val view = volumePanelView ?: return@collect
-                    try { windowManager.updateViewLayout(view, volumePanelLayoutParams(volumePanelYOffsetDp)) }
-                    catch (e: Exception) { Log.w(TAG, "Failed to update volume panel position", e) }
-                }
-
-                // Update brightness panel
-                brightnessPanelView?.visibility = if (brightnessVisible) View.VISIBLE else View.GONE
-                if (brightnessVisible) {
-                    val view = brightnessPanelView ?: return@collect
-                    try { windowManager.updateViewLayout(view, volumePanelLayoutParams(volumePanelYOffsetDp)) }
-                    catch (e: Exception) { Log.w(TAG, "Failed to update brightness panel position", e) }
-                }
-            }
-        }
-    }
+    // region Remove / refresh views
 
     private fun removeOverlayView() {
         overlayView?.let {
@@ -870,6 +722,23 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         }
     }
 
+    private fun refreshAllViews() {
+        if (!observersStarted) return
+        removeOverlayView()
+        addOverlayView()
+        addPillView()
+        addSearchView()
+        addQuickStripView()
+        addMusicPanelView()
+        addVolumeScrimView()
+        addVolumePanelView()
+        addBrightnessPanelView()
+    }
+
+    // endregion
+
+    // region Notification
+
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
             CHANNEL_ID,
@@ -899,6 +768,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             .build()
     }
 
+    // endregion
+
     override fun onDestroy() {
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
@@ -914,144 +785,4 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
-}
-
-@Composable
-private fun OverlayContent(
-    taskbarViewModel: TaskbarViewModel,
-    appMenuViewModel: AppMenuViewModel
-) {
-    val themeMode by taskbarViewModel.themeMode.collectAsState()
-    val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
-    val menuVisible by appMenuViewModel.menuVisible.collectAsState()
-    val isSettingsOpen by taskbarViewModel.isSettingsOpen.collectAsState()
-
-    TaskBarTheme(themeMode = themeMode) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            if (isTaskbarVisible && !isSettingsOpen) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clickable(
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() }
-                        ) {
-                            if (menuVisible) appMenuViewModel.dismissMenu()
-                            else taskbarViewModel.hideTaskbar()
-                        }
-                )
-            }
-            Column(modifier = Modifier.wrapContentHeight()) {
-                AppMenuPanel(
-                    viewModel = appMenuViewModel,
-                    taskbarViewModel = taskbarViewModel,
-                    onHideTaskbar = taskbarViewModel::hideTaskbar,
-                    modifier = Modifier
-                )
-                AnimatedVisibility(
-                    visible = isTaskbarVisible,
-                    enter = slideInVertically(initialOffsetY = { it }),
-                    exit = slideOutVertically(targetOffsetY = { it })
-                ) {
-                    TaskbarView(
-                        taskbarViewModel = taskbarViewModel,
-                        appMenuViewModel = appMenuViewModel
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun TriggerPillContent(taskbarViewModel: TaskbarViewModel) {
-    val themeMode by taskbarViewModel.themeMode.collectAsState()
-    val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
-    val pillSettings by taskbarViewModel.pillSettings.collectAsState()
-
-    TaskBarTheme(themeMode = themeMode) {
-        TriggerPillView(
-            isCollapsed = !isTaskbarVisible,
-            pillSettings = pillSettings,
-            onExpand = { taskbarViewModel.showTaskbar() }
-        )
-    }
-}
-
-@Composable
-private fun SearchOverlayContent(appMenuViewModel: AppMenuViewModel, onHideTaskbar: () -> Unit) {
-    TaskBarTheme {
-        FloatingSearchBar(viewModel = appMenuViewModel, onHideTaskbar = onHideTaskbar)
-    }
-}
-
-@Composable
-private fun QuickStripContent(
-    taskbarViewModel: TaskbarViewModel,
-    appMenuViewModel: AppMenuViewModel,
-    onHideTaskbar: () -> Unit = {}
-) {
-    val themeMode by taskbarViewModel.themeMode.collectAsState()
-    TaskBarTheme(themeMode = themeMode) {
-        QuickStripView(
-            taskbarViewModel = taskbarViewModel,
-            appMenuViewModel = appMenuViewModel,
-            onHideTaskbar = onHideTaskbar
-        )
-    }
-}
-
-@Composable
-private fun VolumePanelContent(
-    taskbarViewModel: TaskbarViewModel,
-    appMenuViewModel: AppMenuViewModel
-) {
-    val themeMode by taskbarViewModel.themeMode.collectAsState()
-    val streams by appMenuViewModel.volumeStreams.collectAsState()
-    TaskBarTheme(themeMode = themeMode) {
-        VolumePanel(
-            streams = streams,
-            onVolumeChange = { streamType, value ->
-                appMenuViewModel.setStreamVolume(streamType, value)
-            }
-        )
-    }
-}
-
-@Composable
-private fun BrightnessPanelContent(
-    taskbarViewModel: TaskbarViewModel,
-    appMenuViewModel: AppMenuViewModel
-) {
-    val themeMode by taskbarViewModel.themeMode.collectAsState()
-    val brightnessLevel by appMenuViewModel.brightnessLevel.collectAsState()
-    val quickControlsState by appMenuViewModel.quickControlsState.collectAsState()
-    TaskBarTheme(themeMode = themeMode) {
-        BrightnessPanel(
-            brightnessLevel = brightnessLevel,
-            onBrightnessChange = { value -> appMenuViewModel.setBrightnessLevel(value) },
-            autoBrightnessEnabled = quickControlsState.autoBrightness,
-            onAutoBrightnessToggle = { appMenuViewModel.toggleAutoBrightness() }
-        )
-    }
-}
-
-@Composable
-private fun MusicPanelContent(
-    taskbarViewModel: TaskbarViewModel,
-    appMenuViewModel: AppMenuViewModel
-) {
-    val themeMode by taskbarViewModel.themeMode.collectAsState()
-    val mediaState by appMenuViewModel.mediaState.collectAsState()
-    TaskBarTheme(themeMode = themeMode) {
-        MusicPanel(
-            mediaState = mediaState,
-            onPlayPause = appMenuViewModel::playPause,
-            onNext = appMenuViewModel::nextTrack,
-            onPrev = appMenuViewModel::prevTrack
-        )
-    }
 }
