@@ -562,16 +562,16 @@ private fun ControlsTab(viewModel: TaskbarViewModel) {
 
     val controlMeta = remember {
         listOf(
-            Triple("torch",      "Torch",      Icons.Filled.FlashlightOn),
-            Triple("ringer",     "Ringer",     Icons.AutoMirrored.Filled.VolumeUp),
-            Triple("rotate",     "Rotate",     Icons.Filled.ScreenRotationAlt),
-            Triple("brightness_slider",  "Brightness",      Icons.Filled.BrightnessMedium),
-            Triple("dnd",               "DND",             Icons.Filled.DoNotDisturbOff),
-            Triple("qr",         "QR",         Icons.Filled.QrCodeScanner),
-            Triple("power",      "Power",      Icons.Filled.PowerSettingsNew),
-            Triple("volume",     "Volume",     Icons.Filled.Tune),
-            Triple("screenshot", "Screenshot", Icons.Filled.PhotoCamera),
-            Triple("lockscreen", "Lock",       Icons.Filled.Lock)
+            Triple("torch",             "Torch",      Icons.Filled.FlashlightOn),
+            Triple("ringer",            "Ringer",     Icons.AutoMirrored.Filled.VolumeUp),
+            Triple("rotate",            "Rotate",     Icons.Filled.ScreenRotationAlt),
+            Triple("brightness_slider", "Brightness", Icons.Filled.BrightnessMedium),
+            Triple("dnd",               "DND",        Icons.Filled.DoNotDisturbOff),
+            Triple("qr",                "QR",         Icons.Filled.QrCodeScanner),
+            Triple("power",             "Power",      Icons.Filled.PowerSettingsNew),
+            Triple("volume",            "Volume",     Icons.Filled.Tune),
+            Triple("screenshot",        "Screenshot", Icons.Filled.PhotoCamera),
+            Triple("lockscreen",        "Lock",       Icons.Filled.Lock)
         )
     }
     val metaMap = remember(controlMeta) { controlMeta.associateBy { it.first } }
@@ -609,7 +609,8 @@ private fun ControlsTab(viewModel: TaskbarViewModel) {
         }
 
         item {
-            SettingsCard(title = "Quick Controls Strip",
+            SettingsCard(
+                title = "Quick Controls Strip",
                 modifier = Modifier.alpha(if (quickControlsEnabled) 1f else 0.38f)
             ) {
                 Row(
@@ -636,7 +637,7 @@ private fun ControlsTab(viewModel: TaskbarViewModel) {
 
         item {
             SettingsCard(
-                title = "Active Controls (long-press to reorder)",
+                title = "Active Controls",
                 modifier = Modifier.alpha(if (quickControlsEnabled) 1f else 0.38f)
             ) {
                 if (activeIds.isEmpty()) {
@@ -661,53 +662,25 @@ private fun ControlsTab(viewModel: TaskbarViewModel) {
                     }
                     LazyColumn(
                         state = lazyListState,
-                        modifier = Modifier.height((activeIds.size * 56).dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        modifier = Modifier.height((activeIds.size * 72).dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
                         userScrollEnabled = false
                     ) {
                         items(activeIds, key = { it }) { id ->
                             ReorderableItem(reorderableState, key = id) { isDragging ->
                                 val meta = metaMap[id] ?: return@ReorderableItem
-                                val label = meta.second
-                                val icon = meta.third
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(
-                                            if (isDragging) MaterialTheme.colorScheme.primaryContainer
-                                            else MaterialTheme.colorScheme.surface,
-                                            RoundedCornerShape(8.dp)
-                                        )
-                                        .padding(horizontal = 8.dp, vertical = 10.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = icon,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(20.dp),
-                                        tint = MaterialTheme.colorScheme.primary
-                                    )
-                                    Text(
-                                        label,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                    Icon(
-                                        imageVector = Icons.Filled.DragHandle,
-                                        contentDescription = "Drag to reorder",
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        modifier = Modifier
-                                            .size(20.dp)
-                                            .longPressDraggableHandle(
-                                                onDragStarted = {
-                                                    haptic.performHapticFeedback(
-                                                        androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress
-                                                    )
-                                                }
+                                ActiveControlItem(
+                                    label = meta.second,
+                                    icon = meta.third,
+                                    isDragging = isDragging,
+                                    modifier = Modifier.longPressDraggableHandle(
+                                        onDragStarted = {
+                                            haptic.performHapticFeedback(
+                                                androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress
                                             )
+                                        }
                                     )
-                                }
+                                )
                             }
                         }
                     }
@@ -717,53 +690,155 @@ private fun ControlsTab(viewModel: TaskbarViewModel) {
 
         item {
             SettingsCard(
-                title = "Available Controls",
+                title = "All Controls",
                 modifier = Modifier.alpha(if (quickControlsEnabled) 1f else 0.38f)
             ) {
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    controlMeta.forEach { meta ->
-                        val id = meta.first
-                        val label = meta.second
-                        val icon = meta.third
-                        val enabled = id !in controlsDisabledIds
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            Icon(
-                                imageVector = icon,
-                                contentDescription = null,
-                                modifier = Modifier.size(20.dp),
-                                tint = if (enabled) MaterialTheme.colorScheme.primary
-                                       else MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Text(
-                                label,
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.weight(1f)
-                            )
-                            Switch(
-                                checked = enabled,
-                                enabled = quickControlsEnabled,
-                                onCheckedChange = { checked ->
-                                    val newDisabled = controlsDisabledIds.toMutableSet()
-                                    if (checked) {
-                                        newDisabled.remove(id)
-                                        if (id !in controlsOrder) {
-                                            viewModel.saveControlsOrder(controlsOrder + id)
-                                        }
-                                    } else {
-                                        newDisabled.add(id)
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(4),
+                    modifier = Modifier.height(260.dp),
+                    contentPadding = PaddingValues(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    items(controlMeta, key = { it.first }) { meta ->
+                        val (id, label, icon) = meta
+                        ControlGridItem(
+                            label = label,
+                            icon = icon,
+                            isEnabled = id !in controlsDisabledIds,
+                            isInteractive = quickControlsEnabled,
+                            onToggle = {
+                                val newDisabled = controlsDisabledIds.toMutableSet()
+                                if (id !in controlsDisabledIds) {
+                                    newDisabled.add(id)
+                                } else {
+                                    newDisabled.remove(id)
+                                    if (id !in controlsOrder) {
+                                        viewModel.saveControlsOrder(controlsOrder + id)
                                     }
-                                    viewModel.saveControlsDisabledIds(newDisabled)
                                 }
-                            )
-                        }
+                                viewModel.saveControlsDisabledIds(newDisabled)
+                            }
+                        )
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ActiveControlItem(
+    label: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    isDragging: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(
+                if (isDragging) MaterialTheme.colorScheme.primaryContainer
+                else MaterialTheme.colorScheme.surface,
+                RoundedCornerShape(12.dp)
+            )
+            .padding(horizontal = 12.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(44.dp)
+                .background(
+                    MaterialTheme.colorScheme.primaryContainer,
+                    RoundedCornerShape(10.dp)
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(22.dp),
+                tint = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+        }
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.weight(1f)
+        )
+        Icon(
+            imageVector = Icons.Filled.DragHandle,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(20.dp)
+        )
+    }
+}
+
+@Composable
+private fun ControlGridItem(
+    label: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    isEnabled: Boolean,
+    isInteractive: Boolean,
+    onToggle: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.padding(vertical = 4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Box {
+            Box(
+                modifier = Modifier
+                    .size(52.dp)
+                    .background(
+                        color = if (isEnabled) MaterialTheme.colorScheme.primaryContainer
+                                else MaterialTheme.colorScheme.surfaceVariant,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .then(if (isInteractive) Modifier.clickable(onClick = onToggle) else Modifier),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp),
+                    tint = if (isEnabled) MaterialTheme.colorScheme.onPrimaryContainer
+                           else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .size(18.dp)
+                    .background(
+                        color = if (isEnabled) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.surfaceVariant,
+                        shape = RoundedCornerShape(4.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = if (isEnabled) Icons.Filled.Check else Icons.Filled.Add,
+                    contentDescription = null,
+                    tint = if (isEnabled) MaterialTheme.colorScheme.onPrimary
+                           else MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(11.dp)
+                )
+            }
+        }
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 1,
+            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
