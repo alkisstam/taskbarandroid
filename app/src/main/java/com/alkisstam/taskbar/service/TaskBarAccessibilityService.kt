@@ -36,6 +36,9 @@ class TaskBarAccessibilityService : AccessibilityService() {
                 startForegroundService(intent)
             }
         }
+        sendBroadcast(
+            Intent(OverlayService.ACTION_ACCESSIBILITY_CHANGED).setPackage(packageName)
+        )
     }
 
     fun showPowerMenu() {
@@ -81,6 +84,9 @@ class TaskBarAccessibilityService : AccessibilityService() {
     override fun onDestroy() {
         instance = null
         scope.cancel()
+        sendBroadcast(
+            Intent(OverlayService.ACTION_ACCESSIBILITY_CHANGED).setPackage(packageName)
+        )
         super.onDestroy()
     }
 
