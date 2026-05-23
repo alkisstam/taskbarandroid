@@ -42,6 +42,7 @@ import com.alkisstam.taskbar.data.AppRepository
 import com.alkisstam.taskbar.data.MediaRepository
 import com.alkisstam.taskbar.data.PreferencesRepository
 import com.alkisstam.taskbar.data.QuickControlsRepository
+import com.alkisstam.taskbar.data.RecentAppsRepository
 import com.alkisstam.taskbar.util.Constants
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
@@ -60,6 +61,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     @Inject lateinit var prefsRepository: PreferencesRepository
     @Inject lateinit var quickControlsRepository: QuickControlsRepository
     @Inject lateinit var mediaRepository: MediaRepository
+    @Inject lateinit var recentAppsRepository: RecentAppsRepository
 
     private val lifecycleRegistry = LifecycleRegistry(this)
     override val lifecycle: Lifecycle get() = lifecycleRegistry
@@ -199,7 +201,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             appRepository = appRepository,
             prefsRepository = prefsRepository,
             quickControlsRepository = quickControlsRepository,
-            mediaRepository = mediaRepository
+            mediaRepository = mediaRepository,
+            recentAppsRepository = recentAppsRepository
         )
         val provider = ViewModelProvider(this, factory)
         taskbarViewModel = provider[TaskbarViewModel::class.java]

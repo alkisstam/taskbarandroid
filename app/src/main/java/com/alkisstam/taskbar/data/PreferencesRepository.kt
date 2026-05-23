@@ -66,8 +66,9 @@ class PreferencesRepository @Inject constructor(
         private val TASKBAR_VISIBLE_KEY = booleanPreferencesKey("taskbar_visible")
         private val ONBOARDING_COMPLETE_KEY = booleanPreferencesKey("onboarding_complete")
         private val MUSIC_PANEL_ENABLED_KEY = booleanPreferencesKey("music_panel_enabled")
+        private val RECENT_APPS_ENABLED_KEY = booleanPreferencesKey("recent_apps_enabled")
 
-        val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen")
+        val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen", "caffeine")
 
         private fun serializeStringList(list: List<String>): String = JSONArray(list).toString()
         private fun deserializeStringList(stored: String): List<String> =
@@ -297,6 +298,16 @@ class PreferencesRepository @Inject constructor(
     suspend fun setMusicPanelEnabled(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[MUSIC_PANEL_ENABLED_KEY] = enabled
+        }
+    }
+
+    val recentAppsEnabled: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[RECENT_APPS_ENABLED_KEY] ?: false
+    }
+
+    suspend fun setRecentAppsEnabled(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[RECENT_APPS_ENABLED_KEY] = enabled
         }
     }
 }

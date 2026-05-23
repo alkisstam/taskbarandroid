@@ -46,7 +46,8 @@ data class QuickControlsState(
     val dndPermissionGranted: Boolean = false,
     val canShowPowerMenu: Boolean = false,
     val canTakeScreenshot: Boolean = false,
-    val canLockScreen: Boolean = false
+    val canLockScreen: Boolean = false,
+    val caffeineMinutes: Int = 0
 )
 
 private const val TAG = "AppMenuViewModel"
@@ -97,6 +98,7 @@ class AppMenuViewModel @Inject constructor(
     val brightnessLevel: StateFlow<Int> = _brightnessLevel.asStateFlow()
 
     private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    private var originalScreenTimeoutMs: Int = -1
 
     private val _volumeStreams = MutableStateFlow<List<VolumeStreamInfo>>(emptyList())
     val volumeStreams: StateFlow<List<VolumeStreamInfo>> = _volumeStreams.asStateFlow()
@@ -228,7 +230,8 @@ class AppMenuViewModel @Inject constructor(
             dndPermissionGranted = quickControls.isDndPermissionGranted(),
             canShowPowerMenu = quickControls.canShowPowerMenu(),
             canTakeScreenshot = quickControls.canTakeScreenshot(),
-            canLockScreen = quickControls.canLockScreen()
+            canLockScreen = quickControls.canLockScreen(),
+            caffeineMinutes = _quickControlsState.value.caffeineMinutes
         )
     }
 
@@ -324,6 +327,31 @@ class AppMenuViewModel @Inject constructor(
             "power" -> showPowerMenu()
             "screenshot" -> viewModelScope.launch { kotlinx.coroutines.delay(700); takeScreenshot() }
             "lockscreen" -> lockScreen()
+            "caffeine" -> cycleCaffeineTimeout()
+        }
+    }
+
+    fun cycleCaffeineTimeout() {
+        if (!_quickControlsState.value.canWriteSettings) return
+        val current = _quickControlsState.value.caffeineMinutes
+        when (current) {
+            0 -> {
+                originalScreenTimeoutMs = quickControls.getScreenTimeout()
+                quickControls.setScreenTimeout(3 * 60 * 1000)
+                _quickControlsState.value = _quickControlsState.value.copy(caffeineMinutes = 3)
+            }
+            3 -> {
+                quickControls.setScreenTimeout(5 * 60 * 1000)
+                _quickControlsState.value = _quickControlsState.value.copy(caffeineMinutes = 5)
+            }
+            5 -> {
+                quickControls.setScreenTimeout(10 * 60 * 1000)
+                _quickControlsState.value = _quickControlsState.value.copy(caffeineMinutes = 10)
+            }
+            else -> {
+                if (originalScreenTimeoutMs > 0) quickControls.setScreenTimeout(originalScreenTimeoutMs)
+                _quickControlsState.value = _quickControlsState.value.copy(caffeineMinutes = 0)
+            }
         }
     }
 }

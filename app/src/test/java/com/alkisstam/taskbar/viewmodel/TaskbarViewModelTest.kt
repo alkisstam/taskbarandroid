@@ -6,6 +6,7 @@ import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.AppRepository
 import com.alkisstam.taskbar.data.PillSettings
 import com.alkisstam.taskbar.data.PreferencesRepository
+import com.alkisstam.taskbar.data.RecentAppsRepository
 import com.alkisstam.taskbar.data.TaskbarSettings
 import com.alkisstam.taskbar.data.ThemeMode
 import com.alkisstam.taskbar.util.MainDispatcherRule
@@ -33,6 +34,7 @@ class TaskbarViewModelTest {
     private lateinit var context: Context
     private lateinit var appRepo: AppRepository
     private lateinit var prefsRepo: PreferencesRepository
+    private lateinit var recentAppsRepo: RecentAppsRepository
 
     @Before
     fun setUp() {
@@ -55,10 +57,15 @@ class TaskbarViewModelTest {
             every { surfaceTintColor } returns flowOf(0L)
             every { onboardingComplete } returns flowOf(true)
             every { musicPanelEnabled } returns flowOf(false)
+            every { recentAppsEnabled } returns flowOf(false)
+        }
+        recentAppsRepo = mockk<RecentAppsRepository>(relaxed = true) {
+            every { isPermissionGranted() } returns false
+            every { getRecentPackages(any(), any()) } returns emptyList()
         }
     }
 
-    private fun createViewModel() = TaskbarViewModel(context, appRepo, prefsRepo)
+    private fun createViewModel() = TaskbarViewModel(context, appRepo, prefsRepo, recentAppsRepo)
 
     @Test
     fun `showTaskbar sets isTaskbarVisible to true`() = runTest(mainDispatcherRule.dispatcher) {

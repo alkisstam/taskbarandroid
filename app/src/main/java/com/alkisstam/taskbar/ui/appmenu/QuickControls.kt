@@ -27,6 +27,7 @@ import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.FreeBreakfast
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -111,7 +112,11 @@ fun QuickControlsState.toItems(
         "power" to QuickControlItemData(id = "power", label = "Power", active = false, icon = Icons.Filled.PowerSettingsNew),
         "volume" to QuickControlItemData(id = "volume", label = "Volume", active = false, icon = Icons.Filled.Tune),
         "screenshot" to QuickControlItemData(id = "screenshot", label = "Screenshot", active = false, icon = Icons.Filled.PhotoCamera),
-        "lockscreen" to QuickControlItemData(id = "lockscreen", label = "Lock", active = false, icon = Icons.Filled.Lock)
+        "lockscreen" to QuickControlItemData(id = "lockscreen", label = "Lock", active = false, icon = Icons.Filled.Lock),
+        "caffeine" to QuickControlItemData(id = "caffeine",
+            label = if (caffeineMinutes == 0) "Caffeine" else "${caffeineMinutes}m",
+            active = caffeineMinutes != 0,
+            icon = Icons.Filled.FreeBreakfast)
     )
     val effectiveOrder = order.ifEmpty { PreferencesRepository.ALL_CONTROL_IDS }
     return effectiveOrder
@@ -119,6 +124,7 @@ fun QuickControlsState.toItems(
         .filter { id -> id != "power" || canShowPowerMenu }
         .filter { id -> id != "screenshot" || canTakeScreenshot }
         .filter { id -> id != "lockscreen" || canLockScreen }
+        .filter { id -> id != "caffeine" || canWriteSettings }
         .mapNotNull { id -> all[id] }
 }
 

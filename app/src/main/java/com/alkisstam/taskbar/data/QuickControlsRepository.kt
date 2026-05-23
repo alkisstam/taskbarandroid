@@ -178,6 +178,15 @@ class QuickControlsRepository @Inject constructor(
 
     fun canWriteSettings(): Boolean = Settings.System.canWrite(context)
 
+    fun getScreenTimeout(): Int =
+        Settings.System.getInt(context.contentResolver, Settings.System.SCREEN_OFF_TIMEOUT, 30_000)
+
+    fun setScreenTimeout(ms: Int) {
+        if (Settings.System.canWrite(context)) {
+            Settings.System.putInt(context.contentResolver, Settings.System.SCREEN_OFF_TIMEOUT, ms)
+        }
+    }
+
     private fun notificationManager() =
         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 

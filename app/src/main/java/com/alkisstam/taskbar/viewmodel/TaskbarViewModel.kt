@@ -13,6 +13,7 @@ import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.AppRepository
 import com.alkisstam.taskbar.data.PillSettings
 import com.alkisstam.taskbar.data.PreferencesRepository
+import com.alkisstam.taskbar.data.RecentAppsRepository
 import com.alkisstam.taskbar.data.TaskbarSettings
 import com.alkisstam.taskbar.data.ThemeMode
 import com.alkisstam.taskbar.service.OverlayService
@@ -34,7 +35,8 @@ import javax.inject.Inject
 class TaskbarViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val appRepository: AppRepository,
-    private val prefsRepository: PreferencesRepository
+    private val prefsRepository: PreferencesRepository,
+    private val recentAppsRepository: RecentAppsRepository
 ) : ViewModel() {
 
     val allApps: StateFlow<List<AppInfo>> = appRepository.apps
@@ -86,6 +88,27 @@ class TaskbarViewModel @Inject constructor(
 
     val musicPanelEnabled: StateFlow<Boolean> = prefsRepository.musicPanelEnabled
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    val recentAppsEnabled: StateFlow<Boolean> = prefsRepository.recentAppsEnabled
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
+    val recentApps: StateFlow<List<AppInfo>> = combine(
+        recentAppsEnabled,
+        prefsRepository.pinnedApps,
+        appRepository.apps
+    ) { enabled, pinnedPkgs, allApps ->
+        if (!enabled) return@combine emptyList()
+        val appMap = allApps.associateBy { it.packageName }
+        val pinnedSet = pinnedPkgs.toSet()
+        recentAppsRepository.getRecentPackages(excludePackages = pinnedSet)
+            .mapNotNull { pkg -> appMap[pkg] }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    fun isRecentAppsPermissionGranted() = recentAppsRepository.isPermissionGranted()
+
+    fun setRecentAppsEnabled(enabled: Boolean) {
+        viewModelScope.launch { prefsRepository.setRecentAppsEnabled(enabled) }
+    }
 
     fun completeOnboarding() {
         viewModelScope.launch { prefsRepository.setOnboardingComplete() }

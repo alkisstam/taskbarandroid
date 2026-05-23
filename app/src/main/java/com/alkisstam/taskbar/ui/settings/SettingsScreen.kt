@@ -40,6 +40,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.DoNotDisturbOff
 import androidx.compose.material.icons.filled.FlashlightOn
+import androidx.compose.material.icons.filled.FreeBreakfast
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PhotoCamera
@@ -292,6 +293,8 @@ private fun GeneralTab(
 
         MusicPanelSettingsCard(viewModel = viewModel, context = context)
 
+        RecentAppsSettingsCard(viewModel = viewModel, context = context)
+
         SettingsCard(title = "Navigation Bar Overlay") {
             if (!hasAccessibilityPermission) {
                 Text(
@@ -380,6 +383,61 @@ private fun MusicPanelSettingsCard(viewModel: TaskbarViewModel, context: android
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Grant Notification Access")
+            }
+        }
+    }
+}
+
+@Composable
+private fun RecentAppsSettingsCard(viewModel: TaskbarViewModel, context: android.content.Context) {
+    val recentAppsEnabled by viewModel.recentAppsEnabled.collectAsState()
+
+    SettingsCard(title = "Recent Apps") {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text("Show Recent Apps", style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    "Shows recently used apps alongside pinned apps in the taskbar",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(
+                checked = recentAppsEnabled,
+                onCheckedChange = { enabled ->
+                    if (enabled && !viewModel.isRecentAppsPermissionGranted()) {
+                        context.startActivity(
+                            android.content.Intent(android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS)
+                                .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                        )
+                    } else {
+                        viewModel.setRecentAppsEnabled(enabled)
+                    }
+                }
+            )
+        }
+        if (recentAppsEnabled && !viewModel.isRecentAppsPermissionGranted()) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Usage Access permission is required. Tap the button below to grant it.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = {
+                    context.startActivity(
+                        android.content.Intent(android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS)
+                            .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                    )
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Grant Usage Access")
             }
         }
     }
@@ -572,7 +630,8 @@ private fun ControlsTab(viewModel: TaskbarViewModel) {
             Triple("power",             "Power",      Icons.Filled.PowerSettingsNew),
             Triple("volume",            "Volume",     Icons.Filled.Tune),
             Triple("screenshot",        "Screenshot", Icons.Filled.PhotoCamera),
-            Triple("lockscreen",        "Lock",       Icons.Filled.Lock)
+            Triple("lockscreen",        "Lock",       Icons.Filled.Lock),
+            Triple("caffeine",          "Caffeine",   Icons.Filled.FreeBreakfast)
         )
     }
     val metaMap = remember(controlMeta) { controlMeta.associateBy { it.first } }

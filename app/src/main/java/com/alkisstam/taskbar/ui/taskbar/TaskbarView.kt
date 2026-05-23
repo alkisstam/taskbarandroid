@@ -19,6 +19,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.foundation.background
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,6 +39,8 @@ fun TaskbarView(
     modifier: Modifier = Modifier
 ) {
     val pinnedApps by taskbarViewModel.pinnedApps.collectAsState()
+    val recentApps by taskbarViewModel.recentApps.collectAsState()
+    val recentAppsEnabled by taskbarViewModel.recentAppsEnabled.collectAsState()
     val menuVisible by appMenuViewModel.menuVisible.collectAsState()
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
     val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
@@ -49,12 +52,14 @@ fun TaskbarView(
     else
         MaterialTheme.colorScheme.surface
 
-    val lazyListState = rememberLazyListState()
-    val reorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
+    val pinnedListState = rememberLazyListState()
+    val reorderableState = rememberReorderableLazyListState(pinnedListState) { from, to ->
         val pkgs = pinnedApps.map { it.packageName }.toMutableList()
         pkgs.add(to.index, pkgs.removeAt(from.index))
         taskbarViewModel.reorderPinnedApps(pkgs)
     }
+
+    val recentListState = rememberLazyListState()
 
     Box(
         modifier = modifier
@@ -85,23 +90,57 @@ fun TaskbarView(
 
                 Spacer(modifier = Modifier.width(4.dp))
 
-                LazyRow(
-                    state = lazyListState,
-                    modifier = Modifier.wrapContentWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    items(pinnedApps, key = { it.packageName }) { app ->
-                        ReorderableItem(reorderableState, key = app.packageName) { isDragging ->
+                // Pinned section — max 3 icons visible before scrolling
+                Box(modifier = Modifier.widthIn(max = 160.dp)) {
+                    LazyRow(
+                        state = pinnedListState,
+                        modifier = Modifier.wrapContentWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        items(pinnedApps, key = { it.packageName }) { app ->
+                            ReorderableItem(reorderableState, key = app.packageName) { isDragging ->
+                                PinnedAppItem(
+                                    app = app,
+                                    showLabel = taskbarSettings.showLabels,
+                                    isDragging = isDragging,
+                                    dragModifier = Modifier.longPressDraggableHandle(
+                                        onDragStarted = {
+                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        }
+                                    ),
+                                    onLaunch = {
+                                        taskbarViewModel.launchApp(app.packageName)
+                                        taskbarViewModel.hideTaskbar()
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Recent apps section
+                if (recentAppsEnabled && recentApps.isNotEmpty()) {
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Box(
+                        modifier = Modifier
+                            .width(1.dp)
+                            .height(32.dp)
+                            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    LazyRow(
+                        state = recentListState,
+                        modifier = Modifier.wrapContentWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        items(recentApps, key = { it.packageName }) { app ->
                             PinnedAppItem(
                                 app = app,
                                 showLabel = taskbarSettings.showLabels,
-                                isDragging = isDragging,
-                                dragModifier = Modifier.longPressDraggableHandle(
-                                    onDragStarted = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                    }
-                                ),
+                                isDragging = false,
+                                dragModifier = Modifier,
                                 onLaunch = {
                                     taskbarViewModel.launchApp(app.packageName)
                                     taskbarViewModel.hideTaskbar()
