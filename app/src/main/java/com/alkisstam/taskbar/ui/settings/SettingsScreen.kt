@@ -398,7 +398,7 @@ private fun RecentAppsSettingsCard(viewModel: TaskbarViewModel, context: android
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
                 Text("Show Recent Apps", style = MaterialTheme.typography.bodyLarge)
                 Text(
                     "Shows recently used apps alongside pinned apps in the taskbar",
