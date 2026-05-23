@@ -90,8 +90,8 @@ fun TaskbarView(
 
                 Spacer(modifier = Modifier.width(4.dp))
 
-                // Pinned section — max 3 icons visible before scrolling
-                Box(modifier = Modifier.widthIn(max = 160.dp)) {
+                val pinnedMaxWidth = if (recentAppsEnabled) 204.dp else 308.dp
+                Box(modifier = Modifier.widthIn(max = pinnedMaxWidth)) {
                     LazyRow(
                         state = pinnedListState,
                         modifier = Modifier.wrapContentWidth(),

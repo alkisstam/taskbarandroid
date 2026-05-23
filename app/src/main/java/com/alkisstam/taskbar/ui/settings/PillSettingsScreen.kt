@@ -146,10 +146,11 @@ fun PillSettingsScreen(
             Spacer(modifier = Modifier.height(8.dp))
             SettingsSlider(
                 label = "Position (from left)",
-                value = pillSettings.positionXDp,
-                valueRange = 0f..400f,
-                unit = "dp",
-                onValueChange = { viewModel.savePillSettings(pillSettings.copy(positionXDp = it)) }
+                value = pillSettings.positionXPct,
+                valueRange = 0f..100f,
+                unit = "%",
+                displayTransform = { "${it.toInt()}%" },
+                onValueChange = { viewModel.savePillSettings(pillSettings.copy(positionXPct = it)) }
             )
             Spacer(modifier = Modifier.height(12.dp))
             Row(

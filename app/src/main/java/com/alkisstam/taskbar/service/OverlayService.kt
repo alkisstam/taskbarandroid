@@ -308,7 +308,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         serviceScope.launch {
             taskbarViewModel.pillSettings.collect { settings ->
                 val view = pillView ?: return@collect
-                try { windowManager.updateViewLayout(view, pillLayoutParams(settings.positionXDp, settings.positionYDp)) }
+                try { windowManager.updateViewLayout(view, pillLayoutParams(settings.positionXPct, settings.positionYDp)) }
                 catch (e: Exception) { Log.w(TAG, "Failed to update pill position", e) }
             }
         }
@@ -514,7 +514,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             }
             pillView = composeView
             val initial = taskbarViewModel.pillSettings.value
-            windowManager.addView(composeView, pillLayoutParams(initial.positionXDp, initial.positionYDp))
+            windowManager.addView(composeView, pillLayoutParams(initial.positionXPct, initial.positionYDp))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add pill view", e)
             pillView = null

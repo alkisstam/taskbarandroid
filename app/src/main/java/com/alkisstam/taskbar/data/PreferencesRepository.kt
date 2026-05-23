@@ -35,7 +35,7 @@ data class PillSettings(
     val heightDp: Float = 60f,
     val alpha: Float = 0.60f,
     val positionYDp: Float = 80f,
-    val positionXDp: Float = 16f
+    val positionXPct: Float = 4f
 )
 
 @Singleton
@@ -52,6 +52,7 @@ class PreferencesRepository @Inject constructor(
         private val PILL_ALPHA_KEY = floatPreferencesKey("pill_alpha")
         private val PILL_POSITION_Y_KEY = floatPreferencesKey("pill_position_y")
         private val PILL_POSITION_X_KEY = floatPreferencesKey("pill_position_x")
+        private val PILL_POSITION_X_PCT_KEY = floatPreferencesKey("pill_position_x_pct")
         private val TASKBAR_POSITION_Y_KEY = floatPreferencesKey("taskbar_position_y")
         private val TASKBAR_WIDTH_KEY = floatPreferencesKey("taskbar_width_fraction")
         private val TASKBAR_HEIGHT_KEY = floatPreferencesKey("taskbar_height_dp")
@@ -156,8 +157,8 @@ class PreferencesRepository @Inject constructor(
             widthDp     = prefs[PILL_WIDTH_KEY]      ?: 10f,
             heightDp    = prefs[PILL_HEIGHT_KEY]     ?: 60f,
             alpha       = prefs[PILL_ALPHA_KEY]      ?: 0.60f,
-            positionYDp = prefs[PILL_POSITION_Y_KEY] ?: 80f,
-            positionXDp = prefs[PILL_POSITION_X_KEY] ?: 16f
+            positionYDp  = prefs[PILL_POSITION_Y_KEY]     ?: 80f,
+            positionXPct = prefs[PILL_POSITION_X_PCT_KEY] ?: 4f
         )
     }
 
@@ -235,8 +236,8 @@ class PreferencesRepository @Inject constructor(
             prefs[PILL_WIDTH_KEY]        = settings.widthDp
             prefs[PILL_HEIGHT_KEY]       = settings.heightDp
             prefs[PILL_ALPHA_KEY]        = settings.alpha
-            prefs[PILL_POSITION_Y_KEY]   = settings.positionYDp
-            prefs[PILL_POSITION_X_KEY]   = settings.positionXDp
+            prefs[PILL_POSITION_Y_KEY]     = settings.positionYDp
+            prefs[PILL_POSITION_X_PCT_KEY] = settings.positionXPct
         }
     }
 

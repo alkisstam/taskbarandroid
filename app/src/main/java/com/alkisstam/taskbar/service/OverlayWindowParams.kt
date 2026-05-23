@@ -50,7 +50,7 @@ internal fun Context.quickStripLayoutParams(interactive: Boolean = false, yOffse
     }
 }
 
-internal fun Context.pillLayoutParams(positionXDp: Float = 16f, positionYDp: Float = 80f): WindowManager.LayoutParams {
+internal fun Context.pillLayoutParams(positionXPct: Float = 4f, positionYDp: Float = 80f): WindowManager.LayoutParams {
     val usingAccessibility = TaskBarAccessibilityService.isRunning()
     val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
             WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
@@ -64,7 +64,7 @@ internal fun Context.pillLayoutParams(positionXDp: Float = 16f, positionYDp: Flo
         PixelFormat.TRANSLUCENT
     ).apply {
         gravity = Gravity.BOTTOM or Gravity.START
-        x = (positionXDp * density).toInt()
+        x = (positionXPct / 100f * resources.displayMetrics.widthPixels).toInt()
         y = (positionYDp * density).toInt()
     }
 }

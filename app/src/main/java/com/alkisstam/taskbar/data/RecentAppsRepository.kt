@@ -27,12 +27,20 @@ class RecentAppsRepository @Inject constructor(
         val usageStatsManager = context.getSystemService(UsageStatsManager::class.java)
         val end = System.currentTimeMillis()
         val start = end - 7L * 24 * 60 * 60 * 1000
-        return usageStatsManager
-            .queryUsageStats(UsageStatsManager.INTERVAL_DAILY, start, end)
-            .filter { it.packageName !in excludePackages && it.lastTimeUsed > 0 }
-            .sortedByDescending { it.lastTimeUsed }
-            .map { it.packageName }
-            .distinct()
+        val events = usageStatsManager.queryEvents(start, end)
+        val event = android.app.usage.UsageEvents.Event()
+        val lastUsed = mutableMapOf<String, Long>()
+        while (events.hasNextEvent()) {
+            events.getNextEvent(event)
+            if (event.eventType == android.app.usage.UsageEvents.Event.MOVE_TO_FOREGROUND) {
+                val pkg = event.packageName
+                if (event.timeStamp > (lastUsed[pkg] ?: 0L)) lastUsed[pkg] = event.timeStamp
+            }
+        }
+        return lastUsed.entries
+            .filter { it.key !in excludePackages }
+            .sortedByDescending { it.value }
+            .map { it.key }
             .take(limit)
     }
 }
