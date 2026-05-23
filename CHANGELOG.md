@@ -4,6 +4,17 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.1.7] - 2026-05-23
+
+### Added
+- **Caffeine control** — new quick control that cycles screen timeout through 3 min → 5 min → 10 min → device default. Label shows the active duration when on. Requires Write Settings permission (same as Brightness).
+- **Recent Apps taskbar section** — optional second section in the taskbar showing recently used apps. Pinned apps are excluded from recents to avoid duplicates. Enable in General settings (requires Usage Access permission). Pinned section is capped at ~3 visible icons and scrolls independently.
+
+### Changed
+- **Controls tab** — Active Controls list is now a horizontal scrollable row (icon + label tiles), matching the Pinned Apps style.
+
+---
+
 ## [1.1.6] - 2026-05-20
 
 ### Changed
