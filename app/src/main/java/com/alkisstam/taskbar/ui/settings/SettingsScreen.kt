@@ -39,7 +39,6 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.DoNotDisturbOff
-import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.FlashlightOn
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Lock
@@ -84,6 +83,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.ThemeMode
@@ -660,11 +661,10 @@ private fun ControlsTab(viewModel: TaskbarViewModel) {
                             viewModel.saveControlsOrder(newOrder)
                         }
                     }
-                    LazyColumn(
+                    LazyRow(
                         state = lazyListState,
-                        modifier = Modifier.height((activeIds.size * 72).dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        userScrollEnabled = false
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(vertical = 4.dp)
                     ) {
                         items(activeIds, key = { it }) { id ->
                             ReorderableItem(reorderableState, key = id) { isDragging ->
@@ -734,44 +734,35 @@ private fun ActiveControlItem(
     isDragging: Boolean,
     modifier: Modifier = Modifier
 ) {
-    Row(
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = modifier
-            .fillMaxWidth()
-            .background(
-                if (isDragging) MaterialTheme.colorScheme.primaryContainer
-                else MaterialTheme.colorScheme.surface,
-                RoundedCornerShape(12.dp)
-            )
-            .padding(horizontal = 12.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Box(
             modifier = Modifier
-                .size(44.dp)
+                .size(52.dp)
                 .background(
-                    MaterialTheme.colorScheme.primaryContainer,
-                    RoundedCornerShape(10.dp)
+                    if (isDragging) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
+                    else MaterialTheme.colorScheme.primaryContainer,
+                    RoundedCornerShape(12.dp)
                 ),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                modifier = Modifier.size(22.dp),
+                modifier = Modifier.size(24.dp),
                 tint = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
         Text(
             text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.weight(1f)
-        )
-        Icon(
-            imageVector = Icons.Filled.DragHandle,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(20.dp)
+            style = MaterialTheme.typography.labelSmall,
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.width(60.dp)
         )
     }
 }
