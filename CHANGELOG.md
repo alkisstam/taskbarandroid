@@ -4,6 +4,13 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.1.8] - 2026-05-25
+
+### Fixed
+- **Edge-to-edge (Android 15)** — removed deprecated `setStatusBarColor`, `setNavigationBarColor`, and `LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES` calls by switching the XML theme from MDC `Theme.Material3.DayNight.NoActionBar` to `Theme.AppCompat.DayNight.NoActionBar` and dropping the `com.google.android.material` library.
+
+---
+
 ## [1.1.7] - 2026-05-23
 
 ### Added
