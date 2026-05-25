@@ -96,7 +96,6 @@ dependencies {
     implementation(libs.reorderable)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)
     debugImplementation(libs.androidx.ui.tooling)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
