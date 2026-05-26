@@ -71,7 +71,8 @@ internal fun Context.pillLayoutParams(positionXPct: Float = 4f, positionYDp: Flo
 
 internal fun Context.searchLayoutParams(): WindowManager.LayoutParams {
     val usingAccessibility = TaskBarAccessibilityService.isRunning()
-    val flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+    val flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
             (if (usingAccessibility) WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS else 0)
     return WindowManager.LayoutParams(
         WindowManager.LayoutParams.MATCH_PARENT,

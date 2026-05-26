@@ -545,6 +545,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             wrapper.setViewTreeViewModelStoreOwner(this@OverlayService)
             wrapper.setViewTreeSavedStateRegistryOwner(this@OverlayService)
             wrapper.addView(composeView)
+            wrapper.visibility = if (appMenuViewModel.isSearching.value) View.VISIBLE else View.GONE
             searchView = wrapper
             windowManager.addView(wrapper, searchLayoutParams())
         } catch (e: Exception) {
