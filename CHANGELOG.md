@@ -4,6 +4,23 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.1.9] - 2026-05-26
+
+### Added
+- **Gesture "Disable" option** — each trigger gesture (swipe up, swipe down, double tap) can now be set to "Disabled" so it performs no action.
+- **Notification Listener permission card** — added to the onboarding screen; required for the music panel to show media controls.
+- **Usage Access permission card** — added to the onboarding screen; required for the Recent Apps section in the taskbar.
+
+### Changed
+- **Controls strip merged into dock** — the floating quick controls strip is removed as a separate window. When "Show Controls in Dock" is enabled, controls appear as a row directly inside the taskbar surface above the pinned apps, separated by a subtle divider. The taskbar height adapts automatically.
+- **Gesture actions are now independent** — each of the three trigger gestures (swipe up, swipe down, double tap) is independently configurable to: Show Dock, Notifications, Quick Settings, or Disabled. The "Swipe In" gesture has been removed.
+- **"Enable Controls Strip" renamed to "Show Controls in Dock"** — label and description updated to match the new behaviour.
+
+### Fixed
+- **Auto-hide in Landscape** — taskbar and pill are now correctly hidden when the setting is enabled and the device is already in landscape when the service refreshes its views.
+
+---
+
 ## [1.1.8] - 2026-05-25
 
 ### Fixed
