@@ -41,6 +41,9 @@ class TaskBarAccessibilityService : AccessibilityService() {
         )
     }
 
+    fun expandNotifications() { performGlobalAction(GLOBAL_ACTION_NOTIFICATIONS) }
+    fun expandQuickSettings() { performGlobalAction(GLOBAL_ACTION_QUICK_SETTINGS) }
+
     fun showPowerMenu() {
         performGlobalAction(GLOBAL_ACTION_POWER_DIALOG)
     }

@@ -1,6 +1,8 @@
 package com.alkisstam.taskbar
 
 import android.Manifest
+import android.app.AppOpsManager
+import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -35,6 +37,8 @@ class MainActivity : ComponentActivity() {
     private var hasWriteSettingsPermission by mutableStateOf(false)
     private var hasNotificationPolicyPermission by mutableStateOf(false)
     private var hasNotificationsPermission by mutableStateOf(false)
+    private var hasUsageStatsPermission by mutableStateOf(false)
+    private var hasNotificationListenerPermission by mutableStateOf(false)
 
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -53,6 +57,8 @@ class MainActivity : ComponentActivity() {
         hasWriteSettingsPermission = Settings.System.canWrite(this)
         hasNotificationPolicyPermission = getNotificationPolicyAccess()
         hasNotificationsPermission = getNotificationsPermission()
+        hasUsageStatsPermission = getUsageStatsPermission()
+        hasNotificationListenerPermission = getNotificationListenerPermission()
 
         setContent {
             val themeMode by taskbarViewModel.themeMode.collectAsState()
@@ -67,11 +73,15 @@ class MainActivity : ComponentActivity() {
                         hasWriteSettingsPermission = hasWriteSettingsPermission,
                         hasNotificationPolicyPermission = hasNotificationPolicyPermission,
                         hasNotificationsPermission = hasNotificationsPermission,
+                        hasUsageStatsPermission = hasUsageStatsPermission,
+                        hasNotificationListenerPermission = hasNotificationListenerPermission,
                         onRequestOverlayPermission = ::requestOverlayPermission,
                         onRequestAccessibilityPermission = ::requestAccessibilityPermission,
                         onRequestWriteSettingsPermission = ::requestWriteSettingsPermission,
                         onRequestNotificationPolicyPermission = ::requestNotificationPolicyPermission,
                         onRequestNotificationsPermission = ::requestNotificationsPermission,
+                        onRequestUsageStatsPermission = ::requestUsageStatsPermission,
+                        onRequestNotificationListenerPermission = ::requestNotificationListenerPermission,
                         onComplete = taskbarViewModel::completeOnboarding
                     )
                     true -> SettingsScreen(
@@ -97,6 +107,8 @@ class MainActivity : ComponentActivity() {
         hasWriteSettingsPermission = Settings.System.canWrite(this)
         hasNotificationPolicyPermission = getNotificationPolicyAccess()
         hasNotificationsPermission = getNotificationsPermission()
+        hasUsageStatsPermission = getUsageStatsPermission()
+        hasNotificationListenerPermission = getNotificationListenerPermission()
     }
 
     private fun getNotificationPolicyAccess(): Boolean {
@@ -143,5 +155,29 @@ class MainActivity : ComponentActivity() {
     private fun requestNotificationPolicyPermission() {
         val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
         permissionLauncher.launch(intent)
+    }
+
+    private fun getUsageStatsPermission(): Boolean {
+        val appOps = getSystemService(APP_OPS_SERVICE) as AppOpsManager
+        val mode = appOps.unsafeCheckOpNoThrow(
+            AppOpsManager.OPSTR_GET_USAGE_STATS,
+            android.os.Process.myUid(),
+            packageName
+        )
+        return mode == AppOpsManager.MODE_ALLOWED
+    }
+
+    private fun requestUsageStatsPermission() {
+        permissionLauncher.launch(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
+    }
+
+    private fun getNotificationListenerPermission(): Boolean {
+        val flat = Settings.Secure.getString(contentResolver, "enabled_notification_listeners") ?: return false
+        val cn = ComponentName(this, com.alkisstam.taskbar.service.MediaListenerService::class.java).flattenToString()
+        return flat.split(":").any { it == cn }
+    }
+
+    private fun requestNotificationListenerPermission() {
+        permissionLauncher.launch(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
     }
 }

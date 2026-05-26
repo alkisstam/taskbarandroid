@@ -79,7 +79,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private var overlayView: View? = null
     private var pillView: View? = null
     private var searchView: View? = null
-    private var quickStripView: View? = null
     private var volumePanelView: View? = null
     private var brightnessPanelView: View? = null
     private var volumeScrimView: View? = null
@@ -91,15 +90,14 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private val handler = Handler(Looper.getMainLooper())
 
     @Volatile private var overlayHiddenForLockscreen = false
+    @Volatile private var hiddenForLandscape = false
 
     private fun showOverlay() {
         overlayHiddenForLockscreen = false
         if (overlayView?.isAttachedToWindow != true) addOverlayView()
         if (pillView?.isAttachedToWindow != true) addPillView()
-        if (quickStripView?.isAttachedToWindow != true) addQuickStripView()
         overlayView?.visibility = View.VISIBLE
         pillView?.visibility = View.VISIBLE
-        restoreQuickStripVisibility()
     }
 
     private fun hideOverlay() {
@@ -119,23 +117,17 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     Handler(Looper.getMainLooper()).post {
                         if (overlayView?.isAttachedToWindow != true) addOverlayView()
                         if (pillView?.isAttachedToWindow != true) addPillView()
-                        if (quickStripView?.isAttachedToWindow != true) addQuickStripView()
-                        restoreQuickStripVisibility()
                     }
                 }
                 Intent.ACTION_CONFIGURATION_CHANGED -> {
-                    if (taskbarViewModel.autoHideInLandscape.value) {
-                        val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-                        if (isLandscape) {
-                            overlayView?.visibility = View.GONE
-                            pillView?.visibility = View.GONE
-                            quickStripView?.visibility = View.GONE
-                            setQuickStripInteractive(false)
-                        } else {
-                            overlayView?.visibility = View.VISIBLE
-                            pillView?.visibility = View.VISIBLE
-                            restoreQuickStripVisibility()
-                        }
+                    val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+                    hiddenForLandscape = isLandscape && taskbarViewModel.autoHideInLandscape.value
+                    if (hiddenForLandscape) {
+                        overlayView?.visibility = View.GONE
+                        pillView?.visibility = View.GONE
+                    } else if (!overlayHiddenForLockscreen) {
+                        overlayView?.visibility = View.VISIBLE
+                        pillView?.visibility = View.VISIBLE
                     }
                 }
                 ACTION_SETTINGS_OPEN -> {
@@ -224,7 +216,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         addOverlayView()
         addPillView()
         addSearchView()
-        addQuickStripView()
         addMusicPanelView()
         addVolumeScrimView()
         addVolumePanelView()
@@ -234,8 +225,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             observePillPosition()
             observeOverlayInteractivity()
             observeSearchVisibility()
-            observeQuickStripVisibility()
-            observeQuickStripPosition()
             observeMusicPanelPosition()
             observeVolumeAndBrightnessPanels()
             observeMusicPanelVisibility()
@@ -245,31 +234,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     // region Quick strip state
 
-    private var quickStripYOffsetDp: Float = 0f
-    private var quickStripInteractive: Boolean = false
     private var volumePanelYOffsetDp: Float = 0f
     private var musicPanelYOffsetDp: Float = 0f
-
-    private fun setQuickStripInteractive(interactive: Boolean) {
-        quickStripInteractive = interactive
-        val view = quickStripView ?: return
-        try { windowManager.updateViewLayout(view, quickStripLayoutParams(interactive, quickStripYOffsetDp)) }
-        catch (e: Exception) { Log.w(TAG, "Failed to update quick strip layout flags", e) }
-    }
-
-    private fun restoreQuickStripVisibility() {
-        val show = taskbarViewModel.isTaskbarVisible.value &&
-                taskbarViewModel.quickControlsEnabled.value &&
-                taskbarViewModel.quickControlsStripEnabled.value &&
-                !appMenuViewModel.menuVisible.value &&
-                !appMenuViewModel.isSearching.value
-        quickStripView?.visibility = if (show) View.VISIBLE else View.GONE
-        setQuickStripInteractive(show)
-        if (!show) {
-            appMenuViewModel.dismissVolumePanel()
-            appMenuViewModel.dismissBrightnessPanel()
-        }
-    }
 
     private fun setOverlayFlags(interactive: Boolean, focusable: Boolean) {
         val view = overlayView ?: return
@@ -286,14 +252,11 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             kotlinx.coroutines.flow.combine(
                 appMenuViewModel.menuVisible,
                 taskbarViewModel.isTaskbarVisible,
-                appMenuViewModel.isSearching,
-                taskbarViewModel.quickControlsEnabled,
-                taskbarViewModel.quickControlsStripEnabled
-            ) { menuOpen, taskbarVisible, searching, controlsEnabled, stripEnabled ->
-                val stripVisible = taskbarVisible && controlsEnabled && stripEnabled && !menuOpen && !searching
-                Triple(menuOpen || taskbarVisible || stripVisible, menuOpen && !searching, stripVisible)
+                appMenuViewModel.isSearching
+            ) { menuOpen, taskbarVisible, searching ->
+                Pair(menuOpen || taskbarVisible, menuOpen && !searching)
             }
-            .collect { (interactive, focusable, _) ->
+            .collect { (interactive, focusable) ->
                 if (interactive) {
                     setOverlayFlags(interactive = true, focusable = focusable)
                 } else {
@@ -322,40 +285,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         }
     }
 
-    private fun observeQuickStripVisibility() {
-        serviceScope.launch {
-            kotlinx.coroutines.flow.combine(
-                taskbarViewModel.isTaskbarVisible,
-                taskbarViewModel.quickControlsEnabled,
-                taskbarViewModel.quickControlsStripEnabled,
-                appMenuViewModel.menuVisible,
-                appMenuViewModel.isSearching
-            ) { values ->
-                val taskbarVisible = values[0] as Boolean
-                val controlsEnabled = values[1] as Boolean
-                val stripEnabled = values[2] as Boolean
-                val menuOpen = values[3] as Boolean
-                val searching = values[4] as Boolean
-                taskbarVisible && controlsEnabled && stripEnabled && !menuOpen && !searching
-            }.collect { visible ->
-                quickStripView?.visibility = if (visible) View.VISIBLE else View.GONE
-                setQuickStripInteractive(visible)
-            }
-        }
-    }
-
-    private fun observeQuickStripPosition() {
-        serviceScope.launch {
-            taskbarViewModel.taskbarSettings.collect { settings ->
-                quickStripYOffsetDp = settings.positionYDp + settings.heightDp + 2f
-                volumePanelYOffsetDp = settings.positionYDp + settings.heightDp * 2 + 10f
-                val view = quickStripView ?: return@collect
-                try { windowManager.updateViewLayout(view, quickStripLayoutParams(quickStripInteractive, quickStripYOffsetDp)) }
-                catch (e: Exception) { Log.w(TAG, "Failed to update quick strip position", e) }
-            }
-        }
-    }
-
     private fun observeMusicPanelPosition() {
         serviceScope.launch {
             kotlinx.coroutines.flow.combine(
@@ -364,10 +293,14 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 taskbarViewModel.quickControlsEnabled,
                 appMenuViewModel.menuVisible
             ) { settings, stripEnabled, controlsEnabled, menuOpen ->
-                val stripActive = stripEnabled && controlsEnabled
+                val controlsInDock = stripEnabled && controlsEnabled
+                volumePanelYOffsetDp = if (controlsInDock)
+                    settings.positionYDp + settings.heightDp * 2 + 10f
+                else
+                    settings.positionYDp + settings.heightDp + 10f
                 when {
                     menuOpen -> settings.positionYDp + settings.heightDp + 420f
-                    stripActive -> settings.positionYDp + settings.heightDp + 80f
+                    controlsInDock -> settings.positionYDp + settings.heightDp * 2 + 8f
                     else -> settings.positionYDp + settings.heightDp + 8f
                 }
             }.collect { yOffset ->
@@ -461,6 +394,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             wrapper.setViewTreeSavedStateRegistryOwner(this@OverlayService)
             wrapper.addView(composeView)
             overlayView = wrapper
+            if (hiddenForLandscape) wrapper.visibility = View.GONE
             windowManager.addView(wrapper, overlayLayoutParams())
             attachInsetsListener(wrapper)
         } catch (e: Exception) {
@@ -488,11 +422,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     val menuOpen = appMenuViewModel.menuVisible.value
                     val taskbarVisible = taskbarViewModel.isTaskbarVisible.value
                     val searching = appMenuViewModel.isSearching.value
-                    val controlsEnabled = taskbarViewModel.quickControlsEnabled.value
-                    val stripEnabled = taskbarViewModel.quickControlsStripEnabled.value
-                    val stripVisible = taskbarVisible && controlsEnabled && stripEnabled && !menuOpen && !searching
                     setOverlayFlags(
-                        interactive = menuOpen || taskbarVisible || stripVisible,
+                        interactive = menuOpen || taskbarVisible,
                         focusable = menuOpen && !searching
                     )
                 }
@@ -513,6 +444,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 setContent { TriggerPillContent(taskbarViewModel = taskbarViewModel) }
             }
             pillView = composeView
+            if (hiddenForLandscape) composeView.visibility = View.GONE
             val initial = taskbarViewModel.pillSettings.value
             windowManager.addView(composeView, pillLayoutParams(initial.positionXPct, initial.positionYDp))
         } catch (e: Exception) {
@@ -551,34 +483,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add search view", e)
             searchView = null
-        }
-    }
-
-    private fun addQuickStripView() {
-        if (quickStripView?.isAttachedToWindow == true) return
-        quickStripView?.let { runCatching { windowManager.removeView(it) } }
-        quickStripView = null
-        try {
-            val composeView = ComposeView(this).apply {
-                setViewTreeLifecycleOwner(this@OverlayService)
-                setViewTreeViewModelStoreOwner(this@OverlayService)
-                setViewTreeSavedStateRegistryOwner(this@OverlayService)
-                setContent {
-                    QuickStripContent(
-                        taskbarViewModel = taskbarViewModel,
-                        appMenuViewModel = appMenuViewModel,
-                        onHideTaskbar = taskbarViewModel::hideTaskbar
-                    )
-                }
-            }
-            val initialSettings = taskbarViewModel.taskbarSettings.value
-            quickStripYOffsetDp = initialSettings.positionYDp + initialSettings.heightDp + 2f
-            composeView.visibility = View.GONE
-            quickStripView = composeView
-            windowManager.addView(composeView, quickStripLayoutParams(false, quickStripYOffsetDp))
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to add quick strip view", e)
-            quickStripView = null
         }
     }
 
@@ -704,10 +608,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove search view", e) }
             searchView = null
         }
-        quickStripView?.let {
-            try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove quick strip view", e) }
-            quickStripView = null
-        }
         volumePanelView?.let {
             try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove volume panel view", e) }
             volumePanelView = null
@@ -732,7 +632,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         addOverlayView()
         addPillView()
         addSearchView()
-        addQuickStripView()
         addMusicPanelView()
         addVolumeScrimView()
         addVolumePanelView()

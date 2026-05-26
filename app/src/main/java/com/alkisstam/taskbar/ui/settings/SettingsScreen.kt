@@ -655,7 +655,7 @@ private fun ControlsTab(viewModel: TaskbarViewModel) {
                     Column {
                         Text("Enable Quick Controls", style = MaterialTheme.typography.bodyLarge)
                         Text(
-                            "Show quick controls in the strip or apps panel",
+                            "Show quick controls in the dock or apps panel",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -670,7 +670,7 @@ private fun ControlsTab(viewModel: TaskbarViewModel) {
 
         item {
             SettingsCard(
-                title = "Quick Controls Strip",
+                title = "Show Controls in Dock",
                 modifier = Modifier.alpha(if (quickControlsEnabled) 1f else 0.38f)
             ) {
                 Row(
@@ -679,9 +679,9 @@ private fun ControlsTab(viewModel: TaskbarViewModel) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
-                        Text("Enable Controls Strip", style = MaterialTheme.typography.bodyLarge)
+                        Text("Show Controls in Dock", style = MaterialTheme.typography.bodyLarge)
                         Text(
-                            "Show quick controls above the taskbar",
+                            "Show quick controls inside the taskbar",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

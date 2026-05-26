@@ -6,6 +6,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,10 +20,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.Block
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SwipeDown
-import androidx.compose.material.icons.filled.SwipeRight
 import androidx.compose.material.icons.filled.SwipeUp
 import androidx.compose.material.icons.filled.TouchApp
+import androidx.compose.material.icons.filled.ViewDay
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
@@ -41,7 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.alkisstam.taskbar.data.PillGesture
+import com.alkisstam.taskbar.data.GestureAction
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 
 @Composable
@@ -69,39 +73,29 @@ fun PillSettingsScreen(
             onToggle = { gestureExpanded = !gestureExpanded }
         ) {
             Text(
-                text = "How to show the taskbar when it's hidden",
+                text = "Configure what each gesture does",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                GestureOption(
+            Spacer(modifier = Modifier.height(12.dp))
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                GestureActionRow(
                     label = "Swipe Up",
-                    description = "Swipe upward on the pill",
                     icon = { Icon(Icons.Filled.SwipeUp, contentDescription = null) },
-                    selected = pillSettings.gesture == PillGesture.SWIPE_UP,
-                    onClick = { viewModel.savePillSettings(pillSettings.copy(gesture = PillGesture.SWIPE_UP)) }
+                    selected = pillSettings.swipeUpAction,
+                    onSelect = { viewModel.savePillSettings(pillSettings.copy(swipeUpAction = it)) }
                 )
-                GestureOption(
+                GestureActionRow(
                     label = "Swipe Down",
-                    description = "Swipe downward on the pill",
                     icon = { Icon(Icons.Filled.SwipeDown, contentDescription = null) },
-                    selected = pillSettings.gesture == PillGesture.SWIPE_DOWN,
-                    onClick = { viewModel.savePillSettings(pillSettings.copy(gesture = PillGesture.SWIPE_DOWN)) }
+                    selected = pillSettings.swipeDownAction,
+                    onSelect = { viewModel.savePillSettings(pillSettings.copy(swipeDownAction = it)) }
                 )
-                GestureOption(
-                    label = "Swipe In",
-                    description = "Swipe inward (right) on the pill",
-                    icon = { Icon(Icons.Filled.SwipeRight, contentDescription = null) },
-                    selected = pillSettings.gesture == PillGesture.SWIPE_IN,
-                    onClick = { viewModel.savePillSettings(pillSettings.copy(gesture = PillGesture.SWIPE_IN)) }
-                )
-                GestureOption(
+                GestureActionRow(
                     label = "Double Tap",
-                    description = "Tap the pill twice quickly",
                     icon = { Icon(Icons.Filled.TouchApp, contentDescription = null) },
-                    selected = pillSettings.gesture == PillGesture.DOUBLE_TAP,
-                    onClick = { viewModel.savePillSettings(pillSettings.copy(gesture = PillGesture.DOUBLE_TAP)) }
+                    selected = pillSettings.doubleTapAction,
+                    onSelect = { viewModel.savePillSettings(pillSettings.copy(doubleTapAction = it)) }
                 )
             }
         }
@@ -271,29 +265,49 @@ private fun ExpandableSection(
 }
 
 @Composable
-private fun GestureOption(
+private fun GestureActionRow(
     label: String,
-    description: String,
     icon: @Composable () -> Unit,
-    selected: Boolean,
-    onClick: () -> Unit
+    selected: GestureAction,
+    onSelect: (GestureAction) -> Unit
 ) {
-    FilterChip(
-        selected = selected,
-        onClick = onClick,
-        label = {
-            Column {
-                Text(label, style = MaterialTheme.typography.bodyMedium)
-                Text(
-                    description,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        },
-        leadingIcon = icon,
-        modifier = Modifier.fillMaxWidth()
-    )
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            icon()
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(label, style = MaterialTheme.typography.bodyMedium)
+        }
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            FilterChip(
+                selected = selected == GestureAction.SHOW_DOCK,
+                onClick = { onSelect(GestureAction.SHOW_DOCK) },
+                label = { Text("Show Dock", style = MaterialTheme.typography.labelMedium) },
+                leadingIcon = { Icon(Icons.Filled.ViewDay, contentDescription = null) }
+            )
+            FilterChip(
+                selected = selected == GestureAction.SHOW_NOTIFICATIONS,
+                onClick = { onSelect(GestureAction.SHOW_NOTIFICATIONS) },
+                label = { Text("Notifications", style = MaterialTheme.typography.labelMedium) },
+                leadingIcon = { Icon(Icons.Filled.Notifications, contentDescription = null) }
+            )
+            FilterChip(
+                selected = selected == GestureAction.SHOW_QUICK_SETTINGS,
+                onClick = { onSelect(GestureAction.SHOW_QUICK_SETTINGS) },
+                label = { Text("Quick Settings", style = MaterialTheme.typography.labelMedium) },
+                leadingIcon = { Icon(Icons.Filled.Settings, contentDescription = null) }
+            )
+            FilterChip(
+                selected = selected == GestureAction.DISABLED,
+                onClick = { onSelect(GestureAction.DISABLED) },
+                label = { Text("Disable", style = MaterialTheme.typography.labelMedium) },
+                leadingIcon = { Icon(Icons.Filled.Block, contentDescription = null) }
+            )
+        }
+    }
 }
 
 @Composable

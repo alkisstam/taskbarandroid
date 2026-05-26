@@ -30,26 +30,6 @@ internal fun Context.overlayLayoutParams(interactive: Boolean = true, focusable:
     }
 }
 
-internal fun Context.quickStripLayoutParams(interactive: Boolean = false, yOffsetDp: Float = 0f): WindowManager.LayoutParams {
-    val usingAccessibility = TaskBarAccessibilityService.isRunning()
-    val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
-            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-            (if (!interactive) WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE else 0) or
-            (if (usingAccessibility) WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS else 0)
-    val density = resources.displayMetrics.density
-    return WindowManager.LayoutParams(
-        WindowManager.LayoutParams.MATCH_PARENT,
-        WindowManager.LayoutParams.WRAP_CONTENT,
-        overlayWindowType(),
-        flags,
-        PixelFormat.TRANSLUCENT
-    ).apply {
-        gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-        y = (yOffsetDp * density).toInt()
-    }
-}
-
 internal fun Context.pillLayoutParams(positionXPct: Float = 4f, positionYDp: Float = 80f): WindowManager.LayoutParams {
     val usingAccessibility = TaskBarAccessibilityService.isRunning()
     val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or

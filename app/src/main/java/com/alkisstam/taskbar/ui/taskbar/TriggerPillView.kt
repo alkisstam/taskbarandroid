@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -20,7 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import com.alkisstam.taskbar.data.PillGesture
+import com.alkisstam.taskbar.data.GestureAction
 import com.alkisstam.taskbar.data.PillSettings
 import com.alkisstam.taskbar.util.Constants
 import kotlinx.coroutines.Job
@@ -32,7 +33,7 @@ import kotlin.math.abs
 fun TriggerPillView(
     isCollapsed: Boolean,
     pillSettings: PillSettings,
-    onExpand: () -> Unit,
+    onAction: (GestureAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
@@ -41,16 +42,58 @@ fun TriggerPillView(
         exit = fadeOut(),
         modifier = modifier
     ) {
-        when (pillSettings.gesture) {
-            PillGesture.DOUBLE_TAP -> DoubleTapPill(pillSettings, onExpand)
-            PillGesture.SWIPE_UP   -> SwipePill(pillSettings, onExpand, direction = SwipeDir.UP)
-            PillGesture.SWIPE_DOWN -> SwipePill(pillSettings, onExpand, direction = SwipeDir.DOWN)
-            PillGesture.SWIPE_IN   -> SwipePill(pillSettings, onExpand, direction = SwipeDir.IN)
-        }
+        val scope = rememberCoroutineScope()
+        var tapJob by remember { mutableStateOf<Job?>(null) }
+        var tapCount by remember { mutableIntStateOf(0) }
+        var swipeFired by remember { mutableStateOf(false) }
+
+        PillShape(
+            pillSettings = pillSettings,
+            modifier = Modifier
+                .pointerInput(pillSettings) {
+                    detectDragGestures(
+                        onDragStart = { swipeFired = false },
+                        onDrag = { _, drag ->
+                            if (!swipeFired) {
+                                when {
+                                    drag.y < -Constants.SWIPE_TRIGGER_THRESHOLD_PX && abs(drag.y) > abs(drag.x) -> {
+                                        swipeFired = true
+                                        onAction(pillSettings.swipeUpAction)
+                                    }
+                                    drag.y > Constants.SWIPE_TRIGGER_THRESHOLD_PX && abs(drag.y) > abs(drag.x) -> {
+                                        swipeFired = true
+                                        onAction(pillSettings.swipeDownAction)
+                                    }
+                                }
+                            }
+                        }
+                    )
+                }
+                .pointerInput(pillSettings) {
+                    detectTapGestures {
+                        tapCount++
+                        if (tapCount == 1) {
+                            tapJob = scope.launch {
+                                delay(Constants.DOUBLE_TAP_WINDOW_MS)
+                                tapCount = 0
+                            }
+                        } else if (tapCount == 2) {
+                            tapJob?.cancel()
+                            tapCount = 0
+                            onAction(pillSettings.doubleTapAction)
+                        } else {
+                            tapJob?.cancel()
+                            tapCount = 1
+                            tapJob = scope.launch {
+                                delay(Constants.DOUBLE_TAP_WINDOW_MS)
+                                tapCount = 0
+                            }
+                        }
+                    }
+                }
+        )
     }
 }
-
-private enum class SwipeDir { UP, DOWN, IN }
 
 @Composable
 private fun PillShape(
@@ -68,68 +111,4 @@ private fun PillShape(
     ) {
         Box { content() }
     }
-}
-
-@Composable
-private fun DoubleTapPill(pillSettings: PillSettings, onExpand: () -> Unit) {
-    val scope = rememberCoroutineScope()
-    var tapJob by remember { mutableStateOf<Job?>(null) }
-    var tapCount by remember { mutableStateOf(0) }
-
-    PillShape(
-        pillSettings = pillSettings,
-        modifier = Modifier.pointerInput(Unit) {
-            detectTapGestures {
-                tapCount++
-                if (tapCount == 1) {
-                    tapJob = scope.launch {
-                        delay(Constants.DOUBLE_TAP_WINDOW_MS)
-                        tapCount = 0
-                    }
-                } else if (tapCount == 2) {
-                    tapJob?.cancel()
-                    tapCount = 0
-                    onExpand()
-                } else {
-                    // Reset on 3rd+ tap within window - start fresh
-                    tapJob?.cancel()
-                    tapCount = 1
-                    tapJob = scope.launch {
-                        delay(Constants.DOUBLE_TAP_WINDOW_MS)
-                        tapCount = 0
-                    }
-                }
-            }
-        }
-    )
-}
-
-@Composable
-private fun SwipePill(
-    pillSettings: PillSettings,
-    onExpand: () -> Unit,
-    direction: SwipeDir
-) {
-    var firedThisGesture by remember { mutableStateOf(false) }
-    PillShape(
-        pillSettings = pillSettings,
-        modifier = Modifier.pointerInput(direction) {
-            detectDragGestures(
-                onDragStart = { firedThisGesture = false },
-                onDrag = { _, dragAmount ->
-                    if (!firedThisGesture) {
-                        val triggered = when (direction) {
-                            SwipeDir.UP   -> dragAmount.y < -Constants.SWIPE_TRIGGER_THRESHOLD_PX && abs(dragAmount.y) > abs(dragAmount.x)
-                            SwipeDir.DOWN -> dragAmount.y > Constants.SWIPE_TRIGGER_THRESHOLD_PX  && abs(dragAmount.y) > abs(dragAmount.x)
-                            SwipeDir.IN   -> dragAmount.x > Constants.SWIPE_TRIGGER_THRESHOLD_PX  && abs(dragAmount.x) > abs(dragAmount.y)
-                        }
-                        if (triggered) {
-                            firedThisGesture = true
-                            onExpand()
-                        }
-                    }
-                }
-            )
-        }
-    )
 }

@@ -1,5 +1,6 @@
 package com.alkisstam.taskbar.service
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -15,12 +16,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import com.alkisstam.taskbar.data.GestureAction
 import com.alkisstam.taskbar.ui.appmenu.AppMenuPanel
 import com.alkisstam.taskbar.ui.appmenu.BrightnessPanel
 import com.alkisstam.taskbar.ui.appmenu.FloatingSearchBar
 import com.alkisstam.taskbar.ui.appmenu.MusicPanel
 import com.alkisstam.taskbar.ui.appmenu.VolumePanel
-import com.alkisstam.taskbar.ui.taskbar.QuickStripView
 import com.alkisstam.taskbar.ui.taskbar.TaskbarView
 import com.alkisstam.taskbar.ui.taskbar.TriggerPillView
 import com.alkisstam.taskbar.ui.theme.TaskBarTheme
@@ -82,12 +84,28 @@ internal fun TriggerPillContent(taskbarViewModel: TaskbarViewModel) {
     val themeMode by taskbarViewModel.themeMode.collectAsState()
     val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
     val pillSettings by taskbarViewModel.pillSettings.collectAsState()
+    val context = LocalContext.current
 
     TaskBarTheme(themeMode = themeMode) {
         TriggerPillView(
             isCollapsed = !isTaskbarVisible,
             pillSettings = pillSettings,
-            onExpand = { taskbarViewModel.showTaskbar() }
+            onAction = { action ->
+                when (action) {
+                    GestureAction.SHOW_DOCK -> taskbarViewModel.showTaskbar()
+                    GestureAction.SHOW_NOTIFICATIONS -> {
+                        val svc = TaskBarAccessibilityService.instance
+                        if (svc != null) svc.expandNotifications()
+                        else Toast.makeText(context, "Requires accessibility service", Toast.LENGTH_SHORT).show()
+                    }
+                    GestureAction.SHOW_QUICK_SETTINGS -> {
+                        val svc = TaskBarAccessibilityService.instance
+                        if (svc != null) svc.expandQuickSettings()
+                        else Toast.makeText(context, "Requires accessibility service", Toast.LENGTH_SHORT).show()
+                    }
+                    GestureAction.DISABLED -> {}
+                }
+            }
         )
     }
 }
@@ -96,22 +114,6 @@ internal fun TriggerPillContent(taskbarViewModel: TaskbarViewModel) {
 internal fun SearchOverlayContent(appMenuViewModel: AppMenuViewModel, onHideTaskbar: () -> Unit) {
     TaskBarTheme {
         FloatingSearchBar(viewModel = appMenuViewModel, onHideTaskbar = onHideTaskbar)
-    }
-}
-
-@Composable
-internal fun QuickStripContent(
-    taskbarViewModel: TaskbarViewModel,
-    appMenuViewModel: AppMenuViewModel,
-    onHideTaskbar: () -> Unit = {}
-) {
-    val themeMode by taskbarViewModel.themeMode.collectAsState()
-    TaskBarTheme(themeMode = themeMode) {
-        QuickStripView(
-            taskbarViewModel = taskbarViewModel,
-            appMenuViewModel = appMenuViewModel,
-            onHideTaskbar = onHideTaskbar
-        )
     }
 }
 

@@ -20,7 +20,14 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 
 enum class ThemeMode { LIGHT, DARK, SYSTEM }
 
-enum class PillGesture { SWIPE_UP, SWIPE_DOWN, SWIPE_IN, DOUBLE_TAP }
+enum class GestureAction { SHOW_DOCK, SHOW_NOTIFICATIONS, SHOW_QUICK_SETTINGS, DISABLED }
+
+private fun String?.toGestureAction() = when (this) {
+    "SHOW_NOTIFICATIONS"  -> GestureAction.SHOW_NOTIFICATIONS
+    "SHOW_QUICK_SETTINGS" -> GestureAction.SHOW_QUICK_SETTINGS
+    "DISABLED"            -> GestureAction.DISABLED
+    else                  -> GestureAction.SHOW_DOCK
+}
 
 data class TaskbarSettings(
     val positionYDp: Float = 20f,
@@ -30,7 +37,9 @@ data class TaskbarSettings(
 )
 
 data class PillSettings(
-    val gesture: PillGesture = PillGesture.SWIPE_UP,
+    val swipeUpAction: GestureAction = GestureAction.SHOW_DOCK,
+    val swipeDownAction: GestureAction = GestureAction.SHOW_DOCK,
+    val doubleTapAction: GestureAction = GestureAction.SHOW_DOCK,
     val widthDp: Float = 10f,
     val heightDp: Float = 60f,
     val alpha: Float = 0.60f,
@@ -46,7 +55,9 @@ class PreferencesRepository @Inject constructor(
         private val PINNED_APPS_KEY = stringPreferencesKey("pinned_apps")
         private val THEME_MODE_KEY = stringPreferencesKey("theme_mode")
         private val OVERLAY_ENABLED_KEY = booleanPreferencesKey("overlay_enabled")
-        private val PILL_GESTURE_KEY = stringPreferencesKey("pill_gesture")
+        private val PILL_SWIPE_UP_ACTION_KEY = stringPreferencesKey("pill_swipe_up_action")
+        private val PILL_SWIPE_DOWN_ACTION_KEY = stringPreferencesKey("pill_swipe_down_action")
+        private val PILL_DOUBLE_TAP_ACTION_KEY = stringPreferencesKey("pill_double_tap_action")
         private val PILL_WIDTH_KEY = floatPreferencesKey("pill_width")
         private val PILL_HEIGHT_KEY = floatPreferencesKey("pill_height")
         private val PILL_ALPHA_KEY = floatPreferencesKey("pill_alpha")
@@ -148,12 +159,9 @@ class PreferencesRepository @Inject constructor(
 
     val pillSettings: Flow<PillSettings> = context.dataStore.data.map { prefs ->
         PillSettings(
-            gesture = when (prefs[PILL_GESTURE_KEY]) {
-                "SWIPE_DOWN" -> PillGesture.SWIPE_DOWN
-                "SWIPE_IN"   -> PillGesture.SWIPE_IN
-                "DOUBLE_TAP" -> PillGesture.DOUBLE_TAP
-                else          -> PillGesture.SWIPE_UP
-            },
+            swipeUpAction    = prefs[PILL_SWIPE_UP_ACTION_KEY].toGestureAction(),
+            swipeDownAction  = prefs[PILL_SWIPE_DOWN_ACTION_KEY].toGestureAction(),
+            doubleTapAction  = prefs[PILL_DOUBLE_TAP_ACTION_KEY].toGestureAction(),
             widthDp     = prefs[PILL_WIDTH_KEY]      ?: 10f,
             heightDp    = prefs[PILL_HEIGHT_KEY]     ?: 60f,
             alpha       = prefs[PILL_ALPHA_KEY]      ?: 0.60f,
@@ -232,7 +240,9 @@ class PreferencesRepository @Inject constructor(
 
     suspend fun savePillSettings(settings: PillSettings) {
         context.dataStore.edit { prefs ->
-            prefs[PILL_GESTURE_KEY]      = settings.gesture.name
+            prefs[PILL_SWIPE_UP_ACTION_KEY]    = settings.swipeUpAction.name
+            prefs[PILL_SWIPE_DOWN_ACTION_KEY]  = settings.swipeDownAction.name
+            prefs[PILL_DOUBLE_TAP_ACTION_KEY]  = settings.doubleTapAction.name
             prefs[PILL_WIDTH_KEY]        = settings.widthDp
             prefs[PILL_HEIGHT_KEY]       = settings.heightDp
             prefs[PILL_ALPHA_KEY]        = settings.alpha

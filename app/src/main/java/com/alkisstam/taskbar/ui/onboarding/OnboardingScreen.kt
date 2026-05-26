@@ -17,8 +17,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.Accessibility
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.QueryStats
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -39,11 +41,15 @@ fun OnboardingScreen(
     hasWriteSettingsPermission: Boolean,
     hasNotificationPolicyPermission: Boolean,
     hasNotificationsPermission: Boolean,
+    hasUsageStatsPermission: Boolean,
+    hasNotificationListenerPermission: Boolean,
     onRequestOverlayPermission: () -> Unit,
     onRequestAccessibilityPermission: () -> Unit,
     onRequestWriteSettingsPermission: () -> Unit,
     onRequestNotificationPolicyPermission: () -> Unit,
     onRequestNotificationsPermission: () -> Unit,
+    onRequestUsageStatsPermission: () -> Unit,
+    onRequestNotificationListenerPermission: () -> Unit,
     onComplete: () -> Unit
 ) {
     Scaffold { paddingValues ->
@@ -143,6 +149,36 @@ fun OnboardingScreen(
                 description = "Optional. Required for the music panel to access media sessions.",
                 granted = hasNotificationsPermission,
                 onGrant = onRequestNotificationsPermission
+            )
+
+            PermissionCard(
+                icon = {
+                    Icon(
+                        Icons.Filled.MusicNote,
+                        contentDescription = null,
+                        modifier = Modifier.size(28.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                },
+                title = "Notification Listener",
+                description = "Optional. Required for the music panel to show media controls.",
+                granted = hasNotificationListenerPermission,
+                onGrant = onRequestNotificationListenerPermission
+            )
+
+            PermissionCard(
+                icon = {
+                    Icon(
+                        Icons.Filled.QueryStats,
+                        contentDescription = null,
+                        modifier = Modifier.size(28.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                },
+                title = "Usage Access",
+                description = "Optional. Required for the Recent Apps section in the taskbar.",
+                granted = hasUsageStatsPermission,
+                onGrant = onRequestUsageStatsPermission
             )
 
             Spacer(modifier = Modifier.weight(1f))
