@@ -100,7 +100,7 @@ fun TaskbarView(
                             .fillMaxWidth()
                             .height(taskbarSettings.heightDp.dp)
                             .padding(horizontal = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(2.dp),
+                        horizontalArrangement = Arrangement.spacedBy(2.dp, Alignment.CenterHorizontally),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         if (musicPanelEnabled) {
@@ -135,6 +135,7 @@ fun TaskbarView(
 
                 Row(
                     modifier = Modifier
+                        .then(if (recentAppsEnabled) Modifier.fillMaxWidth() else Modifier)
                         .height(taskbarSettings.heightDp.dp)
                         .padding(horizontal = 8.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
@@ -147,8 +148,12 @@ fun TaskbarView(
 
                     Spacer(modifier = Modifier.width(4.dp))
 
-                    val pinnedMaxWidth = if (recentAppsEnabled) 204.dp else 308.dp
-                    Box(modifier = Modifier.widthIn(max = pinnedMaxWidth)) {
+                    val pinnedBoxModifier = when {
+                        !recentAppsEnabled -> Modifier.widthIn(max = 308.dp)
+                        recentApps.isNotEmpty() -> Modifier.weight(0.6f)
+                        else -> Modifier.weight(1f)
+                    }
+                    Box(modifier = pinnedBoxModifier) {
                         LazyRow(
                             state = pinnedListState,
                             modifier = Modifier.wrapContentWidth(),
@@ -187,7 +192,7 @@ fun TaskbarView(
                         Spacer(modifier = Modifier.width(4.dp))
                         LazyRow(
                             state = recentListState,
-                            modifier = Modifier.wrapContentWidth(),
+                            modifier = Modifier.weight(0.4f),
                             horizontalArrangement = Arrangement.spacedBy(4.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
