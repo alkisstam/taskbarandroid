@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.PixelFormat
 import android.view.Gravity
 import android.view.WindowManager
+import com.alkisstam.taskbar.data.PillEdgePosition
 
 internal fun overlayWindowType() =
     if (TaskBarAccessibilityService.isRunning())
@@ -30,12 +31,21 @@ internal fun Context.overlayLayoutParams(interactive: Boolean = true, focusable:
     }
 }
 
-internal fun Context.pillLayoutParams(positionXPct: Float = 4f, positionYDp: Float = 80f): WindowManager.LayoutParams {
+internal fun Context.pillLayoutParams(
+    edgePosition: PillEdgePosition = PillEdgePosition.BOTTOM,
+    isRight: Boolean = false,
+    sidePositionPct: Float = 50f
+): WindowManager.LayoutParams {
     val usingAccessibility = TaskBarAccessibilityService.isRunning()
     val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
             WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
             (if (usingAccessibility) WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS else 0)
-    val density = resources.displayMetrics.density
+    val edgePx = (2 * resources.displayMetrics.density).toInt()
+    // y offset from screen centre: 50% → 0, 0% → top, 100% → bottom
+    val sideYPx = ((sidePositionPct - 50f) / 100f * resources.displayMetrics.heightPixels).toInt()
+    val side = if (edgePosition == PillEdgePosition.BOTH) {
+        if (isRight) PillEdgePosition.RIGHT else PillEdgePosition.LEFT
+    } else edgePosition
     return WindowManager.LayoutParams(
         WindowManager.LayoutParams.WRAP_CONTENT,
         WindowManager.LayoutParams.WRAP_CONTENT,
@@ -43,9 +53,23 @@ internal fun Context.pillLayoutParams(positionXPct: Float = 4f, positionYDp: Flo
         flags,
         PixelFormat.TRANSLUCENT
     ).apply {
-        gravity = Gravity.BOTTOM or Gravity.START
-        x = (positionXPct / 100f * resources.displayMetrics.widthPixels).toInt()
-        y = (positionYDp * density).toInt()
+        when (side) {
+            PillEdgePosition.LEFT -> {
+                gravity = Gravity.START or Gravity.CENTER_VERTICAL
+                x = edgePx
+                y = sideYPx
+            }
+            PillEdgePosition.RIGHT -> {
+                gravity = Gravity.END or Gravity.CENTER_VERTICAL
+                x = edgePx
+                y = sideYPx
+            }
+            else -> {
+                gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+                x = 0
+                y = 0
+            }
+        }
     }
 }
 

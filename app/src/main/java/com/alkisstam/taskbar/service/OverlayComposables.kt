@@ -38,6 +38,9 @@ internal fun OverlayContent(
     val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
     val menuVisible by appMenuViewModel.menuVisible.collectAsState()
     val isSettingsOpen by taskbarViewModel.isSettingsOpen.collectAsState()
+    val volumePanelVisible by appMenuViewModel.volumePanelVisible.collectAsState()
+    val brightnessPanelVisible by appMenuViewModel.brightnessPanelVisible.collectAsState()
+    val musicPanelVisible by appMenuViewModel.musicPanelVisible.collectAsState()
 
     TaskBarTheme(themeMode = themeMode) {
         Box(
@@ -52,8 +55,13 @@ internal fun OverlayContent(
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() }
                         ) {
-                            if (menuVisible) appMenuViewModel.dismissMenu()
-                            else taskbarViewModel.hideTaskbar()
+                            when {
+                                menuVisible            -> appMenuViewModel.dismissMenu()
+                                volumePanelVisible     -> appMenuViewModel.dismissVolumePanel()
+                                brightnessPanelVisible -> appMenuViewModel.dismissBrightnessPanel()
+                                musicPanelVisible      -> appMenuViewModel.dismissMusicPanel()
+                                else                   -> taskbarViewModel.hideTaskbar()
+                            }
                         }
                 )
             }

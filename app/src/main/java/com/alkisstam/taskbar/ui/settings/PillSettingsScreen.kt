@@ -3,8 +3,10 @@ package com.alkisstam.taskbar.ui.settings
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -12,7 +14,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -44,17 +48,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.GestureAction
+import com.alkisstam.taskbar.data.PillEdgePosition
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 
 @Composable
 fun PillSettingsScreen(
     viewModel: TaskbarViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    bottomPadding: Dp = 0.dp
 ) {
     val pillSettings by viewModel.pillSettings.collectAsState()
     val taskbarSettings by viewModel.taskbarSettings.collectAsState()
+    val configuration = LocalConfiguration.current
+    val widthMax = configuration.screenWidthDp.toFloat()
+    val heightMax = (configuration.screenHeightDp / 2).toFloat()
 
     var gestureExpanded by remember { mutableStateOf(false) }
     var pillExpanded by remember { mutableStateOf(false) }
@@ -64,7 +75,7 @@ fun PillSettingsScreen(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(16.dp),
+            .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp + bottomPadding),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         ExpandableSection(
@@ -107,16 +118,16 @@ fun PillSettingsScreen(
         ) {
             SettingsSlider(
                 label = "Width",
-                value = pillSettings.widthDp,
-                valueRange = 2f..220f,
+                value = pillSettings.widthDp.coerceAtMost(widthMax),
+                valueRange = 2f..widthMax,
                 unit = "dp",
                 onValueChange = { viewModel.savePillSettings(pillSettings.copy(widthDp = it)) }
             )
             Spacer(modifier = Modifier.height(8.dp))
             SettingsSlider(
                 label = "Height",
-                value = pillSettings.heightDp,
-                valueRange = 2f..120f,
+                value = pillSettings.heightDp.coerceAtMost(heightMax),
+                valueRange = 2f..heightMax,
                 unit = "dp",
                 onValueChange = { viewModel.savePillSettings(pillSettings.copy(heightDp = it)) }
             )
@@ -130,44 +141,47 @@ fun PillSettingsScreen(
                 onValueChange = { viewModel.savePillSettings(pillSettings.copy(alpha = it)) }
             )
             Spacer(modifier = Modifier.height(8.dp))
-            SettingsSlider(
-                label = "Position (from bottom)",
-                value = pillSettings.positionYDp,
-                valueRange = 0f..400f,
-                unit = "dp",
-                onValueChange = { viewModel.savePillSettings(pillSettings.copy(positionYDp = it)) }
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            SettingsSlider(
-                label = "Position (from left)",
-                value = pillSettings.positionXPct,
-                valueRange = 0f..100f,
-                unit = "%",
-                displayTransform = { "${it.toInt()}%" },
-                onValueChange = { viewModel.savePillSettings(pillSettings.copy(positionXPct = it)) }
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Row(
+            Text("Position", style = MaterialTheme.typography.bodyMedium)
+            Spacer(modifier = Modifier.height(4.dp))
+            FlowRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Card(
-                    modifier = Modifier
-                        .width(pillSettings.widthDp.coerceIn(2f, 220f).dp)
-                        .height(pillSettings.heightDp.coerceIn(2f, 64f).dp),
-                    shape = RoundedCornerShape(percent = 50),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = pillSettings.alpha)
+                PillEdgePosition.entries.forEach { pos ->
+                    FilterChip(
+                        selected = pillSettings.edgePosition == pos,
+                        onClick = {
+                            val (w, h) = if (pos == PillEdgePosition.BOTTOM) 180f to 20f else 12f to 120f
+                            viewModel.savePillSettings(pillSettings.copy(edgePosition = pos, widthDp = w, heightDp = h))
+                        },
+                        label = {
+                            Text(
+                                when (pos) {
+                                    PillEdgePosition.BOTTOM -> "Bottom"
+                                    PillEdgePosition.LEFT   -> "Left"
+                                    PillEdgePosition.RIGHT  -> "Right"
+                                    PillEdgePosition.BOTH   -> "Both"
+                                },
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
                     )
-                ) {}
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = "${pillSettings.widthDp.toInt()} × ${pillSettings.heightDp.toInt()} dp  •  ${(pillSettings.alpha * 100).toInt()}% opacity",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                }
+            }
+            if (pillSettings.edgePosition != PillEdgePosition.BOTTOM) {
+                Spacer(modifier = Modifier.height(8.dp))
+                SettingsSlider(
+                    label = "Position along edge",
+                    value = pillSettings.sidePositionPct,
+                    valueRange = 0f..100f,
+                    unit = "%",
+                    displayTransform = { "${it.toInt()}%" },
+                    onValueChange = { viewModel.savePillSettings(pillSettings.copy(sidePositionPct = it)) }
                 )
             }
+            Spacer(modifier = Modifier.height(12.dp))
+            PillPositionPreview(pillSettings.edgePosition, pillSettings.widthDp, pillSettings.heightDp, pillSettings.alpha, pillSettings.sidePositionPct)
         }
 
         ExpandableSection(
@@ -208,6 +222,79 @@ fun PillSettingsScreen(
                     checked = taskbarSettings.showLabels,
                     onCheckedChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(showLabels = it)) }
                 )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PillPositionPreview(
+    edgePosition: PillEdgePosition,
+    widthDp: Float,
+    heightDp: Float,
+    alpha: Float,
+    sidePositionPct: Float = 50f
+) {
+    val pillColor = MaterialTheme.colorScheme.primary.copy(alpha = alpha)
+    val frameColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+    val frameW = 60.dp
+    val frameH = 100.dp
+    val pillW = widthDp.coerceIn(2f, 30f).dp
+    val pillH = heightDp.coerceIn(2f, 50f).dp
+    // y offset of the pill centre inside the frame (clamped so the pill stays within bounds)
+    val sideOffsetFraction = (sidePositionPct - 50f) / 100f  // -0.5 .. +0.5
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(frameH + 8.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size(frameW, frameH)
+                .background(frameColor, RoundedCornerShape(8.dp))
+        ) {
+            when (edgePosition) {
+                PillEdgePosition.BOTTOM -> {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .width(pillW.coerceAtMost(frameW - 4.dp))
+                            .height(4.dp)
+                            .background(pillColor, RoundedCornerShape(percent = 50))
+                    )
+                }
+                PillEdgePosition.LEFT, PillEdgePosition.BOTH -> {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .width(4.dp)
+                            .height(pillH.coerceAtMost(frameH - 4.dp))
+                            .offset(y = (sideOffsetFraction * frameH.value).dp)
+                            .background(pillColor, RoundedCornerShape(percent = 50))
+                    )
+                    if (edgePosition == PillEdgePosition.BOTH) {
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .width(4.dp)
+                                .height(pillH.coerceAtMost(frameH - 4.dp))
+                                .offset(y = (sideOffsetFraction * frameH.value).dp)
+                                .background(pillColor, RoundedCornerShape(percent = 50))
+                        )
+                    }
+                }
+                PillEdgePosition.RIGHT -> {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .width(4.dp)
+                            .height(pillH.coerceAtMost(frameH - 4.dp))
+                            .offset(y = (sideOffsetFraction * frameH.value).dp)
+                            .background(pillColor, RoundedCornerShape(percent = 50))
+                    )
+                }
             }
         }
     }

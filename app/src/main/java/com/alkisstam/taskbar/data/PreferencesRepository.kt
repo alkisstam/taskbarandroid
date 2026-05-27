@@ -29,6 +29,15 @@ private fun String?.toGestureAction() = when (this) {
     else                  -> GestureAction.SHOW_DOCK
 }
 
+enum class PillEdgePosition { BOTTOM, LEFT, RIGHT, BOTH }
+
+private fun String?.toPillEdgePosition() = when (this) {
+    "LEFT"  -> PillEdgePosition.LEFT
+    "RIGHT" -> PillEdgePosition.RIGHT
+    "BOTH"  -> PillEdgePosition.BOTH
+    else    -> PillEdgePosition.BOTTOM
+}
+
 data class TaskbarSettings(
     val positionYDp: Float = 20f,
     val widthFraction: Float = 0.9f,
@@ -44,7 +53,9 @@ data class PillSettings(
     val heightDp: Float = 60f,
     val alpha: Float = 0.60f,
     val positionYDp: Float = 80f,
-    val positionXPct: Float = 4f
+    val positionXPct: Float = 4f,
+    val edgePosition: PillEdgePosition = PillEdgePosition.BOTTOM,
+    val sidePositionPct: Float = 50f
 )
 
 @Singleton
@@ -64,6 +75,8 @@ class PreferencesRepository @Inject constructor(
         private val PILL_POSITION_Y_KEY = floatPreferencesKey("pill_position_y")
         private val PILL_POSITION_X_KEY = floatPreferencesKey("pill_position_x")
         private val PILL_POSITION_X_PCT_KEY = floatPreferencesKey("pill_position_x_pct")
+        private val PILL_EDGE_POSITION_KEY = stringPreferencesKey("pill_edge_position")
+        private val PILL_SIDE_POSITION_PCT_KEY = floatPreferencesKey("pill_side_position_pct")
         private val TASKBAR_POSITION_Y_KEY = floatPreferencesKey("taskbar_position_y")
         private val TASKBAR_WIDTH_KEY = floatPreferencesKey("taskbar_width_fraction")
         private val TASKBAR_HEIGHT_KEY = floatPreferencesKey("taskbar_height_dp")
@@ -162,11 +175,13 @@ class PreferencesRepository @Inject constructor(
             swipeUpAction    = prefs[PILL_SWIPE_UP_ACTION_KEY].toGestureAction(),
             swipeDownAction  = prefs[PILL_SWIPE_DOWN_ACTION_KEY].toGestureAction(),
             doubleTapAction  = prefs[PILL_DOUBLE_TAP_ACTION_KEY].toGestureAction(),
-            widthDp     = prefs[PILL_WIDTH_KEY]      ?: 10f,
-            heightDp    = prefs[PILL_HEIGHT_KEY]     ?: 60f,
-            alpha       = prefs[PILL_ALPHA_KEY]      ?: 0.60f,
-            positionYDp  = prefs[PILL_POSITION_Y_KEY]     ?: 80f,
-            positionXPct = prefs[PILL_POSITION_X_PCT_KEY] ?: 4f
+            widthDp      = prefs[PILL_WIDTH_KEY]           ?: 10f,
+            heightDp     = prefs[PILL_HEIGHT_KEY]          ?: 60f,
+            alpha        = prefs[PILL_ALPHA_KEY]            ?: 0.60f,
+            positionYDp      = prefs[PILL_POSITION_Y_KEY]         ?: 80f,
+            positionXPct     = prefs[PILL_POSITION_X_PCT_KEY]     ?: 4f,
+            edgePosition     = prefs[PILL_EDGE_POSITION_KEY].toPillEdgePosition(),
+            sidePositionPct  = prefs[PILL_SIDE_POSITION_PCT_KEY]  ?: 50f
         )
     }
 
@@ -243,11 +258,13 @@ class PreferencesRepository @Inject constructor(
             prefs[PILL_SWIPE_UP_ACTION_KEY]    = settings.swipeUpAction.name
             prefs[PILL_SWIPE_DOWN_ACTION_KEY]  = settings.swipeDownAction.name
             prefs[PILL_DOUBLE_TAP_ACTION_KEY]  = settings.doubleTapAction.name
-            prefs[PILL_WIDTH_KEY]        = settings.widthDp
-            prefs[PILL_HEIGHT_KEY]       = settings.heightDp
-            prefs[PILL_ALPHA_KEY]        = settings.alpha
-            prefs[PILL_POSITION_Y_KEY]     = settings.positionYDp
-            prefs[PILL_POSITION_X_PCT_KEY] = settings.positionXPct
+            prefs[PILL_WIDTH_KEY]          = settings.widthDp
+            prefs[PILL_HEIGHT_KEY]         = settings.heightDp
+            prefs[PILL_ALPHA_KEY]          = settings.alpha
+            prefs[PILL_POSITION_Y_KEY]         = settings.positionYDp
+            prefs[PILL_POSITION_X_PCT_KEY]     = settings.positionXPct
+            prefs[PILL_EDGE_POSITION_KEY]      = settings.edgePosition.name
+            prefs[PILL_SIDE_POSITION_PCT_KEY]  = settings.sidePositionPct
         }
     }
 

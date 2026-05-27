@@ -31,6 +31,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.Dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Add
@@ -48,6 +50,9 @@ import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.PowerSettingsNew
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.ScreenRotationAlt
+import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -104,9 +109,16 @@ fun SettingsScreen(
     onRequestAccessibilityPermission: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val tabs = listOf("General", "Pinned Apps", "Controls", "Design")
+    val tabs = listOf("General", "Apps", "Controls", "Design")
+    val tabIcons = listOf(
+        Icons.Filled.Tune,
+        Icons.Filled.PushPin,
+        Icons.Filled.Dashboard,
+        Icons.Filled.Palette
+    )
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val coroutineScope = rememberCoroutineScope()
+    val navBottomPadding = 88.dp
 
     Scaffold(
         topBar = {
@@ -119,33 +131,89 @@ fun SettingsScreen(
         },
         modifier = modifier
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            TabRow(selectedTabIndex = pagerState.currentPage) {
-                tabs.forEachIndexed { index, title ->
-                    Tab(
-                        selected = pagerState.currentPage == index,
-                        onClick = { coroutineScope.launch { pagerState.animateScrollToPage(index) } },
-                        text = { Text(title) }
-                    )
-                }
-            }
-
-            HorizontalPager(state = pagerState) { page ->
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxSize()
+            ) { page ->
                 when (page) {
                     0 -> GeneralTab(
                         viewModel = viewModel,
                         hasOverlayPermission = hasOverlayPermission,
                         hasAccessibilityPermission = hasAccessibilityPermission,
                         onRequestOverlayPermission = onRequestOverlayPermission,
-                        onRequestAccessibilityPermission = onRequestAccessibilityPermission
+                        onRequestAccessibilityPermission = onRequestAccessibilityPermission,
+                        bottomPadding = navBottomPadding
                     )
-                    1 -> PinnedAppsTab(viewModel = viewModel)
-                    2 -> ControlsTab(viewModel = viewModel)
-                    3 -> PillSettingsScreen(viewModel = viewModel)
+                    1 -> PinnedAppsTab(viewModel = viewModel, bottomPadding = navBottomPadding)
+                    2 -> ControlsTab(viewModel = viewModel, bottomPadding = navBottomPadding)
+                    3 -> PillSettingsScreen(viewModel = viewModel, bottomPadding = navBottomPadding)
+                }
+            }
+
+            androidx.compose.material3.Surface(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 16.dp, start = 16.dp, end = 16.dp),
+                shape = RoundedCornerShape(40.dp),
+                tonalElevation = 6.dp,
+                shadowElevation = 16.dp
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    tabs.forEachIndexed { index, title ->
+                        val selected = pagerState.currentPage == index
+                        if (selected) {
+                            androidx.compose.material3.Surface(
+                                modifier = Modifier.clickable(
+                                    indication = null,
+                                    interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                                ) { coroutineScope.launch { pagerState.animateScrollToPage(index) } },
+                                shape = RoundedCornerShape(28.dp),
+                                color = MaterialTheme.colorScheme.primaryContainer
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = tabIcons[index],
+                                        contentDescription = null,
+                                        modifier = Modifier.size(18.dp),
+                                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                                    )
+                                    Text(
+                                        text = title,
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                                    )
+                                }
+                            }
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .clip(RoundedCornerShape(24.dp))
+                                    .clickable { coroutineScope.launch { pagerState.animateScrollToPage(index) } },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = tabIcons[index],
+                                    contentDescription = title,
+                                    modifier = Modifier.size(22.dp),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -158,7 +226,8 @@ private fun GeneralTab(
     hasOverlayPermission: Boolean,
     hasAccessibilityPermission: Boolean,
     onRequestOverlayPermission: () -> Unit,
-    onRequestAccessibilityPermission: () -> Unit
+    onRequestAccessibilityPermission: () -> Unit,
+    bottomPadding: Dp = 0.dp
 ) {
     val overlayEnabled by viewModel.overlayEnabled.collectAsState()
     val themeMode by viewModel.themeMode.collectAsState()
@@ -171,7 +240,7 @@ private fun GeneralTab(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(16.dp),
+            .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp + bottomPadding),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         SettingsCard(title = "Overlay Status") {
@@ -444,14 +513,14 @@ private fun RecentAppsSettingsCard(viewModel: TaskbarViewModel, context: android
 }
 
 @Composable
-private fun PinnedAppsTab(viewModel: TaskbarViewModel) {
+private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
     val pinnedApps by viewModel.pinnedApps.collectAsState()
     val allApps by viewModel.allApps.collectAsState()
     val pinnedPackages = remember(pinnedApps) { pinnedApps.map { it.packageName }.toSet() }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp + bottomPadding),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
@@ -613,7 +682,7 @@ private fun AllAppGridItem(
 }
 
 @Composable
-private fun ControlsTab(viewModel: TaskbarViewModel) {
+private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
     val quickControlsEnabled by viewModel.quickControlsEnabled.collectAsState()
     val quickControlsStripEnabled by viewModel.quickControlsStripEnabled.collectAsState()
     val controlsOrder by viewModel.controlsOrder.collectAsState()
@@ -642,7 +711,7 @@ private fun ControlsTab(viewModel: TaskbarViewModel) {
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp + bottomPadding),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
