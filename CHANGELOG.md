@@ -4,6 +4,20 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.2.0] - 2026-05-27
+
+### Added
+- **Pill edge positions** — trigger pill can now be placed on the Left, Right, Both sides, or the Bottom of the screen. Left/Right/Both positions are vertically centred 2 dp from the edge; Bottom is fixed at the bottom centre.
+- **Position along edge slider** — when a side position is selected, a slider (0–100%, default 50% = centre) controls the vertical placement of the pill along the edge. The phone-frame preview updates live.
+- **Position defaults on switch** — switching to Bottom auto-sets the pill to 180 × 20 dp (horizontal bar); switching to a side auto-sets it to 12 × 120 dp (vertical bar).
+- **Device-dependent slider maxes** — Width and Height slider maximums now scale with the device's screen dimensions (width max = screen width dp; height max = half screen height dp).
+- **Floating bottom pill navigation in Settings** — tabs moved from a top tab bar to a floating pill at the bottom of the screen, with icons for each section (General, Apps, Controls, Design).
+
+### Fixed
+- **Panel toggles no longer hide the taskbar** — tapping an icon (app menu, volume, brightness, music) a second time now closes only that panel; the main dock stays visible. The dismiss chain is: app menu → volume → brightness → music → hide taskbar.
+
+---
+
 ## [1.1.9] - 2026-05-26
 
 ### Added
