@@ -13,8 +13,13 @@ All notable changes to Floating Dock are documented here.
 - **Device-dependent slider maxes** — Width and Height slider maximums now scale with the device's screen dimensions (width max = screen width dp; height max = half screen height dp).
 - **Floating bottom pill navigation in Settings** — tabs moved from a top tab bar to a floating pill at the bottom of the screen, with icons for each section (General, Apps, Controls, Design).
 
+### Changed
+- **Controls row centred in dock** — quick controls are now centred horizontally when fewer controls are shown than the full dock width.
+- **Pinned / Recent split** — when Recent Apps are enabled the dock expands to full width and allocates 60 % of the available space to pinned apps and 40 % to recent apps.
+
 ### Fixed
 - **Panel toggles no longer hide the taskbar** — tapping an icon (app menu, volume, brightness, music) a second time now closes only that panel; the main dock stays visible. The dismiss chain is: app menu → volume → brightness → music → hide taskbar.
+- **App icon rounded corners** — restored adaptive icon so the launcher applies the correct squircle mask; added per-density foreground layers and updated the background colour to match the new icon.
 
 ---
 
