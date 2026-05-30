@@ -92,6 +92,7 @@ class PreferencesRepository @Inject constructor(
         private val ONBOARDING_COMPLETE_KEY = booleanPreferencesKey("onboarding_complete")
         private val MUSIC_PANEL_ENABLED_KEY = booleanPreferencesKey("music_panel_enabled")
         private val RECENT_APPS_ENABLED_KEY = booleanPreferencesKey("recent_apps_enabled")
+        private val CONTROLS_SHOW_LABELS_KEY = booleanPreferencesKey("controls_show_labels")
 
         val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen", "caffeine")
 
@@ -336,6 +337,16 @@ class PreferencesRepository @Inject constructor(
     suspend fun setRecentAppsEnabled(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[RECENT_APPS_ENABLED_KEY] = enabled
+        }
+    }
+
+    val controlsShowLabels: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[CONTROLS_SHOW_LABELS_KEY] ?: true
+    }
+
+    suspend fun setControlsShowLabels(show: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[CONTROLS_SHOW_LABELS_KEY] = show
         }
     }
 }

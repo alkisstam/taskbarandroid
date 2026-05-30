@@ -53,6 +53,7 @@ fun QuickControls(
     showMusicIcon: Boolean = false,
     musicPanelActive: Boolean = false,
     onMusicToggle: () -> Unit = {},
+    showLabels: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     val items = state.toItems(order, disabledIds)
@@ -68,7 +69,8 @@ fun QuickControls(
                 icon = Icons.Filled.MusicNote,
                 label = "Music",
                 active = musicPanelActive,
-                onClick = onMusicToggle
+                onClick = onMusicToggle,
+                showLabel = showLabels
             )
         }
         items.forEach { item ->
@@ -76,7 +78,8 @@ fun QuickControls(
                 icon = item.icon,
                 label = item.label,
                 active = item.active,
-                onClick = { onAction(item.id) }
+                onClick = { onAction(item.id) },
+                showLabel = showLabels
             )
         }
     }
@@ -132,6 +135,7 @@ fun QuickControlsState.toItems(
 fun QuickControlItem(
     item: QuickControlItemData,
     onToggle: () -> Unit,
+    showLabel: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     QuickControlTile(
@@ -139,6 +143,7 @@ fun QuickControlItem(
         label = item.label,
         active = item.active,
         onClick = onToggle,
+        showLabel = showLabel,
         modifier = modifier
     )
 }
@@ -149,6 +154,7 @@ private fun QuickControlTile(
     label: String,
     active: Boolean,
     onClick: () -> Unit,
+    showLabel: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     val containerColor = if (active)
@@ -182,12 +188,14 @@ private fun QuickControlTile(
                 )
             }
         }
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.Center,
-            maxLines = 1
-        )
+        if (showLabel) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center,
+                maxLines = 1
+            )
+        }
     }
 }

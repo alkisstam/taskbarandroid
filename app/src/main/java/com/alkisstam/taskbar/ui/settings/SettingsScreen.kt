@@ -687,6 +687,7 @@ private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
     val quickControlsStripEnabled by viewModel.quickControlsStripEnabled.collectAsState()
     val controlsOrder by viewModel.controlsOrder.collectAsState()
     val controlsDisabledIds by viewModel.controlsDisabledIds.collectAsState()
+    val controlsShowLabels by viewModel.controlsShowLabels.collectAsState()
 
     val controlMeta = remember {
         listOf(
@@ -759,6 +760,33 @@ private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
                         checked = quickControlsStripEnabled,
                         enabled = quickControlsEnabled,
                         onCheckedChange = { viewModel.setQuickControlsStripEnabled(it) }
+                    )
+                }
+            }
+        }
+
+        item {
+            SettingsCard(
+                title = "Show Control Labels",
+                modifier = Modifier.alpha(if (quickControlsEnabled) 1f else 0.38f)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text("Show Labels", style = MaterialTheme.typography.bodyLarge)
+                        Text(
+                            "Show text labels below control icons",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Switch(
+                        checked = controlsShowLabels,
+                        enabled = quickControlsEnabled,
+                        onCheckedChange = { viewModel.setControlsShowLabels(it) }
                     )
                 }
             }

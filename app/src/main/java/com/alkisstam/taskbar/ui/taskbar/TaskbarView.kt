@@ -59,6 +59,7 @@ fun TaskbarView(
     val musicPanelEnabled by taskbarViewModel.musicPanelEnabled.collectAsState()
     val musicPanelVisible by appMenuViewModel.musicPanelVisible.collectAsState()
     val quickControls by appMenuViewModel.quickControlsState.collectAsState()
+    val controlsShowLabels by taskbarViewModel.controlsShowLabels.collectAsState()
     val haptic = LocalHapticFeedback.current
     val screenWidthDp = LocalConfiguration.current.screenWidthDp
 
@@ -112,7 +113,8 @@ fun TaskbarView(
                                         active = musicPanelVisible,
                                         icon = Icons.Filled.MusicNote
                                     ),
-                                    onToggle = { appMenuViewModel.toggleMusicPanel() }
+                                    onToggle = { appMenuViewModel.toggleMusicPanel() },
+                                    showLabel = controlsShowLabels
                                 )
                             }
                         }
@@ -122,7 +124,8 @@ fun TaskbarView(
                                 onToggle = {
                                     appMenuViewModel.handleQuickControlAction(item.id)
                                     if (item.id in listOf("qr", "power", "screenshot", "lockscreen")) taskbarViewModel.hideTaskbar()
-                                }
+                                },
+                                showLabel = controlsShowLabels
                             )
                         }
                     }

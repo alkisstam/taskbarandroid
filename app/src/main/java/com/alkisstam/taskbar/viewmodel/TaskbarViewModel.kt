@@ -92,6 +92,9 @@ class TaskbarViewModel @Inject constructor(
     val recentAppsEnabled: StateFlow<Boolean> = prefsRepository.recentAppsEnabled
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
+    val controlsShowLabels: StateFlow<Boolean> = prefsRepository.controlsShowLabels
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
+
     val recentApps: StateFlow<List<AppInfo>> = combine(
         recentAppsEnabled,
         prefsRepository.pinnedApps,
@@ -251,6 +254,12 @@ class TaskbarViewModel @Inject constructor(
     fun setMusicPanelEnabled(enabled: Boolean) {
         viewModelScope.launch {
             prefsRepository.setMusicPanelEnabled(enabled)
+        }
+    }
+
+    fun setControlsShowLabels(show: Boolean) {
+        viewModelScope.launch {
+            prefsRepository.setControlsShowLabels(show)
         }
     }
 
