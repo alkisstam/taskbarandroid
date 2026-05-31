@@ -4,6 +4,18 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.2.1] - 2026-05-31
+
+### Added
+- **Welcome onboarding flow** — first install now shows a 3-page onboarding: a welcome screen with a phone-and-dock graphic, a required-permissions screen with a pill-positions graphic, and an optional-permissions screen. Navigation via page-dot indicators and Next / Get Started buttons.
+- **Battery optimisation exclusion** — new optional permission card in onboarding (and Settings) to exclude the app from battery optimisation, preventing the system from killing the dock in the background.
+
+### Fixed
+- **Landscape auto-hide** — the auto-hide-in-landscape setting now works correctly; previously the preference value was never loaded in the overlay service so the setting had no effect.
+- **Recents full-width when no pinned apps** — when Recent Apps is enabled and no apps are pinned, the recent apps section now expands to fill the full dock width instead of being constrained to 40 %.
+
+---
+
 ## [1.2.0] - 2026-05-27
 
 ### Added
