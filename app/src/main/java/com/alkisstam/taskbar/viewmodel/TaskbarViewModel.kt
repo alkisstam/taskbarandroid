@@ -62,10 +62,10 @@ class TaskbarViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), TaskbarSettings())
 
     val autoHideInFullscreen: StateFlow<Boolean> = prefsRepository.autoHideInFullscreen
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     val autoHideInLandscape: StateFlow<Boolean> = prefsRepository.autoHideInLandscape
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     val quickControlsStripEnabled: StateFlow<Boolean> = prefsRepository.quickControlsStripEnabled
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)

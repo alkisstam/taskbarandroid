@@ -151,51 +151,58 @@ fun TaskbarView(
 
                     Spacer(modifier = Modifier.width(4.dp))
 
-                    val pinnedBoxModifier = when {
-                        !recentAppsEnabled -> Modifier.widthIn(max = 308.dp)
-                        recentApps.isNotEmpty() -> Modifier.weight(0.6f)
-                        else -> Modifier.weight(1f)
-                    }
-                    Box(modifier = pinnedBoxModifier) {
-                        LazyRow(
-                            state = pinnedListState,
-                            modifier = Modifier.wrapContentWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            items(pinnedApps, key = { it.packageName }) { app ->
-                                ReorderableItem(reorderableState, key = app.packageName) { isDragging ->
-                                    PinnedAppItem(
-                                        app = app,
-                                        showLabel = taskbarSettings.showLabels,
-                                        isDragging = isDragging,
-                                        dragModifier = Modifier.longPressDraggableHandle(
-                                            onDragStarted = {
-                                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    val hasRecents = recentAppsEnabled && recentApps.isNotEmpty()
+                    val hasPinned = pinnedApps.isNotEmpty()
+
+                    if (hasPinned || !hasRecents) {
+                        val pinnedBoxModifier = when {
+                            !recentAppsEnabled -> Modifier.widthIn(max = 308.dp)
+                            hasRecents -> Modifier.weight(0.6f)
+                            else -> Modifier.weight(1f)
+                        }
+                        Box(modifier = pinnedBoxModifier) {
+                            LazyRow(
+                                state = pinnedListState,
+                                modifier = Modifier.wrapContentWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                items(pinnedApps, key = { it.packageName }) { app ->
+                                    ReorderableItem(reorderableState, key = app.packageName) { isDragging ->
+                                        PinnedAppItem(
+                                            app = app,
+                                            showLabel = taskbarSettings.showLabels,
+                                            isDragging = isDragging,
+                                            dragModifier = Modifier.longPressDraggableHandle(
+                                                onDragStarted = {
+                                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                }
+                                            ),
+                                            onLaunch = {
+                                                taskbarViewModel.launchApp(app.packageName)
+                                                taskbarViewModel.hideTaskbar()
                                             }
-                                        ),
-                                        onLaunch = {
-                                            taskbarViewModel.launchApp(app.packageName)
-                                            taskbarViewModel.hideTaskbar()
-                                        }
-                                    )
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
 
-                    if (recentAppsEnabled && recentApps.isNotEmpty()) {
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Box(
-                            modifier = Modifier
-                                .width(1.dp)
-                                .height(32.dp)
-                                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
+                    if (hasRecents) {
+                        if (hasPinned) {
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Box(
+                                modifier = Modifier
+                                    .width(1.dp)
+                                    .height(32.dp)
+                                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                        }
                         LazyRow(
                             state = recentListState,
-                            modifier = Modifier.weight(0.4f),
+                            modifier = if (hasPinned) Modifier.weight(0.4f) else Modifier.weight(1f),
                             horizontalArrangement = Arrangement.spacedBy(4.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {

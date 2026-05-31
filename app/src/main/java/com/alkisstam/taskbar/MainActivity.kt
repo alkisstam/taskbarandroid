@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
 import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -39,6 +40,7 @@ class MainActivity : ComponentActivity() {
     private var hasNotificationsPermission by mutableStateOf(false)
     private var hasUsageStatsPermission by mutableStateOf(false)
     private var hasNotificationListenerPermission by mutableStateOf(false)
+    private var hasBatteryOptimizationExcluded by mutableStateOf(false)
 
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -59,6 +61,7 @@ class MainActivity : ComponentActivity() {
         hasNotificationsPermission = getNotificationsPermission()
         hasUsageStatsPermission = getUsageStatsPermission()
         hasNotificationListenerPermission = getNotificationListenerPermission()
+        hasBatteryOptimizationExcluded = getBatteryOptimizationExcluded()
 
         setContent {
             val themeMode by taskbarViewModel.themeMode.collectAsState()
@@ -75,6 +78,7 @@ class MainActivity : ComponentActivity() {
                         hasNotificationsPermission = hasNotificationsPermission,
                         hasUsageStatsPermission = hasUsageStatsPermission,
                         hasNotificationListenerPermission = hasNotificationListenerPermission,
+                        hasBatteryOptimizationExcluded = hasBatteryOptimizationExcluded,
                         onRequestOverlayPermission = ::requestOverlayPermission,
                         onRequestAccessibilityPermission = ::requestAccessibilityPermission,
                         onRequestWriteSettingsPermission = ::requestWriteSettingsPermission,
@@ -82,6 +86,7 @@ class MainActivity : ComponentActivity() {
                         onRequestNotificationsPermission = ::requestNotificationsPermission,
                         onRequestUsageStatsPermission = ::requestUsageStatsPermission,
                         onRequestNotificationListenerPermission = ::requestNotificationListenerPermission,
+                        onRequestBatteryOptimizationExclusion = ::requestBatteryOptimizationExclusion,
                         onComplete = taskbarViewModel::completeOnboarding
                     )
                     true -> SettingsScreen(
@@ -109,6 +114,7 @@ class MainActivity : ComponentActivity() {
         hasNotificationsPermission = getNotificationsPermission()
         hasUsageStatsPermission = getUsageStatsPermission()
         hasNotificationListenerPermission = getNotificationListenerPermission()
+        hasBatteryOptimizationExcluded = getBatteryOptimizationExcluded()
     }
 
     private fun getNotificationPolicyAccess(): Boolean {
@@ -179,5 +185,18 @@ class MainActivity : ComponentActivity() {
 
     private fun requestNotificationListenerPermission() {
         permissionLauncher.launch(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+    }
+
+    private fun getBatteryOptimizationExcluded(): Boolean {
+        val pm = getSystemService(POWER_SERVICE) as PowerManager
+        return pm.isIgnoringBatteryOptimizations(packageName)
+    }
+
+    private fun requestBatteryOptimizationExclusion() {
+        val intent = Intent(
+            Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+            Uri.parse("package:$packageName")
+        )
+        permissionLauncher.launch(intent)
     }
 }
