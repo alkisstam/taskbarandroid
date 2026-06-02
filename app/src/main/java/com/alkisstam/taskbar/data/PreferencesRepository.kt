@@ -35,7 +35,7 @@ private fun String?.toPillEdgePosition() = when (this) {
     "LEFT"  -> PillEdgePosition.LEFT
     "RIGHT" -> PillEdgePosition.RIGHT
     "BOTH"  -> PillEdgePosition.BOTH
-    else    -> PillEdgePosition.BOTTOM
+    else    -> PillEdgePosition.RIGHT
 }
 
 data class TaskbarSettings(
@@ -341,7 +341,7 @@ class PreferencesRepository @Inject constructor(
     }
 
     val controlsShowLabels: Flow<Boolean> = context.dataStore.data.map { prefs ->
-        prefs[CONTROLS_SHOW_LABELS_KEY] ?: true
+        prefs[CONTROLS_SHOW_LABELS_KEY] ?: false
     }
 
     suspend fun setControlsShowLabels(show: Boolean) {

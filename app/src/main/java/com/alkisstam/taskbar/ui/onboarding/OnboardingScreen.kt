@@ -8,11 +8,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -68,11 +71,11 @@ fun OnboardingScreen(
     val pagerState = rememberPagerState(pageCount = { 3 })
     val scope = rememberCoroutineScope()
 
-    Scaffold { paddingValues ->
+    Scaffold(contentWindowInsets = WindowInsets(0)) { _ ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .statusBarsPadding()
         ) {
             HorizontalPager(
                 state = pagerState,
@@ -83,17 +86,17 @@ fun OnboardingScreen(
                     0 -> WelcomePage()
                     1 -> RequiredPermissionPage(
                         hasOverlayPermission = hasOverlayPermission,
-                        onRequestOverlayPermission = onRequestOverlayPermission
+                        hasAccessibilityPermission = hasAccessibilityPermission,
+                        onRequestOverlayPermission = onRequestOverlayPermission,
+                        onRequestAccessibilityPermission = onRequestAccessibilityPermission
                     )
                     else -> OptionalPermissionsPage(
-                        hasAccessibilityPermission = hasAccessibilityPermission,
                         hasWriteSettingsPermission = hasWriteSettingsPermission,
                         hasNotificationPolicyPermission = hasNotificationPolicyPermission,
                         hasNotificationsPermission = hasNotificationsPermission,
                         hasUsageStatsPermission = hasUsageStatsPermission,
                         hasNotificationListenerPermission = hasNotificationListenerPermission,
                         hasBatteryOptimizationExcluded = hasBatteryOptimizationExcluded,
-                        onRequestAccessibilityPermission = onRequestAccessibilityPermission,
                         onRequestWriteSettingsPermission = onRequestWriteSettingsPermission,
                         onRequestNotificationPolicyPermission = onRequestNotificationPolicyPermission,
                         onRequestNotificationsPermission = onRequestNotificationsPermission,
@@ -107,6 +110,7 @@ fun OnboardingScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .navigationBarsPadding()
                     .padding(horizontal = 24.dp, vertical = 20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -249,7 +253,9 @@ private fun PhoneWithDockGraphic() {
 @Composable
 private fun RequiredPermissionPage(
     hasOverlayPermission: Boolean,
-    onRequestOverlayPermission: () -> Unit
+    hasAccessibilityPermission: Boolean,
+    onRequestOverlayPermission: () -> Unit,
+    onRequestAccessibilityPermission: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -263,13 +269,13 @@ private fun RequiredPermissionPage(
         Spacer(modifier = Modifier.height(40.dp))
 
         Text(
-            text = "One permission required",
+            text = "Two permissions required",
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = "Draw over other apps lets the dock float above everything. Without it, nothing works.",
+            text = "These two permissions are needed for the dock to work. Without them, nothing will function.",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -288,6 +294,23 @@ private fun RequiredPermissionPage(
             description = "Required to display the dock above all other apps.",
             granted = hasOverlayPermission,
             onGrant = onRequestOverlayPermission
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        PermissionCard(
+            icon = {
+                Icon(
+                    Icons.Filled.Accessibility,
+                    contentDescription = null,
+                    modifier = Modifier.size(28.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            },
+            title = "Accessibility Service",
+            description = "Required to draw the dock above the navigation bar and enable screenshots and lock screen controls.",
+            granted = hasAccessibilityPermission,
+            onGrant = onRequestAccessibilityPermission
         )
     }
 }
@@ -360,14 +383,12 @@ private fun ThreePillPositionsGraphic() {
 
 @Composable
 private fun OptionalPermissionsPage(
-    hasAccessibilityPermission: Boolean,
     hasWriteSettingsPermission: Boolean,
     hasNotificationPolicyPermission: Boolean,
     hasNotificationsPermission: Boolean,
     hasUsageStatsPermission: Boolean,
     hasNotificationListenerPermission: Boolean,
     hasBatteryOptimizationExcluded: Boolean,
-    onRequestAccessibilityPermission: () -> Unit,
     onRequestWriteSettingsPermission: () -> Unit,
     onRequestNotificationPolicyPermission: () -> Unit,
     onRequestNotificationsPermission: () -> Unit,
@@ -396,21 +417,6 @@ private fun OptionalPermissionsPage(
         )
 
         Spacer(modifier = Modifier.height(8.dp))
-
-        PermissionCard(
-            icon = {
-                Icon(
-                    Icons.Filled.Accessibility,
-                    contentDescription = null,
-                    modifier = Modifier.size(28.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            },
-            title = "Accessibility Service",
-            description = "Enables screenshots, lock screen, and drawing above the navigation bar.",
-            granted = hasAccessibilityPermission,
-            onGrant = onRequestAccessibilityPermission
-        )
 
         PermissionCard(
             icon = {
