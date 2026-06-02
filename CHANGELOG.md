@@ -4,6 +4,20 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.2.2] - 2026-06-02
+
+### Added
+- **Accessibility Service as required permission** — moved from the optional permissions page to the required permissions page in onboarding, alongside "Draw over other apps". Heading updated to "Two permissions required".
+
+### Changed
+- **Default pill position** — changed from Bottom to Right on fresh installs.
+- **Default control labels** — "Show Control Labels" now defaults to off on fresh installs.
+
+### Fixed
+- **Transparent navigation bar** — Settings and Onboarding screens now draw content behind the system navigation bar (edge-to-edge). The floating nav pill and onboarding buttons row are inset above the nav bar; tab scroll content gains matching bottom padding so nothing is obscured.
+
+---
+
 ## [1.2.1] - 2026-05-31
 
 ### Added
