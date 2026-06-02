@@ -4,6 +4,13 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.2.3] - 2026-06-02
+
+### Fixed
+- **Bottom pill position** — selecting Bottom in Pill Size & Appearance now persists correctly across restarts (was loading as Right due to a missing case in the preference parser).
+
+---
+
 ## [1.2.2] - 2026-06-02
 
 ### Added
