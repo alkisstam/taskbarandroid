@@ -32,10 +32,11 @@ private fun String?.toGestureAction() = when (this) {
 enum class PillEdgePosition { BOTTOM, LEFT, RIGHT, BOTH }
 
 private fun String?.toPillEdgePosition() = when (this) {
-    "LEFT"  -> PillEdgePosition.LEFT
-    "RIGHT" -> PillEdgePosition.RIGHT
-    "BOTH"  -> PillEdgePosition.BOTH
-    else    -> PillEdgePosition.RIGHT
+    "LEFT"   -> PillEdgePosition.LEFT
+    "RIGHT"  -> PillEdgePosition.RIGHT
+    "BOTH"   -> PillEdgePosition.BOTH
+    "BOTTOM" -> PillEdgePosition.BOTTOM
+    else     -> PillEdgePosition.RIGHT
 }
 
 data class TaskbarSettings(
