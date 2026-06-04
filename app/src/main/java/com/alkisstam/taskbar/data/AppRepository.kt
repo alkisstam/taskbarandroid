@@ -72,6 +72,7 @@ class AppRepository @Inject constructor(
                         icon = resolveInfo.loadIcon(pm).toBitmap()
                     )
                 }
+                .distinctBy { it.packageName }
                 .sortedBy { it.label.lowercase() }
         }
     }
