@@ -4,6 +4,14 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.2.4] - 2026-06-04
+
+### Fixed
+- **Crash on Android 8/9** — checking Usage Stats permission used an API-29-only method (`unsafeCheckOpNoThrow`), causing a crash on devices running Android 8 or 9. Now falls back to the compatible method on older API levels.
+- **Crash with duplicate app entries** — apps with multiple launcher activities appeared twice in the app grid, triggering a duplicate key crash in the UI. Deduplicated by package name on load.
+
+---
+
 ## [1.2.3] - 2026-06-02
 
 ### Fixed
