@@ -6,19 +6,14 @@ import android.view.Gravity
 import android.view.WindowManager
 import com.alkisstam.taskbar.data.PillEdgePosition
 
-internal fun overlayWindowType() =
-    if (TaskBarAccessibilityService.isRunning())
-        WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
-    else
-        WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+internal fun overlayWindowType() = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
 
 internal fun Context.overlayLayoutParams(interactive: Boolean = true, focusable: Boolean = false): WindowManager.LayoutParams {
-    val usingAccessibility = TaskBarAccessibilityService.isRunning()
     val flags = (if (!focusable) WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE else 0) or
             WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
             (if (!interactive) WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE else 0) or
-            (if (usingAccessibility) WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS else 0)
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
     return WindowManager.LayoutParams(
         WindowManager.LayoutParams.MATCH_PARENT,
         WindowManager.LayoutParams.MATCH_PARENT,
@@ -36,10 +31,10 @@ internal fun Context.pillLayoutParams(
     isRight: Boolean = false,
     sidePositionPct: Float = 50f
 ): WindowManager.LayoutParams {
-    val usingAccessibility = TaskBarAccessibilityService.isRunning()
+    
     val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
             WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
-            (if (usingAccessibility) WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS else 0)
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
     val edgePx = (2 * resources.displayMetrics.density).toInt()
     // y offset from screen centre: 50% → 0, 0% → top, 100% → bottom
     val sideYPx = ((sidePositionPct - 50f) / 100f * resources.displayMetrics.heightPixels).toInt()
@@ -74,10 +69,10 @@ internal fun Context.pillLayoutParams(
 }
 
 internal fun Context.searchLayoutParams(): WindowManager.LayoutParams {
-    val usingAccessibility = TaskBarAccessibilityService.isRunning()
+    
     val flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-            (if (usingAccessibility) WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS else 0)
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
     return WindowManager.LayoutParams(
         WindowManager.LayoutParams.MATCH_PARENT,
         WindowManager.LayoutParams.MATCH_PARENT,
@@ -90,10 +85,10 @@ internal fun Context.searchLayoutParams(): WindowManager.LayoutParams {
 }
 
 internal fun Context.volumePanelLayoutParams(yOffsetDp: Float): WindowManager.LayoutParams {
-    val usingAccessibility = TaskBarAccessibilityService.isRunning()
+    
     val flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-            (if (usingAccessibility) WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS else 0)
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
     val density = resources.displayMetrics.density
     return WindowManager.LayoutParams(
         WindowManager.LayoutParams.WRAP_CONTENT,
@@ -108,10 +103,10 @@ internal fun Context.volumePanelLayoutParams(yOffsetDp: Float): WindowManager.La
 }
 
 internal fun Context.volumeScrimLayoutParams(): WindowManager.LayoutParams {
-    val usingAccessibility = TaskBarAccessibilityService.isRunning()
+    
     val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-            (if (usingAccessibility) WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS else 0)
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
     return WindowManager.LayoutParams(
         WindowManager.LayoutParams.MATCH_PARENT,
         WindowManager.LayoutParams.MATCH_PARENT,
@@ -124,11 +119,11 @@ internal fun Context.volumeScrimLayoutParams(): WindowManager.LayoutParams {
 }
 
 internal fun Context.musicPanelLayoutParams(yOffsetDp: Float): WindowManager.LayoutParams {
-    val usingAccessibility = TaskBarAccessibilityService.isRunning()
+    
     val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
             WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-            (if (usingAccessibility) WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS else 0)
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
     val density = resources.displayMetrics.density
     return WindowManager.LayoutParams(
         WindowManager.LayoutParams.MATCH_PARENT,

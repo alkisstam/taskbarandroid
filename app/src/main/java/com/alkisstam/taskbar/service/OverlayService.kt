@@ -93,21 +93,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     @Volatile private var overlayHiddenForLockscreen = false
     @Volatile private var hiddenForLandscape = false
 
-    private fun showOverlay() {
-        overlayHiddenForLockscreen = false
-        if (overlayView?.isAttachedToWindow != true) addOverlayView()
-        if (pillView?.isAttachedToWindow != true) addPillView()
-        overlayView?.visibility = View.VISIBLE
-        pillView?.visibility = View.VISIBLE
-        pillView2?.visibility = View.VISIBLE
-    }
-
-    private fun hideOverlay() {
-        overlayHiddenForLockscreen = true
-        // Setting views to GONE during screen off can cause WindowManager to remove them on some
-        // Android versions/OEM skins. Track the state and let the insets listener handle visibility.
-    }
-
     private val lockscreenReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
