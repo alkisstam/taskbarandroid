@@ -139,7 +139,7 @@ fun TaskbarView(
 
                 Row(
                     modifier = Modifier
-                        .then(if (recentAppsEnabled) Modifier.fillMaxWidth() else Modifier)
+                        .then(if (recentAppsEnabled || showControlsInDock) Modifier.fillMaxWidth() else Modifier)
                         .height(taskbarSettings.heightDp.dp)
                         .padding(horizontal = 8.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
@@ -157,9 +157,9 @@ fun TaskbarView(
 
                     if (hasPinned || !hasRecents) {
                         val pinnedBoxModifier = when {
-                            !recentAppsEnabled -> Modifier.widthIn(max = 308.dp)
                             hasRecents -> Modifier.weight(0.6f)
-                            else -> Modifier.weight(1f)
+                            recentAppsEnabled || showControlsInDock -> Modifier.weight(1f)
+                            else -> Modifier.widthIn(max = 308.dp)
                         }
                         Box(modifier = pinnedBoxModifier) {
                             LazyRow(
