@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -99,7 +100,7 @@ private fun AppGridItem(
             AppIconImage(
                 icon = app.icon,
                 contentDescription = app.label,
-                modifier = Modifier.size(48.dp)
+                modifier = Modifier.size(48.dp).clip(CircleShape)
             )
             if (isPinned) {
                 Box(

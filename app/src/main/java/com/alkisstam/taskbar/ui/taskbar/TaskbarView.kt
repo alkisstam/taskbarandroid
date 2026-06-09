@@ -77,6 +77,7 @@ fun TaskbarView(
 
     val recentListState = rememberLazyListState()
     val showControlsInDock = quickControlsEnabled && quickControlsStripEnabled
+    val iconSize = (taskbarSettings.heightDp - 16f).coerceIn(24f, 48f).dp
 
     Box(
         modifier = modifier
@@ -171,6 +172,7 @@ fun TaskbarView(
                                     ReorderableItem(reorderableState, key = app.packageName) { isDragging ->
                                         PinnedAppItem(
                                             app = app,
+                                            iconSize = iconSize,
                                             showLabel = taskbarSettings.showLabels,
                                             isDragging = isDragging,
                                             dragModifier = Modifier.longPressDraggableHandle(
@@ -209,6 +211,7 @@ fun TaskbarView(
                             items(recentApps, key = { it.packageName }) { app ->
                                 PinnedAppItem(
                                     app = app,
+                                    iconSize = iconSize,
                                     showLabel = taskbarSettings.showLabels,
                                     isDragging = false,
                                     dragModifier = Modifier,
