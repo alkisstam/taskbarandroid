@@ -4,6 +4,17 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.2.5] - 2026-06-09
+
+### Changed
+- **Circle app icons** — app icons in the all-apps panel, pinned apps, and recent apps now display as circles instead of squares.
+- **Dynamic icon sizing** — taskbar app icons scale with the taskbar height (clamped 24–48dp).
+
+### Fixed
+- **Pinned row clipping** — when Recent Apps was disabled but the controls strip was visible, pinned app icons were cut off on the right. The pinned row now expands to match the controls strip width.
+
+---
+
 ## [1.2.4] - 2026-06-04
 
 ### Fixed
