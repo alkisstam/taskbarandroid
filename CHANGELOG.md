@@ -4,6 +4,13 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.2.6] - 2026-06-09
+
+### Fixed
+- **Overlay visible on lockscreen** — the overlay now hides automatically when the device is locked and reappears on unlock.
+
+---
+
 ## [1.2.5] - 2026-06-09
 
 ### Changed
