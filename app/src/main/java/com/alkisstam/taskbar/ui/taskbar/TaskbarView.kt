@@ -1,6 +1,7 @@
 package com.alkisstam.taskbar.ui.taskbar
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -89,7 +90,8 @@ fun TaskbarView(
             modifier = Modifier
                 .wrapContentWidth()
                 .wrapContentHeight()
-                .widthIn(max = (screenWidthDp * 0.95f).dp),
+                .widthIn(max = (screenWidthDp * 0.95f).dp)
+                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)),
             shape = RoundedCornerShape(16.dp),
             color = surfaceColor,
             tonalElevation = 3.dp,

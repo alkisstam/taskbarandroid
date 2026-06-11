@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -73,7 +74,8 @@ fun AppMenuPanel(
             Surface(
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
-                    .wrapContentHeight(),
+                    .wrapContentHeight()
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(20.dp)),
                 shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 20.dp, bottomEnd = 20.dp),
                 color = panelColor,
                 tonalElevation = if (surfaceTintColor != 0L) 0.dp else 4.dp,

@@ -2,6 +2,7 @@ package com.alkisstam.taskbar.ui.appmenu
 
 import android.media.AudioManager
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
@@ -59,7 +60,7 @@ fun VolumePanel(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = modifier,
+        modifier = modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(20.dp)),
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.surface,
         tonalElevation = 3.dp
@@ -187,7 +188,7 @@ fun BrightnessPanel(
     }
 
     Surface(
-        modifier = modifier,
+        modifier = modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(20.dp)),
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.surface,
         tonalElevation = 3.dp
