@@ -4,6 +4,17 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.2.8] - 2026-06-12
+
+### Fixed
+- **Touch blocking in third-party apps** — the overlay window is now removed from the input dispatcher when the menu is closed, fixing unresponsive taps in apps like Play Store and Google.
+- **Back gesture dismissal** — the taskbar window is now focusable while the dock is visible, so the back gesture correctly dismisses it when an app is in the foreground.
+
+### Changed
+- **App menu opens above the taskbar** — the all-apps panel now slides up above the taskbar strip instead of replacing it; the dock remains visible and interactive while the menu is open.
+
+---
+
 ## [1.2.6] - 2026-06-09
 
 ### Fixed
