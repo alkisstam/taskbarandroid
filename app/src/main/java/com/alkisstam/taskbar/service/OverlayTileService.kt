@@ -59,7 +59,7 @@ class OverlayTileService : TileService() {
     private fun updateTile(enabled: Boolean) {
         val tile = qsTile ?: return
         tile.state = if (enabled) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
-        tile.label = "TaskBar"
+        tile.label = "Floating Dock"
         tile.subtitle = if (enabled) "On" else "Off"
         tile.icon = Icon.createWithResource(this, R.drawable.ic_tile)
         tile.updateTile()

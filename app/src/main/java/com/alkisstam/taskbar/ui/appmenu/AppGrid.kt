@@ -144,7 +144,7 @@ private fun AppGridItem(
                         modifier = Modifier.padding(horizontal = 4.dp)
                     ) {
                         Text(
-                            if (isPinned) "Unpin from TaskBar" else "Pin to TaskBar",
+                            if (isPinned) "Unpin from Dock" else "Pin to Dock",
                             style = MaterialTheme.typography.bodySmall
                         )
                     }

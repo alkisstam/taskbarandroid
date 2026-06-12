@@ -69,7 +69,7 @@ fun SearchResultItem(
             onDismissRequest = { showMenu = false }
         ) {
             DropdownMenuItem(
-                text = { Text(if (isPinned) "Unpin from TaskBar" else "Pin to TaskBar") },
+                text = { Text(if (isPinned) "Unpin from Dock" else "Pin to Dock") },
                 onClick = { onPin(); showMenu = false }
             )
         }

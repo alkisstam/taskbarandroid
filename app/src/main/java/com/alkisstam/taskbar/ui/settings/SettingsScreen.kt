@@ -129,7 +129,7 @@ fun SettingsScreen(
         contentWindowInsets = WindowInsets(0),
         topBar = {
             TopAppBar(
-                title = { Text("TaskBar Settings") },
+                title = { Text("Dock Settings") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 )
@@ -253,7 +253,7 @@ private fun GeneralTab(
         SettingsCard(title = "Overlay Status") {
             if (!hasOverlayPermission) {
                 Text(
-                    text = "TaskBar requires the \"Draw over other apps\" permission to show the taskbar above other apps.",
+                    text = "Floating Dock requires the \"Draw over other apps\" permission to show the dock above other apps.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -269,7 +269,7 @@ private fun GeneralTab(
                 ) {
                     Column {
                         Text(
-                            text = if (overlayEnabled) "TaskBar is running" else "TaskBar is stopped",
+                            text = if (overlayEnabled) "Dock is running" else "Dock is stopped",
                             style = MaterialTheme.typography.bodyLarge
                         )
                         Text(
@@ -337,7 +337,7 @@ private fun GeneralTab(
                 Column {
                     Text("Auto-hide in Fullscreen", style = MaterialTheme.typography.bodyLarge)
                     Text(
-                        "Hide the taskbar when an app goes fullscreen",
+                        "Hide the dock when an app goes fullscreen",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -355,7 +355,7 @@ private fun GeneralTab(
                 Column {
                     Text("Auto-hide in Landscape", style = MaterialTheme.typography.bodyLarge)
                     Text(
-                        "Hide the taskbar when the device is in landscape",
+                        "Hide the dock when the device is in landscape",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -374,7 +374,7 @@ private fun GeneralTab(
         SettingsCard(title = "Navigation Bar Overlay") {
             if (!hasAccessibilityPermission) {
                 Text(
-                    text = "Enable the TaskBar Accessibility Service to allow the overlay to draw above the system navigation bar.",
+                    text = "Enable the Floating Dock Accessibility Service to allow the overlay to draw above the system navigation bar.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -431,7 +431,7 @@ private fun MusicPanelSettingsCard(viewModel: TaskbarViewModel, context: android
             Column {
                 Text("Show Music Panel", style = MaterialTheme.typography.bodyLarge)
                 Text(
-                    "Floats above the taskbar when media is playing",
+                    "Floats above the dock when media is playing",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -477,7 +477,7 @@ private fun RecentAppsSettingsCard(viewModel: TaskbarViewModel, context: android
             Column(modifier = Modifier.weight(1f)) {
                 Text("Show Recent Apps", style = MaterialTheme.typography.bodyLarge)
                 Text(
-                    "Shows recently used apps alongside pinned apps in the taskbar",
+                    "Shows recently used apps alongside pinned apps in the dock",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -758,7 +758,7 @@ private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
                     Column {
                         Text("Show Controls in Dock", style = MaterialTheme.typography.bodyLarge)
                         Text(
-                            "Show quick controls inside the taskbar",
+                            "Show quick controls inside the dock",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -1047,7 +1047,7 @@ private fun SurfaceTintColorPicker(
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text("Surface Tint Color", style = MaterialTheme.typography.bodyMedium)
         Text(
-            "Applies to the taskbar, app menu, and quick controls strip",
+            "Applies to the dock, app menu, and quick controls strip",
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )

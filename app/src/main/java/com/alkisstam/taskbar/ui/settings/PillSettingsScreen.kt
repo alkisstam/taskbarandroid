@@ -185,7 +185,7 @@ fun PillSettingsScreen(
         }
 
         ExpandableSection(
-            title = "Taskbar Size & Appearance",
+            title = "Dock Size & Appearance",
             expanded = taskbarExpanded,
             onToggle = { taskbarExpanded = !taskbarExpanded }
         ) {
@@ -213,7 +213,7 @@ fun PillSettingsScreen(
                 Column {
                     Text("Show App Labels", style = MaterialTheme.typography.bodyMedium)
                     Text(
-                        "Show app name below each icon in the taskbar",
+                        "Show app name below each icon in the dock",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
