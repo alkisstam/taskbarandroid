@@ -9,6 +9,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -17,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.GestureAction
 import com.alkisstam.taskbar.ui.appmenu.AppMenuPanel
 import com.alkisstam.taskbar.ui.appmenu.BrightnessPanel
@@ -35,54 +37,63 @@ internal fun OverlayContent(
     appMenuViewModel: AppMenuViewModel
 ) {
     val themeMode by taskbarViewModel.themeMode.collectAsState()
-    val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
     val menuVisible by appMenuViewModel.menuVisible.collectAsState()
     val isSettingsOpen by taskbarViewModel.isSettingsOpen.collectAsState()
-    val volumePanelVisible by appMenuViewModel.volumePanelVisible.collectAsState()
-    val brightnessPanelVisible by appMenuViewModel.brightnessPanelVisible.collectAsState()
-    val musicPanelVisible by appMenuViewModel.musicPanelVisible.collectAsState()
+    val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
+    val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
+    val quickControlsEnabled by taskbarViewModel.quickControlsEnabled.collectAsState()
+    val quickControlsStripEnabled by taskbarViewModel.quickControlsStripEnabled.collectAsState()
+
+    val controlsInDock = quickControlsEnabled && quickControlsStripEnabled
+    val panelBottomPadding = if (isTaskbarVisible) {
+        (taskbarSettings.positionYDp + taskbarSettings.heightDp * (if (controlsInDock) 2 else 1) + 8f).dp
+    } else 0.dp
 
     TaskBarTheme(themeMode = themeMode) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.BottomCenter
         ) {
-            if (isTaskbarVisible && !isSettingsOpen) {
+            if (menuVisible && !isSettingsOpen) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .clickable(
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() }
-                        ) {
-                            when {
-                                menuVisible            -> appMenuViewModel.dismissMenu()
-                                volumePanelVisible     -> appMenuViewModel.dismissVolumePanel()
-                                brightnessPanelVisible -> appMenuViewModel.dismissBrightnessPanel()
-                                musicPanelVisible      -> appMenuViewModel.dismissMusicPanel()
-                                else                   -> taskbarViewModel.hideTaskbar()
-                            }
-                        }
+                        ) { appMenuViewModel.dismissMenu() }
                 )
             }
-            Column(modifier = Modifier.wrapContentHeight()) {
+            Column(modifier = Modifier.wrapContentHeight().padding(bottom = panelBottomPadding)) {
                 AppMenuPanel(
                     viewModel = appMenuViewModel,
                     taskbarViewModel = taskbarViewModel,
                     onHideTaskbar = taskbarViewModel::hideTaskbar,
                     modifier = Modifier
                 )
-                AnimatedVisibility(
-                    visible = isTaskbarVisible,
-                    enter = slideInVertically(initialOffsetY = { it }),
-                    exit = slideOutVertically(targetOffsetY = { it })
-                ) {
-                    TaskbarView(
-                        taskbarViewModel = taskbarViewModel,
-                        appMenuViewModel = appMenuViewModel
-                    )
-                }
             }
+        }
+    }
+}
+
+@Composable
+internal fun TaskbarContent(
+    taskbarViewModel: TaskbarViewModel,
+    appMenuViewModel: AppMenuViewModel
+) {
+    val themeMode by taskbarViewModel.themeMode.collectAsState()
+    val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
+
+    TaskBarTheme(themeMode = themeMode) {
+        AnimatedVisibility(
+            visible = isTaskbarVisible,
+            enter = slideInVertically(initialOffsetY = { it }),
+            exit = slideOutVertically(targetOffsetY = { it })
+        ) {
+            TaskbarView(
+                taskbarViewModel = taskbarViewModel,
+                appMenuViewModel = appMenuViewModel
+            )
         }
     }
 }

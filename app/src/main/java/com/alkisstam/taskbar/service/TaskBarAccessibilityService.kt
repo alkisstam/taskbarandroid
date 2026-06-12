@@ -1,10 +1,12 @@
 package com.alkisstam.taskbar.service
 
 import android.accessibilityservice.AccessibilityService
+import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.provider.Settings
+import android.view.KeyEvent
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import com.alkisstam.taskbar.data.PreferencesRepository
@@ -29,6 +31,9 @@ class TaskBarAccessibilityService : AccessibilityService() {
 
     override fun onServiceConnected() {
         instance = this
+        val info = serviceInfo
+        info.flags = info.flags or AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS
+        serviceInfo = info
         scope.launch {
             val overlayEnabled = prefsRepository.overlayEnabled.first()
             if (overlayEnabled && Settings.canDrawOverlays(this@TaskBarAccessibilityService)) {
@@ -80,6 +85,16 @@ class TaskBarAccessibilityService : AccessibilityService() {
                 )
             }
         }
+    }
+
+    override fun onKeyEvent(event: KeyEvent): Boolean {
+        if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+            if (OverlayService.isTaskbarVisibleForBack) {
+                sendBroadcast(Intent(OverlayService.ACTION_DISMISS_ALL).setPackage(packageName))
+                return true
+            }
+        }
+        return false
     }
 
     override fun onInterrupt() {}

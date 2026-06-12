@@ -35,6 +35,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.ui.appmenu.QuickControlItem
 import com.alkisstam.taskbar.ui.appmenu.toItems
+import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
 import com.alkisstam.taskbar.viewmodel.QuickControlItemData
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
@@ -81,9 +82,7 @@ fun TaskbarView(
     val iconSize = (taskbarSettings.heightDp - 16f).coerceIn(24f, 48f).dp
 
     Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(bottom = taskbarSettings.positionYDp.dp),
+        modifier = modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
         Surface(
@@ -91,7 +90,7 @@ fun TaskbarView(
                 .wrapContentWidth()
                 .wrapContentHeight()
                 .widthIn(max = (screenWidthDp * 0.95f).dp)
-                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp)),
+                .border(2.dp, TaskbarOutlineGreen, RoundedCornerShape(16.dp)),
             shape = RoundedCornerShape(16.dp),
             color = surfaceColor,
             tonalElevation = 3.dp,

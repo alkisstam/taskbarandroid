@@ -36,6 +36,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.MediaState
+import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 
 @Composable
 fun MusicPanel(
@@ -53,7 +54,7 @@ fun MusicPanel(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(28.dp))
+            .border(2.dp, TaskbarOutlineGreen, RoundedCornerShape(28.dp))
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),

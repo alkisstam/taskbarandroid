@@ -77,6 +77,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private val windowManager: WindowManager
         get() = TaskBarAccessibilityService.instance?.accessibilityWindowManager ?: _windowManager
     private var overlayView: View? = null
+    private var taskbarView: View? = null
     private var pillView: View? = null
     private var pillView2: View? = null
     private var searchView: View? = null
@@ -103,6 +104,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     overlayHiddenForLockscreen = false
                     Handler(Looper.getMainLooper()).post {
                         if (overlayView?.isAttachedToWindow != true) addOverlayView()
+                        if (taskbarView?.isAttachedToWindow != true) addTaskbarView()
                         if (pillView?.isAttachedToWindow != true) addPillView()
                     }
                 }
@@ -111,10 +113,12 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     hiddenForLandscape = isLandscape && taskbarViewModel.autoHideInLandscape.value
                     if (hiddenForLandscape) {
                         overlayView?.visibility = View.GONE
+                        taskbarView?.visibility = View.GONE
                         pillView?.visibility = View.GONE
                         pillView2?.visibility = View.GONE
                     } else if (!overlayHiddenForLockscreen) {
-                        overlayView?.visibility = View.VISIBLE
+                        if (appMenuViewModel.menuVisible.value) overlayView?.visibility = View.VISIBLE
+                        taskbarView?.visibility = View.VISIBLE
                         pillView?.visibility = View.VISIBLE
                         pillView2?.visibility = View.VISIBLE
                     }
@@ -153,6 +157,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         const val ACTION_SETTINGS_CLOSE = "com.alkisstam.taskbar.ACTION_SETTINGS_CLOSE"
         const val ACTION_DISMISS_ALL = "com.alkisstam.taskbar.DISMISS_ALL"
         const val ACTION_ACCESSIBILITY_CHANGED = "com.alkisstam.taskbar.ACCESSIBILITY_CHANGED"
+
+        @Volatile var isTaskbarVisibleForBack = false
     }
 
     override fun onCreate() {
@@ -204,6 +210,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
         hiddenForLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE && taskbarViewModel.autoHideInLandscape.value
         addOverlayView()
+        addTaskbarView()
         addPillView()
         addSearchView()
         addMusicPanelView()
@@ -214,6 +221,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             observersStarted = true
             observePillPosition()
             observeOverlayInteractivity()
+            observeTaskbarPosition()
+            observeTaskbarInteractivity()
             observeSearchVisibility()
             observeMusicPanelPosition()
             observeVolumeAndBrightnessPanels()
@@ -233,6 +242,13 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         catch (e: Exception) { Log.w(TAG, "Failed to update overlay layout flags", e) }
     }
 
+    private fun setTaskbarFlags(interactive: Boolean) {
+        val view = taskbarView ?: return
+        val yOffsetDp = taskbarViewModel.taskbarSettings.value.positionYDp
+        try { windowManager.updateViewLayout(view, taskbarLayoutParams(interactive, yOffsetDp)) }
+        catch (e: Exception) { Log.w(TAG, "Failed to update taskbar layout flags", e) }
+    }
+
     // endregion
 
     // region Observers
@@ -241,17 +257,43 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         serviceScope.launch {
             kotlinx.coroutines.flow.combine(
                 appMenuViewModel.menuVisible,
-                taskbarViewModel.isTaskbarVisible,
                 appMenuViewModel.isSearching
-            ) { menuOpen, taskbarVisible, searching ->
-                Pair(menuOpen || taskbarVisible, menuOpen && !searching)
+            ) { menuOpen, searching ->
+                Pair(menuOpen, menuOpen && !searching)
             }
             .collect { (interactive, focusable) ->
                 if (interactive) {
+                    overlayView?.visibility = View.VISIBLE
                     setOverlayFlags(interactive = true, focusable = focusable)
                 } else {
                     kotlinx.coroutines.delay(Constants.OVERLAY_HIDE_DEBOUNCE_MS)
                     setOverlayFlags(interactive = false, focusable = false)
+                    overlayView?.visibility = View.GONE
+                }
+            }
+        }
+    }
+
+    private fun observeTaskbarPosition() {
+        serviceScope.launch {
+            taskbarViewModel.taskbarSettings.collect { settings ->
+                val view = taskbarView ?: return@collect
+                val interactive = taskbarViewModel.isTaskbarVisible.value && !appMenuViewModel.menuVisible.value
+                try { windowManager.updateViewLayout(view, taskbarLayoutParams(interactive, settings.positionYDp)) }
+                catch (e: Exception) { Log.w(TAG, "Failed to update taskbar position", e) }
+            }
+        }
+    }
+
+    private fun observeTaskbarInteractivity() {
+        serviceScope.launch {
+            taskbarViewModel.isTaskbarVisible.collect { interactive ->
+                isTaskbarVisibleForBack = interactive
+                if (interactive) {
+                    setTaskbarFlags(interactive = true)
+                } else {
+                    kotlinx.coroutines.delay(Constants.OVERLAY_HIDE_DEBOUNCE_MS)
+                    setTaskbarFlags(interactive = false)
                 }
             }
         }
@@ -421,8 +463,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             wrapper.setViewTreeSavedStateRegistryOwner(this@OverlayService)
             wrapper.addView(composeView)
             overlayView = wrapper
-            if (hiddenForLandscape) wrapper.visibility = View.GONE
-            windowManager.addView(wrapper, overlayLayoutParams())
+            if (hiddenForLandscape || !appMenuViewModel.menuVisible.value) wrapper.visibility = View.GONE
+            windowManager.addView(wrapper, overlayLayoutParams(interactive = false))
             attachInsetsListener(wrapper)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add overlay view", e)
@@ -447,15 +489,54 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     setOverlayFlags(interactive = false, focusable = false)
                 } else {
                     val menuOpen = appMenuViewModel.menuVisible.value
-                    val taskbarVisible = taskbarViewModel.isTaskbarVisible.value
                     val searching = appMenuViewModel.isSearching.value
                     setOverlayFlags(
-                        interactive = menuOpen || taskbarVisible,
+                        interactive = menuOpen,
                         focusable = menuOpen && !searching
                     )
                 }
             }
             insets
+        }
+    }
+
+    private fun addTaskbarView() {
+        if (taskbarView?.isAttachedToWindow == true) return
+        taskbarView?.let { runCatching { windowManager.removeView(it) } }
+        taskbarView = null
+        try {
+            val composeView = ComposeView(this).apply {
+                setViewTreeLifecycleOwner(this@OverlayService)
+                setViewTreeViewModelStoreOwner(this@OverlayService)
+                setViewTreeSavedStateRegistryOwner(this@OverlayService)
+                setContent {
+                    TaskbarContent(
+                        taskbarViewModel = taskbarViewModel,
+                        appMenuViewModel = appMenuViewModel
+                    )
+                }
+            }
+            val wrapper = object : FrameLayout(this) {
+                override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+                    if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+                        dismissAll()
+                        return true
+                    }
+                    return super.dispatchKeyEvent(event)
+                }
+            }
+            wrapper.setViewTreeLifecycleOwner(this@OverlayService)
+            wrapper.setViewTreeViewModelStoreOwner(this@OverlayService)
+            wrapper.setViewTreeSavedStateRegistryOwner(this@OverlayService)
+            wrapper.addView(composeView)
+            taskbarView = wrapper
+            if (hiddenForLandscape) wrapper.visibility = View.GONE
+            val initialInteractive = taskbarViewModel.isTaskbarVisible.value && !appMenuViewModel.menuVisible.value
+            val initialYOffset = taskbarViewModel.taskbarSettings.value.positionYDp
+            windowManager.addView(wrapper, taskbarLayoutParams(initialInteractive, initialYOffset))
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to add taskbar view", e)
+            taskbarView = null
         }
     }
 
@@ -627,6 +708,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove overlay view", e) }
             overlayView = null
         }
+        taskbarView?.let {
+            try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove taskbar view", e) }
+            taskbarView = null
+        }
         pillView?.let {
             try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove pill view", e) }
             pillView = null
@@ -658,6 +743,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         if (!observersStarted) return
         removeOverlayView()
         addOverlayView()
+        addTaskbarView()
         addPillView()
         if (taskbarViewModel.pillSettings.value.edgePosition == com.alkisstam.taskbar.data.PillEdgePosition.BOTH) ensurePillView2()
         addSearchView()

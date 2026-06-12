@@ -44,6 +44,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 
 data class VolumeStreamInfo(
     val streamType: Int,
@@ -60,7 +61,7 @@ fun VolumePanel(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(20.dp)),
+        modifier = modifier.border(2.dp, TaskbarOutlineGreen, RoundedCornerShape(20.dp)),
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.surface,
         tonalElevation = 3.dp
