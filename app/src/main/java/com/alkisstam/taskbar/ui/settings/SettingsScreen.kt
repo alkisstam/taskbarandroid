@@ -369,8 +369,6 @@ private fun GeneralTab(
 
         MusicPanelSettingsCard(viewModel = viewModel, context = context)
 
-        RecentAppsSettingsCard(viewModel = viewModel, context = context)
-
         SettingsCard(title = "Navigation Bar Overlay") {
             if (!hasAccessibilityPermission) {
                 Text(
@@ -459,61 +457,6 @@ private fun MusicPanelSettingsCard(viewModel: TaskbarViewModel, context: android
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Grant Notification Access")
-            }
-        }
-    }
-}
-
-@Composable
-private fun RecentAppsSettingsCard(viewModel: TaskbarViewModel, context: android.content.Context) {
-    val recentAppsEnabled by viewModel.recentAppsEnabled.collectAsState()
-
-    SettingsCard(title = "Recent Apps") {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text("Show Recent Apps", style = MaterialTheme.typography.bodyLarge)
-                Text(
-                    "Shows recently used apps alongside pinned apps in the dock",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            Switch(
-                checked = recentAppsEnabled,
-                onCheckedChange = { enabled ->
-                    if (enabled && !viewModel.isRecentAppsPermissionGranted()) {
-                        context.startActivity(
-                            android.content.Intent(android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS)
-                                .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-                        )
-                    } else {
-                        viewModel.setRecentAppsEnabled(enabled)
-                    }
-                }
-            )
-        }
-        if (recentAppsEnabled && !viewModel.isRecentAppsPermissionGranted()) {
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Usage Access permission is required. Tap the button below to grant it.",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedButton(
-                onClick = {
-                    context.startActivity(
-                        android.content.Intent(android.provider.Settings.ACTION_USAGE_ACCESS_SETTINGS)
-                            .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-                    )
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Grant Usage Access")
             }
         }
     }
@@ -691,10 +634,9 @@ private fun AllAppGridItem(
 @Composable
 private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
     val quickControlsEnabled by viewModel.quickControlsEnabled.collectAsState()
-    val quickControlsStripEnabled by viewModel.quickControlsStripEnabled.collectAsState()
+    val taskbarSettings by viewModel.taskbarSettings.collectAsState()
     val controlsOrder by viewModel.controlsOrder.collectAsState()
     val controlsDisabledIds by viewModel.controlsDisabledIds.collectAsState()
-    val controlsShowLabels by viewModel.controlsShowLabels.collectAsState()
 
     val controlMeta = remember {
         listOf(
@@ -742,58 +684,19 @@ private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
                         onCheckedChange = { viewModel.setQuickControlsEnabled(it) }
                     )
                 }
-            }
-        }
-
-        item {
-            SettingsCard(
-                title = "Show Controls in Dock",
-                modifier = Modifier.alpha(if (quickControlsEnabled) 1f else 0.38f)
-            ) {
+                Spacer(modifier = Modifier.height(8.dp))
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .alpha(if (quickControlsEnabled) 1f else 0.38f),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
-                        Text("Show Controls in Dock", style = MaterialTheme.typography.bodyLarge)
-                        Text(
-                            "Show quick controls inside the dock",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                    Text("Show control labels", style = MaterialTheme.typography.bodyLarge)
                     Switch(
-                        checked = quickControlsStripEnabled,
-                        enabled = quickControlsEnabled,
-                        onCheckedChange = { viewModel.setQuickControlsStripEnabled(it) }
-                    )
-                }
-            }
-        }
-
-        item {
-            SettingsCard(
-                title = "Show Control Labels",
-                modifier = Modifier.alpha(if (quickControlsEnabled) 1f else 0.38f)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Text("Show Labels", style = MaterialTheme.typography.bodyLarge)
-                        Text(
-                            "Show text labels below control icons",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    Switch(
-                        checked = controlsShowLabels,
-                        enabled = quickControlsEnabled,
-                        onCheckedChange = { viewModel.setControlsShowLabels(it) }
+                        checked = taskbarSettings.showControlLabels,
+                        onCheckedChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(showControlLabels = it)) },
+                        enabled = quickControlsEnabled
                     )
                 }
             }

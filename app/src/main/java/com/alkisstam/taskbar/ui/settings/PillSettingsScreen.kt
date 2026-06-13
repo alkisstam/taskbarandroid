@@ -201,25 +201,6 @@ fun PillSettingsScreen(
                     unit = "dp",
                     onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(heightDp = it)) }
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Text("Show App Labels", style = MaterialTheme.typography.bodyMedium)
-                        Text(
-                            "Show app name below each icon in the dock",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    androidx.compose.material3.Switch(
-                        checked = taskbarSettings.showLabels,
-                        onCheckedChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(showLabels = it)) }
-                    )
-                }
             }
         }
     }

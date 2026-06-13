@@ -17,6 +17,7 @@ import android.os.IBinder
 import android.os.Looper
 import android.util.Log
 import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
@@ -42,7 +43,6 @@ import com.alkisstam.taskbar.data.AppRepository
 import com.alkisstam.taskbar.data.MediaRepository
 import com.alkisstam.taskbar.data.PreferencesRepository
 import com.alkisstam.taskbar.data.QuickControlsRepository
-import com.alkisstam.taskbar.data.RecentAppsRepository
 import com.alkisstam.taskbar.util.Constants
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
@@ -61,7 +61,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     @Inject lateinit var prefsRepository: PreferencesRepository
     @Inject lateinit var quickControlsRepository: QuickControlsRepository
     @Inject lateinit var mediaRepository: MediaRepository
-    @Inject lateinit var recentAppsRepository: RecentAppsRepository
 
     private val lifecycleRegistry = LifecycleRegistry(this)
     override val lifecycle: Lifecycle get() = lifecycleRegistry
@@ -188,8 +187,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             appRepository = appRepository,
             prefsRepository = prefsRepository,
             quickControlsRepository = quickControlsRepository,
-            mediaRepository = mediaRepository,
-            recentAppsRepository = recentAppsRepository
+            mediaRepository = mediaRepository
         )
         val provider = ViewModelProvider(this, factory)
         taskbarViewModel = provider[TaskbarViewModel::class.java]
@@ -358,20 +356,11 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         serviceScope.launch {
             kotlinx.coroutines.flow.combine(
                 taskbarViewModel.taskbarSettings,
-                taskbarViewModel.quickControlsStripEnabled,
-                taskbarViewModel.quickControlsEnabled,
                 appMenuViewModel.menuVisible
-            ) { settings, stripEnabled, controlsEnabled, menuOpen ->
-                val controlsInDock = stripEnabled && controlsEnabled
-                volumePanelYOffsetDp = if (controlsInDock)
-                    settings.positionYDp + settings.heightDp * 2 + 10f
-                else
-                    settings.positionYDp + settings.heightDp + 10f
-                when {
-                    menuOpen -> settings.positionYDp + settings.heightDp + 420f
-                    controlsInDock -> settings.positionYDp + settings.heightDp * 2 + 8f
-                    else -> settings.positionYDp + settings.heightDp + 8f
-                }
+            ) { settings, menuOpen ->
+                volumePanelYOffsetDp = settings.positionYDp + settings.heightDp + 10f
+                if (menuOpen) settings.positionYDp + settings.heightDp + 420f
+                else settings.positionYDp + settings.heightDp + 8f
             }.collect { yOffset ->
                 musicPanelYOffsetDp = yOffset
                 val view = musicPanelView ?: return@collect
@@ -529,6 +518,12 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             wrapper.setViewTreeViewModelStoreOwner(this@OverlayService)
             wrapper.setViewTreeSavedStateRegistryOwner(this@OverlayService)
             wrapper.addView(composeView)
+            wrapper.setOnTouchListener { _, event ->
+                if (event.action == MotionEvent.ACTION_OUTSIDE && !appMenuViewModel.menuVisible.value) {
+                    taskbarViewModel.hideTaskbar()
+                }
+                false
+            }
             taskbarView = wrapper
             if (hiddenForLandscape) wrapper.visibility = View.GONE
             val initialInteractive = taskbarViewModel.isTaskbarVisible.value && !appMenuViewModel.menuVisible.value

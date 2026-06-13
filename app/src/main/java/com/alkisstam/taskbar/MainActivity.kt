@@ -1,7 +1,6 @@
 package com.alkisstam.taskbar
 
 import android.Manifest
-import android.app.AppOpsManager
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -40,7 +39,6 @@ class MainActivity : ComponentActivity() {
     private var hasWriteSettingsPermission by mutableStateOf(false)
     private var hasNotificationPolicyPermission by mutableStateOf(false)
     private var hasNotificationsPermission by mutableStateOf(false)
-    private var hasUsageStatsPermission by mutableStateOf(false)
     private var hasNotificationListenerPermission by mutableStateOf(false)
     private var hasBatteryOptimizationExcluded by mutableStateOf(false)
 
@@ -61,7 +59,6 @@ class MainActivity : ComponentActivity() {
         hasWriteSettingsPermission = Settings.System.canWrite(this)
         hasNotificationPolicyPermission = getNotificationPolicyAccess()
         hasNotificationsPermission = getNotificationsPermission()
-        hasUsageStatsPermission = getUsageStatsPermission()
         hasNotificationListenerPermission = getNotificationListenerPermission()
         hasBatteryOptimizationExcluded = getBatteryOptimizationExcluded()
 
@@ -79,7 +76,6 @@ class MainActivity : ComponentActivity() {
                         hasWriteSettingsPermission = hasWriteSettingsPermission,
                         hasNotificationPolicyPermission = hasNotificationPolicyPermission,
                         hasNotificationsPermission = hasNotificationsPermission,
-                        hasUsageStatsPermission = hasUsageStatsPermission,
                         hasNotificationListenerPermission = hasNotificationListenerPermission,
                         hasBatteryOptimizationExcluded = hasBatteryOptimizationExcluded,
                         selectedPosition = pillSettings.edgePosition,
@@ -99,7 +95,6 @@ class MainActivity : ComponentActivity() {
                         onRequestWriteSettingsPermission = ::requestWriteSettingsPermission,
                         onRequestNotificationPolicyPermission = ::requestNotificationPolicyPermission,
                         onRequestNotificationsPermission = ::requestNotificationsPermission,
-                        onRequestUsageStatsPermission = ::requestUsageStatsPermission,
                         onRequestNotificationListenerPermission = ::requestNotificationListenerPermission,
                         onRequestBatteryOptimizationExclusion = ::requestBatteryOptimizationExclusion,
                         onComplete = taskbarViewModel::completeOnboarding
@@ -127,7 +122,6 @@ class MainActivity : ComponentActivity() {
         hasWriteSettingsPermission = Settings.System.canWrite(this)
         hasNotificationPolicyPermission = getNotificationPolicyAccess()
         hasNotificationsPermission = getNotificationsPermission()
-        hasUsageStatsPermission = getUsageStatsPermission()
         hasNotificationListenerPermission = getNotificationListenerPermission()
         hasBatteryOptimizationExcluded = getBatteryOptimizationExcluded()
     }
@@ -176,21 +170,6 @@ class MainActivity : ComponentActivity() {
     private fun requestNotificationPolicyPermission() {
         val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
         permissionLauncher.launch(intent)
-    }
-
-    private fun getUsageStatsPermission(): Boolean {
-        val appOps = getSystemService(APP_OPS_SERVICE) as AppOpsManager
-        @Suppress("DEPRECATION")
-        val mode = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-            appOps.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, android.os.Process.myUid(), packageName)
-        } else {
-            appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, android.os.Process.myUid(), packageName)
-        }
-        return mode == AppOpsManager.MODE_ALLOWED
-    }
-
-    private fun requestUsageStatsPermission() {
-        permissionLauncher.launch(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
     }
 
     private fun getNotificationListenerPermission(): Boolean {

@@ -39,6 +39,10 @@ fun TriggerPillView(
     isCollapsed: Boolean,
     pillSettings: PillSettings,
     onAction: (GestureAction) -> Unit,
+    dockRevealMaxDragPx: Float = 200f,
+    onRevealProgress: (Float) -> Unit = {},
+    onRevealCommit: () -> Unit = {},
+    onRevealCancel: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(
@@ -50,31 +54,58 @@ fun TriggerPillView(
         val scope = rememberCoroutineScope()
         var tapJob by remember { mutableStateOf<Job?>(null) }
         var tapCount by remember { mutableIntStateOf(0) }
-        var swipeFired by remember { mutableStateOf(false) }
 
         val isBottom = pillSettings.edgePosition == PillEdgePosition.BOTTOM
 
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
-                .pointerInput(pillSettings) {
+                .pointerInput(pillSettings, dockRevealMaxDragPx) {
+                    var totalDragY = 0f
+                    var swipeFiredLocal = false
                     detectDragGestures(
-                        onDragStart = { swipeFired = false },
-                        onDrag = { _, drag ->
-                            if (!swipeFired) {
-                                when {
+                        onDragStart = {
+                            totalDragY = 0f
+                            swipeFiredLocal = false
+                        },
+                        onDragEnd = {
+                            val upward = -totalDragY
+                            when {
+                                pillSettings.swipeUpAction == GestureAction.SHOW_DOCK && upward > 0 -> {
+                                    val progress = (upward / dockRevealMaxDragPx).coerceIn(0f, 1f)
+                                    if (progress >= 0.4f) onRevealCommit() else onRevealCancel()
+                                }
+                            }
+                            totalDragY = 0f
+                            swipeFiredLocal = false
+                        },
+                        onDragCancel = {
+                            if (pillSettings.swipeUpAction == GestureAction.SHOW_DOCK && -totalDragY > 0) {
+                                onRevealCancel()
+                            }
+                            totalDragY = 0f
+                            swipeFiredLocal = false
+                        }
+                    ) { _, drag ->
+                        totalDragY += drag.y
+                        val upward = -totalDragY
+                        if (!swipeFiredLocal) {
+                            when {
+                                pillSettings.swipeUpAction == GestureAction.SHOW_DOCK && upward > 0 && abs(drag.y) > abs(drag.x) -> {
+                                    onRevealProgress((upward / dockRevealMaxDragPx).coerceIn(0f, 1f))
+                                }
+                                pillSettings.swipeUpAction != GestureAction.SHOW_DOCK &&
                                     drag.y < -Constants.SWIPE_TRIGGER_THRESHOLD_PX && abs(drag.y) > abs(drag.x) -> {
-                                        swipeFired = true
-                                        onAction(pillSettings.swipeUpAction)
-                                    }
-                                    drag.y > Constants.SWIPE_TRIGGER_THRESHOLD_PX && abs(drag.y) > abs(drag.x) -> {
-                                        swipeFired = true
-                                        onAction(pillSettings.swipeDownAction)
-                                    }
+                                    swipeFiredLocal = true
+                                    onAction(pillSettings.swipeUpAction)
+                                }
+                                drag.y > Constants.SWIPE_TRIGGER_THRESHOLD_PX && abs(drag.y) > abs(drag.x) -> {
+                                    swipeFiredLocal = true
+                                    onAction(pillSettings.swipeDownAction)
                                 }
                             }
                         }
-                    )
+                    }
                 }
                 .pointerInput(pillSettings) {
                     detectTapGestures {
@@ -100,12 +131,10 @@ fun TriggerPillView(
                 }
         ) {
             if (isBottom) {
-                // Pill indicator centered horizontally, centered vertically in the strip
                 Box(modifier = Modifier.align(Alignment.Center)) {
                     PillShape(pillSettings = pillSettings)
                 }
             } else {
-                // Pill indicator positioned along the edge by sidePositionPct
                 val totalH = maxHeight
                 val pillH = pillSettings.heightDp.coerceAtLeast(2f).dp
                 val availableH = totalH - pillH

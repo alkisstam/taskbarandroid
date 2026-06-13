@@ -13,7 +13,6 @@ import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.AppRepository
 import com.alkisstam.taskbar.data.PillSettings
 import com.alkisstam.taskbar.data.PreferencesRepository
-import com.alkisstam.taskbar.data.RecentAppsRepository
 import com.alkisstam.taskbar.data.TaskbarSettings
 import com.alkisstam.taskbar.data.ThemeMode
 import com.alkisstam.taskbar.service.OverlayService
@@ -25,7 +24,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -35,8 +33,7 @@ import javax.inject.Inject
 class TaskbarViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val appRepository: AppRepository,
-    private val prefsRepository: PreferencesRepository,
-    private val recentAppsRepository: RecentAppsRepository
+    private val prefsRepository: PreferencesRepository
 ) : ViewModel() {
 
     val allApps: StateFlow<List<AppInfo>> = appRepository.apps
@@ -67,9 +64,6 @@ class TaskbarViewModel @Inject constructor(
     val autoHideInLandscape: StateFlow<Boolean> = prefsRepository.autoHideInLandscape
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    val quickControlsStripEnabled: StateFlow<Boolean> = prefsRepository.quickControlsStripEnabled
-        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
-
     val quickControlsEnabled: StateFlow<Boolean> = prefsRepository.quickControlsEnabled
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
@@ -89,30 +83,6 @@ class TaskbarViewModel @Inject constructor(
     val musicPanelEnabled: StateFlow<Boolean> = prefsRepository.musicPanelEnabled
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    val recentAppsEnabled: StateFlow<Boolean> = prefsRepository.recentAppsEnabled
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
-
-    val controlsShowLabels: StateFlow<Boolean> = prefsRepository.controlsShowLabels
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
-
-    val recentApps: StateFlow<List<AppInfo>> = combine(
-        recentAppsEnabled,
-        prefsRepository.pinnedApps,
-        appRepository.apps
-    ) { enabled, pinnedPkgs, allApps ->
-        if (!enabled) return@combine emptyList()
-        val appMap = allApps.associateBy { it.packageName }
-        val pinnedSet = pinnedPkgs.toSet()
-        recentAppsRepository.getRecentPackages(excludePackages = pinnedSet)
-            .mapNotNull { pkg -> appMap[pkg] }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-
-    fun isRecentAppsPermissionGranted() = recentAppsRepository.isPermissionGranted()
-
-    fun setRecentAppsEnabled(enabled: Boolean) {
-        viewModelScope.launch { prefsRepository.setRecentAppsEnabled(enabled) }
-    }
-
     fun completeOnboarding() {
         viewModelScope.launch { prefsRepository.setOnboardingComplete() }
     }
@@ -123,6 +93,18 @@ class TaskbarViewModel @Inject constructor(
 
     private val _isTaskbarVisible = MutableStateFlow(true)
     val isTaskbarVisible: StateFlow<Boolean> = _isTaskbarVisible.asStateFlow()
+
+    private val _isDockExpanded = MutableStateFlow(false)
+    val isDockExpanded: StateFlow<Boolean> = _isDockExpanded.asStateFlow()
+
+    fun toggleDockExpanded() { _isDockExpanded.value = !_isDockExpanded.value }
+    fun collapseDock() { _isDockExpanded.value = false }
+
+    private val _dockRevealProgress = MutableStateFlow(0f)
+    val dockRevealProgress: StateFlow<Float> = _dockRevealProgress.asStateFlow()
+
+    fun setRevealProgress(p: Float) { _dockRevealProgress.value = p.coerceIn(0f, 1f) }
+    fun cancelReveal() { _dockRevealProgress.value = 0f }
 
     private val _isSettingsOpen = MutableStateFlow(false)
     val isSettingsOpen: StateFlow<Boolean> = _isSettingsOpen.asStateFlow()
@@ -140,7 +122,11 @@ class TaskbarViewModel @Inject constructor(
 
     fun showTaskbar() { _isTaskbarVisible.value = true }
     fun hideTaskbar() {
-        if (!_isSettingsOpen.value) _isTaskbarVisible.value = false
+        if (!_isSettingsOpen.value) {
+            _isDockExpanded.value = false
+            _isTaskbarVisible.value = false
+            _dockRevealProgress.value = 0f
+        }
     }
 
     init {
@@ -227,12 +213,6 @@ class TaskbarViewModel @Inject constructor(
         }
     }
 
-    fun setQuickControlsStripEnabled(enabled: Boolean) {
-        viewModelScope.launch {
-            prefsRepository.setQuickControlsStripEnabled(enabled)
-        }
-    }
-
     fun setQuickControlsEnabled(enabled: Boolean) {
         viewModelScope.launch {
             prefsRepository.setQuickControlsEnabled(enabled)
@@ -254,12 +234,6 @@ class TaskbarViewModel @Inject constructor(
     fun setMusicPanelEnabled(enabled: Boolean) {
         viewModelScope.launch {
             prefsRepository.setMusicPanelEnabled(enabled)
-        }
-    }
-
-    fun setControlsShowLabels(show: Boolean) {
-        viewModelScope.launch {
-            prefsRepository.setControlsShowLabels(show)
         }
     }
 

@@ -30,7 +30,6 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.QueryStats
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -62,7 +61,6 @@ fun OnboardingScreen(
     hasWriteSettingsPermission: Boolean,
     hasNotificationPolicyPermission: Boolean,
     hasNotificationsPermission: Boolean,
-    hasUsageStatsPermission: Boolean,
     hasNotificationListenerPermission: Boolean,
     hasBatteryOptimizationExcluded: Boolean,
     selectedPosition: PillEdgePosition,
@@ -72,7 +70,6 @@ fun OnboardingScreen(
     onRequestWriteSettingsPermission: () -> Unit,
     onRequestNotificationPolicyPermission: () -> Unit,
     onRequestNotificationsPermission: () -> Unit,
-    onRequestUsageStatsPermission: () -> Unit,
     onRequestNotificationListenerPermission: () -> Unit,
     onRequestBatteryOptimizationExclusion: () -> Unit,
     onComplete: () -> Unit
@@ -107,13 +104,11 @@ fun OnboardingScreen(
                         hasWriteSettingsPermission = hasWriteSettingsPermission,
                         hasNotificationPolicyPermission = hasNotificationPolicyPermission,
                         hasNotificationsPermission = hasNotificationsPermission,
-                        hasUsageStatsPermission = hasUsageStatsPermission,
                         hasNotificationListenerPermission = hasNotificationListenerPermission,
                         hasBatteryOptimizationExcluded = hasBatteryOptimizationExcluded,
                         onRequestWriteSettingsPermission = onRequestWriteSettingsPermission,
                         onRequestNotificationPolicyPermission = onRequestNotificationPolicyPermission,
                         onRequestNotificationsPermission = onRequestNotificationsPermission,
-                        onRequestUsageStatsPermission = onRequestUsageStatsPermission,
                         onRequestNotificationListenerPermission = onRequestNotificationListenerPermission,
                         onRequestBatteryOptimizationExclusion = onRequestBatteryOptimizationExclusion
                     )
@@ -504,13 +499,11 @@ private fun OptionalPermissionsPage(
     hasWriteSettingsPermission: Boolean,
     hasNotificationPolicyPermission: Boolean,
     hasNotificationsPermission: Boolean,
-    hasUsageStatsPermission: Boolean,
     hasNotificationListenerPermission: Boolean,
     hasBatteryOptimizationExcluded: Boolean,
     onRequestWriteSettingsPermission: () -> Unit,
     onRequestNotificationPolicyPermission: () -> Unit,
     onRequestNotificationsPermission: () -> Unit,
-    onRequestUsageStatsPermission: () -> Unit,
     onRequestNotificationListenerPermission: () -> Unit,
     onRequestBatteryOptimizationExclusion: () -> Unit
 ) {
@@ -594,21 +587,6 @@ private fun OptionalPermissionsPage(
             description = "Required for the music panel to show media controls.",
             granted = hasNotificationListenerPermission,
             onGrant = onRequestNotificationListenerPermission
-        )
-
-        PermissionCard(
-            icon = {
-                Icon(
-                    Icons.Filled.QueryStats,
-                    contentDescription = null,
-                    modifier = Modifier.size(28.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            },
-            title = "Usage Access",
-            description = "Required for the Recent Apps section in the dock.",
-            granted = hasUsageStatsPermission,
-            onGrant = onRequestUsageStatsPermission
         )
 
         PermissionCard(

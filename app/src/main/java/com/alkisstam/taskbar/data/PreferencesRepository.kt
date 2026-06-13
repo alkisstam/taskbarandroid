@@ -42,7 +42,7 @@ private fun String?.toPillEdgePosition() = when (this) {
 data class TaskbarSettings(
     val positionYDp: Float = 20f,
     val heightDp: Float = 70f,
-    val showLabels: Boolean = false
+    val showControlLabels: Boolean = true
 )
 
 data class PillSettings(
@@ -79,19 +79,16 @@ class PreferencesRepository @Inject constructor(
         private val PILL_SIDE_POSITION_PCT_KEY = floatPreferencesKey("pill_side_position_pct")
         private val TASKBAR_POSITION_Y_KEY = floatPreferencesKey("taskbar_position_y")
         private val TASKBAR_HEIGHT_KEY = floatPreferencesKey("taskbar_height_dp")
-        private val TASKBAR_SHOW_LABELS_KEY = booleanPreferencesKey("taskbar_show_labels")
+        private val TASKBAR_CONTROL_LABELS_KEY = booleanPreferencesKey("taskbar_control_labels")
         private val SURFACE_TINT_COLOR_KEY = stringPreferencesKey("surface_tint_color")
         private val AUTO_HIDE_FULLSCREEN_KEY = booleanPreferencesKey("auto_hide_fullscreen")
         private val AUTO_HIDE_LANDSCAPE_KEY = booleanPreferencesKey("auto_hide_landscape")
-        private val QUICK_CONTROLS_STRIP_KEY = booleanPreferencesKey("quick_controls_strip")
         private val QUICK_CONTROLS_ENABLED_KEY = booleanPreferencesKey("quick_controls_enabled")
         private val CONTROLS_ORDER_KEY = stringPreferencesKey("controls_order")
         private val CONTROLS_DISABLED_KEY = stringPreferencesKey("controls_disabled_ids")
         private val TASKBAR_VISIBLE_KEY = booleanPreferencesKey("taskbar_visible")
         private val ONBOARDING_COMPLETE_KEY = booleanPreferencesKey("onboarding_complete")
         private val MUSIC_PANEL_ENABLED_KEY = booleanPreferencesKey("music_panel_enabled")
-        private val RECENT_APPS_ENABLED_KEY = booleanPreferencesKey("recent_apps_enabled")
-        private val CONTROLS_SHOW_LABELS_KEY = booleanPreferencesKey("controls_show_labels")
 
         val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen", "caffeine")
 
@@ -205,16 +202,6 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
-    val quickControlsStripEnabled: Flow<Boolean> = context.dataStore.data.map { prefs ->
-        prefs[QUICK_CONTROLS_STRIP_KEY] ?: false
-    }
-
-    suspend fun setQuickControlsStripEnabled(enabled: Boolean) {
-        context.dataStore.edit { prefs ->
-            prefs[QUICK_CONTROLS_STRIP_KEY] = enabled
-        }
-    }
-
     val quickControlsEnabled: Flow<Boolean> = context.dataStore.data.map { prefs ->
         prefs[QUICK_CONTROLS_ENABLED_KEY] ?: true
     }
@@ -237,17 +224,17 @@ class PreferencesRepository @Inject constructor(
 
     val taskbarSettings: Flow<TaskbarSettings> = context.dataStore.data.map { prefs ->
         TaskbarSettings(
-            positionYDp = prefs[TASKBAR_POSITION_Y_KEY]  ?: 20f,
-            heightDp    = prefs[TASKBAR_HEIGHT_KEY]      ?: 70f,
-            showLabels  = prefs[TASKBAR_SHOW_LABELS_KEY] ?: false
+            positionYDp       = prefs[TASKBAR_POSITION_Y_KEY]      ?: 20f,
+            heightDp          = prefs[TASKBAR_HEIGHT_KEY]           ?: 70f,
+            showControlLabels = prefs[TASKBAR_CONTROL_LABELS_KEY]   ?: true
         )
     }
 
     suspend fun saveTaskbarSettings(settings: TaskbarSettings) {
         context.dataStore.edit { prefs ->
-            prefs[TASKBAR_POSITION_Y_KEY]  = settings.positionYDp
-            prefs[TASKBAR_HEIGHT_KEY]      = settings.heightDp
-            prefs[TASKBAR_SHOW_LABELS_KEY] = settings.showLabels
+            prefs[TASKBAR_POSITION_Y_KEY]    = settings.positionYDp
+            prefs[TASKBAR_HEIGHT_KEY]        = settings.heightDp
+            prefs[TASKBAR_CONTROL_LABELS_KEY] = settings.showControlLabels
         }
     }
 
@@ -327,23 +314,4 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
-    val recentAppsEnabled: Flow<Boolean> = context.dataStore.data.map { prefs ->
-        prefs[RECENT_APPS_ENABLED_KEY] ?: false
-    }
-
-    suspend fun setRecentAppsEnabled(enabled: Boolean) {
-        context.dataStore.edit { prefs ->
-            prefs[RECENT_APPS_ENABLED_KEY] = enabled
-        }
-    }
-
-    val controlsShowLabels: Flow<Boolean> = context.dataStore.data.map { prefs ->
-        prefs[CONTROLS_SHOW_LABELS_KEY] ?: false
-    }
-
-    suspend fun setControlsShowLabels(show: Boolean) {
-        context.dataStore.edit { prefs ->
-            prefs[CONTROLS_SHOW_LABELS_KEY] = show
-        }
-    }
 }
