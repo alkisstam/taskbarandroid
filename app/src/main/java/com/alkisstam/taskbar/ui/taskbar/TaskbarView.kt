@@ -89,7 +89,7 @@ fun TaskbarView(
             modifier = Modifier
                 .wrapContentWidth()
                 .wrapContentHeight()
-                .widthIn(max = (screenWidthDp * 0.95f).dp)
+                .widthIn(max = (screenWidthDp * 0.98f).dp)
                 .border(2.dp, TaskbarOutlineGreen, RoundedCornerShape(16.dp)),
             shape = RoundedCornerShape(16.dp),
             color = surfaceColor,
