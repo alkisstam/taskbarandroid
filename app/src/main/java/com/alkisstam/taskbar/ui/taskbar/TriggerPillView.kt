@@ -6,7 +6,10 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -18,10 +21,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.GestureAction
+import com.alkisstam.taskbar.data.PillEdgePosition
 import com.alkisstam.taskbar.data.PillSettings
 import com.alkisstam.taskbar.util.Constants
 import kotlinx.coroutines.Job
@@ -47,9 +52,11 @@ fun TriggerPillView(
         var tapCount by remember { mutableIntStateOf(0) }
         var swipeFired by remember { mutableStateOf(false) }
 
-        PillShape(
-            pillSettings = pillSettings,
+        val isBottom = pillSettings.edgePosition == PillEdgePosition.BOTTOM
+
+        BoxWithConstraints(
             modifier = Modifier
+                .fillMaxSize()
                 .pointerInput(pillSettings) {
                     detectDragGestures(
                         onDragStart = { swipeFired = false },
@@ -91,7 +98,24 @@ fun TriggerPillView(
                         }
                     }
                 }
-        )
+        ) {
+            if (isBottom) {
+                // Pill indicator centered horizontally, centered vertically in the strip
+                Box(modifier = Modifier.align(Alignment.Center)) {
+                    PillShape(pillSettings = pillSettings)
+                }
+            } else {
+                // Pill indicator positioned along the edge by sidePositionPct
+                val totalH = maxHeight
+                val pillH = pillSettings.heightDp.coerceAtLeast(2f).dp
+                val availableH = totalH - pillH
+                val yOffset = (pillSettings.sidePositionPct / 100f * availableH.value).dp
+                    .coerceIn(0.dp, availableH.coerceAtLeast(0.dp))
+                Box(modifier = Modifier.offset(y = yOffset).align(Alignment.TopCenter)) {
+                    PillShape(pillSettings = pillSettings)
+                }
+            }
+        }
     }
 }
 

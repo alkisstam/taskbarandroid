@@ -24,13 +24,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.Block
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.SwipeDown
-import androidx.compose.material.icons.filled.SwipeUp
-import androidx.compose.material.icons.filled.TouchApp
-import androidx.compose.material.icons.filled.ViewDay
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
@@ -67,10 +61,6 @@ fun PillSettingsScreen(
     val widthMax = configuration.screenWidthDp.toFloat()
     val heightMax = (configuration.screenHeightDp / 2).toFloat()
 
-    var gestureExpanded by remember { mutableStateOf(false) }
-    var pillExpanded by remember { mutableStateOf(false) }
-    var taskbarExpanded by remember { mutableStateOf(false) }
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -78,44 +68,22 @@ fun PillSettingsScreen(
             .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp + bottomPadding),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        ExpandableSection(
-            title = "Trigger Gesture",
-            expanded = gestureExpanded,
-            onToggle = { gestureExpanded = !gestureExpanded }
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
         ) {
-            Text(
-                text = "Configure what each gesture does",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                GestureActionRow(
-                    label = "Swipe Up",
-                    icon = { Icon(Icons.Filled.SwipeUp, contentDescription = null) },
-                    selected = pillSettings.swipeUpAction,
-                    onSelect = { viewModel.savePillSettings(pillSettings.copy(swipeUpAction = it)) }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = "Pill Size & Appearance",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
                 )
-                GestureActionRow(
-                    label = "Swipe Down",
-                    icon = { Icon(Icons.Filled.SwipeDown, contentDescription = null) },
-                    selected = pillSettings.swipeDownAction,
-                    onSelect = { viewModel.savePillSettings(pillSettings.copy(swipeDownAction = it)) }
-                )
-                GestureActionRow(
-                    label = "Double Tap",
-                    icon = { Icon(Icons.Filled.TouchApp, contentDescription = null) },
-                    selected = pillSettings.doubleTapAction,
-                    onSelect = { viewModel.savePillSettings(pillSettings.copy(doubleTapAction = it)) }
-                )
-            }
-        }
-
-        ExpandableSection(
-            title = "Pill Size & Appearance",
-            expanded = pillExpanded,
-            onToggle = { pillExpanded = !pillExpanded }
-        ) {
+                Spacer(modifier = Modifier.height(12.dp))
             SettingsSlider(
                 label = "Width",
                 value = pillSettings.widthDp.coerceAtMost(widthMax),
@@ -152,8 +120,15 @@ fun PillSettingsScreen(
                     FilterChip(
                         selected = pillSettings.edgePosition == pos,
                         onClick = {
-                            val (w, h) = if (pos == PillEdgePosition.BOTTOM) 180f to 20f else 12f to 120f
-                            viewModel.savePillSettings(pillSettings.copy(edgePosition = pos, widthDp = w, heightDp = h))
+                            val (w, h) = if (pos == PillEdgePosition.BOTTOM) 80f to 8f else 8f to 40f
+                            val (swipeUp, swipeDown, doubleTap) = if (pos == PillEdgePosition.BOTTOM)
+                                Triple(GestureAction.DISABLED, GestureAction.DISABLED, GestureAction.SHOW_DOCK)
+                            else
+                                Triple(GestureAction.SHOW_DOCK, GestureAction.DISABLED, GestureAction.DISABLED)
+                            viewModel.savePillSettings(pillSettings.copy(
+                                edgePosition = pos, widthDp = w, heightDp = h,
+                                swipeUpAction = swipeUp, swipeDownAction = swipeDown, doubleTapAction = doubleTap
+                            ))
                         },
                         label = {
                             Text(
@@ -182,46 +157,69 @@ fun PillSettingsScreen(
             }
             Spacer(modifier = Modifier.height(12.dp))
             PillPositionPreview(pillSettings.edgePosition, pillSettings.widthDp, pillSettings.heightDp, pillSettings.alpha, pillSettings.sidePositionPct)
+            if (pillSettings.edgePosition == PillEdgePosition.BOTTOM) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Double Tap Home Button/Pill to Activate",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            }
+            }
         }
 
-        ExpandableSection(
-            title = "Dock Size & Appearance",
-            expanded = taskbarExpanded,
-            onToggle = { taskbarExpanded = !taskbarExpanded }
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
         ) {
-            SettingsSlider(
-                label = "Position (from bottom)",
-                value = taskbarSettings.positionYDp,
-                valueRange = 0f..300f,
-                unit = "dp",
-                onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(positionYDp = it)) }
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            SettingsSlider(
-                label = "Height",
-                value = taskbarSettings.heightDp,
-                valueRange = 40f..120f,
-                unit = "dp",
-                onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(heightDp = it)) }
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
             ) {
-                Column {
-                    Text("Show App Labels", style = MaterialTheme.typography.bodyMedium)
-                    Text(
-                        "Show app name below each icon in the dock",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                Text(
+                    text = "Dock Size & Appearance",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                SettingsSlider(
+                    label = "Position (from bottom)",
+                    value = taskbarSettings.positionYDp,
+                    valueRange = 0f..300f,
+                    unit = "dp",
+                    onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(positionYDp = it)) }
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                SettingsSlider(
+                    label = "Height",
+                    value = taskbarSettings.heightDp,
+                    valueRange = 40f..120f,
+                    unit = "dp",
+                    onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(heightDp = it)) }
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text("Show App Labels", style = MaterialTheme.typography.bodyMedium)
+                        Text(
+                            "Show app name below each icon in the dock",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    androidx.compose.material3.Switch(
+                        checked = taskbarSettings.showLabels,
+                        onCheckedChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(showLabels = it)) }
                     )
                 }
-                androidx.compose.material3.Switch(
-                    checked = taskbarSettings.showLabels,
-                    onCheckedChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(showLabels = it)) }
-                )
             }
         }
     }
@@ -236,13 +234,12 @@ private fun PillPositionPreview(
     sidePositionPct: Float = 50f
 ) {
     val pillColor = MaterialTheme.colorScheme.primary.copy(alpha = alpha)
+    val triggerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)
     val frameColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
     val frameW = 60.dp
     val frameH = 100.dp
-    val pillW = widthDp.coerceIn(2f, 30f).dp
     val pillH = heightDp.coerceIn(2f, 50f).dp
-    // y offset of the pill centre inside the frame (clamped so the pill stays within bounds)
-    val sideOffsetFraction = (sidePositionPct - 50f) / 100f  // -0.5 .. +0.5
+    val sideOffsetFraction = (sidePositionPct - 50f) / 100f
 
     Box(
         modifier = Modifier
@@ -257,15 +254,34 @@ private fun PillPositionPreview(
         ) {
             when (edgePosition) {
                 PillEdgePosition.BOTTOM -> {
+                    // Trigger area: full-width 18dp strip at bottom
                     Box(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
-                            .width(pillW.coerceAtMost(frameW - 4.dp))
+                            .fillMaxWidth()
+                            .height(10.dp)
+                            .background(triggerColor, RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp))
+                    )
+                    // Pill indicator
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .width(28.dp)
                             .height(4.dp)
+                            .offset(y = (-3).dp)
                             .background(pillColor, RoundedCornerShape(percent = 50))
                     )
                 }
                 PillEdgePosition.LEFT, PillEdgePosition.BOTH -> {
+                    // Trigger area: 6dp strip on left
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .width(6.dp)
+                            .height(frameH)
+                            .background(triggerColor, RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp))
+                    )
+                    // Pill indicator
                     Box(
                         modifier = Modifier
                             .align(Alignment.CenterStart)
@@ -278,6 +294,13 @@ private fun PillPositionPreview(
                         Box(
                             modifier = Modifier
                                 .align(Alignment.CenterEnd)
+                                .width(6.dp)
+                                .height(frameH)
+                                .background(triggerColor, RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp))
+                        )
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
                                 .width(4.dp)
                                 .height(pillH.coerceAtMost(frameH - 4.dp))
                                 .offset(y = (sideOffsetFraction * frameH.value).dp)
@@ -286,6 +309,15 @@ private fun PillPositionPreview(
                     }
                 }
                 PillEdgePosition.RIGHT -> {
+                    // Trigger area: 6dp strip on right
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .width(6.dp)
+                            .height(frameH)
+                            .background(triggerColor, RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp))
+                    )
+                    // Pill indicator
                     Box(
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
@@ -347,52 +379,6 @@ private fun ExpandableSection(
                     content()
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun GestureActionRow(
-    label: String,
-    icon: @Composable () -> Unit,
-    selected: GestureAction,
-    onSelect: (GestureAction) -> Unit
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            icon()
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(label, style = MaterialTheme.typography.bodyMedium)
-        }
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            FilterChip(
-                selected = selected == GestureAction.SHOW_DOCK,
-                onClick = { onSelect(GestureAction.SHOW_DOCK) },
-                label = { Text("Show Dock", style = MaterialTheme.typography.labelMedium) },
-                leadingIcon = { Icon(Icons.Filled.ViewDay, contentDescription = null) }
-            )
-            FilterChip(
-                selected = selected == GestureAction.SHOW_NOTIFICATIONS,
-                onClick = { onSelect(GestureAction.SHOW_NOTIFICATIONS) },
-                label = { Text("Notifications", style = MaterialTheme.typography.labelMedium) },
-                leadingIcon = { Icon(Icons.Filled.Notifications, contentDescription = null) }
-            )
-            FilterChip(
-                selected = selected == GestureAction.SHOW_QUICK_SETTINGS,
-                onClick = { onSelect(GestureAction.SHOW_QUICK_SETTINGS) },
-                label = { Text("Quick Settings", style = MaterialTheme.typography.labelMedium) },
-                leadingIcon = { Icon(Icons.Filled.Settings, contentDescription = null) }
-            )
-            FilterChip(
-                selected = selected == GestureAction.DISABLED,
-                onClick = { onSelect(GestureAction.DISABLED) },
-                label = { Text("Disable", style = MaterialTheme.typography.labelMedium) },
-                leadingIcon = { Icon(Icons.Filled.Block, contentDescription = null) }
-            )
         }
     }
 }

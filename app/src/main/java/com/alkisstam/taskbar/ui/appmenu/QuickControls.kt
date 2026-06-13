@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -174,10 +175,10 @@ private fun QuickControlTile(
         Surface(
             modifier = Modifier
                 .size(44.dp)
-                .clip(RoundedCornerShape(12.dp))
+                .clip(CircleShape)
                 .clickable(onClick = onClick),
             color = containerColor,
-            shape = RoundedCornerShape(12.dp)
+            shape = CircleShape
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(

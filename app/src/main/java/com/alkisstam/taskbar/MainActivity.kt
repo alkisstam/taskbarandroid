@@ -22,6 +22,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.alkisstam.taskbar.data.GestureAction
+import com.alkisstam.taskbar.data.PillEdgePosition
 import com.alkisstam.taskbar.service.OverlayService
 import com.alkisstam.taskbar.ui.onboarding.OnboardingScreen
 import com.alkisstam.taskbar.ui.settings.SettingsScreen
@@ -67,6 +69,7 @@ class MainActivity : ComponentActivity() {
             val themeMode by taskbarViewModel.themeMode.collectAsState()
             val hasAccessibilityPermission by taskbarViewModel.isAccessibilityEnabled.collectAsState()
             val onboardingComplete by taskbarViewModel.onboardingComplete.collectAsState()
+            val pillSettings by taskbarViewModel.pillSettings.collectAsState()
             TaskBarTheme(themeMode = themeMode) {
                 when (onboardingComplete) {
                     null -> Box(modifier = Modifier.fillMaxSize())
@@ -79,6 +82,18 @@ class MainActivity : ComponentActivity() {
                         hasUsageStatsPermission = hasUsageStatsPermission,
                         hasNotificationListenerPermission = hasNotificationListenerPermission,
                         hasBatteryOptimizationExcluded = hasBatteryOptimizationExcluded,
+                        selectedPosition = pillSettings.edgePosition,
+                        onPositionSelected = { pos ->
+                            val (w, h) = if (pos == PillEdgePosition.BOTTOM) 80f to 8f else 8f to 40f
+                            val (swipeUp, swipeDown, doubleTap) = if (pos == PillEdgePosition.BOTTOM)
+                                Triple(GestureAction.DISABLED, GestureAction.DISABLED, GestureAction.SHOW_DOCK)
+                            else
+                                Triple(GestureAction.SHOW_DOCK, GestureAction.DISABLED, GestureAction.DISABLED)
+                            taskbarViewModel.savePillSettings(pillSettings.copy(
+                                edgePosition = pos, widthDp = w, heightDp = h,
+                                swipeUpAction = swipeUp, swipeDownAction = swipeDown, doubleTapAction = doubleTap
+                            ))
+                        },
                         onRequestOverlayPermission = ::requestOverlayPermission,
                         onRequestAccessibilityPermission = ::requestAccessibilityPermission,
                         onRequestWriteSettingsPermission = ::requestWriteSettingsPermission,

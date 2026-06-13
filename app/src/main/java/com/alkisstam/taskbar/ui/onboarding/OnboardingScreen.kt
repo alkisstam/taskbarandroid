@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.QueryStats
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -40,12 +41,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.data.PillEdgePosition
 import kotlinx.coroutines.launch
 
 @Composable
@@ -58,6 +65,8 @@ fun OnboardingScreen(
     hasUsageStatsPermission: Boolean,
     hasNotificationListenerPermission: Boolean,
     hasBatteryOptimizationExcluded: Boolean,
+    selectedPosition: PillEdgePosition,
+    onPositionSelected: (PillEdgePosition) -> Unit,
     onRequestOverlayPermission: () -> Unit,
     onRequestAccessibilityPermission: () -> Unit,
     onRequestWriteSettingsPermission: () -> Unit,
@@ -68,7 +77,7 @@ fun OnboardingScreen(
     onRequestBatteryOptimizationExclusion: () -> Unit,
     onComplete: () -> Unit
 ) {
-    val pagerState = rememberPagerState(pageCount = { 3 })
+    val pagerState = rememberPagerState(pageCount = { 4 })
     val scope = rememberCoroutineScope()
 
     Scaffold(contentWindowInsets = WindowInsets(0)) { _ ->
@@ -84,7 +93,11 @@ fun OnboardingScreen(
             ) { page ->
                 when (page) {
                     0 -> WelcomePage()
-                    1 -> RequiredPermissionPage(
+                    1 -> HandlePositionPage(
+                        selectedPosition = selectedPosition,
+                        onPositionSelected = onPositionSelected
+                    )
+                    2 -> RequiredPermissionPage(
                         hasOverlayPermission = hasOverlayPermission,
                         hasAccessibilityPermission = hasAccessibilityPermission,
                         onRequestOverlayPermission = onRequestOverlayPermission,
@@ -114,9 +127,9 @@ fun OnboardingScreen(
                     .padding(horizontal = 24.dp, vertical = 20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                PageDots(currentPage = pagerState.currentPage, totalPages = 3)
+                PageDots(currentPage = pagerState.currentPage, totalPages = 4)
                 Spacer(modifier = Modifier.weight(1f))
-                if (pagerState.currentPage < 2) {
+                if (pagerState.currentPage < 3) {
                     Button(onClick = {
                         scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) }
                     }) {
@@ -179,6 +192,77 @@ private fun WelcomePage() {
             text = "A floating dock that lives on top of every app. Launch apps, control music, and access quick settings — without leaving what you're doing.",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
+private fun HandlePositionPage(
+    selectedPosition: PillEdgePosition,
+    onPositionSelected: (PillEdgePosition) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "Handle position",
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "Navigation gestures can interfere with this app. If you use them, select \"Left\" or \"Right\" to avoid conflicts.",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "Select an edge to open the dock from:",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            listOf(
+                PillEdgePosition.LEFT to "Left",
+                PillEdgePosition.RIGHT to "Right",
+                PillEdgePosition.BOTH to "Both Sides",
+                PillEdgePosition.BOTTOM to "Bottom"
+            ).forEach { (pos, label) ->
+                val isSelected = selectedPosition == pos
+                if (isSelected) {
+                    Button(
+                        onClick = { onPositionSelected(pos) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(label.uppercase(), style = MaterialTheme.typography.labelLarge)
+                    }
+                } else {
+                    OutlinedButton(
+                        onClick = { onPositionSelected(pos) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(label.uppercase(), style = MaterialTheme.typography.labelLarge)
+                    }
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(32.dp))
+        Text(
+            text = if (selectedPosition == PillEdgePosition.BOTTOM)
+                "Double tap the pill to open the dock"
+            else
+                "Swipe upwards to open the dock when the handle is on the left or right",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center
         )
     }
 }
@@ -257,6 +341,40 @@ private fun RequiredPermissionPage(
     onRequestOverlayPermission: () -> Unit,
     onRequestAccessibilityPermission: () -> Unit
 ) {
+    var showAccessibilityDialog by remember { mutableStateOf(false) }
+
+    if (showAccessibilityDialog) {
+        AlertDialog(
+            onDismissRequest = { showAccessibilityDialog = false },
+            title = {
+                Text(
+                    "Accessibility Service",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            },
+            text = {
+                Text(
+                    "Required to draw the dock above the navigation bar and enable screenshots and lock screen controls.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            dismissButton = {
+                TextButton(onClick = { showAccessibilityDialog = false }) {
+                    Text("Cancel")
+                }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    showAccessibilityDialog = false
+                    onRequestAccessibilityPermission()
+                }) {
+                    Text("Accept")
+                }
+            }
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -310,7 +428,7 @@ private fun RequiredPermissionPage(
             title = "Accessibility Service",
             description = "Required to draw the dock above the navigation bar and enable screenshots and lock screen controls.",
             granted = hasAccessibilityPermission,
-            onGrant = onRequestAccessibilityPermission
+            onGrant = { showAccessibilityDialog = true }
         )
     }
 }

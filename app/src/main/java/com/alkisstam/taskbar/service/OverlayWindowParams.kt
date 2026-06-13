@@ -31,33 +31,32 @@ internal fun Context.pillLayoutParams(
     isRight: Boolean = false,
     sidePositionPct: Float = 50f
 ): WindowManager.LayoutParams {
-    
     val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
             WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-    val edgePx = (2 * resources.displayMetrics.density).toInt()
-    // y offset from screen centre: 50% → 0, 0% → top, 100% → bottom
-    val sideYPx = ((sidePositionPct - 50f) / 100f * resources.displayMetrics.heightPixels).toInt()
+    val density = resources.displayMetrics.density
+    val sideStripPx = (12 * density).toInt()
+    val bottomStripPx = (18 * density).toInt()
     val side = if (edgePosition == PillEdgePosition.BOTH) {
         if (isRight) PillEdgePosition.RIGHT else PillEdgePosition.LEFT
     } else edgePosition
     return WindowManager.LayoutParams(
-        WindowManager.LayoutParams.WRAP_CONTENT,
-        WindowManager.LayoutParams.WRAP_CONTENT,
+        if (side == PillEdgePosition.BOTTOM) WindowManager.LayoutParams.MATCH_PARENT else sideStripPx,
+        if (side == PillEdgePosition.BOTTOM) bottomStripPx else WindowManager.LayoutParams.MATCH_PARENT,
         overlayWindowType(),
         flags,
         PixelFormat.TRANSLUCENT
     ).apply {
         when (side) {
             PillEdgePosition.LEFT -> {
-                gravity = Gravity.START or Gravity.CENTER_VERTICAL
-                x = edgePx
-                y = sideYPx
+                gravity = Gravity.START or Gravity.TOP
+                x = 0
+                y = 0
             }
             PillEdgePosition.RIGHT -> {
-                gravity = Gravity.END or Gravity.CENTER_VERTICAL
-                x = edgePx
-                y = sideYPx
+                gravity = Gravity.END or Gravity.TOP
+                x = 0
+                y = 0
             }
             else -> {
                 gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
