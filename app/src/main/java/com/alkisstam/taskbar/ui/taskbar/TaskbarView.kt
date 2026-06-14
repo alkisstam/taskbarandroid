@@ -21,15 +21,25 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Battery0Bar
+import androidx.compose.material.icons.filled.Battery2Bar
+import androidx.compose.material.icons.filled.Battery3Bar
+import androidx.compose.material.icons.filled.Battery5Bar
+import androidx.compose.material.icons.filled.BatteryChargingFull
+import androidx.compose.material.icons.filled.BatteryFull
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -39,6 +49,10 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import com.alkisstam.taskbar.ui.appmenu.QuickControlItem
 import com.alkisstam.taskbar.ui.appmenu.toItems
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
@@ -68,6 +82,8 @@ fun TaskbarView(
     val quickControls by appMenuViewModel.quickControlsState.collectAsState()
     val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
     val dockExpandProgress by taskbarViewModel.dockExpandProgress.collectAsState()
+    val batteryLevel by taskbarViewModel.batteryLevel.collectAsState()
+    val isCharging by taskbarViewModel.isCharging.collectAsState()
     val haptic = LocalHapticFeedback.current
     val density = LocalDensity.current
 
@@ -183,7 +199,7 @@ fun TaskbarView(
                                         .fillMaxWidth()
                                         .height(taskbarSettings.heightDp.dp),
                                     contentPadding = PaddingValues(horizontal = 12.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(2.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     if (musicPanelEnabled) {
@@ -238,9 +254,9 @@ fun TaskbarView(
                     LazyRow(
                         state = pinnedListState,
                         modifier = Modifier.weight(1f),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
                         verticalAlignment = Alignment.CenterVertically,
-                        contentPadding = PaddingValues(horizontal = 8.dp)
+                        contentPadding = PaddingValues(horizontal = 4.dp)
                     ) {
                             items(pinnedApps, key = { it.packageName }) { app ->
                                 ReorderableItem(reorderableState, key = app.packageName) { isDragging ->
@@ -263,7 +279,61 @@ fun TaskbarView(
                             }
                         }
                 }
+
+                StatusBarRow(batteryLevel = batteryLevel, isCharging = isCharging)
             }
+        }
+    }
+}
+
+@Composable
+private fun StatusBarRow(batteryLevel: Int, isCharging: Boolean) {
+    var currentTime by remember { mutableStateOf(LocalTime.now()) }
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(60_000L - (System.currentTimeMillis() % 60_000L))
+            currentTime = LocalTime.now()
+        }
+    }
+    val timeStr = remember(currentTime) {
+        currentTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+    }
+    val dateStr = remember(currentTime) {
+        LocalDate.now().format(DateTimeFormatter.ofPattern("EEE d MMM"))
+    }
+    val batteryIcon = when {
+        isCharging        -> Icons.Filled.BatteryChargingFull
+        batteryLevel > 80 -> Icons.Filled.BatteryFull
+        batteryLevel > 60 -> Icons.Filled.Battery5Bar
+        batteryLevel > 40 -> Icons.Filled.Battery3Bar
+        batteryLevel > 20 -> Icons.Filled.Battery2Bar
+        else              -> Icons.Filled.Battery0Bar
+    }
+    val contentAlpha = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 14.dp, vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(timeStr, style = MaterialTheme.typography.labelSmall, color = contentAlpha)
+            Text("·", style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.35f))
+            Text(dateStr, style = MaterialTheme.typography.labelSmall, color = contentAlpha)
+        }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(2.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(batteryIcon, contentDescription = null,
+                modifier = Modifier.width(14.dp).height(14.dp),
+                tint = contentAlpha)
+            Text("$batteryLevel%", style = MaterialTheme.typography.labelSmall, color = contentAlpha)
         }
     }
 }

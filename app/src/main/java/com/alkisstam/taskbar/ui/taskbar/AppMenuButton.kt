@@ -3,7 +3,7 @@ package com.alkisstam.taskbar.ui.taskbar
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material3.Icon
@@ -24,13 +24,13 @@ fun AppMenuButton(
     Surface(
         modifier = modifier
             .size(48.dp)
-            .clip(RoundedCornerShape(14.dp))
+            .clip(CircleShape)
             .clickable(onClick = onClick),
         color = if (menuOpen)
             MaterialTheme.colorScheme.primaryContainer
         else
             MaterialTheme.colorScheme.surfaceVariant,
-        shape = RoundedCornerShape(14.dp)
+        shape = CircleShape
     ) {
         Box(contentAlignment = Alignment.Center) {
             Icon(

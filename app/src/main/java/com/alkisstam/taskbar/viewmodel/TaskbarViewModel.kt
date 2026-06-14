@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -91,7 +92,7 @@ class TaskbarViewModel @Inject constructor(
         viewModelScope.launch { prefsRepository.setSurfaceTintColor(color) }
     }
 
-    private val _isTaskbarVisible = MutableStateFlow(true)
+    private val _isTaskbarVisible = MutableStateFlow(false)
     val isTaskbarVisible: StateFlow<Boolean> = _isTaskbarVisible.asStateFlow()
 
     private val _isDockExpanded = MutableStateFlow(false)
@@ -134,17 +135,24 @@ class TaskbarViewModel @Inject constructor(
         }
     }
 
-    fun showTaskbar() { _isTaskbarVisible.value = true }
+    fun showTaskbar() {
+        _isTaskbarVisible.value = true
+        viewModelScope.launch { prefsRepository.setTaskbarVisible(true) }
+    }
     fun hideTaskbar() {
         if (!_isSettingsOpen.value) {
             _isDockExpanded.value = false
             _dockExpandProgress.value = 0f
             _isTaskbarVisible.value = false
             _dockRevealProgress.value = 0f
+            viewModelScope.launch { prefsRepository.setTaskbarVisible(false) }
         }
     }
 
     init {
+        viewModelScope.launch {
+            _isTaskbarVisible.value = prefsRepository.taskbarVisible.first()
+        }
         context.contentResolver.registerContentObserver(
             Settings.Secure.getUriFor(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES),
             false,
@@ -250,6 +258,17 @@ class TaskbarViewModel @Inject constructor(
         viewModelScope.launch {
             prefsRepository.setMusicPanelEnabled(enabled)
         }
+    }
+
+    private val _batteryLevel = MutableStateFlow(0)
+    val batteryLevel: StateFlow<Int> = _batteryLevel.asStateFlow()
+
+    private val _isCharging = MutableStateFlow(false)
+    val isCharging: StateFlow<Boolean> = _isCharging.asStateFlow()
+
+    fun updateBattery(level: Int, charging: Boolean) {
+        _batteryLevel.value = level
+        _isCharging.value = charging
     }
 
     fun stopOverlay() {

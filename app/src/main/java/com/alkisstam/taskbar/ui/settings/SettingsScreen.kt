@@ -474,6 +474,14 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
+            Text(
+                text = "Tap on an app icon to add it to Pinned Apps. Touch and drag an icon in Pinned Apps to re-order it.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        item {
             SettingsCard(title = "Pinned Apps (${pinnedApps.size})") {
                 if (pinnedApps.isEmpty()) {
                     Text(
@@ -512,10 +520,11 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
                                             contentDescription = app.label,
                                             modifier = Modifier
                                                 .size(48.dp)
+                                                .clip(CircleShape)
                                                 .then(
                                                     if (isDragging) Modifier.background(
                                                         MaterialTheme.colorScheme.primaryContainer,
-                                                        RoundedCornerShape(12.dp)
+                                                        CircleShape
                                                     ) else Modifier
                                                 )
                                         )
@@ -596,7 +605,7 @@ private fun AllAppGridItem(
             AppIconImage(
                 icon = app.icon,
                 contentDescription = app.label,
-                modifier = Modifier.size(52.dp)
+                modifier = Modifier.size(52.dp).clip(CircleShape)
             )
             Box(
                 modifier = Modifier
@@ -811,7 +820,7 @@ private fun ActiveControlItem(
                 .background(
                     if (isDragging) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
                     else MaterialTheme.colorScheme.primaryContainer,
-                    RoundedCornerShape(12.dp)
+                    CircleShape
                 ),
             contentAlignment = Alignment.Center
         ) {
@@ -854,8 +863,9 @@ private fun ControlGridItem(
                     .background(
                         color = if (isEnabled) MaterialTheme.colorScheme.primaryContainer
                                 else MaterialTheme.colorScheme.surfaceVariant,
-                        shape = RoundedCornerShape(12.dp)
+                        shape = CircleShape
                     )
+                    .clip(CircleShape)
                     .then(if (isInteractive) Modifier.clickable(onClick = onToggle) else Modifier),
                 contentAlignment = Alignment.Center
             ) {

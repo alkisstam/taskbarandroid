@@ -10,6 +10,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.BatteryManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Handler
@@ -155,6 +156,17 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         }
     }
 
+    private val batteryReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+            val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, 100)
+            val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
+            val charging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
+                           status == BatteryManager.BATTERY_STATUS_FULL
+            if (level >= 0 && scale > 0) taskbarViewModel.updateBattery(level * 100 / scale, charging)
+        }
+    }
+
     private fun dismissAll() {
         appMenuViewModel.dismissMenu()
         appMenuViewModel.dismissMusicPanel()
@@ -197,6 +209,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         } else {
             registerReceiver(lockscreenReceiver, filter)
         }
+        registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
 
         val factory = OverlayViewModelFactory(
             context = this,
@@ -370,7 +383,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 appMenuViewModel.menuVisible,
                 taskbarViewModel.isDockExpanded
             ) { settings, menuOpen, dockExpanded ->
-                val baseY = 20f + settings.heightDp + (if (dockExpanded) settings.heightDp + 25f else 24f)
+                val baseY = 20f + settings.heightDp + 16f + (if (dockExpanded) settings.heightDp + 25f else 24f)
                 volumePanelYOffsetDp = baseY
                 if (menuOpen) baseY + 400f else baseY
             }.collect { yOffset ->
@@ -413,7 +426,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             }.collect { (volumeVisible, brightnessVisible) ->
                 val settings = taskbarViewModel.taskbarSettings.value
                 val dockExpanded = taskbarViewModel.isDockExpanded.value
-                val yOffset = 20f + settings.heightDp + (if (dockExpanded) settings.heightDp + 25f else 24f)
+                val yOffset = 20f + settings.heightDp + 16f + (if (dockExpanded) settings.heightDp + 25f else 24f)
 
                 val scrimActive = volumeVisible || brightnessVisible
                 setVolumeScrimActive(scrimActive)
@@ -639,7 +652,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         volumePanelView = null
         try {
             val initialSettings = taskbarViewModel.taskbarSettings.value
-            volumePanelYOffsetDp = 20f + initialSettings.heightDp + 24f
+            volumePanelYOffsetDp = 20f + initialSettings.heightDp + 16f + 24f
             val composeView = ComposeView(this).apply {
                 setBackgroundColor(android.graphics.Color.TRANSPARENT)
                 setViewTreeLifecycleOwner(this@OverlayService)
@@ -667,7 +680,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         brightnessPanelView = null
         try {
             val initialSettings = taskbarViewModel.taskbarSettings.value
-            val yOffset = 20f + initialSettings.heightDp + 24f
+            val yOffset = 20f + initialSettings.heightDp + 16f + 24f
             val composeView = ComposeView(this).apply {
                 setBackgroundColor(android.graphics.Color.TRANSPARENT)
                 setViewTreeLifecycleOwner(this@OverlayService)
@@ -695,7 +708,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         musicPanelView = null
         try {
             val initialSettings = taskbarViewModel.taskbarSettings.value
-            musicPanelYOffsetDp = 20f + initialSettings.heightDp + 24f
+            musicPanelYOffsetDp = 20f + initialSettings.heightDp + 16f + 24f
             val composeView = ComposeView(this).apply {
                 setBackgroundColor(android.graphics.Color.TRANSPARENT)
                 setViewTreeLifecycleOwner(this@OverlayService)
@@ -812,6 +825,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         observersStarted = false
         unregisterReceiver(lockscreenReceiver)
+        unregisterReceiver(batteryReceiver)
         removeOverlayView()
         serviceScope.cancel()
         _viewModelStore.clear()

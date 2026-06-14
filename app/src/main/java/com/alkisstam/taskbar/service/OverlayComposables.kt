@@ -53,7 +53,7 @@ internal fun OverlayContent(
 
     val expandedRows = if (isDockExpanded && quickControlsEnabled) 1 else 0
     val panelBottomPadding = if (isTaskbarVisible) {
-        (20f + taskbarSettings.heightDp * (1 + expandedRows) + 28f).dp
+        (20f + taskbarSettings.heightDp * (1 + expandedRows) + 16f + 28f).dp
     } else 0.dp
 
     TaskBarTheme(themeMode = themeMode) {

@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.Remove
@@ -85,7 +87,7 @@ fun PinnedAppsManager(
                         AppIconImage(
                             icon = app.icon,
                             contentDescription = app.label,
-                            modifier = Modifier.size(40.dp)
+                            modifier = Modifier.size(40.dp).clip(CircleShape)
                         )
 
                         Text(

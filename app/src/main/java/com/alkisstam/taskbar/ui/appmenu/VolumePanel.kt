@@ -189,7 +189,7 @@ fun BrightnessPanel(
     }
 
     Surface(
-        modifier = modifier.border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(20.dp)),
+        modifier = modifier.border(2.dp, TaskbarOutlineGreen, RoundedCornerShape(20.dp)),
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.surface,
         tonalElevation = 3.dp

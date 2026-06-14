@@ -120,7 +120,7 @@ fun PillSettingsScreen(
                     FilterChip(
                         selected = pillSettings.edgePosition == pos,
                         onClick = {
-                            val (w, h) = if (pos == PillEdgePosition.BOTTOM) 80f to 8f else 8f to 40f
+                            val (w, h) = if (pos == PillEdgePosition.BOTTOM) 130f to 8f else 4f to 60f
                             val (swipeUp, swipeDown, doubleTap) = if (pos == PillEdgePosition.BOTTOM)
                                 Triple(GestureAction.DISABLED, GestureAction.DISABLED, GestureAction.SHOW_DOCK)
                             else
@@ -157,10 +157,18 @@ fun PillSettingsScreen(
             }
             Spacer(modifier = Modifier.height(12.dp))
             PillPositionPreview(pillSettings.edgePosition, pillSettings.widthDp, pillSettings.heightDp, pillSettings.alpha, pillSettings.sidePositionPct)
+            Spacer(modifier = Modifier.height(8.dp))
             if (pillSettings.edgePosition == PillEdgePosition.BOTTOM) {
-                Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "Double Tap Home Button/Pill to Activate",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            } else {
+                Text(
+                    text = "Swipe Up in Trigger Area to Activate the Dock",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.fillMaxWidth(),

@@ -43,13 +43,7 @@ fun AppMenuPanel(
     val menuVisible by viewModel.menuVisible.collectAsState()
     val apps by viewModel.filteredApps.collectAsState()
     val pinnedPackages by viewModel.pinnedPackages.collectAsState()
-    val quickControls by viewModel.quickControlsState.collectAsState()
-    val quickControlsEnabled by taskbarViewModel.quickControlsEnabled.collectAsState()
-    val controlsOrder by taskbarViewModel.controlsOrder.collectAsState()
-    val controlsDisabledIds by taskbarViewModel.controlsDisabledIds.collectAsState()
     val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
-    val musicPanelEnabled by taskbarViewModel.musicPanelEnabled.collectAsState()
-    val musicPanelVisible by viewModel.musicPanelVisible.collectAsState()
     val panelColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
 
     AnimatedVisibility(
@@ -111,38 +105,16 @@ fun AppMenuPanel(
                     }
                 }
 
-                Row(
+                AppGrid(
+                    apps = apps,
+                    pinnedPackages = pinnedPackages,
+                    onLaunchApp = { pkg -> viewModel.launchApp(pkg); onHideTaskbar() },
+                    onPinApp = viewModel::pinApp,
+                    onUnpinApp = viewModel::unpinApp,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(320.dp)
-                ) {
-                    AppGrid(
-                        apps = apps,
-                        pinnedPackages = pinnedPackages,
-                        onLaunchApp = { pkg -> viewModel.launchApp(pkg); onHideTaskbar() },
-                        onPinApp = viewModel::pinApp,
-                        onUnpinApp = viewModel::unpinApp,
-                        modifier = if (quickControlsEnabled) Modifier.weight(0.8f) else Modifier.weight(1f)
-                    )
-
-                    if (quickControlsEnabled) {
-                        QuickControls(
-                            state = quickControls,
-                            order = controlsOrder,
-                            disabledIds = controlsDisabledIds,
-                            showMusicIcon = musicPanelEnabled,
-                            musicPanelActive = musicPanelVisible,
-                            onMusicToggle = viewModel::toggleMusicPanel,
-                            showLabels = true,
-                            onAction = { id ->
-                                viewModel.handleQuickControlAction(id)
-                                if (id in listOf("qr", "power", "screenshot", "lockscreen")) onHideTaskbar()
-                                if (id in listOf("screenshot", "lockscreen")) viewModel.dismissMenu()
-                            },
-                            modifier = Modifier.weight(0.2f)
-                        )
-                    }
-                }
+                        .height(340.dp)
+                )
             }
             }   // Surface
             }   // inner Box (margin wrapper)
