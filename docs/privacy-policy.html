@@ -30,7 +30,7 @@
 <body>
 
 <h1>Privacy Policy for Floating Dock</h1>
-<p class="meta">Last updated: May 18, 2026</p>
+<p class="meta">Last updated: June 14, 2026</p>
 
 <p>Floating Dock ("the app") is a free Android application that displays a system-overlay dock above other apps.</p>
 
@@ -48,8 +48,11 @@
     <li><code>WRITE_SETTINGS</code> — toggle auto-rotate and auto-brightness</li>
     <li><code>ACCESS_NOTIFICATION_POLICY</code> — toggle Do Not Disturb mode</li>
     <li><code>FOREGROUND_SERVICE</code> — keep the overlay service running in the background</li>
+    <li><code>FOREGROUND_SERVICE_SPECIAL_USE</code> — required foreground service type on Android 14+</li>
+    <li><code>POST_NOTIFICATIONS</code> — show the persistent notification required by the foreground service</li>
     <li><code>RECEIVE_BOOT_COMPLETED</code> — restore the overlay automatically after reboot</li>
     <li><code>CHANGE_AUDIO_SETTINGS</code> — cycle the ringer mode (Normal / Vibrate / Silent)</li>
+    <li><code>BIND_ACCESSIBILITY_SERVICE</code> — draw the overlay above the system navigation bar; handle back gesture, screenshot, and lock screen quick controls</li>
 </ul>
 <p>No permission is used to collect or transmit data.</p>
 
