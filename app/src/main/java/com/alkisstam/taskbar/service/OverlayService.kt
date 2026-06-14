@@ -98,13 +98,29 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             when (intent.action) {
                 Intent.ACTION_SCREEN_OFF -> {
                     overlayHiddenForLockscreen = true
+                    handler.post {
+                        overlayView?.visibility = View.GONE
+                        taskbarView?.visibility = View.GONE
+                        pillView?.visibility = View.GONE
+                        pillView2?.visibility = View.GONE
+                        searchView?.visibility = View.GONE
+                        musicPanelView?.visibility = View.GONE
+                        volumeScrimView?.visibility = View.GONE
+                        volumePanelView?.visibility = View.GONE
+                        brightnessPanelView?.visibility = View.GONE
+                    }
                 }
                 Intent.ACTION_USER_PRESENT, Intent.ACTION_SCREEN_ON -> {
                     overlayHiddenForLockscreen = false
-                    Handler(Looper.getMainLooper()).post {
+                    handler.post {
                         if (overlayView?.isAttachedToWindow != true) addOverlayView()
                         if (taskbarView?.isAttachedToWindow != true) addTaskbarView()
                         if (pillView?.isAttachedToWindow != true) addPillView()
+                        if (!hiddenForLandscape) {
+                            taskbarView?.visibility = View.VISIBLE
+                            pillView?.visibility = View.VISIBLE
+                            pillView2?.visibility = View.VISIBLE
+                        }
                     }
                 }
                 Intent.ACTION_CONFIGURATION_CHANGED -> {
