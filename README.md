@@ -2,54 +2,62 @@
 
 A system-overlay dock for Android that renders above all other apps — including the system navigation bar when the Accessibility Service is enabled.
 
-**Current version:** 1.1.0 (versionCode 11)
+**Current version:** 1.2.9 (versionCode 32)
 
 ## Features
 
-### Taskbar
-- **Persistent overlay taskbar** docked at the bottom of the screen
-  - Configurable width, height, and vertical position
-  - **Drag-to-reorder** pinned apps directly in the taskbar row (long-press to start dragging)
-  - **Optional app labels** shown below each icon (toggle in *Design → Taskbar Size & Appearance*)
-- **Navigation bar overlay** – enable the Accessibility Service to draw the taskbar *above* the system navigation bar
+### Dock
+
+- **Persistent overlay dock** fixed at the bottom of the screen (98% width)
+- **Drag-to-reorder** pinned apps directly in the dock row (long-press to start dragging)
+- **Status bar strip** at the bottom of the dock: current time & date (left), battery level + icon (right)
+- **Swipe up** on the dock to expand a Quick Controls row above the pinned apps; swipe down to collapse
+- **Visibility persists** across service restarts — dock stays hidden if you dismissed it
 
 ### Trigger Pill
-- **Trigger pill** – a small draggable pill that reveals the dock on swipe-up, swipe-down, swipe-in, or double-tap
-  - Configurable size, opacity, and screen position
+
+- Small pill that reveals the dock without opening the App Menu
+- **Bottom position:** double-tap pill or Home button to activate
+- **Left / Right / Both:** swipe up in the trigger area to activate
+- Configurable size, opacity, and position along the edge
+- Gestures: swipe-up, swipe-down, double-tap — each independently mapped to Show Dock, Show Notifications, Show Quick Settings, or Disabled
 
 ### App Menu
-- **App Menu** – floating panel that slides up from above the taskbar:
-  - 3-column scrollable app grid
-  - Quick Controls column: shows enabled controls in user-configured order (mirrors the strip configuration)
-  - Full-screen app search
-  - Long-press any app to pin/unpin from the dock
-- **Quick Controls Strip** – an always-visible horizontal row that sits directly above the taskbar; fixed 70 dp height, flexible width, 2 dp icon spacing. When the strip is enabled, the quick controls column is hidden from the app menu to avoid duplication.
 
-### Pinned Apps
-- Launch pinned apps directly from the dock
-- **Long-press shortcuts** – long-pressing a pinned app shows its launcher shortcuts (up to 4) plus an *Unpin* option
-- Manage pinned apps in *Settings → Pinned Apps* tab with drag-to-reorder and tap-to-unpin
+- **Floating panel** that slides up from above the dock
+- **4-row, 3-column** scrollable app grid
+- Full-screen app search
+- Long-press any app to pin/unpin from the dock; long-press a pinned app for launcher shortcuts (up to 4) and Unpin
+
+### Quick Controls
+
+- Expandable row above pinned apps (swipe up on dock to reveal)
+- Controls: Music, Torch, Ringer, Rotate, Brightness, DND, QR Code, Power, Volume, Screenshot, Lock Screen
+- Reorderable and individually enable/disable in the **Controls** settings tab
+- **Music Panel:** floating player with album art, playback controls (prev/play-pause/next)
+- **Volume Panel:** per-stream vertical sliders (Media, Ring, Alarm)
+- **Brightness Panel:** vertical slider with auto-brightness toggle
 
 ### Theming
+
 - **Material You** – Dynamic Color (Android 12+), fallback palette for older devices
 - **Dark / Light / System** theme toggle in *General → Theme*
-- **Surface Tint Color** – nine preset color swatches in *General → Theme* that uniformly tint the taskbar, app menu panel, and quick controls strip
+- **Surface Tint Color** – nine preset color swatches that tint the dock, app menu, and control panels
 
 ### Behaviour
-- **Auto-hide in Fullscreen** – hides the overlay when the foreground app goes fullscreen
-- **Auto-hide in Landscape** – hides the overlay when the device rotates to landscape
-- **Auto-hide on keyboard** – overlay hides while the soft keyboard is visible
-- **Hide on lockscreen** – overlay is hidden on screen-off and restored on unlock
-- **Boot autostart** – re-enables the overlay on reboot (if permissions were granted)
+
+- **Auto-hide in Fullscreen** – hides when the foreground app goes fullscreen
+- **Auto-hide in Landscape** – hides when the device rotates to landscape
+- **Hide on screen-off / lockscreen** – overlay hidden on screen-off, restored on unlock
+- **Boot autostart** – re-enables the overlay after reboot
 
 ### Settings
-- Four-tab settings screen: **General**, **Pinned Apps**, **Controls**, **Design**
-- **Controls** tab:
-  - **Quick Controls** master toggle – disables the strip and the app-menu column in one tap; greys out all sub-settings when off
-  - **Controls Strip** toggle – show/hide the strip independently of the app-menu column
-  - **Active Controls** – reorderable list (long-press drag) of currently enabled controls; order is shared between strip and app-menu column
-  - **Available Controls** – per-control enable/disable switches (Torch, Ringer, Rotate, Brightness, DND, QR, Power, Volume)
-- **Design** tab has three collapsible sections: Trigger Gesture, Pill Size & Appearance, Taskbar Size & Appearance
+
+Four-tab settings screen: **General**, **Apps**, **Controls**, **Design**
+
+- **Apps** tab: manage pinned apps (drag-to-reorder, tap to pin/unpin); browse all installed apps
+- **Controls** tab: Quick Controls master toggle, show/hide labels, reorder Active Controls, enable/disable individual controls
+- **Design** tab: Trigger Gesture, Pill Size & Appearance, Dock Size & Appearance
 
 ## Requirements
 
@@ -84,22 +92,25 @@ A system-overlay dock for Android that renders above all other apps — includin
 
 ```
 TaskBarApplication           (Hilt entry point)
-MainActivity                 (Settings screen – General / Pinned Apps / Design tabs)
-TaskBarAccessibilityService  (AccessibilityService – enables TYPE_ACCESSIBILITY_OVERLAY)
+MainActivity                 (Settings screen – General / Apps / Controls / Design tabs)
+TaskBarAccessibilityService  (AccessibilityService – TYPE_ACCESSIBILITY_OVERLAY + back gesture)
 OverlayService               (ForegroundService – WindowManager window host)
-  ├── overlayView    (ComposeView)
-  │     ├── AppMenuPanel     (sliding-up panel: AppGrid + QuickControls column)
-  │     └── TaskbarView      (pinned apps row – drag-to-reorder, labels, tint)
-  ├── quickStripView (ComposeView – always-visible quick controls strip above taskbar)
-  ├── pillView       (ComposeView – trigger pill, draggable)
-  └── searchView     (ComposeView – full-screen app search)
+  ├── overlayView        (ComposeView – AppMenuPanel: 4×3 app grid + search)
+  ├── taskbarView        (ComposeView – TaskbarView: handle, quick controls row, pinned apps, status bar)
+  ├── pillView/pillView2 (ComposeView – TriggerPillContent: left/right/bottom edge pill)
+  ├── searchView         (ComposeView – FloatingSearchBar)
+  ├── volumePanelView    (ComposeView – VolumePanel: per-stream vertical sliders)
+  ├── brightnessPanelView(ComposeView – BrightnessPanel: brightness slider)
+  ├── musicPanelView     (ComposeView – MusicPanel: MediaSession player)
+  └── volumeScrimView    (ComposeView – transparent clickable backdrop)
 
 data/
   AppRepository            (PackageManager → installed apps; refreshes on package changes)
-  PreferencesRepository    (DataStore – pinned apps, theme, tint color, pill/taskbar settings)
+  MediaRepository          (MediaController – active MediaSession state)
+  PreferencesRepository    (DataStore – pinned apps, theme, tint, pill/dock settings, visibility state)
   QuickControlsRepository  (Camera, AudioManager, Settings.System; notifies on system changes)
 
 viewmodel/
-  TaskbarViewModel         (@HiltViewModel – overlay, theme, tint, pinned apps, pill/taskbar settings)
-  AppMenuViewModel         (@HiltViewModel – app search, quick controls, menu state)
+  TaskbarViewModel         (@HiltViewModel – overlay, theme, tint, pinned apps, dock/pill settings, battery)
+  AppMenuViewModel         (@HiltViewModel – app search, quick controls, media state, panel visibility)
 ```
