@@ -3,6 +3,8 @@ package com.alkisstam.taskbar.ui.settings
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -55,6 +57,8 @@ import androidx.compose.material.icons.filled.PowerSettingsNew
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.ScreenRotationAlt
 import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material.icons.filled.FileUpload
+import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.filled.Tune
@@ -243,6 +247,13 @@ private fun GeneralTab(
     val autoHideInLandscape by viewModel.autoHideInLandscape.collectAsState()
     val context = LocalContext.current
 
+    val backupLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
+        uri?.let { viewModel.exportBackup(it) }
+    }
+    val restoreLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        uri?.let { viewModel.importBackup(it) }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -403,6 +414,26 @@ private fun GeneralTab(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Manage Write Settings (Auto-rotate / Brightness)")
+            }
+        }
+
+        SettingsCard(title = "Backup & Restore") {
+            OutlinedButton(
+                onClick = { backupLauncher.launch("taskbar_backup.json") },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Filled.FileUpload, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Backup Settings")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = { restoreLauncher.launch(arrayOf("application/json", "*/*")) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Filled.FileDownload, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Restore Settings")
             }
         }
     }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,6 +41,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.viewmodel.QuickControlItemData
 import com.alkisstam.taskbar.viewmodel.QuickControlsState
@@ -55,6 +58,7 @@ fun QuickControls(
     musicPanelActive: Boolean = false,
     onMusicToggle: () -> Unit = {},
     showLabels: Boolean = true,
+    tileSize: Dp = 44.dp,
     modifier: Modifier = Modifier
 ) {
     val items = state.toItems(order, disabledIds)
@@ -71,7 +75,8 @@ fun QuickControls(
                 label = "Music",
                 active = musicPanelActive,
                 onClick = onMusicToggle,
-                showLabel = showLabels
+                showLabel = showLabels,
+                tileSize = tileSize
             )
         }
         items.forEach { item ->
@@ -80,7 +85,8 @@ fun QuickControls(
                 label = item.label,
                 active = item.active,
                 onClick = { onAction(item.id) },
-                showLabel = showLabels
+                showLabel = showLabels,
+                tileSize = tileSize
             )
         }
     }
@@ -137,6 +143,7 @@ fun QuickControlItem(
     item: QuickControlItemData,
     onToggle: () -> Unit,
     showLabel: Boolean = true,
+    tileSize: Dp = 44.dp,
     modifier: Modifier = Modifier
 ) {
     QuickControlTile(
@@ -145,6 +152,7 @@ fun QuickControlItem(
         active = item.active,
         onClick = onToggle,
         showLabel = showLabel,
+        tileSize = tileSize,
         modifier = modifier
     )
 }
@@ -156,6 +164,7 @@ private fun QuickControlTile(
     active: Boolean,
     onClick: () -> Unit,
     showLabel: Boolean = true,
+    tileSize: Dp = 44.dp,
     modifier: Modifier = Modifier
 ) {
     val containerColor = if (active)
@@ -169,12 +178,12 @@ private fun QuickControlTile(
         MaterialTheme.colorScheme.onSurfaceVariant
 
     Column(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.width(tileSize),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Surface(
             modifier = Modifier
-                .size(44.dp)
+                .size(tileSize)
                 .clip(CircleShape)
                 .clickable(onClick = onClick),
             color = containerColor,
@@ -184,7 +193,7 @@ private fun QuickControlTile(
                 Icon(
                     imageVector = icon,
                     contentDescription = label,
-                    modifier = Modifier.size(22.dp),
+                    modifier = Modifier.size(tileSize / 2),
                     tint = contentColor
                 )
             }
@@ -195,7 +204,8 @@ private fun QuickControlTile(
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
-                maxLines = 1
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }

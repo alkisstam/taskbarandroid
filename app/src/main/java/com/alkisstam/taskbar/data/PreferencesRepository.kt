@@ -10,9 +10,11 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import org.json.JSONArray
 import org.json.JSONException
+import org.json.JSONObject
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -42,7 +44,9 @@ private fun String?.toPillEdgePosition() = when (this) {
 data class TaskbarSettings(
     val positionYDp: Float = 20f,
     val heightDp: Float = 70f,
-    val showControlLabels: Boolean = true
+    val showControlLabels: Boolean = true,
+    val pinnedIconSizeDp: Float = 40f,
+    val quickControlSizeDp: Float = 44f
 )
 
 data class PillSettings(
@@ -80,6 +84,8 @@ class PreferencesRepository @Inject constructor(
         private val TASKBAR_POSITION_Y_KEY = floatPreferencesKey("taskbar_position_y")
         private val TASKBAR_HEIGHT_KEY = floatPreferencesKey("taskbar_height_dp")
         private val TASKBAR_CONTROL_LABELS_KEY = booleanPreferencesKey("taskbar_control_labels")
+        private val PINNED_ICON_SIZE_KEY = floatPreferencesKey("pinned_icon_size_dp")
+        private val QUICK_CONTROL_SIZE_KEY = floatPreferencesKey("quick_control_size_dp")
         private val SURFACE_TINT_COLOR_KEY = stringPreferencesKey("surface_tint_color")
         private val AUTO_HIDE_FULLSCREEN_KEY = booleanPreferencesKey("auto_hide_fullscreen")
         private val AUTO_HIDE_LANDSCAPE_KEY = booleanPreferencesKey("auto_hide_landscape")
@@ -224,17 +230,21 @@ class PreferencesRepository @Inject constructor(
 
     val taskbarSettings: Flow<TaskbarSettings> = context.dataStore.data.map { prefs ->
         TaskbarSettings(
-            positionYDp       = prefs[TASKBAR_POSITION_Y_KEY]      ?: 20f,
-            heightDp          = prefs[TASKBAR_HEIGHT_KEY]           ?: 70f,
-            showControlLabels = prefs[TASKBAR_CONTROL_LABELS_KEY]   ?: true
+            positionYDp        = prefs[TASKBAR_POSITION_Y_KEY]     ?: 20f,
+            heightDp           = prefs[TASKBAR_HEIGHT_KEY]          ?: 70f,
+            showControlLabels  = prefs[TASKBAR_CONTROL_LABELS_KEY]  ?: true,
+            pinnedIconSizeDp   = prefs[PINNED_ICON_SIZE_KEY]        ?: 40f,
+            quickControlSizeDp = prefs[QUICK_CONTROL_SIZE_KEY]      ?: 44f
         )
     }
 
     suspend fun saveTaskbarSettings(settings: TaskbarSettings) {
         context.dataStore.edit { prefs ->
-            prefs[TASKBAR_POSITION_Y_KEY]    = settings.positionYDp
-            prefs[TASKBAR_HEIGHT_KEY]        = settings.heightDp
+            prefs[TASKBAR_POSITION_Y_KEY]     = settings.positionYDp
+            prefs[TASKBAR_HEIGHT_KEY]         = settings.heightDp
             prefs[TASKBAR_CONTROL_LABELS_KEY] = settings.showControlLabels
+            prefs[PINNED_ICON_SIZE_KEY]       = settings.pinnedIconSizeDp
+            prefs[QUICK_CONTROL_SIZE_KEY]     = settings.quickControlSizeDp
         }
     }
 
@@ -311,6 +321,68 @@ class PreferencesRepository @Inject constructor(
     suspend fun setMusicPanelEnabled(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[MUSIC_PANEL_ENABLED_KEY] = enabled
+        }
+    }
+
+    suspend fun exportToJson(): String {
+        val prefs = context.dataStore.data.first()
+        return JSONObject().apply {
+            prefs[PINNED_APPS_KEY]?.let { put("pinned_apps", it) }
+            prefs[THEME_MODE_KEY]?.let { put("theme_mode", it) }
+            prefs[OVERLAY_ENABLED_KEY]?.let { put("overlay_enabled", it) }
+            prefs[PILL_SWIPE_UP_ACTION_KEY]?.let { put("pill_swipe_up_action", it) }
+            prefs[PILL_SWIPE_DOWN_ACTION_KEY]?.let { put("pill_swipe_down_action", it) }
+            prefs[PILL_DOUBLE_TAP_ACTION_KEY]?.let { put("pill_double_tap_action", it) }
+            prefs[PILL_WIDTH_KEY]?.let { put("pill_width", it) }
+            prefs[PILL_HEIGHT_KEY]?.let { put("pill_height", it) }
+            prefs[PILL_ALPHA_KEY]?.let { put("pill_alpha", it) }
+            prefs[PILL_POSITION_Y_KEY]?.let { put("pill_position_y", it) }
+            prefs[PILL_POSITION_X_PCT_KEY]?.let { put("pill_position_x_pct", it) }
+            prefs[PILL_EDGE_POSITION_KEY]?.let { put("pill_edge_position", it) }
+            prefs[PILL_SIDE_POSITION_PCT_KEY]?.let { put("pill_side_position_pct", it) }
+            prefs[TASKBAR_POSITION_Y_KEY]?.let { put("taskbar_position_y", it) }
+            prefs[TASKBAR_HEIGHT_KEY]?.let { put("taskbar_height_dp", it) }
+            prefs[TASKBAR_CONTROL_LABELS_KEY]?.let { put("taskbar_control_labels", it) }
+            prefs[PINNED_ICON_SIZE_KEY]?.let { put("pinned_icon_size_dp", it) }
+            prefs[QUICK_CONTROL_SIZE_KEY]?.let { put("quick_control_size_dp", it) }
+            prefs[SURFACE_TINT_COLOR_KEY]?.let { put("surface_tint_color", it) }
+            prefs[AUTO_HIDE_FULLSCREEN_KEY]?.let { put("auto_hide_fullscreen", it) }
+            prefs[AUTO_HIDE_LANDSCAPE_KEY]?.let { put("auto_hide_landscape", it) }
+            prefs[QUICK_CONTROLS_ENABLED_KEY]?.let { put("quick_controls_enabled", it) }
+            prefs[CONTROLS_ORDER_KEY]?.let { put("controls_order", it) }
+            prefs[CONTROLS_DISABLED_KEY]?.let { put("controls_disabled_ids", it) }
+            prefs[MUSIC_PANEL_ENABLED_KEY]?.let { put("music_panel_enabled", it) }
+        }.toString()
+    }
+
+    suspend fun importFromJson(json: String) {
+        val obj = JSONObject(json)
+        context.dataStore.edit { prefs ->
+            if (obj.has("pinned_apps")) prefs[PINNED_APPS_KEY] = obj.getString("pinned_apps")
+            if (obj.has("theme_mode")) prefs[THEME_MODE_KEY] = obj.getString("theme_mode")
+            if (obj.has("overlay_enabled")) prefs[OVERLAY_ENABLED_KEY] = obj.getBoolean("overlay_enabled")
+            if (obj.has("pill_swipe_up_action")) prefs[PILL_SWIPE_UP_ACTION_KEY] = obj.getString("pill_swipe_up_action")
+            if (obj.has("pill_swipe_down_action")) prefs[PILL_SWIPE_DOWN_ACTION_KEY] = obj.getString("pill_swipe_down_action")
+            if (obj.has("pill_double_tap_action")) prefs[PILL_DOUBLE_TAP_ACTION_KEY] = obj.getString("pill_double_tap_action")
+            if (obj.has("pill_width")) prefs[PILL_WIDTH_KEY] = obj.getDouble("pill_width").toFloat()
+            if (obj.has("pill_height")) prefs[PILL_HEIGHT_KEY] = obj.getDouble("pill_height").toFloat()
+            if (obj.has("pill_alpha")) prefs[PILL_ALPHA_KEY] = obj.getDouble("pill_alpha").toFloat()
+            if (obj.has("pill_position_y")) prefs[PILL_POSITION_Y_KEY] = obj.getDouble("pill_position_y").toFloat()
+            if (obj.has("pill_position_x_pct")) prefs[PILL_POSITION_X_PCT_KEY] = obj.getDouble("pill_position_x_pct").toFloat()
+            if (obj.has("pill_edge_position")) prefs[PILL_EDGE_POSITION_KEY] = obj.getString("pill_edge_position")
+            if (obj.has("pill_side_position_pct")) prefs[PILL_SIDE_POSITION_PCT_KEY] = obj.getDouble("pill_side_position_pct").toFloat()
+            if (obj.has("taskbar_position_y")) prefs[TASKBAR_POSITION_Y_KEY] = obj.getDouble("taskbar_position_y").toFloat()
+            if (obj.has("taskbar_height_dp")) prefs[TASKBAR_HEIGHT_KEY] = obj.getDouble("taskbar_height_dp").toFloat()
+            if (obj.has("taskbar_control_labels")) prefs[TASKBAR_CONTROL_LABELS_KEY] = obj.getBoolean("taskbar_control_labels")
+            if (obj.has("pinned_icon_size_dp")) prefs[PINNED_ICON_SIZE_KEY] = obj.getDouble("pinned_icon_size_dp").toFloat()
+            if (obj.has("quick_control_size_dp")) prefs[QUICK_CONTROL_SIZE_KEY] = obj.getDouble("quick_control_size_dp").toFloat()
+            if (obj.has("surface_tint_color")) prefs[SURFACE_TINT_COLOR_KEY] = obj.getString("surface_tint_color")
+            if (obj.has("auto_hide_fullscreen")) prefs[AUTO_HIDE_FULLSCREEN_KEY] = obj.getBoolean("auto_hide_fullscreen")
+            if (obj.has("auto_hide_landscape")) prefs[AUTO_HIDE_LANDSCAPE_KEY] = obj.getBoolean("auto_hide_landscape")
+            if (obj.has("quick_controls_enabled")) prefs[QUICK_CONTROLS_ENABLED_KEY] = obj.getBoolean("quick_controls_enabled")
+            if (obj.has("controls_order")) prefs[CONTROLS_ORDER_KEY] = obj.getString("controls_order")
+            if (obj.has("controls_disabled_ids")) prefs[CONTROLS_DISABLED_KEY] = obj.getString("controls_disabled_ids")
+            if (obj.has("music_panel_enabled")) prefs[MUSIC_PANEL_ENABLED_KEY] = obj.getBoolean("music_panel_enabled")
         }
     }
 

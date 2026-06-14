@@ -99,7 +99,7 @@ fun TaskbarView(
         taskbarViewModel.reorderPinnedApps(pkgs)
     }
 
-    val iconSize = (taskbarSettings.heightDp - 16f).coerceIn(24f, 48f).dp
+    val iconSize = taskbarSettings.pinnedIconSizeDp.dp
 
     Box(
         modifier = modifier.fillMaxWidth(),
@@ -212,7 +212,8 @@ fun TaskbarView(
                                                     icon = Icons.Filled.MusicNote
                                                 ),
                                                 onToggle = { appMenuViewModel.toggleMusicPanel() },
-                                                showLabel = taskbarSettings.showControlLabels
+                                                showLabel = taskbarSettings.showControlLabels,
+                                                tileSize = taskbarSettings.quickControlSizeDp.dp
                                             )
                                         }
                                     }
@@ -223,7 +224,8 @@ fun TaskbarView(
                                                 appMenuViewModel.handleQuickControlAction(item.id)
                                                 if (item.id in listOf("qr", "power", "screenshot", "lockscreen")) taskbarViewModel.hideTaskbar()
                                             },
-                                            showLabel = taskbarSettings.showControlLabels
+                                            showLabel = taskbarSettings.showControlLabels,
+                                            tileSize = taskbarSettings.quickControlSizeDp.dp
                                         )
                                     }
                                 }

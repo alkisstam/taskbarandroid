@@ -279,4 +279,18 @@ class TaskbarViewModel @Inject constructor(
         context.stopService(intent)
     }
 
+    fun exportBackup(uri: android.net.Uri) {
+        viewModelScope.launch {
+            val json = prefsRepository.exportToJson()
+            context.contentResolver.openOutputStream(uri)?.use { it.write(json.toByteArray()) }
+        }
+    }
+
+    fun importBackup(uri: android.net.Uri) {
+        viewModelScope.launch {
+            val json = context.contentResolver.openInputStream(uri)?.use { it.readBytes().toString(Charsets.UTF_8) } ?: return@launch
+            prefsRepository.importFromJson(json)
+        }
+    }
+
 }
