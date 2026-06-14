@@ -207,8 +207,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
         hiddenForLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE && taskbarViewModel.autoHideInLandscape.value
-        addOverlayView()
         addTaskbarView()
+        addOverlayView()
         addPillView()
         addSearchView()
         addMusicPanelView()
@@ -219,7 +219,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             observersStarted = true
             observePillPosition()
             observeOverlayInteractivity()
-            observeTaskbarPosition()
             observeTaskbarInteractivity()
             observeSearchVisibility()
             observeMusicPanelPosition()
@@ -242,9 +241,20 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private fun setTaskbarFlags(interactive: Boolean) {
         val view = taskbarView ?: return
-        val yOffsetDp = taskbarViewModel.taskbarSettings.value.positionYDp
-        try { windowManager.updateViewLayout(view, taskbarLayoutParams(interactive, yOffsetDp)) }
+        try { windowManager.updateViewLayout(view, taskbarLayoutParams(interactive)) }
         catch (e: Exception) { Log.w(TAG, "Failed to update taskbar layout flags", e) }
+    }
+
+    private fun setSearchFlags(active: Boolean) {
+        val view = searchView ?: return
+        try { windowManager.updateViewLayout(view, searchLayoutParams(focusable = active)) }
+        catch (e: Exception) { Log.w(TAG, "Failed to update search layout flags", e) }
+    }
+
+    private fun setVolumeScrimActive(active: Boolean) {
+        val view = volumeScrimView ?: return
+        try { windowManager.updateViewLayout(view, volumeScrimLayoutParams(active = active)) }
+        catch (e: Exception) { Log.w(TAG, "Failed to update volume scrim flags", e) }
     }
 
     // endregion
@@ -264,21 +274,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     overlayView?.visibility = View.VISIBLE
                     setOverlayFlags(interactive = true, focusable = focusable)
                 } else {
-                    kotlinx.coroutines.delay(Constants.OVERLAY_HIDE_DEBOUNCE_MS)
                     setOverlayFlags(interactive = false, focusable = false)
+                    kotlinx.coroutines.delay(Constants.OVERLAY_HIDE_DEBOUNCE_MS)
                     overlayView?.visibility = View.GONE
                 }
-            }
-        }
-    }
-
-    private fun observeTaskbarPosition() {
-        serviceScope.launch {
-            taskbarViewModel.taskbarSettings.collect { settings ->
-                val view = taskbarView ?: return@collect
-                val interactive = taskbarViewModel.isTaskbarVisible.value && !appMenuViewModel.menuVisible.value
-                try { windowManager.updateViewLayout(view, taskbarLayoutParams(interactive, settings.positionYDp)) }
-                catch (e: Exception) { Log.w(TAG, "Failed to update taskbar position", e) }
             }
         }
     }
@@ -287,12 +286,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         serviceScope.launch {
             taskbarViewModel.isTaskbarVisible.collect { interactive ->
                 isTaskbarVisibleForBack = interactive
-                if (interactive) {
-                    setTaskbarFlags(interactive = true)
-                } else {
-                    kotlinx.coroutines.delay(Constants.OVERLAY_HIDE_DEBOUNCE_MS)
-                    setTaskbarFlags(interactive = false)
-                }
+                setTaskbarFlags(interactive = interactive)
             }
         }
     }
@@ -348,6 +342,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         serviceScope.launch {
             appMenuViewModel.isSearching.collect { searching ->
                 searchView?.visibility = if (searching) View.VISIBLE else View.GONE
+                setSearchFlags(active = searching)
             }
         }
     }
@@ -356,11 +351,12 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         serviceScope.launch {
             kotlinx.coroutines.flow.combine(
                 taskbarViewModel.taskbarSettings,
-                appMenuViewModel.menuVisible
-            ) { settings, menuOpen ->
-                volumePanelYOffsetDp = settings.positionYDp + settings.heightDp + 10f
-                if (menuOpen) settings.positionYDp + settings.heightDp + 420f
-                else settings.positionYDp + settings.heightDp + 8f
+                appMenuViewModel.menuVisible,
+                taskbarViewModel.isDockExpanded
+            ) { settings, menuOpen, dockExpanded ->
+                val baseY = 20f + settings.heightDp + (if (dockExpanded) settings.heightDp + 25f else 24f)
+                volumePanelYOffsetDp = baseY
+                if (menuOpen) baseY + 400f else baseY
             }.collect { yOffset ->
                 musicPanelYOffsetDp = yOffset
                 val view = musicPanelView ?: return@collect
@@ -399,19 +395,25 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             ) { volumeVisible, brightnessVisible ->
                 Pair(volumeVisible, brightnessVisible)
             }.collect { (volumeVisible, brightnessVisible) ->
-                volumeScrimView?.visibility = if (volumeVisible || brightnessVisible) View.VISIBLE else View.GONE
+                val settings = taskbarViewModel.taskbarSettings.value
+                val dockExpanded = taskbarViewModel.isDockExpanded.value
+                val yOffset = 20f + settings.heightDp + (if (dockExpanded) settings.heightDp + 25f else 24f)
+
+                val scrimActive = volumeVisible || brightnessVisible
+                setVolumeScrimActive(scrimActive)
+                volumeScrimView?.visibility = if (scrimActive) View.VISIBLE else View.GONE
 
                 volumePanelView?.visibility = if (volumeVisible) View.VISIBLE else View.GONE
                 if (volumeVisible) {
                     val view = volumePanelView ?: return@collect
-                    try { windowManager.updateViewLayout(view, volumePanelLayoutParams(volumePanelYOffsetDp)) }
+                    try { windowManager.updateViewLayout(view, volumePanelLayoutParams(yOffset)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update volume panel position", e) }
                 }
 
                 brightnessPanelView?.visibility = if (brightnessVisible) View.VISIBLE else View.GONE
                 if (brightnessVisible) {
                     val view = brightnessPanelView ?: return@collect
-                    try { windowManager.updateViewLayout(view, volumePanelLayoutParams(volumePanelYOffsetDp)) }
+                    try { windowManager.updateViewLayout(view, volumePanelLayoutParams(yOffset)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update brightness panel position", e) }
                 }
             }
@@ -506,6 +508,18 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 }
             }
             val wrapper = object : FrameLayout(this) {
+                override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+                    val result = super.dispatchTouchEvent(ev)
+                    if (!result && ev.action == MotionEvent.ACTION_DOWN
+                        && taskbarViewModel.isTaskbarVisible.value
+                        && !appMenuViewModel.menuVisible.value) {
+                        taskbarViewModel.hideTaskbar()
+                        // Apply non-interactive flags synchronously so any new window
+                        // appearing after this touch is not blocked by our overlay.
+                        setTaskbarFlags(interactive = false)
+                    }
+                    return result
+                }
                 override fun dispatchKeyEvent(event: KeyEvent): Boolean {
                     if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
                         dismissAll()
@@ -518,17 +532,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             wrapper.setViewTreeViewModelStoreOwner(this@OverlayService)
             wrapper.setViewTreeSavedStateRegistryOwner(this@OverlayService)
             wrapper.addView(composeView)
-            wrapper.setOnTouchListener { _, event ->
-                if (event.action == MotionEvent.ACTION_OUTSIDE && !appMenuViewModel.menuVisible.value) {
-                    taskbarViewModel.hideTaskbar()
-                }
-                false
-            }
             taskbarView = wrapper
             if (hiddenForLandscape) wrapper.visibility = View.GONE
             val initialInteractive = taskbarViewModel.isTaskbarVisible.value && !appMenuViewModel.menuVisible.value
-            val initialYOffset = taskbarViewModel.taskbarSettings.value.positionYDp
-            windowManager.addView(wrapper, taskbarLayoutParams(initialInteractive, initialYOffset))
+            windowManager.addView(wrapper, taskbarLayoutParams(initialInteractive))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add taskbar view", e)
             taskbarView = null
@@ -582,7 +589,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             wrapper.addView(composeView)
             wrapper.visibility = if (appMenuViewModel.isSearching.value) View.VISIBLE else View.GONE
             searchView = wrapper
-            windowManager.addView(wrapper, searchLayoutParams())
+            windowManager.addView(wrapper, searchLayoutParams(focusable = appMenuViewModel.isSearching.value))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add search view", e)
             searchView = null
@@ -616,7 +623,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         volumePanelView = null
         try {
             val initialSettings = taskbarViewModel.taskbarSettings.value
-            volumePanelYOffsetDp = initialSettings.positionYDp + initialSettings.heightDp * 2 + 10f
+            volumePanelYOffsetDp = 20f + initialSettings.heightDp + 24f
             val composeView = ComposeView(this).apply {
                 setBackgroundColor(android.graphics.Color.TRANSPARENT)
                 setViewTreeLifecycleOwner(this@OverlayService)
@@ -644,7 +651,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         brightnessPanelView = null
         try {
             val initialSettings = taskbarViewModel.taskbarSettings.value
-            val yOffset = initialSettings.positionYDp + initialSettings.heightDp * 2 + 10f
+            val yOffset = 20f + initialSettings.heightDp + 24f
             val composeView = ComposeView(this).apply {
                 setBackgroundColor(android.graphics.Color.TRANSPARENT)
                 setViewTreeLifecycleOwner(this@OverlayService)
@@ -672,7 +679,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         musicPanelView = null
         try {
             val initialSettings = taskbarViewModel.taskbarSettings.value
-            musicPanelYOffsetDp = initialSettings.positionYDp + initialSettings.heightDp + 80f
+            musicPanelYOffsetDp = 20f + initialSettings.heightDp + 24f
             val composeView = ComposeView(this).apply {
                 setBackgroundColor(android.graphics.Color.TRANSPARENT)
                 setViewTreeLifecycleOwner(this@OverlayService)
@@ -737,8 +744,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private fun refreshAllViews() {
         if (!observersStarted) return
         removeOverlayView()
-        addOverlayView()
         addTaskbarView()
+        addOverlayView()
         addPillView()
         if (taskbarViewModel.pillSettings.value.edgePosition == com.alkisstam.taskbar.data.PillEdgePosition.BOTH) ensurePillView2()
         addSearchView()

@@ -53,7 +53,7 @@ internal fun OverlayContent(
 
     val expandedRows = if (isDockExpanded && quickControlsEnabled) 1 else 0
     val panelBottomPadding = if (isTaskbarVisible) {
-        (taskbarSettings.positionYDp + taskbarSettings.heightDp * (1 + expandedRows) + 28f).dp
+        (20f + taskbarSettings.heightDp * (1 + expandedRows) + 28f).dp
     } else 0.dp
 
     TaskBarTheme(themeMode = themeMode) {
@@ -107,17 +107,25 @@ internal fun TaskbarContent(
     }
 
     TaskBarTheme(themeMode = themeMode) {
-        if (revealAnim.value > 0.001f) {
-            TaskbarView(
-                taskbarViewModel = taskbarViewModel,
-                appMenuViewModel = appMenuViewModel,
-                modifier = Modifier
-                    .onGloballyPositioned { taskbarHeightPx = it.size.height.toFloat() }
-                    .graphicsLayer {
-                        translationY = taskbarHeightPx * (1f - revealAnim.value)
-                        alpha = revealAnim.value
-                    }
-            )
+        Box(modifier = Modifier.fillMaxSize()) {
+            if (revealAnim.value > 0.001f) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 20.dp)
+                ) {
+                    TaskbarView(
+                        taskbarViewModel = taskbarViewModel,
+                        appMenuViewModel = appMenuViewModel,
+                        modifier = Modifier
+                            .onGloballyPositioned { taskbarHeightPx = it.size.height.toFloat() }
+                            .graphicsLayer {
+                                translationY = taskbarHeightPx * (1f - revealAnim.value)
+                                alpha = revealAnim.value
+                            }
+                    )
+                }
+            }
         }
     }
 }

@@ -97,8 +97,22 @@ class TaskbarViewModel @Inject constructor(
     private val _isDockExpanded = MutableStateFlow(false)
     val isDockExpanded: StateFlow<Boolean> = _isDockExpanded.asStateFlow()
 
-    fun toggleDockExpanded() { _isDockExpanded.value = !_isDockExpanded.value }
-    fun collapseDock() { _isDockExpanded.value = false }
+    fun toggleDockExpanded() {
+        val next = !_isDockExpanded.value
+        _isDockExpanded.value = next
+        _dockExpandProgress.value = if (next) 1f else 0f
+    }
+    fun collapseDock() {
+        _isDockExpanded.value = false
+        _dockExpandProgress.value = 0f
+    }
+
+    private val _dockExpandProgress = MutableStateFlow(0f)
+    val dockExpandProgress: StateFlow<Float> = _dockExpandProgress.asStateFlow()
+
+    fun setExpandProgress(p: Float) { _dockExpandProgress.value = p.coerceIn(0f, 1f) }
+    fun cancelExpandReveal() { _dockExpandProgress.value = 0f }
+    fun cancelCollapseReveal() { _dockExpandProgress.value = 1f }
 
     private val _dockRevealProgress = MutableStateFlow(0f)
     val dockRevealProgress: StateFlow<Float> = _dockRevealProgress.asStateFlow()
@@ -124,6 +138,7 @@ class TaskbarViewModel @Inject constructor(
     fun hideTaskbar() {
         if (!_isSettingsOpen.value) {
             _isDockExpanded.value = false
+            _dockExpandProgress.value = 0f
             _isTaskbarVisible.value = false
             _dockRevealProgress.value = 0f
         }

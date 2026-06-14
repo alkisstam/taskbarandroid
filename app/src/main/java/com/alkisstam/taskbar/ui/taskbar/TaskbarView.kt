@@ -1,10 +1,7 @@
 package com.alkisstam.taskbar.ui.taskbar
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -29,16 +26,17 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.ui.appmenu.QuickControlItem
@@ -69,8 +67,9 @@ fun TaskbarView(
     val musicPanelVisible by appMenuViewModel.musicPanelVisible.collectAsState()
     val quickControls by appMenuViewModel.quickControlsState.collectAsState()
     val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
+    val dockExpandProgress by taskbarViewModel.dockExpandProgress.collectAsState()
     val haptic = LocalHapticFeedback.current
-    var swipeFired by remember { mutableStateOf(false) }
+    val density = LocalDensity.current
 
     val surfaceColor = if (surfaceTintColor != 0L)
         Color(surfaceTintColor)
@@ -95,20 +94,45 @@ fun TaskbarView(
                 .fillMaxWidth(0.98f)
                 .wrapContentHeight()
                 .border(2.dp, TaskbarOutlineGreen, RoundedCornerShape(16.dp))
-                .pointerInput(isDockExpanded) {
+                .pointerInput(isDockExpanded, taskbarSettings.heightDp) {
+                    val maxDragPx = with(density) { taskbarSettings.heightDp.dp.toPx() }
+                    var totalDragY = 0f
                     detectDragGestures(
-                        onDragStart = { swipeFired = false },
-                        onDragEnd = { swipeFired = false },
-                        onDragCancel = { swipeFired = false }
+                        onDragStart = { totalDragY = 0f },
+                        onDragEnd = {
+                            val upward = -totalDragY
+                            val downward = totalDragY
+                            when {
+                                !isDockExpanded && quickControlsEnabled && upward > 0 -> {
+                                    if ((upward / maxDragPx).coerceIn(0f, 1f) >= 0.4f)
+                                        taskbarViewModel.toggleDockExpanded()
+                                    else
+                                        taskbarViewModel.cancelExpandReveal()
+                                }
+                                isDockExpanded && downward > 0 -> {
+                                    if ((downward / maxDragPx).coerceIn(0f, 1f) >= 0.4f)
+                                        taskbarViewModel.toggleDockExpanded()
+                                    else
+                                        taskbarViewModel.cancelCollapseReveal()
+                                }
+                            }
+                            totalDragY = 0f
+                        },
+                        onDragCancel = {
+                            if (!isDockExpanded) taskbarViewModel.cancelExpandReveal()
+                            else taskbarViewModel.cancelCollapseReveal()
+                            totalDragY = 0f
+                        }
                     ) { _, drag ->
-                        if (!swipeFired) {
-                            val threshold = Constants.SWIPE_TRIGGER_THRESHOLD_PX
-                            if (drag.y < -threshold && abs(drag.y) > abs(drag.x) && !isDockExpanded && quickControlsEnabled) {
-                                swipeFired = true
-                                taskbarViewModel.toggleDockExpanded()
-                            } else if (drag.y > threshold && abs(drag.y) > abs(drag.x) && isDockExpanded) {
-                                swipeFired = true
-                                taskbarViewModel.toggleDockExpanded()
+                        totalDragY += drag.y
+                        if (abs(drag.y) > abs(drag.x)) {
+                            val upward = -totalDragY
+                            val downward = totalDragY
+                            when {
+                                !isDockExpanded && quickControlsEnabled && upward > 0 ->
+                                    taskbarViewModel.setExpandProgress((upward / maxDragPx).coerceIn(0f, 1f))
+                                isDockExpanded && downward > 0 ->
+                                    taskbarViewModel.setExpandProgress(1f - (downward / maxDragPx).coerceIn(0f, 1f))
                             }
                         }
                     }
@@ -132,49 +156,66 @@ fun TaskbarView(
                 Spacer(modifier = Modifier.height(6.dp))
 
                 if (quickControlsEnabled) {
-                    AnimatedVisibility(
-                        visible = isDockExpanded,
-                        enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
-                        exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
-                    ) {
-                        Column {
-                            HorizontalDivider(
-                                modifier = Modifier.padding(horizontal = 12.dp),
-                                thickness = 1.dp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
-                            )
-                            LazyRow(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(taskbarSettings.heightDp.dp),
-                                contentPadding = PaddingValues(horizontal = 12.dp),
-                                horizontalArrangement = Arrangement.spacedBy(2.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                if (musicPanelEnabled) {
-                                    item {
+                    val expandAnim = remember { Animatable(if (isDockExpanded) 1f else 0f) }
+                    val maxControlsHeight = taskbarSettings.heightDp.dp + 1.dp
+
+                    LaunchedEffect(isDockExpanded, dockExpandProgress) {
+                        when {
+                            isDockExpanded && dockExpandProgress >= 1f ->
+                                expandAnim.animateTo(1f, tween(220))
+                            !isDockExpanded && dockExpandProgress == 0f ->
+                                expandAnim.animateTo(0f, tween(180))
+                            else ->
+                                expandAnim.snapTo(dockExpandProgress)
+                        }
+                    }
+
+                    if (expandAnim.value > 0.001f) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(maxControlsHeight * expandAnim.value)
+                                .clipToBounds()
+                        ) {
+                            Column {
+                                LazyRow(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(taskbarSettings.heightDp.dp),
+                                    contentPadding = PaddingValues(horizontal = 12.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(2.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    if (musicPanelEnabled) {
+                                        item {
+                                            QuickControlItem(
+                                                item = QuickControlItemData(
+                                                    id = "music",
+                                                    label = "Music",
+                                                    active = musicPanelVisible,
+                                                    icon = Icons.Filled.MusicNote
+                                                ),
+                                                onToggle = { appMenuViewModel.toggleMusicPanel() },
+                                                showLabel = taskbarSettings.showControlLabels
+                                            )
+                                        }
+                                    }
+                                    items(quickControls.toItems(controlsOrder, controlsDisabledIds)) { item ->
                                         QuickControlItem(
-                                            item = QuickControlItemData(
-                                                id = "music",
-                                                label = "Music",
-                                                active = musicPanelVisible,
-                                                icon = Icons.Filled.MusicNote
-                                            ),
-                                            onToggle = { appMenuViewModel.toggleMusicPanel() },
+                                            item = item,
+                                            onToggle = {
+                                                appMenuViewModel.handleQuickControlAction(item.id)
+                                                if (item.id in listOf("qr", "power", "screenshot", "lockscreen")) taskbarViewModel.hideTaskbar()
+                                            },
                                             showLabel = taskbarSettings.showControlLabels
                                         )
                                     }
                                 }
-                                items(quickControls.toItems(controlsOrder, controlsDisabledIds)) { item ->
-                                    QuickControlItem(
-                                        item = item,
-                                        onToggle = {
-                                            appMenuViewModel.handleQuickControlAction(item.id)
-                                            if (item.id in listOf("qr", "power", "screenshot", "lockscreen")) taskbarViewModel.hideTaskbar()
-                                        },
-                                        showLabel = taskbarSettings.showControlLabels
-                                    )
-                                }
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(horizontal = 12.dp),
+                                    thickness = 1.dp,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+                                )
                             }
                         }
                     }

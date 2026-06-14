@@ -6,7 +6,11 @@ import android.view.Gravity
 import android.view.WindowManager
 import com.alkisstam.taskbar.data.PillEdgePosition
 
-internal fun overlayWindowType() = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+internal fun overlayWindowType() =
+    if (TaskBarAccessibilityService.instance != null)
+        WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
+    else
+        WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
 
 internal fun Context.overlayLayoutParams(interactive: Boolean = true, focusable: Boolean = false): WindowManager.LayoutParams {
     val flags = (if (!focusable) WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE else 0) or
@@ -67,11 +71,12 @@ internal fun Context.pillLayoutParams(
     }
 }
 
-internal fun Context.searchLayoutParams(): WindowManager.LayoutParams {
-    
+internal fun Context.searchLayoutParams(focusable: Boolean = false): WindowManager.LayoutParams {
     val flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
+            (if (!focusable) WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE else 0) or
+            (if (!focusable) WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE else 0)
     return WindowManager.LayoutParams(
         WindowManager.LayoutParams.MATCH_PARENT,
         WindowManager.LayoutParams.MATCH_PARENT,
@@ -101,30 +106,30 @@ internal fun Context.volumePanelLayoutParams(yOffsetDp: Float): WindowManager.La
     }
 }
 
-internal fun Context.taskbarLayoutParams(interactive: Boolean = true, yOffsetDp: Float = 0f): WindowManager.LayoutParams {
+internal fun Context.taskbarLayoutParams(interactive: Boolean = true): WindowManager.LayoutParams {
     val flags = (if (!interactive) WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE else 0) or
             WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
-            WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH or
             (if (!interactive) WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE else 0)
     return WindowManager.LayoutParams(
         WindowManager.LayoutParams.MATCH_PARENT,
-        WindowManager.LayoutParams.WRAP_CONTENT,
+        WindowManager.LayoutParams.MATCH_PARENT,
         overlayWindowType(),
         flags,
         PixelFormat.TRANSLUCENT
     ).apply {
         gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-        y = (yOffsetDp * resources.displayMetrics.density).toInt()
+        y = 0
     }
 }
 
-internal fun Context.volumeScrimLayoutParams(): WindowManager.LayoutParams {
-    
+internal fun Context.volumeScrimLayoutParams(active: Boolean = false): WindowManager.LayoutParams {
     val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
+            (if (!active) WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE else 0)
     return WindowManager.LayoutParams(
         WindowManager.LayoutParams.MATCH_PARENT,
         WindowManager.LayoutParams.MATCH_PARENT,

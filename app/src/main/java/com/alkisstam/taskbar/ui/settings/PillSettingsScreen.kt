@@ -187,14 +187,6 @@ fun PillSettingsScreen(
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 SettingsSlider(
-                    label = "Position (from bottom)",
-                    value = taskbarSettings.positionYDp,
-                    valueRange = 0f..300f,
-                    unit = "dp",
-                    onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(positionYDp = it)) }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                SettingsSlider(
                     label = "Height",
                     value = taskbarSettings.heightDp,
                     valueRange = 40f..120f,
