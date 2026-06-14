@@ -4,6 +4,26 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.3.0] - 2026-06-14
+
+### Added
+- **Dock status bar** — slim strip at the bottom of the dock showing current time & date (left) and battery level with icon (right). Time updates every minute; battery icon reflects charge level and charging state.
+- **Apps tab hint** — instructional text at the top of the Apps settings tab explaining how to pin and reorder apps.
+- **Pill hint for side positions** — "Swipe Up in Trigger Area to Activate the Dock" hint shown below the preview graphic when Left, Right, or Both is selected (matches the existing Bottom hint).
+
+### Changed
+- **App menu — quick controls removed** — the quick controls column is no longer shown in the all-apps panel. The app grid now fills the full panel width.
+- **App grid size** — increased from 320 dp to 340 dp tall, reliably showing 4 rows of app icons.
+- **Dock item spacing** — pinned apps and quick controls rows now use `spacedBy(4 dp, CenterHorizontally)`: items are centred with consistent 4 dp gaps when few, and scroll with 4 dp gaps when many.
+- **Circle icons across the app** — AppMenuButton (grid icon in dock), app icons in the Apps settings tab and Pinned Apps manager, and control icons in the Controls settings tab (Active Controls and All Controls) are now displayed as circles.
+- **Brightness panel outline** — updated to match the Volume panel: 2 dp `TaskbarOutlineGreen` border instead of the 1 dp `outlineVariant` border.
+- **Pill position defaults** — switching to Bottom now sets 130 × 8 dp (wider bar); switching to Left/Right/Both now sets 4 × 60 dp (taller, narrower pill).
+
+### Fixed
+- **Dock visibility persists across service restarts** — the dock's hidden/visible state is now written to DataStore on every `show`/`hide` call and read back when the service starts. Stopping and restarting the service no longer forces the dock visible if it was dismissed.
+
+---
+
 ## [1.2.8] - 2026-06-12
 
 ### Fixed
