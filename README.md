@@ -20,14 +20,13 @@ A system-overlay dock for Android that renders above all other apps — includin
 - **Bottom position:** double-tap pill or Home button to activate
 - **Left / Right / Both:** swipe up in the trigger area to activate
 - Configurable size, opacity, and position along the edge
-- Gestures: swipe-up, swipe-down, double-tap — each independently mapped to Show Dock, Show Notifications, Show Quick Settings, or Disabled
 
 ### App Menu
 
 - **Floating panel** that slides up from above the dock
 - **4-row, 3-column** scrollable app grid
 - Full-screen app search
-- Long-press any app to pin/unpin from the dock; long-press a pinned app for launcher shortcuts (up to 4) and Unpin
+- Long-press any app to pin/unpin from the dock
 
 ### Quick Controls
 
@@ -36,7 +35,7 @@ A system-overlay dock for Android that renders above all other apps — includin
 - Reorderable and individually enable/disable in the **Controls** settings tab
 - **Music Panel:** floating player with album art, playback controls (prev/play-pause/next)
 - **Volume Panel:** per-stream vertical sliders (Media, Ring, Alarm)
-- **Brightness Panel:** vertical slider with auto-brightness toggle
+- **Brightness Panel:** horizontal slider with auto-brightness toggle
 
 ### Theming
 
@@ -57,7 +56,7 @@ Four-tab settings screen: **General**, **Apps**, **Controls**, **Design**
 
 - **Apps** tab: manage pinned apps (drag-to-reorder, tap to pin/unpin); browse all installed apps
 - **Controls** tab: Quick Controls master toggle, show/hide labels, reorder Active Controls, enable/disable individual controls
-- **Design** tab: Trigger Gesture, Pill Size & Appearance, Dock Size & Appearance
+- **Design** tab: Pill Size & Appearance, Dock Size & Appearance
 
 ## Requirements
 
