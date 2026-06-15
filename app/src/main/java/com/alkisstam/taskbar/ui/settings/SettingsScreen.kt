@@ -711,10 +711,10 @@ private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
+                    Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
                         Text("Enable Quick Controls", style = MaterialTheme.typography.bodyLarge)
                         Text(
-                            "Show quick controls in the dock or apps panel",
+                            "Show quick controls in the Dock. Swipe up to show the quick controls. Swipe down to hide them.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -991,7 +991,7 @@ private fun SurfaceTintColorPicker(
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text("Surface Tint Color", style = MaterialTheme.typography.bodyMedium)
         Text(
-            "Applies to the dock, app menu, and quick controls strip",
+            "Applies to the dock and app menu",
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )

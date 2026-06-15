@@ -168,15 +168,15 @@ fun BrightnessPanel(
     modifier: Modifier = Modifier
 ) {
     val maxBrightness = 255
-    var trackHeightPx by remember { mutableFloatStateOf(1f) }
+    var trackWidthPx by remember { mutableFloatStateOf(1f) }
     var isDragging by remember { mutableStateOf(false) }
     var localCurrent by remember { mutableIntStateOf(brightnessLevel) }
     SideEffect { if (!isDragging) localCurrent = brightnessLevel }
     val fraction = localCurrent.toFloat() / maxBrightness
     var dragAccumulator by remember { mutableFloatStateOf(0f) }
     val draggableState = rememberDraggableState { delta ->
-        val pxPerStep = trackHeightPx / maxBrightness
-        dragAccumulator -= delta
+        val pxPerStep = trackWidthPx / maxBrightness
+        dragAccumulator += delta
         val steps = (dragAccumulator / pxPerStep).toInt()
         if (steps != 0) {
             dragAccumulator -= steps * pxPerStep
@@ -197,58 +197,48 @@ fun BrightnessPanel(
         Row(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.Bottom
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(6.dp)
+            Box(
+                modifier = Modifier
+                    .size(32.dp)
+                    .background(
+                        if (autoBrightnessEnabled) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                        else MaterialTheme.colorScheme.surfaceVariant,
+                        RoundedCornerShape(8.dp)
+                    )
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable { onAutoBrightnessToggle() },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = if (autoBrightnessEnabled) Icons.Filled.BrightnessAuto else Icons.Filled.BrightnessHigh,
+                    contentDescription = if (autoBrightnessEnabled) "Disable auto brightness" else "Enable auto brightness",
+                    modifier = Modifier.size(18.dp),
+                    tint = if (autoBrightnessEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(40.dp)
+                    .alpha(if (autoBrightnessEnabled) 0.4f else 1f)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .onSizeChanged { trackWidthPx = it.width.toFloat() }
+                    .draggable(
+                        state = draggableState,
+                        orientation = Orientation.Horizontal,
+                        onDragStarted = { isDragging = true; dragAccumulator = 0f },
+                        onDragStopped = { isDragging = false }
+                    ),
+                contentAlignment = Alignment.CenterStart
             ) {
                 Box(
                     modifier = Modifier
-                        .size(32.dp)
-                        .background(
-                            if (autoBrightnessEnabled) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
-                            else MaterialTheme.colorScheme.surfaceVariant,
-                            RoundedCornerShape(8.dp)
-                        )
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable { onAutoBrightnessToggle() },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = if (autoBrightnessEnabled) Icons.Filled.BrightnessAuto else Icons.Filled.BrightnessHigh,
-                        contentDescription = if (autoBrightnessEnabled) "Disable auto brightness" else "Enable auto brightness",
-                        modifier = Modifier.size(18.dp),
-                        tint = if (autoBrightnessEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                Box(
-                    modifier = Modifier
-                        .width(40.dp)
-                        .height(140.dp)
-                        .alpha(if (autoBrightnessEnabled) 0.4f else 1f)
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .onSizeChanged { trackHeightPx = it.height.toFloat() }
-                        .draggable(
-                            state = draggableState,
-                            orientation = Orientation.Vertical,
-                            onDragStarted = { isDragging = true; dragAccumulator = 0f },
-                            onDragStopped = { isDragging = false }
-                        ),
-                    contentAlignment = Alignment.BottomCenter
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight(fraction)
-                            .background(MaterialTheme.colorScheme.primary)
-                    )
-                }
-                Text(
-                    text = "Bright",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurface
+                        .fillMaxHeight()
+                        .fillMaxWidth(fraction)
+                        .background(MaterialTheme.colorScheme.primary)
                 )
             }
         }
