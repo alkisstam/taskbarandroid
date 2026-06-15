@@ -10,6 +10,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
@@ -219,12 +220,44 @@ internal fun MusicPanelContent(
 ) {
     val themeMode by taskbarViewModel.themeMode.collectAsState()
     val mediaState by appMenuViewModel.mediaState.collectAsState()
+    val musicPanelEnabled by taskbarViewModel.musicPanelEnabled.collectAsState()
+    val musicPanelVisible by appMenuViewModel.musicPanelVisible.collectAsState()
+    val isSearching by appMenuViewModel.isSearching.collectAsState()
+
+    val dockRevealProgress by taskbarViewModel.dockRevealProgress.collectAsState()
+
+    val panelShouldShow = musicPanelEnabled && mediaState.hasSession && musicPanelVisible && !isSearching
+
+    val revealAnim = remember { Animatable(0f) }
+    var panelHeightPx by remember { mutableFloatStateOf(0f) }
+
+    LaunchedEffect(panelShouldShow, dockRevealProgress) {
+        when {
+            panelShouldShow && dockRevealProgress == 1f ->
+                revealAnim.animateTo(1f, spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium))
+            !panelShouldShow || dockRevealProgress == 0f ->
+                revealAnim.animateTo(0f, tween(220))
+            panelShouldShow ->
+                revealAnim.snapTo(dockRevealProgress)
+        }
+    }
+
     TaskBarTheme(themeMode = themeMode) {
-        MusicPanel(
-            mediaState = mediaState,
-            onPlayPause = appMenuViewModel::playPause,
-            onNext = appMenuViewModel::nextTrack,
-            onPrev = appMenuViewModel::prevTrack
-        )
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            if (revealAnim.value > 0.001f) {
+                MusicPanel(
+                    mediaState = mediaState,
+                    onPlayPause = appMenuViewModel::playPause,
+                    onNext = appMenuViewModel::nextTrack,
+                    onPrev = appMenuViewModel::prevTrack,
+                    modifier = Modifier
+                        .onGloballyPositioned { panelHeightPx = it.size.height.toFloat() }
+                        .graphicsLayer {
+                            translationY = panelHeightPx * (1f - revealAnim.value)
+                            alpha = revealAnim.value
+                        }
+                )
+            }
+        }
     }
 }

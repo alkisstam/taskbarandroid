@@ -47,14 +47,13 @@ fun MusicPanel(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        shape = RoundedCornerShape(28.dp),
+        shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surface,
         tonalElevation = 3.dp,
         shadowElevation = 8.dp,
         modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .border(2.dp, TaskbarOutlineGreen, RoundedCornerShape(28.dp))
+            .fillMaxWidth(0.98f)
+            .border(2.dp, TaskbarOutlineGreen, RoundedCornerShape(16.dp))
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),

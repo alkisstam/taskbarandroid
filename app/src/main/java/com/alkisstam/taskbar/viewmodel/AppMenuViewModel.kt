@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -134,7 +135,9 @@ class AppMenuViewModel @Inject constructor(
     }
 
     fun toggleMusicPanel() {
-        _musicPanelVisible.value = !_musicPanelVisible.value
+        val newValue = !_musicPanelVisible.value
+        _musicPanelVisible.value = newValue
+        viewModelScope.launch { prefsRepository.setMusicPanelOpen(newValue) }
     }
 
     fun dismissMusicPanel() {
@@ -178,6 +181,9 @@ class AppMenuViewModel @Inject constructor(
     }
 
     init {
+        viewModelScope.launch {
+            _musicPanelVisible.value = prefsRepository.musicPanelOpen.first()
+        }
         refreshQuickControls()
         quickControls.addChangeListener(quickControlsChangeListener)
     }

@@ -169,7 +169,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private fun dismissAll() {
         appMenuViewModel.dismissMenu()
-        appMenuViewModel.dismissMusicPanel()
         taskbarViewModel.hideTaskbar()
     }
 
@@ -381,9 +380,9 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             kotlinx.coroutines.flow.combine(
                 taskbarViewModel.taskbarSettings,
                 appMenuViewModel.menuVisible,
-                taskbarViewModel.isDockExpanded
-            ) { settings, menuOpen, dockExpanded ->
-                val baseY = 20f + settings.heightDp + 16f + (if (dockExpanded) settings.heightDp + 25f else 24f)
+                taskbarViewModel.dockExpandProgress
+            ) { settings, menuOpen, expandProgress ->
+                val baseY = 20f + settings.heightDp + 16f + 24f + expandProgress * (settings.heightDp + 1f)
                 volumePanelYOffsetDp = baseY
                 if (menuOpen) baseY + 400f else baseY
             }.collect { yOffset ->
@@ -396,24 +395,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     }
 
     private fun observeMusicPanelVisibility() {
-        serviceScope.launch {
-            kotlinx.coroutines.flow.combine(
-                appMenuViewModel.mediaState,
-                taskbarViewModel.musicPanelEnabled,
-                taskbarViewModel.isTaskbarVisible,
-                appMenuViewModel.musicPanelVisible,
-                appMenuViewModel.isSearching
-            ) { values ->
-                val state = values[0] as com.alkisstam.taskbar.data.MediaState
-                val enabled = values[1] as Boolean
-                val taskbarVisible = values[2] as Boolean
-                val userVisible = values[3] as Boolean
-                val searching = values[4] as Boolean
-                enabled && state.hasSession && taskbarVisible && userVisible && !searching
-            }.collect { show ->
-                musicPanelView?.visibility = if (show) View.VISIBLE else View.GONE
-            }
-        }
+        musicPanelView?.visibility = View.VISIBLE
     }
 
     private fun observeVolumeAndBrightnessPanels() {
