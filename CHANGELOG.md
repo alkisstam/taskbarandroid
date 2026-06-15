@@ -4,6 +4,18 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.3.1] - 2026-06-15
+
+### Changed
+- **Brightness slider** — now horizontal (drag right to increase); removed "Bright" label.
+- **Quick Controls description** — updated to explain swipe-up/swipe-down gestures.
+- **Surface Tint Color description** — shortened to "Applies to the dock and app menu".
+
+### Fixed
+- **Quick Controls toggle text overflow** — description text no longer clips into the switch on narrow screens.
+
+---
+
 ## [1.3.0] - 2026-06-14
 
 ### Added
