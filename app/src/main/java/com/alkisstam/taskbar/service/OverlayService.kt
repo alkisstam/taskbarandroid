@@ -117,6 +117,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                         if (overlayView?.isAttachedToWindow != true) addOverlayView()
                         if (taskbarView?.isAttachedToWindow != true) addTaskbarView()
                         if (pillView?.isAttachedToWindow != true) addPillView()
+                        musicPanelView?.visibility = View.VISIBLE
                         if (!hiddenForLandscape) {
                             taskbarView?.visibility = View.VISIBLE
                             pillView?.visibility = View.VISIBLE
