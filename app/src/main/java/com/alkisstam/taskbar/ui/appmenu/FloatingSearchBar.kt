@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -125,10 +125,11 @@ fun FloatingSearchBar(viewModel: AppMenuViewModel, onHideTaskbar: () -> Unit = {
                     shadowElevation = 6.dp
                 ) {
                     LazyColumn(modifier = Modifier.padding(vertical = 4.dp)) {
-                        items(filteredApps, key = { it.packageName }) { app ->
+                        itemsIndexed(filteredApps, key = { _, app -> app.packageName }) { index, app ->
                             SearchResultItem(
                                 app = app,
                                 isPinned = pinnedPackages.contains(app.packageName),
+                                isHighlighted = index == 0,
                                 onLaunch = { viewModel.launchApp(app.packageName); onHideTaskbar() },
                                 onPin = {
                                     if (pinnedPackages.contains(app.packageName))

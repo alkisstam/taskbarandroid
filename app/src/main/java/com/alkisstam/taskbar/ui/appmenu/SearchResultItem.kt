@@ -1,6 +1,8 @@
 package com.alkisstam.taskbar.ui.appmenu
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -33,6 +35,7 @@ import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 fun SearchResultItem(
     app: AppInfo,
     isPinned: Boolean,
+    isHighlighted: Boolean = false,
     onLaunch: () -> Unit,
     onPin: () -> Unit,
     modifier: Modifier = Modifier
@@ -45,6 +48,12 @@ fun SearchResultItem(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
+            .then(
+                if (isHighlighted) Modifier
+                    .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f))
+                else Modifier
+            )
             .combinedClickable(
                 onClick = onLaunch,
                 onLongClick = {
