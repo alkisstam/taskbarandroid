@@ -146,6 +146,29 @@ fun PillSettingsScreen(
             }
             if (pillSettings.edgePosition != PillEdgePosition.BOTTOM) {
                 Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("Notification Panel", style = MaterialTheme.typography.bodyMedium)
+                        Text(
+                            "Swipe down for Notification Panel",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Switch(
+                        checked = pillSettings.swipeDownAction == GestureAction.SHOW_NOTIFICATIONS,
+                        onCheckedChange = { enabled ->
+                            viewModel.savePillSettings(pillSettings.copy(
+                                swipeDownAction = if (enabled) GestureAction.SHOW_NOTIFICATIONS else GestureAction.DISABLED
+                            ))
+                        }
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
                 SettingsSlider(
                     label = "Position along edge",
                     value = pillSettings.sidePositionPct,
