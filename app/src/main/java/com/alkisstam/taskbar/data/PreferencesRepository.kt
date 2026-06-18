@@ -96,6 +96,7 @@ class PreferencesRepository @Inject constructor(
         private val ONBOARDING_COMPLETE_KEY = booleanPreferencesKey("onboarding_complete")
         private val MUSIC_PANEL_ENABLED_KEY = booleanPreferencesKey("music_panel_enabled")
         private val MUSIC_PANEL_OPEN_KEY = booleanPreferencesKey("music_panel_open")
+        private val HAPTIC_FEEDBACK_KEY = booleanPreferencesKey("haptic_feedback")
 
         val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen", "caffeine")
 
@@ -206,6 +207,16 @@ class PreferencesRepository @Inject constructor(
     suspend fun setAutoHideInLandscape(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[AUTO_HIDE_LANDSCAPE_KEY] = enabled
+        }
+    }
+
+    val hapticFeedbackEnabled: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[HAPTIC_FEEDBACK_KEY] ?: true
+    }
+
+    suspend fun setHapticFeedbackEnabled(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[HAPTIC_FEEDBACK_KEY] = enabled
         }
     }
 
@@ -363,6 +374,7 @@ class PreferencesRepository @Inject constructor(
             prefs[CONTROLS_ORDER_KEY]?.let { put("controls_order", it) }
             prefs[CONTROLS_DISABLED_KEY]?.let { put("controls_disabled_ids", it) }
             prefs[MUSIC_PANEL_ENABLED_KEY]?.let { put("music_panel_enabled", it) }
+            prefs[HAPTIC_FEEDBACK_KEY]?.let { put("haptic_feedback", it) }
         }.toString()
     }
 
@@ -394,6 +406,7 @@ class PreferencesRepository @Inject constructor(
             if (obj.has("controls_order")) prefs[CONTROLS_ORDER_KEY] = obj.getString("controls_order")
             if (obj.has("controls_disabled_ids")) prefs[CONTROLS_DISABLED_KEY] = obj.getString("controls_disabled_ids")
             if (obj.has("music_panel_enabled")) prefs[MUSIC_PANEL_ENABLED_KEY] = obj.getBoolean("music_panel_enabled")
+            if (obj.has("haptic_feedback")) prefs[HAPTIC_FEEDBACK_KEY] = obj.getBoolean("haptic_feedback")
         }
     }
 

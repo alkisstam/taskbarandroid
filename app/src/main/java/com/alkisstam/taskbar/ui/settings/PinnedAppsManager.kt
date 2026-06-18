@@ -28,6 +28,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.ui.common.AppIconImage
+import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -40,6 +41,7 @@ fun PinnedAppsManager(
     val pinnedApps by viewModel.pinnedApps.collectAsState()
     val lazyListState = rememberLazyListState()
     val haptic = LocalHapticFeedback.current
+    val hapticEnabled = LocalHapticEnabled.current
 
     val reorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
         val currentPackages = pinnedApps.map { it.packageName }.toMutableList()
@@ -77,7 +79,7 @@ fun PinnedAppsManager(
                                 .size(24.dp)
                                 .draggableHandle(
                                     onDragStarted = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        if (hapticEnabled) haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     },
                                     onDragStopped = {}
                                 ),

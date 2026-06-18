@@ -20,12 +20,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import com.alkisstam.taskbar.data.GestureAction
 import com.alkisstam.taskbar.data.PillEdgePosition
 import com.alkisstam.taskbar.service.OverlayService
 import com.alkisstam.taskbar.ui.onboarding.OnboardingScreen
 import com.alkisstam.taskbar.ui.settings.SettingsScreen
+import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import com.alkisstam.taskbar.ui.theme.TaskBarTheme
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -67,7 +69,9 @@ class MainActivity : ComponentActivity() {
             val hasAccessibilityPermission by taskbarViewModel.isAccessibilityEnabled.collectAsState()
             val onboardingComplete by taskbarViewModel.onboardingComplete.collectAsState()
             val pillSettings by taskbarViewModel.pillSettings.collectAsState()
+            val hapticEnabled by taskbarViewModel.hapticFeedbackEnabled.collectAsState()
             TaskBarTheme(themeMode = themeMode) {
+              CompositionLocalProvider(LocalHapticEnabled provides hapticEnabled) {
                 when (onboardingComplete) {
                     null -> Box(modifier = Modifier.fillMaxSize())
                     false -> OnboardingScreen(
@@ -107,6 +111,7 @@ class MainActivity : ComponentActivity() {
                         onRequestAccessibilityPermission = ::requestAccessibilityPermission
                     )
                 }
+              }
             }
         }
     }

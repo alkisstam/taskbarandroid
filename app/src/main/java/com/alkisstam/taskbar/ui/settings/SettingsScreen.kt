@@ -103,6 +103,7 @@ import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.ThemeMode
 import com.alkisstam.taskbar.ui.common.AppIconImage
+import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -245,6 +246,7 @@ private fun GeneralTab(
     val surfaceTintColor by viewModel.surfaceTintColor.collectAsState()
     val autoHideInFullscreen by viewModel.autoHideInFullscreen.collectAsState()
     val autoHideInLandscape by viewModel.autoHideInLandscape.collectAsState()
+    val hapticFeedbackEnabled by viewModel.hapticFeedbackEnabled.collectAsState()
     val context = LocalContext.current
 
     val backupLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
@@ -374,6 +376,24 @@ private fun GeneralTab(
                 Switch(
                     checked = autoHideInLandscape,
                     onCheckedChange = { viewModel.setAutoHideInLandscape(it) }
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text("Vibrate Feedback", style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        "Haptic feedback on long press and drag",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Switch(
+                    checked = hapticFeedbackEnabled,
+                    onCheckedChange = { viewModel.setHapticFeedbackEnabled(it) }
                 )
             }
         }
@@ -523,6 +543,7 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
                 } else {
                     val lazyListState = rememberLazyListState()
                     val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
+                    val hapticEnabled = LocalHapticEnabled.current
                     val reorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
                         val pkgs = pinnedApps.map { it.packageName }.toMutableList()
                         pkgs.add(to.index, pkgs.removeAt(from.index))
@@ -541,7 +562,7 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
                                     modifier = Modifier
                                         .longPressDraggableHandle(
                                             onDragStarted = {
-                                                haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                                                if (hapticEnabled) haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
                                             }
                                         )
                                 ) {
@@ -756,6 +777,7 @@ private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
                 } else {
                     val lazyListState = rememberLazyListState()
                     val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
+                    val hapticEnabled = LocalHapticEnabled.current
                     val reorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
                         val newOrder = controlsOrder.toMutableList()
                         val fromId = activeIds[from.index]
@@ -781,7 +803,7 @@ private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
                                     isDragging = isDragging,
                                     modifier = Modifier.longPressDraggableHandle(
                                         onDragStarted = {
-                                            haptic.performHapticFeedback(
+                                            if (hapticEnabled) haptic.performHapticFeedback(
                                                 androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress
                                             )
                                         }

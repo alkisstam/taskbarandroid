@@ -49,6 +49,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.LocalTime
@@ -85,6 +86,7 @@ fun TaskbarView(
     val batteryLevel by taskbarViewModel.batteryLevel.collectAsState()
     val isCharging by taskbarViewModel.isCharging.collectAsState()
     val haptic = LocalHapticFeedback.current
+    val hapticEnabled = LocalHapticEnabled.current
     val density = LocalDensity.current
 
     val surfaceColor = if (surfaceTintColor != 0L)
@@ -269,7 +271,7 @@ fun TaskbarView(
                                         isDragging = isDragging,
                                         dragModifier = Modifier.longPressDraggableHandle(
                                             onDragStarted = {
-                                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                if (hapticEnabled) haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                             }
                                         ),
                                         onLaunch = {

@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.ui.common.AppIconImage
+import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -38,6 +39,7 @@ fun SearchResultItem(
 ) {
     var showMenu by remember { mutableStateOf(false) }
     val haptic = LocalHapticFeedback.current
+    val hapticEnabled = LocalHapticEnabled.current
 
     Row(
         modifier = modifier
@@ -46,7 +48,7 @@ fun SearchResultItem(
             .combinedClickable(
                 onClick = onLaunch,
                 onLongClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    if (hapticEnabled) haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                     showMenu = true
                 }
             )

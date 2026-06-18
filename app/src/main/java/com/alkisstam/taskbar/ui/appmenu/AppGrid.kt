@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -81,6 +82,7 @@ private fun AppGridItem(
 ) {
     var showMenu by remember { mutableStateOf(false) }
     val haptic = LocalHapticFeedback.current
+    val hapticEnabled = LocalHapticEnabled.current
 
     Column(
         modifier = modifier
@@ -88,7 +90,7 @@ private fun AppGridItem(
             .combinedClickable(
                 onClick = onLaunch,
                 onLongClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    if (hapticEnabled) haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                     showMenu = true
                 }
             )

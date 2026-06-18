@@ -22,7 +22,11 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
+import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import androidx.core.app.NotificationCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -446,10 +450,13 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 setViewTreeViewModelStoreOwner(this@OverlayService)
                 setViewTreeSavedStateRegistryOwner(this@OverlayService)
                 setContent {
-                    OverlayContent(
-                        taskbarViewModel = taskbarViewModel,
-                        appMenuViewModel = appMenuViewModel
-                    )
+                    val hapticEnabled by taskbarViewModel.hapticFeedbackEnabled.collectAsState()
+                    CompositionLocalProvider(LocalHapticEnabled provides hapticEnabled) {
+                        OverlayContent(
+                            taskbarViewModel = taskbarViewModel,
+                            appMenuViewModel = appMenuViewModel
+                        )
+                    }
                 }
             }
             val wrapper = object : FrameLayout(this) {
@@ -513,10 +520,13 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 setViewTreeViewModelStoreOwner(this@OverlayService)
                 setViewTreeSavedStateRegistryOwner(this@OverlayService)
                 setContent {
-                    TaskbarContent(
-                        taskbarViewModel = taskbarViewModel,
-                        appMenuViewModel = appMenuViewModel
-                    )
+                    val hapticEnabled by taskbarViewModel.hapticFeedbackEnabled.collectAsState()
+                    CompositionLocalProvider(LocalHapticEnabled provides hapticEnabled) {
+                        TaskbarContent(
+                            taskbarViewModel = taskbarViewModel,
+                            appMenuViewModel = appMenuViewModel
+                        )
+                    }
                 }
             }
             val wrapper = object : FrameLayout(this) {
@@ -584,7 +594,12 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 setViewTreeLifecycleOwner(this@OverlayService)
                 setViewTreeViewModelStoreOwner(this@OverlayService)
                 setViewTreeSavedStateRegistryOwner(this@OverlayService)
-                setContent { SearchOverlayContent(appMenuViewModel = appMenuViewModel, onHideTaskbar = taskbarViewModel::hideTaskbar) }
+                setContent {
+                    val hapticEnabled by taskbarViewModel.hapticFeedbackEnabled.collectAsState()
+                    CompositionLocalProvider(LocalHapticEnabled provides hapticEnabled) {
+                        SearchOverlayContent(appMenuViewModel = appMenuViewModel, onHideTaskbar = taskbarViewModel::hideTaskbar)
+                    }
+                }
             }
             val wrapper = object : FrameLayout(this) {
                 override fun dispatchKeyEvent(event: KeyEvent): Boolean {

@@ -84,6 +84,15 @@ class TaskbarViewModel @Inject constructor(
     val musicPanelEnabled: StateFlow<Boolean> = prefsRepository.musicPanelEnabled
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
+    val hapticFeedbackEnabled: StateFlow<Boolean> = prefsRepository.hapticFeedbackEnabled
+        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
+    fun setHapticFeedbackEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            prefsRepository.setHapticFeedbackEnabled(enabled)
+        }
+    }
+
     fun completeOnboarding() {
         viewModelScope.launch { prefsRepository.setOnboardingComplete() }
     }
