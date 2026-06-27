@@ -4,6 +4,19 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.3.2] - 2026-06-27
+
+### Added
+- **Panel Outline toggle** — General > Theme: enable/disable the green border on the dock, app menu, volume, brightness, and music panels.
+- **App Grid configuration** — Apps tab: "App Grid" card with Columns and Rows sliders (3–6) to customise the floating all-apps grid layout.
+- **Music panel auto-hide** — music panel now hides automatically when the volume or brightness panel is triggered.
+
+### Changed
+- **Icon size slider range** — Pinned App Icon Size and Quick Controls Size sliders in Design > Dock Size & Appearance now go up to 60 dp (was 50 dp).
+- **App menu button size** — the grid icon button in the dock now matches the Pinned App Icon Size setting instead of being fixed at 48 dp.
+
+---
+
 ## [1.3.1] - 2026-06-15
 
 ### Changed
