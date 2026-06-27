@@ -185,12 +185,14 @@ internal fun VolumePanelContent(
 ) {
     val themeMode by taskbarViewModel.themeMode.collectAsState()
     val streams by appMenuViewModel.volumeStreams.collectAsState()
+    val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
     TaskBarTheme(themeMode = themeMode) {
         VolumePanel(
             streams = streams,
             onVolumeChange = { streamType, value ->
                 appMenuViewModel.setStreamVolume(streamType, value)
-            }
+            },
+            panelOutlineEnabled = panelOutlineEnabled
         )
     }
 }
@@ -203,12 +205,14 @@ internal fun BrightnessPanelContent(
     val themeMode by taskbarViewModel.themeMode.collectAsState()
     val brightnessLevel by appMenuViewModel.brightnessLevel.collectAsState()
     val quickControlsState by appMenuViewModel.quickControlsState.collectAsState()
+    val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
     TaskBarTheme(themeMode = themeMode) {
         BrightnessPanel(
             brightnessLevel = brightnessLevel,
             onBrightnessChange = { value -> appMenuViewModel.setBrightnessLevel(value) },
             autoBrightnessEnabled = quickControlsState.autoBrightness,
-            onAutoBrightnessToggle = { appMenuViewModel.toggleAutoBrightness() }
+            onAutoBrightnessToggle = { appMenuViewModel.toggleAutoBrightness() },
+            panelOutlineEnabled = panelOutlineEnabled
         )
     }
 }
@@ -243,6 +247,8 @@ internal fun MusicPanelContent(
         }
     }
 
+    val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
+
     TaskBarTheme(themeMode = themeMode) {
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
             if (revealAnim.value > 0.001f) {
@@ -251,6 +257,7 @@ internal fun MusicPanelContent(
                     onPlayPause = appMenuViewModel::playPause,
                     onNext = appMenuViewModel::nextTrack,
                     onPrev = appMenuViewModel::prevTrack,
+                    panelOutlineEnabled = panelOutlineEnabled,
                     modifier = Modifier
                         .onGloballyPositioned { panelHeightPx = it.size.height.toFloat() }
                         .graphicsLayer {

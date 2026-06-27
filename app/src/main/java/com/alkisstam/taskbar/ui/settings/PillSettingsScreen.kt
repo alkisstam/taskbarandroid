@@ -227,14 +227,14 @@ fun PillSettingsScreen(
                 SettingsSlider(
                     label = "Pinned App Icon Size",
                     value = taskbarSettings.pinnedIconSizeDp,
-                    valueRange = 32f..50f,
+                    valueRange = 32f..60f,
                     unit = "dp",
                     onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(pinnedIconSizeDp = it)) }
                 )
                 SettingsSlider(
                     label = "Quick Controls Size",
                     value = taskbarSettings.quickControlSizeDp,
-                    valueRange = 32f..50f,
+                    valueRange = 32f..60f,
                     unit = "dp",
                     onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(quickControlSizeDp = it)) }
                 )

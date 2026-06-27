@@ -47,10 +47,11 @@ fun AppGrid(
     onLaunchApp: (String) -> Unit,
     onPinApp: (String) -> Unit,
     onUnpinApp: (String) -> Unit,
+    columns: Int = 3,
     modifier: Modifier = Modifier
 ) {
     LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
+        columns = GridCells.Fixed(columns),
         modifier = modifier,
         contentPadding = PaddingValues(4.dp),
         horizontalArrangement = Arrangement.spacedBy(2.dp),

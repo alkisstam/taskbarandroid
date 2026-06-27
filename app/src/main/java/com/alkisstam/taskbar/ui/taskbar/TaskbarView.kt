@@ -102,6 +102,7 @@ fun TaskbarView(
     }
 
     val iconSize = taskbarSettings.pinnedIconSizeDp.dp
+    val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
 
     Box(
         modifier = modifier.fillMaxWidth(),
@@ -111,7 +112,7 @@ fun TaskbarView(
             modifier = Modifier
                 .fillMaxWidth(0.98f)
                 .wrapContentHeight()
-                .border(2.dp, TaskbarOutlineGreen, RoundedCornerShape(16.dp))
+                .then(if (panelOutlineEnabled) Modifier.border(2.dp, TaskbarOutlineGreen, RoundedCornerShape(16.dp)) else Modifier)
                 .pointerInput(isDockExpanded, taskbarSettings.heightDp) {
                     val maxDragPx = with(density) { taskbarSettings.heightDp.dp.toPx() }
                     var totalDragY = 0f
@@ -252,6 +253,7 @@ fun TaskbarView(
                     AppMenuButton(
                         menuOpen = menuVisible,
                         onClick = { appMenuViewModel.toggleMenu() },
+                        size = iconSize,
                         modifier = Modifier.padding(start = 8.dp)
                     )
 

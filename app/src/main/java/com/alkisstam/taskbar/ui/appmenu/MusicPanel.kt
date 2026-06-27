@@ -44,6 +44,7 @@ fun MusicPanel(
     onPlayPause: () -> Unit,
     onNext: () -> Unit,
     onPrev: () -> Unit,
+    panelOutlineEnabled: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -53,7 +54,7 @@ fun MusicPanel(
         shadowElevation = 8.dp,
         modifier = modifier
             .fillMaxWidth(0.98f)
-            .border(2.dp, TaskbarOutlineGreen, RoundedCornerShape(16.dp))
+            .then(if (panelOutlineEnabled) Modifier.border(2.dp, TaskbarOutlineGreen, RoundedCornerShape(16.dp)) else Modifier)
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),

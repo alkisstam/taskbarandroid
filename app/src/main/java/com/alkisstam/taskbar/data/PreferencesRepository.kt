@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -97,6 +98,9 @@ class PreferencesRepository @Inject constructor(
         private val MUSIC_PANEL_ENABLED_KEY = booleanPreferencesKey("music_panel_enabled")
         private val MUSIC_PANEL_OPEN_KEY = booleanPreferencesKey("music_panel_open")
         private val HAPTIC_FEEDBACK_KEY = booleanPreferencesKey("haptic_feedback")
+        private val PANEL_OUTLINE_KEY = booleanPreferencesKey("panel_outline_enabled")
+        private val APP_GRID_COLUMNS_KEY = intPreferencesKey("app_grid_columns")
+        private val APP_GRID_ROWS_KEY = intPreferencesKey("app_grid_rows")
 
         val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen", "caffeine")
 
@@ -346,6 +350,36 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
+    val panelOutlineEnabled: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[PANEL_OUTLINE_KEY] ?: true
+    }
+
+    suspend fun setPanelOutlineEnabled(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[PANEL_OUTLINE_KEY] = enabled
+        }
+    }
+
+    val appGridColumns: Flow<Int> = context.dataStore.data.map { prefs ->
+        prefs[APP_GRID_COLUMNS_KEY] ?: 3
+    }
+
+    suspend fun setAppGridColumns(value: Int) {
+        context.dataStore.edit { prefs ->
+            prefs[APP_GRID_COLUMNS_KEY] = value
+        }
+    }
+
+    val appGridRows: Flow<Int> = context.dataStore.data.map { prefs ->
+        prefs[APP_GRID_ROWS_KEY] ?: 4
+    }
+
+    suspend fun setAppGridRows(value: Int) {
+        context.dataStore.edit { prefs ->
+            prefs[APP_GRID_ROWS_KEY] = value
+        }
+    }
+
     suspend fun exportToJson(): String {
         val prefs = context.dataStore.data.first()
         return JSONObject().apply {
@@ -375,6 +409,9 @@ class PreferencesRepository @Inject constructor(
             prefs[CONTROLS_DISABLED_KEY]?.let { put("controls_disabled_ids", it) }
             prefs[MUSIC_PANEL_ENABLED_KEY]?.let { put("music_panel_enabled", it) }
             prefs[HAPTIC_FEEDBACK_KEY]?.let { put("haptic_feedback", it) }
+            prefs[PANEL_OUTLINE_KEY]?.let { put("panel_outline_enabled", it) }
+            prefs[APP_GRID_COLUMNS_KEY]?.let { put("app_grid_columns", it) }
+            prefs[APP_GRID_ROWS_KEY]?.let { put("app_grid_rows", it) }
         }.toString()
     }
 
@@ -407,6 +444,9 @@ class PreferencesRepository @Inject constructor(
             if (obj.has("controls_disabled_ids")) prefs[CONTROLS_DISABLED_KEY] = obj.getString("controls_disabled_ids")
             if (obj.has("music_panel_enabled")) prefs[MUSIC_PANEL_ENABLED_KEY] = obj.getBoolean("music_panel_enabled")
             if (obj.has("haptic_feedback")) prefs[HAPTIC_FEEDBACK_KEY] = obj.getBoolean("haptic_feedback")
+            if (obj.has("panel_outline_enabled")) prefs[PANEL_OUTLINE_KEY] = obj.getBoolean("panel_outline_enabled")
+            if (obj.has("app_grid_columns")) prefs[APP_GRID_COLUMNS_KEY] = obj.getInt("app_grid_columns")
+            if (obj.has("app_grid_rows")) prefs[APP_GRID_ROWS_KEY] = obj.getInt("app_grid_rows")
         }
     }
 

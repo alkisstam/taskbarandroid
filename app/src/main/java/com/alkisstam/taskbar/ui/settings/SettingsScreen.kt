@@ -247,6 +247,7 @@ private fun GeneralTab(
     val autoHideInFullscreen by viewModel.autoHideInFullscreen.collectAsState()
     val autoHideInLandscape by viewModel.autoHideInLandscape.collectAsState()
     val hapticFeedbackEnabled by viewModel.hapticFeedbackEnabled.collectAsState()
+    val panelOutlineEnabled by viewModel.panelOutlineEnabled.collectAsState()
     val context = LocalContext.current
 
     val backupLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
@@ -339,6 +340,18 @@ private fun GeneralTab(
                 currentColor = surfaceTintColor,
                 onColorSelected = { viewModel.setSurfaceTintColor(it) }
             )
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Panel Outline", style = MaterialTheme.typography.bodyLarge)
+                Switch(
+                    checked = panelOutlineEnabled,
+                    onCheckedChange = { viewModel.setPanelOutlineEnabled(it) }
+                )
+            }
         }
 
         SettingsCard(title = "Behaviour") {
@@ -518,6 +531,8 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
     val pinnedApps by viewModel.pinnedApps.collectAsState()
     val allApps by viewModel.allApps.collectAsState()
     val pinnedPackages = remember(pinnedApps) { pinnedApps.map { it.packageName }.toSet() }
+    val appGridColumns by viewModel.appGridColumns.collectAsState()
+    val appGridRows by viewModel.appGridRows.collectAsState()
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -635,6 +650,42 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
                             }
                         )
                     }
+                }
+            }
+        }
+        item {
+            SettingsCard(title = "App Grid") {
+                var localColumns by remember(appGridColumns) { androidx.compose.runtime.mutableFloatStateOf(appGridColumns.toFloat()) }
+                var localRows by remember(appGridRows) { androidx.compose.runtime.mutableFloatStateOf(appGridRows.toFloat()) }
+                Column {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("Columns", style = MaterialTheme.typography.bodyMedium)
+                        Text("${localColumns.toInt()}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary)
+                    }
+                    Slider(
+                        value = localColumns,
+                        onValueChange = { localColumns = it },
+                        onValueChangeFinished = { viewModel.setAppGridColumns(localColumns.toInt()) },
+                        valueRange = 3f..6f,
+                        steps = 2
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("Rows", style = MaterialTheme.typography.bodyMedium)
+                        Text("${localRows.toInt()}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary)
+                    }
+                    Slider(
+                        value = localRows,
+                        onValueChange = { localRows = it },
+                        onValueChangeFinished = { viewModel.setAppGridRows(localRows.toInt()) },
+                        valueRange = 3f..6f,
+                        steps = 2
+                    )
                 }
             }
         }

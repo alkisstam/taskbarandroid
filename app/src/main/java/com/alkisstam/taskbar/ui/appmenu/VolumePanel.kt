@@ -58,10 +58,11 @@ data class VolumeStreamInfo(
 fun VolumePanel(
     streams: List<VolumeStreamInfo>,
     onVolumeChange: (streamType: Int, value: Int) -> Unit,
+    panelOutlineEnabled: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = modifier.border(2.dp, TaskbarOutlineGreen, RoundedCornerShape(20.dp)),
+        modifier = modifier.then(if (panelOutlineEnabled) Modifier.border(2.dp, TaskbarOutlineGreen, RoundedCornerShape(20.dp)) else Modifier),
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.surface,
         tonalElevation = 3.dp
@@ -165,6 +166,7 @@ fun BrightnessPanel(
     onBrightnessChange: (Int) -> Unit,
     autoBrightnessEnabled: Boolean,
     onAutoBrightnessToggle: () -> Unit,
+    panelOutlineEnabled: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     val maxBrightness = 255
@@ -189,7 +191,7 @@ fun BrightnessPanel(
     }
 
     Surface(
-        modifier = modifier.border(2.dp, TaskbarOutlineGreen, RoundedCornerShape(20.dp)),
+        modifier = modifier.then(if (panelOutlineEnabled) Modifier.border(2.dp, TaskbarOutlineGreen, RoundedCornerShape(20.dp)) else Modifier),
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.surface,
         tonalElevation = 3.dp

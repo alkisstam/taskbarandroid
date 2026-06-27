@@ -13,17 +13,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun AppMenuButton(
     menuOpen: Boolean,
     onClick: () -> Unit,
+    size: Dp = 48.dp,
     modifier: Modifier = Modifier
 ) {
     Surface(
         modifier = modifier
-            .size(48.dp)
+            .size(size)
             .clip(CircleShape)
             .clickable(onClick = onClick),
         color = if (menuOpen)

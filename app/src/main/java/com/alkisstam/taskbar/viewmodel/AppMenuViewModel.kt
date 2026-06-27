@@ -113,6 +113,7 @@ class AppMenuViewModel @Inject constructor(
         if (nowVisible) {
             refreshVolumeStreams()
             _brightnessPanelVisible.value = false
+            _musicPanelVisible.value = false
         }
         _volumePanelVisible.value = nowVisible
     }
@@ -126,6 +127,7 @@ class AppMenuViewModel @Inject constructor(
         if (nowVisible) {
             _brightnessLevel.value = quickControls.getBrightness()
             _volumePanelVisible.value = false
+            _musicPanelVisible.value = false
         }
         _brightnessPanelVisible.value = nowVisible
     }

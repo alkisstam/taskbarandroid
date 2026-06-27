@@ -44,7 +44,11 @@ fun AppMenuPanel(
     val apps by viewModel.filteredApps.collectAsState()
     val pinnedPackages by viewModel.pinnedPackages.collectAsState()
     val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
+    val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
+    val appGridColumns by taskbarViewModel.appGridColumns.collectAsState()
+    val appGridRows by taskbarViewModel.appGridRows.collectAsState()
     val panelColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
+    val gridHeight = (appGridRows * 84).dp
 
     AnimatedVisibility(
         visible = menuVisible,
@@ -68,7 +72,7 @@ fun AppMenuPanel(
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
                     .wrapContentHeight()
-                    .border(2.dp, TaskbarOutlineGreen, RoundedCornerShape(20.dp)),
+                    .then(if (panelOutlineEnabled) Modifier.border(2.dp, TaskbarOutlineGreen, RoundedCornerShape(20.dp)) else Modifier),
                 shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 20.dp, bottomEnd = 20.dp),
                 color = panelColor,
                 tonalElevation = if (surfaceTintColor != 0L) 0.dp else 4.dp,
@@ -111,9 +115,10 @@ fun AppMenuPanel(
                     onLaunchApp = { pkg -> viewModel.launchApp(pkg); onHideTaskbar() },
                     onPinApp = viewModel::pinApp,
                     onUnpinApp = viewModel::unpinApp,
+                    columns = appGridColumns,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(340.dp)
+                        .height(gridHeight)
                 )
             }
             }   // Surface

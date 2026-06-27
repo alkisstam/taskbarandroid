@@ -87,10 +87,31 @@ class TaskbarViewModel @Inject constructor(
     val hapticFeedbackEnabled: StateFlow<Boolean> = prefsRepository.hapticFeedbackEnabled
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
+    val panelOutlineEnabled: StateFlow<Boolean> = prefsRepository.panelOutlineEnabled
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
+
+    val appGridColumns: StateFlow<Int> = prefsRepository.appGridColumns
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 3)
+
+    val appGridRows: StateFlow<Int> = prefsRepository.appGridRows
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 4)
+
     fun setHapticFeedbackEnabled(enabled: Boolean) {
         viewModelScope.launch {
             prefsRepository.setHapticFeedbackEnabled(enabled)
         }
+    }
+
+    fun setPanelOutlineEnabled(enabled: Boolean) {
+        viewModelScope.launch { prefsRepository.setPanelOutlineEnabled(enabled) }
+    }
+
+    fun setAppGridColumns(value: Int) {
+        viewModelScope.launch { prefsRepository.setAppGridColumns(value) }
+    }
+
+    fun setAppGridRows(value: Int) {
+        viewModelScope.launch { prefsRepository.setAppGridRows(value) }
     }
 
     fun completeOnboarding() {
