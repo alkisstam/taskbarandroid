@@ -328,13 +328,13 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         serviceScope.launch {
             taskbarViewModel.pillSettings.collect { settings ->
                 val view = pillView ?: return@collect
-                try { windowManager.updateViewLayout(view, pillLayoutParams(settings.edgePosition, isRight = false, sidePositionPct = settings.sidePositionPct)) }
+                try { windowManager.updateViewLayout(view, pillLayoutParams(settings.edgePosition, isRight = false, sidePositionPct = settings.sidePositionPct, triggerAreaDp = settings.triggerAreaDp)) }
                 catch (e: Exception) { Log.w(TAG, "Failed to update pill position", e) }
 
                 if (settings.edgePosition == com.alkisstam.taskbar.data.PillEdgePosition.BOTH) {
                     ensurePillView2()
                     val v2 = pillView2 ?: return@collect
-                    try { windowManager.updateViewLayout(v2, pillLayoutParams(settings.edgePosition, isRight = true, sidePositionPct = settings.sidePositionPct)) }
+                    try { windowManager.updateViewLayout(v2, pillLayoutParams(settings.edgePosition, isRight = true, sidePositionPct = settings.sidePositionPct, triggerAreaDp = settings.triggerAreaDp)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update pill2 position", e) }
                 } else {
                     removePillView2()
@@ -357,7 +357,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             pillView2 = composeView
             if (hiddenForLandscape) composeView.visibility = View.GONE
             val settings = taskbarViewModel.pillSettings.value
-            windowManager.addView(composeView, pillLayoutParams(settings.edgePosition, isRight = true, sidePositionPct = settings.sidePositionPct))
+            windowManager.addView(composeView, pillLayoutParams(settings.edgePosition, isRight = true, sidePositionPct = settings.sidePositionPct, triggerAreaDp = settings.triggerAreaDp))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add pill2 view", e)
             pillView2 = null
@@ -578,7 +578,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             pillView = composeView
             if (hiddenForLandscape) composeView.visibility = View.GONE
             val initial = taskbarViewModel.pillSettings.value
-            windowManager.addView(composeView, pillLayoutParams(initial.edgePosition, isRight = false, sidePositionPct = initial.sidePositionPct))
+            windowManager.addView(composeView, pillLayoutParams(initial.edgePosition, isRight = false, sidePositionPct = initial.sidePositionPct, triggerAreaDp = initial.triggerAreaDp))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add pill view", e)
             pillView = null

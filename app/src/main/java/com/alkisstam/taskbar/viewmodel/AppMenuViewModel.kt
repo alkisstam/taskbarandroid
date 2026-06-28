@@ -92,6 +92,7 @@ class AppMenuViewModel @Inject constructor(
 
     private val _musicPanelVisible = MutableStateFlow(false)
     val musicPanelVisible: StateFlow<Boolean> = _musicPanelVisible.asStateFlow()
+    private var _musicWasVisibleBeforeSlider = false
 
     val mediaState: StateFlow<MediaState> = mediaRepository.mediaState
 
@@ -113,13 +114,21 @@ class AppMenuViewModel @Inject constructor(
         if (nowVisible) {
             refreshVolumeStreams()
             _brightnessPanelVisible.value = false
+            _musicWasVisibleBeforeSlider = _musicPanelVisible.value
             _musicPanelVisible.value = false
+        } else if (_musicWasVisibleBeforeSlider) {
+            _musicPanelVisible.value = true
+            _musicWasVisibleBeforeSlider = false
         }
         _volumePanelVisible.value = nowVisible
     }
 
     fun dismissVolumePanel() {
         _volumePanelVisible.value = false
+        if (_musicWasVisibleBeforeSlider) {
+            _musicPanelVisible.value = true
+            _musicWasVisibleBeforeSlider = false
+        }
     }
 
     fun toggleBrightnessPanel() {
@@ -127,13 +136,21 @@ class AppMenuViewModel @Inject constructor(
         if (nowVisible) {
             _brightnessLevel.value = quickControls.getBrightness()
             _volumePanelVisible.value = false
+            _musicWasVisibleBeforeSlider = _musicPanelVisible.value
             _musicPanelVisible.value = false
+        } else if (_musicWasVisibleBeforeSlider) {
+            _musicPanelVisible.value = true
+            _musicWasVisibleBeforeSlider = false
         }
         _brightnessPanelVisible.value = nowVisible
     }
 
     fun dismissBrightnessPanel() {
         _brightnessPanelVisible.value = false
+        if (_musicWasVisibleBeforeSlider) {
+            _musicPanelVisible.value = true
+            _musicWasVisibleBeforeSlider = false
+        }
     }
 
     fun toggleMusicPanel() {

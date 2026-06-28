@@ -109,6 +109,14 @@ fun PillSettingsScreen(
                 onValueChange = { viewModel.savePillSettings(pillSettings.copy(alpha = it)) }
             )
             Spacer(modifier = Modifier.height(8.dp))
+            SettingsSlider(
+                label = "Trigger Area",
+                value = pillSettings.triggerAreaDp,
+                valueRange = 8f..40f,
+                unit = "dp",
+                onValueChange = { viewModel.savePillSettings(pillSettings.copy(triggerAreaDp = it)) }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
             Text("Position", style = MaterialTheme.typography.bodyMedium)
             Spacer(modifier = Modifier.height(4.dp))
             FlowRow(

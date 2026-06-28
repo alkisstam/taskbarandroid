@@ -33,14 +33,16 @@ internal fun Context.overlayLayoutParams(interactive: Boolean = true, focusable:
 internal fun Context.pillLayoutParams(
     edgePosition: PillEdgePosition = PillEdgePosition.BOTTOM,
     isRight: Boolean = false,
-    sidePositionPct: Float = 50f
+    sidePositionPct: Float = 50f,
+    triggerAreaDp: Float = 18f
 ): WindowManager.LayoutParams {
     val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
             WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
     val density = resources.displayMetrics.density
-    val sideStripPx = (12 * density).toInt()
-    val bottomStripPx = (18 * density).toInt()
+    val triggerPx = (triggerAreaDp * density).toInt()
+    val sideStripPx = triggerPx
+    val bottomStripPx = triggerPx
     val side = if (edgePosition == PillEdgePosition.BOTH) {
         if (isRight) PillEdgePosition.RIGHT else PillEdgePosition.LEFT
     } else edgePosition

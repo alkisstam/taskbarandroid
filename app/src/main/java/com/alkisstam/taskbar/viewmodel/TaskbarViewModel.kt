@@ -323,4 +323,10 @@ class TaskbarViewModel @Inject constructor(
         }
     }
 
+    fun resetAllSettings() {
+        viewModelScope.launch {
+            prefsRepository.resetAllSettings()
+        }
+    }
+
 }

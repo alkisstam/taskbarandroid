@@ -60,7 +60,8 @@ data class PillSettings(
     val positionYDp: Float = 80f,
     val positionXPct: Float = 4f,
     val edgePosition: PillEdgePosition = PillEdgePosition.BOTTOM,
-    val sidePositionPct: Float = 50f
+    val sidePositionPct: Float = 50f,
+    val triggerAreaDp: Float = 18f
 )
 
 @Singleton
@@ -101,6 +102,7 @@ class PreferencesRepository @Inject constructor(
         private val PANEL_OUTLINE_KEY = booleanPreferencesKey("panel_outline_enabled")
         private val APP_GRID_COLUMNS_KEY = intPreferencesKey("app_grid_columns")
         private val APP_GRID_ROWS_KEY = intPreferencesKey("app_grid_rows")
+        private val PILL_TRIGGER_AREA_KEY = floatPreferencesKey("pill_trigger_area")
 
         val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen", "caffeine")
 
@@ -190,7 +192,8 @@ class PreferencesRepository @Inject constructor(
             positionYDp      = prefs[PILL_POSITION_Y_KEY]         ?: 80f,
             positionXPct     = prefs[PILL_POSITION_X_PCT_KEY]     ?: 4f,
             edgePosition     = prefs[PILL_EDGE_POSITION_KEY].toPillEdgePosition(),
-            sidePositionPct  = prefs[PILL_SIDE_POSITION_PCT_KEY]  ?: 50f
+            sidePositionPct  = prefs[PILL_SIDE_POSITION_PCT_KEY]  ?: 50f,
+            triggerAreaDp    = prefs[PILL_TRIGGER_AREA_KEY]       ?: 18f
         )
     }
 
@@ -276,6 +279,7 @@ class PreferencesRepository @Inject constructor(
             prefs[PILL_POSITION_X_PCT_KEY]     = settings.positionXPct
             prefs[PILL_EDGE_POSITION_KEY]      = settings.edgePosition.name
             prefs[PILL_SIDE_POSITION_PCT_KEY]  = settings.sidePositionPct
+            prefs[PILL_TRIGGER_AREA_KEY]       = settings.triggerAreaDp
         }
     }
 
@@ -412,6 +416,7 @@ class PreferencesRepository @Inject constructor(
             prefs[PANEL_OUTLINE_KEY]?.let { put("panel_outline_enabled", it) }
             prefs[APP_GRID_COLUMNS_KEY]?.let { put("app_grid_columns", it) }
             prefs[APP_GRID_ROWS_KEY]?.let { put("app_grid_rows", it) }
+            prefs[PILL_TRIGGER_AREA_KEY]?.let { put("pill_trigger_area", it) }
         }.toString()
     }
 
@@ -447,6 +452,15 @@ class PreferencesRepository @Inject constructor(
             if (obj.has("panel_outline_enabled")) prefs[PANEL_OUTLINE_KEY] = obj.getBoolean("panel_outline_enabled")
             if (obj.has("app_grid_columns")) prefs[APP_GRID_COLUMNS_KEY] = obj.getInt("app_grid_columns")
             if (obj.has("app_grid_rows")) prefs[APP_GRID_ROWS_KEY] = obj.getInt("app_grid_rows")
+            if (obj.has("pill_trigger_area")) prefs[PILL_TRIGGER_AREA_KEY] = obj.getDouble("pill_trigger_area").toFloat()
+        }
+    }
+
+    suspend fun resetAllSettings() {
+        context.dataStore.edit { prefs ->
+            val onboarding = prefs[ONBOARDING_COMPLETE_KEY]
+            prefs.clear()
+            if (onboarding == true) prefs[ONBOARDING_COMPLETE_KEY] = true
         }
     }
 

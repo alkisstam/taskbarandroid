@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
@@ -55,6 +56,7 @@ import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.PowerSettingsNew
 import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.ScreenRotationAlt
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.FileUpload
@@ -281,7 +283,7 @@ private fun GeneralTab(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = if (overlayEnabled) "Dock is running" else "Dock is stopped",
                             style = MaterialTheme.typography.bodyLarge
@@ -315,7 +317,7 @@ private fun GeneralTab(
         }
 
         SettingsCard(title = "Theme") {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 FilterChip(
                     selected = themeMode == ThemeMode.LIGHT,
                     onClick = { viewModel.setThemeMode(ThemeMode.LIGHT) },
@@ -346,7 +348,7 @@ private fun GeneralTab(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Panel Outline", style = MaterialTheme.typography.bodyLarge)
+                Text("Panel Outline", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
                 Switch(
                     checked = panelOutlineEnabled,
                     onCheckedChange = { viewModel.setPanelOutlineEnabled(it) }
@@ -360,7 +362,7 @@ private fun GeneralTab(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text("Auto-hide in Fullscreen", style = MaterialTheme.typography.bodyLarge)
                     Text(
                         "Hide the dock when an app goes fullscreen",
@@ -378,7 +380,7 @@ private fun GeneralTab(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text("Auto-hide in Landscape", style = MaterialTheme.typography.bodyLarge)
                     Text(
                         "Hide the dock when the device is in landscape",
@@ -396,7 +398,7 @@ private fun GeneralTab(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text("Vibrate Feedback", style = MaterialTheme.typography.bodyLarge)
                     Text(
                         "Haptic feedback on long press and drag",
@@ -469,6 +471,41 @@ private fun GeneralTab(
                 Text("Restore Settings")
             }
         }
+
+        var showResetDialog by remember { mutableStateOf(false) }
+        SettingsCard(title = "Reset") {
+            OutlinedButton(
+                onClick = { showResetDialog = true },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = MaterialTheme.colorScheme.error
+                )
+            ) {
+                Icon(Icons.Filled.Refresh, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Reset Settings to Default")
+            }
+        }
+        if (showResetDialog) {
+            AlertDialog(
+                onDismissRequest = { showResetDialog = false },
+                title = { Text("Reset Settings") },
+                text = { Text("Reset all settings to default? This cannot be undone.") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        viewModel.resetAllSettings()
+                        showResetDialog = false
+                    }) {
+                        Text("Reset", color = MaterialTheme.colorScheme.error)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showResetDialog = false }) {
+                        Text("Cancel")
+                    }
+                }
+            )
+        }
     }
 }
 
@@ -490,7 +527,7 @@ private fun MusicPanelSettingsCard(viewModel: TaskbarViewModel, context: android
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
                 Text("Show Music Panel", style = MaterialTheme.typography.bodyLarge)
                 Text(
                     "Floats above the dock when media is playing",
