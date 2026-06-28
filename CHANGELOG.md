@@ -4,6 +4,17 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.3.3] - 2026-06-28
+
+### Added
+- **Translucent panels** — General > Theme: toggle semi-transparent dock, app menu, volume, brightness, music, and search panels. On Android 12+, volume, brightness, and music panels also apply window-level blur behind them for a frosted-glass look.
+- **Glassmorphism border** — when Translucent Panels is enabled, all panels show a subtle 1dp outline border to simulate the glass edge.
+
+### Changed
+- **Panel Outline** — border reduced from 2dp to 1dp. The toggle is automatically disabled and cleared when Translucent Panels is enabled (the two modes are mutually exclusive).
+
+---
+
 ## [1.3.2] - 2026-06-27
 
 ### Added
