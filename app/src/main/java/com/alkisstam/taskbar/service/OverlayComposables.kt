@@ -172,9 +172,15 @@ internal fun TriggerPillContent(taskbarViewModel: TaskbarViewModel) {
 }
 
 @Composable
-internal fun SearchOverlayContent(appMenuViewModel: AppMenuViewModel, onHideTaskbar: () -> Unit) {
-    TaskBarTheme {
-        FloatingSearchBar(viewModel = appMenuViewModel, onHideTaskbar = onHideTaskbar)
+internal fun SearchOverlayContent(
+    appMenuViewModel: AppMenuViewModel,
+    taskbarViewModel: TaskbarViewModel,
+    onHideTaskbar: () -> Unit
+) {
+    val themeMode by taskbarViewModel.themeMode.collectAsState()
+    val translucentMode by taskbarViewModel.translucentMode.collectAsState()
+    TaskBarTheme(themeMode = themeMode) {
+        FloatingSearchBar(viewModel = appMenuViewModel, onHideTaskbar = onHideTaskbar, translucentMode = translucentMode)
     }
 }
 
@@ -186,13 +192,15 @@ internal fun VolumePanelContent(
     val themeMode by taskbarViewModel.themeMode.collectAsState()
     val streams by appMenuViewModel.volumeStreams.collectAsState()
     val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
+    val translucentMode by taskbarViewModel.translucentMode.collectAsState()
     TaskBarTheme(themeMode = themeMode) {
         VolumePanel(
             streams = streams,
             onVolumeChange = { streamType, value ->
                 appMenuViewModel.setStreamVolume(streamType, value)
             },
-            panelOutlineEnabled = panelOutlineEnabled
+            panelOutlineEnabled = panelOutlineEnabled,
+            translucentMode = translucentMode
         )
     }
 }
@@ -206,13 +214,15 @@ internal fun BrightnessPanelContent(
     val brightnessLevel by appMenuViewModel.brightnessLevel.collectAsState()
     val quickControlsState by appMenuViewModel.quickControlsState.collectAsState()
     val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
+    val translucentMode by taskbarViewModel.translucentMode.collectAsState()
     TaskBarTheme(themeMode = themeMode) {
         BrightnessPanel(
             brightnessLevel = brightnessLevel,
             onBrightnessChange = { value -> appMenuViewModel.setBrightnessLevel(value) },
             autoBrightnessEnabled = quickControlsState.autoBrightness,
             onAutoBrightnessToggle = { appMenuViewModel.toggleAutoBrightness() },
-            panelOutlineEnabled = panelOutlineEnabled
+            panelOutlineEnabled = panelOutlineEnabled,
+            translucentMode = translucentMode
         )
     }
 }
@@ -248,6 +258,7 @@ internal fun MusicPanelContent(
     }
 
     val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
+    val translucentMode by taskbarViewModel.translucentMode.collectAsState()
 
     TaskBarTheme(themeMode = themeMode) {
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -258,6 +269,7 @@ internal fun MusicPanelContent(
                     onNext = appMenuViewModel::nextTrack,
                     onPrev = appMenuViewModel::prevTrack,
                     panelOutlineEnabled = panelOutlineEnabled,
+                    translucentMode = translucentMode,
                     modifier = Modifier
                         .onGloballyPositioned { panelHeightPx = it.size.height.toFloat() }
                         .graphicsLayer {

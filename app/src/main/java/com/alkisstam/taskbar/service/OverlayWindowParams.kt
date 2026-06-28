@@ -2,6 +2,7 @@ package com.alkisstam.taskbar.service
 
 import android.content.Context
 import android.graphics.PixelFormat
+import android.os.Build
 import android.view.Gravity
 import android.view.WindowManager
 import com.alkisstam.taskbar.data.PillEdgePosition
@@ -90,8 +91,7 @@ internal fun Context.searchLayoutParams(focusable: Boolean = false): WindowManag
     }
 }
 
-internal fun Context.volumePanelLayoutParams(yOffsetDp: Float): WindowManager.LayoutParams {
-    
+internal fun Context.volumePanelLayoutParams(yOffsetDp: Float, translucentMode: Boolean = false): WindowManager.LayoutParams {
     val flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
@@ -105,6 +105,9 @@ internal fun Context.volumePanelLayoutParams(yOffsetDp: Float): WindowManager.La
     ).apply {
         gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
         y = (yOffsetDp * density).toInt()
+        if (translucentMode && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            setBlurBehindRadius((15 * density).toInt())
+        }
     }
 }
 
@@ -143,8 +146,7 @@ internal fun Context.volumeScrimLayoutParams(active: Boolean = false): WindowMan
     }
 }
 
-internal fun Context.musicPanelLayoutParams(yOffsetDp: Float): WindowManager.LayoutParams {
-    
+internal fun Context.musicPanelLayoutParams(yOffsetDp: Float, translucentMode: Boolean = false): WindowManager.LayoutParams {
     val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
             WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
@@ -159,5 +161,8 @@ internal fun Context.musicPanelLayoutParams(yOffsetDp: Float): WindowManager.Lay
     ).apply {
         gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
         y = (yOffsetDp * density).toInt()
+        if (translucentMode && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            setBlurBehindRadius((15 * density).toInt())
+        }
     }
 }

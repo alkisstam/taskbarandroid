@@ -103,6 +103,7 @@ class PreferencesRepository @Inject constructor(
         private val APP_GRID_COLUMNS_KEY = intPreferencesKey("app_grid_columns")
         private val APP_GRID_ROWS_KEY = intPreferencesKey("app_grid_rows")
         private val PILL_TRIGGER_AREA_KEY = floatPreferencesKey("pill_trigger_area")
+        private val TRANSLUCENT_MODE_KEY = booleanPreferencesKey("translucent_mode")
 
         val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen", "caffeine")
 
@@ -361,6 +362,16 @@ class PreferencesRepository @Inject constructor(
     suspend fun setPanelOutlineEnabled(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[PANEL_OUTLINE_KEY] = enabled
+        }
+    }
+
+    val translucentMode: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[TRANSLUCENT_MODE_KEY] ?: false
+    }
+
+    suspend fun setTranslucentMode(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[TRANSLUCENT_MODE_KEY] = enabled
         }
     }
 

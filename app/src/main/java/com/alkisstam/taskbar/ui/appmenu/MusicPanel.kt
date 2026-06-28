@@ -45,16 +45,20 @@ fun MusicPanel(
     onNext: () -> Unit,
     onPrev: () -> Unit,
     panelOutlineEnabled: Boolean = true,
+    translucentMode: Boolean = false,
     modifier: Modifier = Modifier
 ) {
+    val surfaceColor = MaterialTheme.colorScheme.surface
+    val glassBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
     Surface(
         shape = RoundedCornerShape(16.dp),
-        color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 3.dp,
+        color = if (translucentMode) surfaceColor.copy(alpha = 0.80f) else surfaceColor,
+        tonalElevation = if (translucentMode) 0.dp else 3.dp,
         shadowElevation = 8.dp,
         modifier = modifier
             .fillMaxWidth(0.98f)
-            .then(if (panelOutlineEnabled) Modifier.border(2.dp, TaskbarOutlineGreen, RoundedCornerShape(16.dp)) else Modifier)
+            .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, RoundedCornerShape(16.dp)) else Modifier)
+            .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor, RoundedCornerShape(16.dp)) else Modifier)
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),

@@ -45,6 +45,7 @@ fun AppMenuPanel(
     val pinnedPackages by viewModel.pinnedPackages.collectAsState()
     val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
     val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
+    val translucentMode by taskbarViewModel.translucentMode.collectAsState()
     val appGridColumns by taskbarViewModel.appGridColumns.collectAsState()
     val appGridRows by taskbarViewModel.appGridRows.collectAsState()
     val panelColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
@@ -68,14 +69,16 @@ fun AppMenuPanel(
                     .padding(bottom = 4.dp),
                 contentAlignment = Alignment.Center
             ) {
+            val glassBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
             Surface(
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
                     .wrapContentHeight()
-                    .then(if (panelOutlineEnabled) Modifier.border(2.dp, TaskbarOutlineGreen, RoundedCornerShape(20.dp)) else Modifier),
+                    .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, RoundedCornerShape(20.dp)) else Modifier)
+                    .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor, RoundedCornerShape(20.dp)) else Modifier),
                 shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 20.dp, bottomEnd = 20.dp),
-                color = panelColor,
-                tonalElevation = if (surfaceTintColor != 0L) 0.dp else 4.dp,
+                color = if (translucentMode) panelColor.copy(alpha = 0.80f) else panelColor,
+                tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 4.dp,
                 shadowElevation = 8.dp
             ) {
             Column(
@@ -86,7 +89,8 @@ fun AppMenuPanel(
                         .fillMaxWidth()
                         .padding(horizontal = 12.dp, vertical = 4.dp),
                     shape = RoundedCornerShape(12.dp),
-                    tonalElevation = 2.dp,
+                    color = if (translucentMode) MaterialTheme.colorScheme.surface.copy(alpha = 0.70f) else MaterialTheme.colorScheme.surface,
+                    tonalElevation = if (translucentMode) 0.dp else 2.dp,
                     onClick = { viewModel.openSearch() }
                 ) {
                     Row(

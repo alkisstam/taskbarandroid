@@ -90,6 +90,9 @@ class TaskbarViewModel @Inject constructor(
     val panelOutlineEnabled: StateFlow<Boolean> = prefsRepository.panelOutlineEnabled
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
 
+    val translucentMode: StateFlow<Boolean> = prefsRepository.translucentMode
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
     val appGridColumns: StateFlow<Int> = prefsRepository.appGridColumns
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 3)
 
@@ -104,6 +107,13 @@ class TaskbarViewModel @Inject constructor(
 
     fun setPanelOutlineEnabled(enabled: Boolean) {
         viewModelScope.launch { prefsRepository.setPanelOutlineEnabled(enabled) }
+    }
+
+    fun setTranslucentMode(enabled: Boolean) {
+        viewModelScope.launch {
+            prefsRepository.setTranslucentMode(enabled)
+            if (enabled) prefsRepository.setPanelOutlineEnabled(false)
+        }
     }
 
     fun setAppGridColumns(value: Int) {

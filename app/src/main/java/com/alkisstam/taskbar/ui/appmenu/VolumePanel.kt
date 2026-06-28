@@ -59,13 +59,18 @@ fun VolumePanel(
     streams: List<VolumeStreamInfo>,
     onVolumeChange: (streamType: Int, value: Int) -> Unit,
     panelOutlineEnabled: Boolean = true,
+    translucentMode: Boolean = false,
     modifier: Modifier = Modifier
 ) {
+    val surfaceColor = MaterialTheme.colorScheme.surface
+    val glassBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
     Surface(
-        modifier = modifier.then(if (panelOutlineEnabled) Modifier.border(2.dp, TaskbarOutlineGreen, RoundedCornerShape(20.dp)) else Modifier),
+        modifier = modifier
+            .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, RoundedCornerShape(20.dp)) else Modifier)
+            .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor, RoundedCornerShape(20.dp)) else Modifier),
         shape = RoundedCornerShape(20.dp),
-        color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 3.dp
+        color = if (translucentMode) surfaceColor.copy(alpha = 0.80f) else surfaceColor,
+        tonalElevation = if (translucentMode) 0.dp else 3.dp
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
@@ -167,6 +172,7 @@ fun BrightnessPanel(
     autoBrightnessEnabled: Boolean,
     onAutoBrightnessToggle: () -> Unit,
     panelOutlineEnabled: Boolean = true,
+    translucentMode: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val maxBrightness = 255
@@ -190,11 +196,15 @@ fun BrightnessPanel(
         }
     }
 
+    val surfaceColor2 = MaterialTheme.colorScheme.surface
+    val glassBorderColor2 = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
     Surface(
-        modifier = modifier.then(if (panelOutlineEnabled) Modifier.border(2.dp, TaskbarOutlineGreen, RoundedCornerShape(20.dp)) else Modifier),
+        modifier = modifier
+            .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, RoundedCornerShape(20.dp)) else Modifier)
+            .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor2, RoundedCornerShape(20.dp)) else Modifier),
         shape = RoundedCornerShape(20.dp),
-        color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 3.dp
+        color = if (translucentMode) surfaceColor2.copy(alpha = 0.80f) else surfaceColor2,
+        tonalElevation = if (translucentMode) 0.dp else 3.dp
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),

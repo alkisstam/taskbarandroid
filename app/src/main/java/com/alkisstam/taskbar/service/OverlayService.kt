@@ -257,6 +257,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             observeMusicPanelPosition()
             observeVolumeAndBrightnessPanels()
             observeMusicPanelVisibility()
+            observeTranslucentMode()
         }
         return START_STICKY
     }
@@ -265,6 +266,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private var volumePanelYOffsetDp: Float = 0f
     private var musicPanelYOffsetDp: Float = 0f
+    private var translucentModeEnabled: Boolean = false
 
     private fun setOverlayFlags(interactive: Boolean, focusable: Boolean) {
         val view = overlayView ?: return
@@ -393,7 +395,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             }.collect { yOffset ->
                 musicPanelYOffsetDp = yOffset
                 val view = musicPanelView ?: return@collect
-                try { windowManager.updateViewLayout(view, musicPanelLayoutParams(musicPanelYOffsetDp)) }
+                try { windowManager.updateViewLayout(view, musicPanelLayoutParams(musicPanelYOffsetDp, translucentModeEnabled)) }
                 catch (e: Exception) { Log.w(TAG, "Failed to update music panel position", e) }
             }
         }
@@ -401,6 +403,27 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private fun observeMusicPanelVisibility() {
         musicPanelView?.visibility = View.VISIBLE
+    }
+
+    private fun observeTranslucentMode() {
+        serviceScope.launch {
+            taskbarViewModel.translucentMode.collect { enabled ->
+                translucentModeEnabled = enabled
+                val yOffset = volumePanelYOffsetDp
+                volumePanelView?.let { view ->
+                    try { windowManager.updateViewLayout(view, volumePanelLayoutParams(yOffset, translucentModeEnabled)) }
+                    catch (e: Exception) { Log.w(TAG, "Failed to update volume panel blur", e) }
+                }
+                brightnessPanelView?.let { view ->
+                    try { windowManager.updateViewLayout(view, volumePanelLayoutParams(yOffset, translucentModeEnabled)) }
+                    catch (e: Exception) { Log.w(TAG, "Failed to update brightness panel blur", e) }
+                }
+                musicPanelView?.let { view ->
+                    try { windowManager.updateViewLayout(view, musicPanelLayoutParams(musicPanelYOffsetDp, translucentModeEnabled)) }
+                    catch (e: Exception) { Log.w(TAG, "Failed to update music panel blur", e) }
+                }
+            }
+        }
     }
 
     private fun observeVolumeAndBrightnessPanels() {
@@ -422,14 +445,14 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 volumePanelView?.visibility = if (volumeVisible) View.VISIBLE else View.GONE
                 if (volumeVisible) {
                     val view = volumePanelView ?: return@collect
-                    try { windowManager.updateViewLayout(view, volumePanelLayoutParams(yOffset)) }
+                    try { windowManager.updateViewLayout(view, volumePanelLayoutParams(yOffset, translucentModeEnabled)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update volume panel position", e) }
                 }
 
                 brightnessPanelView?.visibility = if (brightnessVisible) View.VISIBLE else View.GONE
                 if (brightnessVisible) {
                     val view = brightnessPanelView ?: return@collect
-                    try { windowManager.updateViewLayout(view, volumePanelLayoutParams(yOffset)) }
+                    try { windowManager.updateViewLayout(view, volumePanelLayoutParams(yOffset, translucentModeEnabled)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update brightness panel position", e) }
                 }
             }
@@ -597,7 +620,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 setContent {
                     val hapticEnabled by taskbarViewModel.hapticFeedbackEnabled.collectAsState()
                     CompositionLocalProvider(LocalHapticEnabled provides hapticEnabled) {
-                        SearchOverlayContent(appMenuViewModel = appMenuViewModel, onHideTaskbar = taskbarViewModel::hideTaskbar)
+                        SearchOverlayContent(appMenuViewModel = appMenuViewModel, taskbarViewModel = taskbarViewModel, onHideTaskbar = taskbarViewModel::hideTaskbar)
                     }
                 }
             }
@@ -665,7 +688,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             }
             composeView.visibility = View.GONE
             volumePanelView = composeView
-            windowManager.addView(composeView, volumePanelLayoutParams(volumePanelYOffsetDp))
+            windowManager.addView(composeView, volumePanelLayoutParams(volumePanelYOffsetDp, translucentModeEnabled))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add volume panel view", e)
             volumePanelView = null
@@ -693,7 +716,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             }
             composeView.visibility = View.GONE
             brightnessPanelView = composeView
-            windowManager.addView(composeView, volumePanelLayoutParams(yOffset))
+            windowManager.addView(composeView, volumePanelLayoutParams(yOffset, translucentModeEnabled))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add brightness panel view", e)
             brightnessPanelView = null
@@ -721,7 +744,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             }
             composeView.visibility = View.GONE
             musicPanelView = composeView
-            windowManager.addView(composeView, musicPanelLayoutParams(musicPanelYOffsetDp))
+            windowManager.addView(composeView, musicPanelLayoutParams(musicPanelYOffsetDp, translucentModeEnabled))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add music panel view", e)
             musicPanelView = null

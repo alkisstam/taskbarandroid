@@ -103,16 +103,19 @@ fun TaskbarView(
 
     val iconSize = taskbarSettings.pinnedIconSizeDp.dp
     val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
+    val translucentMode by taskbarViewModel.translucentMode.collectAsState()
 
     Box(
         modifier = modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
+        val glassBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
         Surface(
             modifier = Modifier
                 .fillMaxWidth(0.98f)
                 .wrapContentHeight()
-                .then(if (panelOutlineEnabled) Modifier.border(2.dp, TaskbarOutlineGreen, RoundedCornerShape(16.dp)) else Modifier)
+                .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, RoundedCornerShape(16.dp)) else Modifier)
+                .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor, RoundedCornerShape(16.dp)) else Modifier)
                 .pointerInput(isDockExpanded, taskbarSettings.heightDp) {
                     val maxDragPx = with(density) { taskbarSettings.heightDp.dp.toPx() }
                     var totalDragY = 0f
@@ -157,8 +160,8 @@ fun TaskbarView(
                     }
                 },
             shape = RoundedCornerShape(16.dp),
-            color = surfaceColor,
-            tonalElevation = 3.dp,
+            color = if (translucentMode) surfaceColor.copy(alpha = 0.80f) else surfaceColor,
+            tonalElevation = if (translucentMode) 0.dp else 3.dp,
             shadowElevation = 8.dp
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {

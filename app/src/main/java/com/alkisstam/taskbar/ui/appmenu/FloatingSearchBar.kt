@@ -1,5 +1,6 @@
 package com.alkisstam.taskbar.ui.appmenu
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -39,7 +41,7 @@ import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FloatingSearchBar(viewModel: AppMenuViewModel, onHideTaskbar: () -> Unit = {}) {
+fun FloatingSearchBar(viewModel: AppMenuViewModel, onHideTaskbar: () -> Unit = {}, translucentMode: Boolean = false) {
     val searchQuery by viewModel.searchQuery.collectAsState()
     val filteredApps by viewModel.filteredApps.collectAsState()
     val pinnedPackages by viewModel.pinnedPackages.collectAsState()
@@ -64,6 +66,8 @@ fun FloatingSearchBar(viewModel: AppMenuViewModel, onHideTaskbar: () -> Unit = {
                     interactionSource = remember { MutableInteractionSource() }
                 ) { viewModel.closeSearch() }
         )
+        val surfaceColor = MaterialTheme.colorScheme.surface
+        val glassBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -72,9 +76,12 @@ fun FloatingSearchBar(viewModel: AppMenuViewModel, onHideTaskbar: () -> Unit = {
                 .padding(top = 8.dp)
         ) {
             Surface(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .then(if (translucentMode) Modifier.border(1.dp, glassBorderColor, RoundedCornerShape(16.dp)) else Modifier),
                 shape = RoundedCornerShape(16.dp),
-                tonalElevation = 8.dp,
+                color = if (translucentMode) surfaceColor.copy(alpha = 0.80f) else surfaceColor,
+                tonalElevation = if (translucentMode) 0.dp else 8.dp,
                 shadowElevation = 8.dp
             ) {
                 // Show keyboard reliably when search field is laid out
@@ -119,9 +126,11 @@ fun FloatingSearchBar(viewModel: AppMenuViewModel, onHideTaskbar: () -> Unit = {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 4.dp)
-                        .heightIn(max = 360.dp),
+                        .heightIn(max = 360.dp)
+                        .then(if (translucentMode) Modifier.border(1.dp, glassBorderColor, RoundedCornerShape(16.dp)) else Modifier),
                     shape = RoundedCornerShape(16.dp),
-                    tonalElevation = 6.dp,
+                    color = if (translucentMode) surfaceColor.copy(alpha = 0.80f) else surfaceColor,
+                    tonalElevation = if (translucentMode) 0.dp else 6.dp,
                     shadowElevation = 6.dp
                 ) {
                     LazyColumn(modifier = Modifier.padding(vertical = 4.dp)) {

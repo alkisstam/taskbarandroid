@@ -250,6 +250,7 @@ private fun GeneralTab(
     val autoHideInLandscape by viewModel.autoHideInLandscape.collectAsState()
     val hapticFeedbackEnabled by viewModel.hapticFeedbackEnabled.collectAsState()
     val panelOutlineEnabled by viewModel.panelOutlineEnabled.collectAsState()
+    val translucentMode by viewModel.translucentMode.collectAsState()
     val context = LocalContext.current
 
     val backupLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
@@ -344,14 +345,36 @@ private fun GeneralTab(
             )
             Spacer(modifier = Modifier.height(12.dp))
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .alpha(if (translucentMode) 0.38f else 1f),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("Panel Outline", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
                 Switch(
                     checked = panelOutlineEnabled,
-                    onCheckedChange = { viewModel.setPanelOutlineEnabled(it) }
+                    onCheckedChange = { viewModel.setPanelOutlineEnabled(it) },
+                    enabled = !translucentMode
+                )
+            }
+            Spacer(modifier = Modifier.height(4.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("Translucent panels", style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        "Semi-transparent dock and panels",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Switch(
+                    checked = translucentMode,
+                    onCheckedChange = { viewModel.setTranslucentMode(it) }
                 )
             }
         }
