@@ -13,6 +13,9 @@ All notable changes to Floating Dock are documented here.
 ### Changed
 - **Panel Outline** — border reduced from 2dp to 1dp. The toggle is automatically disabled and cleared when Translucent Panels is enabled (the two modes are mutually exclusive).
 
+### Fixed
+- **Accessibility service reconnect** — re-enabling the accessibility service no longer leaves orphaned duplicate overlay views, which previously caused overlapping dock bars and required a manual stop/start cycle to recover.
+
 ---
 
 ## [1.3.2] - 2026-06-27
