@@ -70,6 +70,7 @@ fun VolumePanel(
             .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor, RoundedCornerShape(20.dp)) else Modifier),
         shape = RoundedCornerShape(20.dp),
         color = if (translucentMode) surfaceColor.copy(alpha = 0.80f) else surfaceColor,
+        contentColor = MaterialTheme.colorScheme.onSurface,
         tonalElevation = if (translucentMode) 0.dp else 3.dp
     ) {
         Row(
@@ -204,6 +205,7 @@ fun BrightnessPanel(
             .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor2, RoundedCornerShape(20.dp)) else Modifier),
         shape = RoundedCornerShape(20.dp),
         color = if (translucentMode) surfaceColor2.copy(alpha = 0.80f) else surfaceColor2,
+        contentColor = MaterialTheme.colorScheme.onSurface,
         tonalElevation = if (translucentMode) 0.dp else 3.dp
     ) {
         Row(

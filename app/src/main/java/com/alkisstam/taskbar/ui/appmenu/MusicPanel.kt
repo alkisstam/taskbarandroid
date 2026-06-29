@@ -53,6 +53,7 @@ fun MusicPanel(
     Surface(
         shape = RoundedCornerShape(16.dp),
         color = if (translucentMode) surfaceColor.copy(alpha = 0.80f) else surfaceColor,
+        contentColor = MaterialTheme.colorScheme.onSurface,
         tonalElevation = if (translucentMode) 0.dp else 3.dp,
         shadowElevation = 8.dp,
         modifier = modifier
