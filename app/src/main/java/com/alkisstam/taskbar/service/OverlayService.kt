@@ -78,8 +78,16 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         get() = savedStateRegistryController.savedStateRegistry
 
     private lateinit var _windowManager: WindowManager
+    private var activeWM: WindowManager? = null
     private val windowManager: WindowManager
-        get() = TaskBarAccessibilityService.instance?.accessibilityWindowManager ?: _windowManager
+        get() = activeWM ?: TaskBarAccessibilityService.instance?.accessibilityWindowManager ?: _windowManager
+
+    private fun removeViewFromAnyWM(view: View) {
+        val wms = listOfNotNull(_windowManager, TaskBarAccessibilityService.instance?.accessibilityWindowManager)
+        for (wm in wms) {
+            try { wm.removeView(view); return } catch (_: Exception) {}
+        }
+    }
     private var overlayView: View? = null
     private var taskbarView: View? = null
     private var pillView: View? = null
@@ -240,6 +248,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
         hiddenForLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE && taskbarViewModel.autoHideInLandscape.value
+        activeWM = TaskBarAccessibilityService.instance?.accessibilityWindowManager ?: _windowManager
         addTaskbarView()
         addOverlayView()
         addPillView()
@@ -347,7 +356,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private fun ensurePillView2() {
         if (pillView2?.isAttachedToWindow == true) return
-        pillView2?.let { runCatching { windowManager.removeView(it) } }
+        pillView2?.let { removeViewFromAnyWM(it) }
         pillView2 = null
         try {
             val composeView = ComposeView(this).apply {
@@ -367,10 +376,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     }
 
     private fun removePillView2() {
-        pillView2?.let {
-            try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove pill2 view", e) }
-            pillView2 = null
-        }
+        pillView2?.let { removeViewFromAnyWM(it) }
+        pillView2 = null
     }
 
     private fun observeSearchVisibility() {
@@ -465,7 +472,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private fun addOverlayView() {
         if (overlayView?.isAttachedToWindow == true) return
-        overlayView?.let { runCatching { windowManager.removeView(it) } }
+        overlayView?.let { removeViewFromAnyWM(it) }
         overlayView = null
         try {
             val composeView = ComposeView(this).apply {
@@ -535,7 +542,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private fun addTaskbarView() {
         if (taskbarView?.isAttachedToWindow == true) return
-        taskbarView?.let { runCatching { windowManager.removeView(it) } }
+        taskbarView?.let { removeViewFromAnyWM(it) }
         taskbarView = null
         try {
             val composeView = ComposeView(this).apply {
@@ -589,7 +596,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private fun addPillView() {
         if (pillView?.isAttachedToWindow == true) return
-        pillView?.let { runCatching { windowManager.removeView(it) } }
+        pillView?.let { removeViewFromAnyWM(it) }
         pillView = null
         try {
             val composeView = ComposeView(this).apply {
@@ -610,7 +617,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private fun addSearchView() {
         if (searchView?.isAttachedToWindow == true) return
-        searchView?.let { runCatching { windowManager.removeView(it) } }
+        searchView?.let { removeViewFromAnyWM(it) }
         searchView = null
         try {
             val composeView = ComposeView(this).apply {
@@ -648,7 +655,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private fun addVolumeScrimView() {
         if (volumeScrimView?.isAttachedToWindow == true) return
-        volumeScrimView?.let { runCatching { windowManager.removeView(it) } }
+        volumeScrimView?.let { removeViewFromAnyWM(it) }
         volumeScrimView = null
         try {
             val view = android.view.View(this).apply {
@@ -669,7 +676,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private fun addVolumePanelView() {
         if (volumePanelView?.isAttachedToWindow == true) return
-        volumePanelView?.let { runCatching { windowManager.removeView(it) } }
+        volumePanelView?.let { removeViewFromAnyWM(it) }
         volumePanelView = null
         try {
             val initialSettings = taskbarViewModel.taskbarSettings.value
@@ -697,7 +704,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private fun addBrightnessPanelView() {
         if (brightnessPanelView?.isAttachedToWindow == true) return
-        brightnessPanelView?.let { runCatching { windowManager.removeView(it) } }
+        brightnessPanelView?.let { removeViewFromAnyWM(it) }
         brightnessPanelView = null
         try {
             val initialSettings = taskbarViewModel.taskbarSettings.value
@@ -725,7 +732,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private fun addMusicPanelView() {
         if (musicPanelView?.isAttachedToWindow == true) return
-        musicPanelView?.let { runCatching { windowManager.removeView(it) } }
+        musicPanelView?.let { removeViewFromAnyWM(it) }
         musicPanelView = null
         try {
             val initialSettings = taskbarViewModel.taskbarSettings.value
@@ -756,44 +763,21 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     // region Remove / refresh views
 
     private fun removeOverlayView() {
-        overlayView?.let {
-            try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove overlay view", e) }
-            overlayView = null
-        }
-        taskbarView?.let {
-            try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove taskbar view", e) }
-            taskbarView = null
-        }
-        pillView?.let {
-            try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove pill view", e) }
-            pillView = null
-        }
+        overlayView?.let { removeViewFromAnyWM(it) }; overlayView = null
+        taskbarView?.let { removeViewFromAnyWM(it) }; taskbarView = null
+        pillView?.let { removeViewFromAnyWM(it) }; pillView = null
         removePillView2()
-        searchView?.let {
-            try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove search view", e) }
-            searchView = null
-        }
-        volumePanelView?.let {
-            try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove volume panel view", e) }
-            volumePanelView = null
-        }
-        brightnessPanelView?.let {
-            try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove brightness panel view", e) }
-            brightnessPanelView = null
-        }
-        volumeScrimView?.let {
-            try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove volume scrim view", e) }
-            volumeScrimView = null
-        }
-        musicPanelView?.let {
-            try { windowManager.removeView(it) } catch (e: Exception) { Log.w(TAG, "Failed to remove music panel view", e) }
-            musicPanelView = null
-        }
+        searchView?.let { removeViewFromAnyWM(it) }; searchView = null
+        volumePanelView?.let { removeViewFromAnyWM(it) }; volumePanelView = null
+        brightnessPanelView?.let { removeViewFromAnyWM(it) }; brightnessPanelView = null
+        volumeScrimView?.let { removeViewFromAnyWM(it) }; volumeScrimView = null
+        musicPanelView?.let { removeViewFromAnyWM(it) }; musicPanelView = null
     }
 
     private fun refreshAllViews() {
         if (!observersStarted) return
         removeOverlayView()
+        activeWM = TaskBarAccessibilityService.instance?.accessibilityWindowManager ?: _windowManager
         addTaskbarView()
         addOverlayView()
         addPillView()
@@ -848,6 +832,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         unregisterReceiver(lockscreenReceiver)
         unregisterReceiver(batteryReceiver)
         removeOverlayView()
+        activeWM = null
         serviceScope.cancel()
         _viewModelStore.clear()
         appRepository.cleanup()
