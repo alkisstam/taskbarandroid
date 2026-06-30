@@ -244,6 +244,10 @@ internal fun ClipboardPanelContent(
         ClipboardPanel(
             viewModel = clipboardViewModel,
             onDismiss = appMenuViewModel::dismissClipboardPanel,
+            onOpenExternal = {
+                appMenuViewModel.dismissClipboardPanel()
+                taskbarViewModel.hideTaskbar()
+            },
             panelOutlineEnabled = panelOutlineEnabled,
             translucentMode = translucentMode,
             surfaceTintColor = surfaceTintColor

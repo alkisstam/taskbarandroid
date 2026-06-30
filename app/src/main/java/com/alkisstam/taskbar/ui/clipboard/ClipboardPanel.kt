@@ -73,6 +73,7 @@ import kotlinx.coroutines.launch
 fun ClipboardPanel(
     viewModel: ClipboardViewModel,
     onDismiss: () -> Unit,
+    onOpenExternal: () -> Unit = {},
     panelOutlineEnabled: Boolean = false,
     translucentMode: Boolean = false,
     surfaceTintColor: Long = 0L
@@ -135,11 +136,13 @@ fun ClipboardPanel(
                                 items = clips.sortedWith(
                                     compareByDescending<ClipItem> { it.isPinned }.thenByDescending { it.timestamp }
                                 ),
-                                viewModel = viewModel
+                                viewModel = viewModel,
+                                onOpenExternal = onOpenExternal
                             )
                             1 -> ClipListTab(
                                 items = favorites.sortedByDescending { it.timestamp },
-                                viewModel = viewModel
+                                viewModel = viewModel,
+                                onOpenExternal = onOpenExternal
                             )
                             2 -> NotesTab(
                                 noteItems = noteItems.sortedWith(
@@ -148,7 +151,8 @@ fun ClipboardPanel(
                                 onAdd = viewModel::addNote,
                                 onTogglePin = viewModel::toggleNotePin,
                                 onDelete = viewModel::removeNote,
-                                onEdit = viewModel::updateNote
+                                onEdit = viewModel::updateNote,
+                                onOpenExternal = onOpenExternal
                             )
                         }
                     }
@@ -221,7 +225,7 @@ fun ClipboardPanel(
 }
 
 @Composable
-private fun ClipListTab(items: List<ClipItem>, viewModel: ClipboardViewModel) {
+private fun ClipListTab(items: List<ClipItem>, viewModel: ClipboardViewModel, onOpenExternal: () -> Unit) {
     if (items.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(
@@ -253,7 +257,8 @@ private fun ClipListTab(items: List<ClipItem>, viewModel: ClipboardViewModel) {
                 item = item,
                 onToggleFavorite = { viewModel.toggleFavorite(item) },
                 onTogglePin = { viewModel.togglePin(item) },
-                onDelete = { viewModel.removeClip(item.id) }
+                onDelete = { viewModel.removeClip(item.id) },
+                onOpenExternal = onOpenExternal
             )
         }
     }
@@ -265,7 +270,8 @@ private fun NotesTab(
     onAdd: (String) -> Unit,
     onTogglePin: (NoteItem) -> Unit,
     onDelete: (String) -> Unit,
-    onEdit: (NoteItem) -> Unit
+    onEdit: (NoteItem) -> Unit,
+    onOpenExternal: () -> Unit
 ) {
     var composerVisible by remember { mutableStateOf(false) }
     var editingNote by remember { mutableStateOf<NoteItem?>(null) }
@@ -324,6 +330,7 @@ private fun NotesTab(
                             cm.setPrimaryClip(ClipData.newPlainText("note", note.content))
                         },
                         onShare = {
+                            onOpenExternal()
                             val intent = Intent(Intent.ACTION_SEND).apply {
                                 type = "text/plain"
                                 putExtra(Intent.EXTRA_TEXT, note.content)

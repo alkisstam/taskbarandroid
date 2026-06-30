@@ -60,6 +60,7 @@ fun ClipItemCard(
     onToggleFavorite: () -> Unit,
     onTogglePin: () -> Unit,
     onDelete: () -> Unit,
+    onOpenExternal: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -141,6 +142,7 @@ fun ClipItemCard(
                 }
                 ClipType.URL -> {
                     Box(modifier = Modifier.clickable {
+                        onOpenExternal()
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.content)).apply {
                             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         }
@@ -160,7 +162,7 @@ fun ClipItemCard(
                     val preview = remember(item.content) {
                         runCatching { File(item.content).readText(Charsets.UTF_8).take(300) }.getOrNull()
                     }
-                    Box(modifier = Modifier.clickable { openFile(context, item.content, "text/plain") }) {
+                    Box(modifier = Modifier.clickable { onOpenExternal(); openFile(context, item.content, "text/plain") }) {
                         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                             Text(
                                 text = filename,
@@ -190,7 +192,7 @@ fun ClipItemCard(
                                 .fillMaxWidth()
                                 .height(160.dp)
                                 .clip(RoundedCornerShape(8.dp))
-                                .clickable { openFile(context, item.content, "image/*") },
+                                .clickable { onOpenExternal(); openFile(context, item.content, "image/*") },
                             contentScale = ContentScale.Crop
                         )
                     } else {
@@ -218,7 +220,7 @@ fun ClipItemCard(
                             .height(120.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .background(MaterialTheme.colorScheme.surface)
-                            .clickable { openFile(context, item.content, "application/pdf") },
+                            .clickable { onOpenExternal(); openFile(context, item.content, "application/pdf") },
                         contentAlignment = Alignment.Center
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -256,7 +258,7 @@ fun ClipItemCard(
                         modifier = Modifier.size(20.dp)
                     )
                 }
-                IconButton(onClick = { shareClip(context, item) }) {
+                IconButton(onClick = { onOpenExternal(); shareClip(context, item) }) {
                     Icon(
                         Icons.Default.Share,
                         contentDescription = "Share",
