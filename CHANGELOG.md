@@ -4,6 +4,13 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.3.4] - 2026-06-30
+
+### Changed
+- **Translucent panels** — dock, app menu, volume, brightness, and music panels now render a grain/noise texture when Translucent Panels is enabled, giving a frosted-glass appearance.
+
+---
+
 ## [1.3.3] - 2026-06-28
 
 ### Added
