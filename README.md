@@ -2,7 +2,7 @@
 
 A system-overlay dock for Android that renders above all other apps — including the system navigation bar when the Accessibility Service is enabled.
 
-**Current version:** 1.3.0 (versionCode 33)
+**Current version:** 1.3.4 (versionCode 37)
 
 ## Features
 
@@ -31,11 +31,12 @@ A system-overlay dock for Android that renders above all other apps — includin
 ### Quick Controls
 
 - Expandable row above pinned apps (swipe up on dock to reveal)
-- Controls: Music, Torch, Ringer, Rotate, Brightness, DND, QR Code, Power, Volume, Screenshot, Lock Screen
+- Controls: Music, Torch, Ringer, Rotate, Brightness, DND, QR Code, Power, Volume, Screenshot, Lock Screen, Clipboard
 - Reorderable and individually enable/disable in the **Controls** settings tab
 - **Music Panel:** floating player with album art, playback controls (prev/play-pause/next)
 - **Volume Panel:** per-stream vertical sliders (Media, Ring, Alarm)
 - **Brightness Panel:** horizontal slider with auto-brightness toggle
+- **Clipboard Panel:** three-tab panel (Clips / Favorites / Notes) — capture content via the Android share sheet, open URLs/images/PDFs/files in-place, compose and edit notes
 
 ### Theming
 
@@ -101,15 +102,20 @@ OverlayService               (ForegroundService – WindowManager window host)
   ├── volumePanelView    (ComposeView – VolumePanel: per-stream vertical sliders)
   ├── brightnessPanelView(ComposeView – BrightnessPanel: brightness slider)
   ├── musicPanelView     (ComposeView – MusicPanel: MediaSession player)
+  ├── clipboardPanelView (ComposeView – ClipboardPanel: Clips / Favorites / Notes tabs)
   └── volumeScrimView    (ComposeView – transparent clickable backdrop)
+
+ClipboardShareActivity   (ComponentActivity – handles ACTION_SEND share intents; saves clip, opens panel)
 
 data/
   AppRepository            (PackageManager → installed apps; refreshes on package changes)
   MediaRepository          (MediaController – active MediaSession state)
   PreferencesRepository    (DataStore – pinned apps, theme, tint, pill/dock settings, visibility state)
   QuickControlsRepository  (Camera, AudioManager, Settings.System; notifies on system changes)
+  ClipboardRepository      (DataStore – clips + notes; file storage for images/PDFs/text files in filesDir/clipboard/)
 
 viewmodel/
   TaskbarViewModel         (@HiltViewModel – overlay, theme, tint, pinned apps, dock/pill settings, battery)
   AppMenuViewModel         (@HiltViewModel – app search, quick controls, media state, panel visibility)
+  ClipboardViewModel       (@HiltViewModel – clips, favorites, notes CRUD)
 ```

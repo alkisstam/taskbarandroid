@@ -4,6 +4,24 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [Unreleased]
+
+### Added
+- **Clipboard / Notes panel** — new Quick Controls tile opens a three-tab floating panel (Clips, Favorites, Notes) reachable from the dock.
+- **Share sheet capture** — any app's share sheet shows "TaskBar Clipboard" as a target; saves text, URLs, images, PDFs, and text files (`.txt`, `.md`, `.csv`, `.html`, etc.).
+- **Clips tab** — card per saved item with type icon, source app label, and timestamp. Supports copy, share, pin, favorite, and delete actions.
+- **Favorites tab** — filtered view of starred clips.
+- **Notes tab** — multiple note cards with copy, share, pin, edit, and delete actions; "+" FAB to compose a new note inline.
+- **URL clips** — tapping a URL clip opens it in the default browser.
+- **Image clips** — thumbnail preview; tap to open in the default image viewer.
+- **PDF clips** — placeholder card; tap to open in the default PDF viewer.
+- **Text file clips** — filename + content preview; tap to open in a text viewer.
+- **Share from panel** — every clip and note card has a share icon that forwards content to the Android share sheet.
+- **Auto-dismiss on open** — tapping a URL, file, image, PDF, or share icon automatically dismisses the panel and hides the dock so the target app opens unobstructed.
+- **Clipboard tile in Controls settings** — the Clipboard tile now appears in the Controls tab so it can be reordered and toggled like other quick controls.
+
+---
+
 ## [1.3.4] - 2026-06-30
 
 ### Changed
