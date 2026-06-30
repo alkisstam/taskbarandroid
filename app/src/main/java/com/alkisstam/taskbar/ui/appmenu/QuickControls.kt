@@ -29,6 +29,7 @@ import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.FreeBreakfast
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material3.Icon
@@ -126,7 +127,9 @@ fun QuickControlsState.toItems(
         "caffeine" to QuickControlItemData(id = "caffeine",
             label = if (caffeineMinutes == 0) "Caffeine" else "${caffeineMinutes}m",
             active = caffeineMinutes != 0,
-            icon = Icons.Filled.FreeBreakfast)
+            icon = Icons.Filled.FreeBreakfast),
+        "clipboard" to QuickControlItemData(id = "clipboard", label = "Clipboard",
+            active = false, icon = Icons.Filled.ContentPaste)
     )
     val effectiveOrder = order.ifEmpty { PreferencesRepository.ALL_CONTROL_IDS }
     return effectiveOrder

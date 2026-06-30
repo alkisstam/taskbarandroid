@@ -44,6 +44,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.BrightnessMedium
+import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DarkMode
@@ -822,7 +823,8 @@ private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
             Triple("volume",            "Volume",     Icons.Filled.Tune),
             Triple("screenshot",        "Screenshot", Icons.Filled.PhotoCamera),
             Triple("lockscreen",        "Lock",       Icons.Filled.Lock),
-            Triple("caffeine",          "Caffeine",   Icons.Filled.FreeBreakfast)
+            Triple("caffeine",          "Caffeine",   Icons.Filled.FreeBreakfast),
+            Triple("clipboard",         "Clipboard",  Icons.Filled.ContentPaste)
         )
     }
     val metaMap = remember(controlMeta) { controlMeta.associateBy { it.first } }

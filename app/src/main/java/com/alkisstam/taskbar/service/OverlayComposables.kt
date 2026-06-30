@@ -33,10 +33,12 @@ import com.alkisstam.taskbar.ui.appmenu.BrightnessPanel
 import com.alkisstam.taskbar.ui.appmenu.FloatingSearchBar
 import com.alkisstam.taskbar.ui.appmenu.MusicPanel
 import com.alkisstam.taskbar.ui.appmenu.VolumePanel
+import com.alkisstam.taskbar.ui.clipboard.ClipboardPanel
 import com.alkisstam.taskbar.ui.taskbar.TaskbarView
 import com.alkisstam.taskbar.ui.taskbar.TriggerPillView
 import com.alkisstam.taskbar.ui.theme.TaskBarTheme
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
+import com.alkisstam.taskbar.viewmodel.ClipboardViewModel
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 
 @Composable
@@ -223,6 +225,28 @@ internal fun BrightnessPanelContent(
             onAutoBrightnessToggle = { appMenuViewModel.toggleAutoBrightness() },
             panelOutlineEnabled = panelOutlineEnabled,
             translucentMode = translucentMode
+        )
+    }
+}
+
+@Composable
+internal fun ClipboardPanelContent(
+    taskbarViewModel: TaskbarViewModel,
+    appMenuViewModel: AppMenuViewModel,
+    clipboardViewModel: ClipboardViewModel
+) {
+    val themeMode by taskbarViewModel.themeMode.collectAsState()
+    val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
+    val translucentMode by taskbarViewModel.translucentMode.collectAsState()
+    val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
+
+    TaskBarTheme(themeMode = themeMode) {
+        ClipboardPanel(
+            viewModel = clipboardViewModel,
+            onDismiss = appMenuViewModel::dismissClipboardPanel,
+            panelOutlineEnabled = panelOutlineEnabled,
+            translucentMode = translucentMode,
+            surfaceTintColor = surfaceTintColor
         )
     }
 }

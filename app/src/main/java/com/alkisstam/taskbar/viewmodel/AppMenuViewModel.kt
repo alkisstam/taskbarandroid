@@ -94,6 +94,9 @@ class AppMenuViewModel @Inject constructor(
     val musicPanelVisible: StateFlow<Boolean> = _musicPanelVisible.asStateFlow()
     private var _musicWasVisibleBeforeSlider = false
 
+    private val _clipboardPanelVisible = MutableStateFlow(false)
+    val clipboardPanelVisible: StateFlow<Boolean> = _clipboardPanelVisible.asStateFlow()
+
     val mediaState: StateFlow<MediaState> = mediaRepository.mediaState
 
     private val _brightnessLevel = MutableStateFlow(128)
@@ -161,6 +164,14 @@ class AppMenuViewModel @Inject constructor(
 
     fun dismissMusicPanel() {
         _musicPanelVisible.value = false
+    }
+
+    fun toggleClipboardPanel() {
+        _clipboardPanelVisible.value = !_clipboardPanelVisible.value
+    }
+
+    fun dismissClipboardPanel() {
+        _clipboardPanelVisible.value = false
     }
 
     fun playPause() { mediaRepository.playPause() }
@@ -353,6 +364,7 @@ class AppMenuViewModel @Inject constructor(
             "screenshot" -> viewModelScope.launch { kotlinx.coroutines.delay(700); takeScreenshot() }
             "lockscreen" -> lockScreen()
             "caffeine" -> cycleCaffeineTimeout()
+            "clipboard" -> toggleClipboardPanel()
         }
     }
 

@@ -45,11 +45,13 @@ import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.alkisstam.taskbar.MainActivity
 import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.AppRepository
+import com.alkisstam.taskbar.data.ClipboardRepository
 import com.alkisstam.taskbar.data.MediaRepository
 import com.alkisstam.taskbar.data.PreferencesRepository
 import com.alkisstam.taskbar.data.QuickControlsRepository
 import com.alkisstam.taskbar.util.Constants
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
+import com.alkisstam.taskbar.viewmodel.ClipboardViewModel
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -66,6 +68,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     @Inject lateinit var prefsRepository: PreferencesRepository
     @Inject lateinit var quickControlsRepository: QuickControlsRepository
     @Inject lateinit var mediaRepository: MediaRepository
+    @Inject lateinit var clipboardRepository: ClipboardRepository
 
     private val lifecycleRegistry = LifecycleRegistry(this)
     override val lifecycle: Lifecycle get() = lifecycleRegistry
@@ -97,6 +100,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private var brightnessPanelView: View? = null
     private var volumeScrimView: View? = null
     private var musicPanelView: View? = null
+    private var clipboardPanelView: View? = null
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var observersStarted = false
 
@@ -121,6 +125,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                         volumeScrimView?.visibility = View.GONE
                         volumePanelView?.visibility = View.GONE
                         brightnessPanelView?.visibility = View.GONE
+                        clipboardPanelView?.visibility = View.GONE
                     }
                 }
                 Intent.ACTION_USER_PRESENT, Intent.ACTION_SCREEN_ON -> {
@@ -165,6 +170,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 ACTION_ACCESSIBILITY_CHANGED -> {
                     Handler(Looper.getMainLooper()).post { refreshAllViews() }
                 }
+                ACTION_CLIPBOARD_PANEL_SHOW -> {
+                    if (this@OverlayService::appMenuViewModel.isInitialized)
+                        appMenuViewModel.toggleClipboardPanel()
+                }
             }
         }
     }
@@ -187,6 +196,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private lateinit var taskbarViewModel: TaskbarViewModel
     private lateinit var appMenuViewModel: AppMenuViewModel
+    private lateinit var clipboardViewModel: ClipboardViewModel
 
     companion object {
         private const val TAG = "OverlayService"
@@ -196,6 +206,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         const val ACTION_SETTINGS_CLOSE = "com.alkisstam.taskbar.ACTION_SETTINGS_CLOSE"
         const val ACTION_DISMISS_ALL = "com.alkisstam.taskbar.DISMISS_ALL"
         const val ACTION_ACCESSIBILITY_CHANGED = "com.alkisstam.taskbar.ACCESSIBILITY_CHANGED"
+        const val ACTION_CLIPBOARD_PANEL_SHOW = "com.alkisstam.taskbar.CLIPBOARD_PANEL_SHOW"
 
         @Volatile var isTaskbarVisibleForBack = false
     }
@@ -215,6 +226,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             addAction(ACTION_SETTINGS_CLOSE)
             addAction(ACTION_DISMISS_ALL)
             addAction(ACTION_ACCESSIBILITY_CHANGED)
+            addAction(ACTION_CLIPBOARD_PANEL_SHOW)
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(lockscreenReceiver, filter, RECEIVER_NOT_EXPORTED)
@@ -228,11 +240,13 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             appRepository = appRepository,
             prefsRepository = prefsRepository,
             quickControlsRepository = quickControlsRepository,
-            mediaRepository = mediaRepository
+            mediaRepository = mediaRepository,
+            clipboardRepository = clipboardRepository
         )
         val provider = ViewModelProvider(this, factory)
         taskbarViewModel = provider[TaskbarViewModel::class.java]
         appMenuViewModel = provider[AppMenuViewModel::class.java]
+        clipboardViewModel = provider[ClipboardViewModel::class.java]
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -257,6 +271,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         addVolumeScrimView()
         addVolumePanelView()
         addBrightnessPanelView()
+        addClipboardPanelView()
         if (!observersStarted) {
             observersStarted = true
             observePillPosition()
@@ -267,6 +282,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             observeVolumeAndBrightnessPanels()
             observeMusicPanelVisibility()
             observeTranslucentMode()
+            observeClipboardPanel()
         }
         return START_STICKY
     }
@@ -761,6 +777,59 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         }
     }
 
+    private fun addClipboardPanelView() {
+        if (clipboardPanelView?.isAttachedToWindow == true) return
+        clipboardPanelView?.let { removeViewFromAnyWM(it) }
+        clipboardPanelView = null
+        try {
+            val composeView = ComposeView(this).apply {
+                setViewTreeLifecycleOwner(this@OverlayService)
+                setViewTreeViewModelStoreOwner(this@OverlayService)
+                setViewTreeSavedStateRegistryOwner(this@OverlayService)
+                setContent {
+                    val hapticEnabled by taskbarViewModel.hapticFeedbackEnabled.collectAsState()
+                    CompositionLocalProvider(LocalHapticEnabled provides hapticEnabled) {
+                        ClipboardPanelContent(
+                            taskbarViewModel = taskbarViewModel,
+                            appMenuViewModel = appMenuViewModel,
+                            clipboardViewModel = clipboardViewModel
+                        )
+                    }
+                }
+            }
+            val wrapper = object : FrameLayout(this) {
+                override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+                    if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+                        appMenuViewModel.dismissClipboardPanel()
+                        return true
+                    }
+                    return super.dispatchKeyEvent(event)
+                }
+            }
+            wrapper.setViewTreeLifecycleOwner(this@OverlayService)
+            wrapper.setViewTreeViewModelStoreOwner(this@OverlayService)
+            wrapper.setViewTreeSavedStateRegistryOwner(this@OverlayService)
+            wrapper.addView(composeView)
+            wrapper.visibility = View.GONE
+            clipboardPanelView = wrapper
+            windowManager.addView(wrapper, searchLayoutParams(focusable = false))
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to add clipboard panel view", e)
+            clipboardPanelView = null
+        }
+    }
+
+    private fun observeClipboardPanel() {
+        serviceScope.launch {
+            appMenuViewModel.clipboardPanelVisible.collect { visible ->
+                clipboardPanelView?.visibility = if (visible) View.VISIBLE else View.GONE
+                val view = clipboardPanelView ?: return@collect
+                try { windowManager.updateViewLayout(view, searchLayoutParams(focusable = visible)) }
+                catch (e: Exception) { Log.w(TAG, "Failed to update clipboard panel flags", e) }
+            }
+        }
+    }
+
     // endregion
 
     // region Remove / refresh views
@@ -775,6 +844,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         brightnessPanelView?.let { removeViewFromAnyWM(it) }; brightnessPanelView = null
         volumeScrimView?.let { removeViewFromAnyWM(it) }; volumeScrimView = null
         musicPanelView?.let { removeViewFromAnyWM(it) }; musicPanelView = null
+        clipboardPanelView?.let { removeViewFromAnyWM(it) }; clipboardPanelView = null
     }
 
     private fun refreshAllViews() {
@@ -790,6 +860,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         addVolumeScrimView()
         addVolumePanelView()
         addBrightnessPanelView()
+        addClipboardPanelView()
     }
 
     // endregion

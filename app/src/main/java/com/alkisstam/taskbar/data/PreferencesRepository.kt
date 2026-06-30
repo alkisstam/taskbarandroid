@@ -105,7 +105,7 @@ class PreferencesRepository @Inject constructor(
         private val PILL_TRIGGER_AREA_KEY = floatPreferencesKey("pill_trigger_area")
         private val TRANSLUCENT_MODE_KEY = booleanPreferencesKey("translucent_mode")
 
-        val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen", "caffeine")
+        val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen", "caffeine", "clipboard")
 
         private fun serializeStringList(list: List<String>): String = JSONArray(list).toString()
         private fun deserializeStringList(stored: String): List<String> =
