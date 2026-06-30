@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.MediaState
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
+import com.alkisstam.taskbar.ui.theme.grain
 
 @Composable
 fun MusicPanel(
@@ -60,6 +61,8 @@ fun MusicPanel(
             .fillMaxWidth(0.98f)
             .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, RoundedCornerShape(16.dp)) else Modifier)
             .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor, RoundedCornerShape(16.dp)) else Modifier)
+            .clip(RoundedCornerShape(16.dp))
+            .grain(enabled = translucentMode)
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),

@@ -276,6 +276,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private var volumePanelYOffsetDp: Float = 0f
     private var musicPanelYOffsetDp: Float = 0f
     private var translucentModeEnabled: Boolean = false
+    private var taskbarInteractive: Boolean = true
 
     private fun setOverlayFlags(interactive: Boolean, focusable: Boolean) {
         val view = overlayView ?: return
@@ -284,6 +285,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     }
 
     private fun setTaskbarFlags(interactive: Boolean) {
+        taskbarInteractive = interactive
         val view = taskbarView ?: return
         try { windowManager.updateViewLayout(view, taskbarLayoutParams(interactive)) }
         catch (e: Exception) { Log.w(TAG, "Failed to update taskbar layout flags", e) }
@@ -587,6 +589,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             taskbarView = wrapper
             if (hiddenForLandscape) wrapper.visibility = View.GONE
             val initialInteractive = taskbarViewModel.isTaskbarVisible.value && !appMenuViewModel.menuVisible.value
+            taskbarInteractive = initialInteractive
             windowManager.addView(wrapper, taskbarLayoutParams(initialInteractive))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add taskbar view", e)

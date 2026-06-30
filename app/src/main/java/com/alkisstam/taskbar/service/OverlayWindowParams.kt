@@ -2,7 +2,6 @@ package com.alkisstam.taskbar.service
 
 import android.content.Context
 import android.graphics.PixelFormat
-import android.os.Build
 import android.view.Gravity
 import android.view.WindowManager
 import com.alkisstam.taskbar.data.PillEdgePosition
@@ -105,9 +104,6 @@ internal fun Context.volumePanelLayoutParams(yOffsetDp: Float, translucentMode: 
     ).apply {
         gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
         y = (yOffsetDp * density).toInt()
-        if (translucentMode && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            setBlurBehindRadius((15 * density).toInt())
-        }
     }
 }
 
@@ -161,8 +157,5 @@ internal fun Context.musicPanelLayoutParams(yOffsetDp: Float, translucentMode: B
     ).apply {
         gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
         y = (yOffsetDp * density).toInt()
-        if (translucentMode && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            setBlurBehindRadius((15 * density).toInt())
-        }
     }
 }

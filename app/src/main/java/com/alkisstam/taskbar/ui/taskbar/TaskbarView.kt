@@ -42,6 +42,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -57,6 +58,7 @@ import java.time.format.DateTimeFormatter
 import com.alkisstam.taskbar.ui.appmenu.QuickControlItem
 import com.alkisstam.taskbar.ui.appmenu.toItems
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
+import com.alkisstam.taskbar.ui.theme.grain
 import com.alkisstam.taskbar.util.Constants
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
 import com.alkisstam.taskbar.viewmodel.QuickControlItemData
@@ -116,6 +118,8 @@ fun TaskbarView(
                 .wrapContentHeight()
                 .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, RoundedCornerShape(16.dp)) else Modifier)
                 .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor, RoundedCornerShape(16.dp)) else Modifier)
+                .clip(RoundedCornerShape(16.dp))
+                .grain(enabled = translucentMode)
                 .pointerInput(isDockExpanded, taskbarSettings.heightDp) {
                     val maxDragPx = with(density) { taskbarSettings.heightDp.dp.toPx() }
                     var totalDragY = 0f

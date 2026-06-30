@@ -26,10 +26,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
+import com.alkisstam.taskbar.ui.theme.grain
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 
@@ -75,7 +77,9 @@ fun AppMenuPanel(
                     .fillMaxWidth(0.9f)
                     .wrapContentHeight()
                     .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, RoundedCornerShape(20.dp)) else Modifier)
-                    .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor, RoundedCornerShape(20.dp)) else Modifier),
+                    .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor, RoundedCornerShape(20.dp)) else Modifier)
+                    .clip(RoundedCornerShape(20.dp))
+                    .grain(enabled = translucentMode),
                 shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 20.dp, bottomEnd = 20.dp),
                 color = if (translucentMode) panelColor.copy(alpha = 0.80f) else panelColor,
                 tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 4.dp,

@@ -8,6 +8,13 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import com.alkisstam.taskbar.data.ThemeMode
 
@@ -49,4 +56,37 @@ fun TaskBarTheme(
         typography = Typography,
         content = content
     )
+}
+
+fun Modifier.grain(enabled: Boolean = true, alpha: Float = 0.10f): Modifier {
+    if (!enabled) return this
+    return composed {
+        val noiseBitmap: ImageBitmap = remember {
+            val tileSize = 128
+            val bmp = android.graphics.Bitmap.createBitmap(tileSize, tileSize, android.graphics.Bitmap.Config.ARGB_8888)
+            val pixels = IntArray(tileSize * tileSize)
+            val rng = java.util.Random(0xAB1C3D)
+            for (i in pixels.indices) {
+                val a = (rng.nextFloat() * alpha * 255).toInt()
+                val g = rng.nextInt(256)
+                pixels[i] = android.graphics.Color.argb(a, g, g, g)
+            }
+            bmp.setPixels(pixels, 0, tileSize, 0, 0, tileSize, tileSize)
+            bmp.asImageBitmap()
+        }
+        drawWithContent {
+            drawContent()
+            val bw = noiseBitmap.width.toFloat()
+            val bh = noiseBitmap.height.toFloat()
+            var ty = 0f
+            while (ty < size.height) {
+                var tx = 0f
+                while (tx < size.width) {
+                    drawImage(noiseBitmap, topLeft = Offset(tx, ty))
+                    tx += bw
+                }
+                ty += bh
+            }
+        }
+    }
 }
