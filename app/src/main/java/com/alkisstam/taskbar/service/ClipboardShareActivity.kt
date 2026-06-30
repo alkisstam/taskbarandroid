@@ -41,9 +41,29 @@ class ClipboardShareActivity : ComponentActivity() {
 
         return when {
             mimeType == "text/plain" -> {
-                val text = intent.getStringExtra(Intent.EXTRA_TEXT) ?: return null
-                val type = if (text.startsWith("http://") || text.startsWith("https://")) ClipType.URL else ClipType.TEXT
-                ClipItem(id = id, type = type, content = text, sourceApp = sourceApp, timestamp = timestamp)
+                val text = intent.getStringExtra(Intent.EXTRA_TEXT)
+                if (text != null) {
+                    val type = if (text.startsWith("http://") || text.startsWith("https://")) ClipType.URL else ClipType.TEXT
+                    ClipItem(id = id, type = type, content = text, sourceApp = sourceApp, timestamp = timestamp)
+                } else {
+                    val uri = intentStream() ?: return null
+                    val path = try {
+                        contentResolver.openInputStream(uri)?.use { input ->
+                            clipboardRepository.copyStreamToStorage(input, "txt", id)
+                        }
+                    } catch (e: Exception) { null } ?: return null
+                    ClipItem(id = id, type = ClipType.TEXT_FILE, content = path, sourceApp = sourceApp, timestamp = timestamp)
+                }
+            }
+            mimeType.startsWith("text/") -> {
+                val uri = intentStream() ?: return null
+                val ext = mimeType.substringAfter("/").substringBefore(";").trim().takeIf { it.isNotBlank() } ?: "txt"
+                val path = try {
+                    contentResolver.openInputStream(uri)?.use { input ->
+                        clipboardRepository.copyStreamToStorage(input, ext, id)
+                    }
+                } catch (e: Exception) { null } ?: return null
+                ClipItem(id = id, type = ClipType.TEXT_FILE, content = path, sourceApp = sourceApp, timestamp = timestamp)
             }
             mimeType.startsWith("image/") -> {
                 val uri = intentStream() ?: return null

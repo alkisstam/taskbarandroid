@@ -18,7 +18,7 @@ import javax.inject.Singleton
 
 private val Context.clipboardDataStore: DataStore<Preferences> by preferencesDataStore(name = "clipboard_prefs")
 
-enum class ClipType { TEXT, IMAGE, PDF, URL }
+enum class ClipType { TEXT, IMAGE, PDF, URL, TEXT_FILE }
 
 data class ClipItem(
     val id: String,

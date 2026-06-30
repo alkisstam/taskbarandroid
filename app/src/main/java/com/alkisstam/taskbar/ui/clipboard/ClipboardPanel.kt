@@ -3,6 +3,7 @@ package com.alkisstam.taskbar.ui.clipboard
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -36,6 +37,7 @@ import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PushPin
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
@@ -145,7 +147,8 @@ fun ClipboardPanel(
                                 ),
                                 onAdd = viewModel::addNote,
                                 onTogglePin = viewModel::toggleNotePin,
-                                onDelete = viewModel::removeNote
+                                onDelete = viewModel::removeNote,
+                                onEdit = viewModel::updateNote
                             )
                         }
                     }
@@ -261,13 +264,15 @@ private fun NotesTab(
     noteItems: List<NoteItem>,
     onAdd: (String) -> Unit,
     onTogglePin: (NoteItem) -> Unit,
-    onDelete: (String) -> Unit
+    onDelete: (String) -> Unit,
+    onEdit: (NoteItem) -> Unit
 ) {
     var composerVisible by remember { mutableStateOf(false) }
+    var editingNote by remember { mutableStateOf<NoteItem?>(null) }
     val context = LocalContext.current
 
     Box(modifier = Modifier.fillMaxSize()) {
-        if (noteItems.isEmpty() && !composerVisible) {
+        if (noteItems.isEmpty() && !composerVisible && editingNote == null) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -292,7 +297,18 @@ private fun NotesTab(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                if (composerVisible) {
+                if (editingNote != null) {
+                    item("editor") {
+                        NoteComposer(
+                            initialText = editingNote!!.content,
+                            onSave = { text ->
+                                onEdit(editingNote!!.copy(content = text))
+                                editingNote = null
+                            },
+                            onCancel = { editingNote = null }
+                        )
+                    }
+                } else if (composerVisible) {
                     item("composer") {
                         NoteComposer(
                             onSave = { text -> onAdd(text); composerVisible = false },
@@ -307,7 +323,20 @@ private fun NotesTab(
                             val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                             cm.setPrimaryClip(ClipData.newPlainText("note", note.content))
                         },
+                        onShare = {
+                            val intent = Intent(Intent.ACTION_SEND).apply {
+                                type = "text/plain"
+                                putExtra(Intent.EXTRA_TEXT, note.content)
+                            }
+                            context.startActivity(Intent.createChooser(intent, null).apply {
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            })
+                        },
                         onTogglePin = { onTogglePin(note) },
+                        onEdit = {
+                            composerVisible = false
+                            editingNote = note
+                        },
                         onDelete = { onDelete(note.id) }
                     )
                 }
@@ -315,15 +344,18 @@ private fun NotesTab(
         }
 
         FloatingActionButton(
-            onClick = { composerVisible = !composerVisible },
+            onClick = {
+                editingNote = null
+                composerVisible = !composerVisible
+            },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp),
             containerColor = MaterialTheme.colorScheme.primaryContainer
         ) {
             Icon(
-                if (composerVisible) Icons.Default.Edit else Icons.Default.Add,
-                contentDescription = if (composerVisible) "Cancel" else "New note",
+                if (composerVisible || editingNote != null) Icons.Default.Edit else Icons.Default.Add,
+                contentDescription = if (composerVisible || editingNote != null) "Cancel" else "New note",
                 tint = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
@@ -331,8 +363,12 @@ private fun NotesTab(
 }
 
 @Composable
-private fun NoteComposer(onSave: (String) -> Unit, onCancel: () -> Unit) {
-    var text by remember { mutableStateOf("") }
+private fun NoteComposer(
+    initialText: String = "",
+    onSave: (String) -> Unit,
+    onCancel: () -> Unit
+) {
+    var text by remember(initialText) { mutableStateOf(initialText) }
 
     Surface(
         shape = RoundedCornerShape(12.dp),
@@ -364,7 +400,9 @@ private fun NoteComposer(onSave: (String) -> Unit, onCancel: () -> Unit) {
 private fun NoteItemCard(
     note: NoteItem,
     onCopy: () -> Unit,
+    onShare: () -> Unit,
     onTogglePin: () -> Unit,
+    onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
     Surface(
@@ -430,8 +468,14 @@ private fun NoteItemCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
+                IconButton(onClick = onEdit) {
+                    Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(20.dp))
+                }
                 IconButton(onClick = onCopy) {
                     Icon(Icons.Default.ContentCopy, contentDescription = "Copy", modifier = Modifier.size(20.dp))
+                }
+                IconButton(onClick = onShare) {
+                    Icon(Icons.Default.Share, contentDescription = "Share", modifier = Modifier.size(20.dp))
                 }
                 IconButton(onClick = onTogglePin) {
                     Icon(

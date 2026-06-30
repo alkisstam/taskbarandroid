@@ -54,4 +54,8 @@ class ClipboardViewModel @Inject constructor(
     fun toggleNotePin(item: NoteItem) {
         viewModelScope.launch { clipboardRepository.updateNote(item.copy(isPinned = !item.isPinned)) }
     }
+
+    fun updateNote(item: NoteItem) {
+        viewModelScope.launch { clipboardRepository.updateNote(item) }
+    }
 }

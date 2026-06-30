@@ -25,10 +25,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.PictureAsPdf
 import androidx.compose.material.icons.filled.PushPin
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material.icons.automirrored.filled.TextSnippet
@@ -47,8 +49,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import com.alkisstam.taskbar.data.ClipItem
 import com.alkisstam.taskbar.data.ClipType
+import java.io.File
 
 @Composable
 fun ClipItemCard(
@@ -83,6 +87,7 @@ fun ClipItemCard(
                             ClipType.IMAGE -> Icons.Default.Image
                             ClipType.PDF -> Icons.Default.PictureAsPdf
                             ClipType.URL -> Icons.Default.Link
+                            ClipType.TEXT_FILE -> Icons.Default.Description
                         },
                         contentDescription = null,
                         modifier = Modifier.size(18.dp),
@@ -150,6 +155,29 @@ fun ClipItemCard(
                         )
                     }
                 }
+                ClipType.TEXT_FILE -> {
+                    val filename = remember(item.content) { File(item.content).name }
+                    val preview = remember(item.content) {
+                        runCatching { File(item.content).readText(Charsets.UTF_8).take(300) }.getOrNull()
+                    }
+                    Box(modifier = Modifier.clickable { openFile(context, item.content, "text/plain") }) {
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Text(
+                                text = filename,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            if (preview != null) {
+                                Text(
+                                    text = preview,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    maxLines = 4,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        }
+                    }
+                }
                 ClipType.IMAGE -> {
                     val bitmap = remember(item.content) {
                         runCatching { BitmapFactory.decodeFile(item.content) }.getOrNull()
@@ -161,7 +189,8 @@ fun ClipItemCard(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(160.dp)
-                                .clip(RoundedCornerShape(8.dp)),
+                                .clip(RoundedCornerShape(8.dp))
+                                .clickable { openFile(context, item.content, "image/*") },
                             contentScale = ContentScale.Crop
                         )
                     } else {
@@ -188,7 +217,8 @@ fun ClipItemCard(
                             .fillMaxWidth()
                             .height(120.dp)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(MaterialTheme.colorScheme.surface),
+                            .background(MaterialTheme.colorScheme.surface)
+                            .clickable { openFile(context, item.content, "application/pdf") },
                         contentAlignment = Alignment.Center
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -213,12 +243,23 @@ fun ClipItemCard(
                 horizontalArrangement = Arrangement.End
             ) {
                 IconButton(onClick = {
+                    val textToCopy = when (item.type) {
+                        ClipType.TEXT_FILE -> runCatching { File(item.content).readText().take(50_000) }.getOrElse { item.content }
+                        else -> item.content
+                    }
                     val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    cm.setPrimaryClip(ClipData.newPlainText("clip", item.content))
+                    cm.setPrimaryClip(ClipData.newPlainText("clip", textToCopy))
                 }) {
                     Icon(
                         Icons.Default.ContentCopy,
                         contentDescription = "Copy",
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+                IconButton(onClick = { shareClip(context, item) }) {
+                    Icon(
+                        Icons.Default.Share,
+                        contentDescription = "Share",
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -249,6 +290,38 @@ fun ClipItemCard(
             }
         }
     }
+}
+
+private fun openFile(context: Context, path: String, mimeType: String) {
+    val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", File(path))
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        setDataAndType(uri, mimeType)
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+    context.startActivity(intent)
+}
+
+private fun shareClip(context: Context, item: ClipItem) {
+    val intent = when (item.type) {
+        ClipType.TEXT, ClipType.URL -> Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, item.content)
+        }
+        ClipType.IMAGE, ClipType.PDF, ClipType.TEXT_FILE -> {
+            val file = File(item.content)
+            val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+            Intent(Intent.ACTION_SEND).apply {
+                type = when (item.type) {
+                    ClipType.IMAGE -> "image/*"
+                    ClipType.PDF -> "application/pdf"
+                    else -> "text/plain"
+                }
+                putExtra(Intent.EXTRA_STREAM, uri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+        }
+    }
+    context.startActivity(Intent.createChooser(intent, null).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) })
 }
 
 private fun formatTimestamp(timestamp: Long): String {
