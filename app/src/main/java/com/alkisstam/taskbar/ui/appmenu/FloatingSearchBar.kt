@@ -41,7 +41,12 @@ import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FloatingSearchBar(viewModel: AppMenuViewModel, onHideTaskbar: () -> Unit = {}, translucentMode: Boolean = false) {
+fun FloatingSearchBar(
+    viewModel: AppMenuViewModel,
+    onHideTaskbar: () -> Unit = {},
+    translucentMode: Boolean = false,
+    translucentAlpha: Float = 0.80f
+) {
     val searchQuery by viewModel.searchQuery.collectAsState()
     val filteredApps by viewModel.filteredApps.collectAsState()
     val pinnedPackages by viewModel.pinnedPackages.collectAsState()
@@ -80,7 +85,7 @@ fun FloatingSearchBar(viewModel: AppMenuViewModel, onHideTaskbar: () -> Unit = {
                     .fillMaxWidth()
                     .then(if (translucentMode) Modifier.border(1.dp, glassBorderColor, RoundedCornerShape(16.dp)) else Modifier),
                 shape = RoundedCornerShape(16.dp),
-                color = if (translucentMode) surfaceColor.copy(alpha = 0.80f) else surfaceColor,
+                color = if (translucentMode) surfaceColor.copy(alpha = translucentAlpha) else surfaceColor,
                 tonalElevation = if (translucentMode) 0.dp else 8.dp,
                 shadowElevation = 8.dp
             ) {
@@ -129,7 +134,7 @@ fun FloatingSearchBar(viewModel: AppMenuViewModel, onHideTaskbar: () -> Unit = {
                         .heightIn(max = 360.dp)
                         .then(if (translucentMode) Modifier.border(1.dp, glassBorderColor, RoundedCornerShape(16.dp)) else Modifier),
                     shape = RoundedCornerShape(16.dp),
-                    color = if (translucentMode) surfaceColor.copy(alpha = 0.80f) else surfaceColor,
+                    color = if (translucentMode) surfaceColor.copy(alpha = translucentAlpha) else surfaceColor,
                     tonalElevation = if (translucentMode) 0.dp else 6.dp,
                     shadowElevation = 6.dp
                 ) {

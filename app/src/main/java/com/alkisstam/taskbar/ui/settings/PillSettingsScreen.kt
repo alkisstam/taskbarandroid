@@ -51,7 +51,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.Dp
@@ -73,6 +72,7 @@ fun PillSettingsScreen(
     val surfaceTintColor by viewModel.surfaceTintColor.collectAsState()
     val panelOutlineEnabled by viewModel.panelOutlineEnabled.collectAsState()
     val translucentMode by viewModel.translucentMode.collectAsState()
+    val translucentAlpha by viewModel.translucentAlpha.collectAsState()
     val configuration = LocalConfiguration.current
     val widthMax = configuration.screenWidthDp.toFloat()
     val heightMax = (configuration.screenHeightDp / 2).toFloat()
@@ -275,20 +275,19 @@ fun PillSettingsScreen(
                 currentColor = surfaceTintColor,
                 onColorSelected = { viewModel.setSurfaceTintColor(it) }
             )
-            Spacer(modifier = Modifier.height(12.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .alpha(if (translucentMode) 0.38f else 1f),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("Panel Outline", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
-                Switch(
-                    checked = panelOutlineEnabled,
-                    onCheckedChange = { viewModel.setPanelOutlineEnabled(it) },
-                    enabled = !translucentMode
-                )
+            if (!translucentMode) {
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Panel Outline", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+                    Switch(
+                        checked = panelOutlineEnabled,
+                        onCheckedChange = { viewModel.setPanelOutlineEnabled(it) }
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(4.dp))
             Row(
@@ -307,6 +306,17 @@ fun PillSettingsScreen(
                 Switch(
                     checked = translucentMode,
                     onCheckedChange = { viewModel.setTranslucentMode(it) }
+                )
+            }
+            if (translucentMode) {
+                Spacer(modifier = Modifier.height(8.dp))
+                SettingsSlider(
+                    label = "Transparency",
+                    value = translucentAlpha,
+                    valueRange = 0.3f..1f,
+                    unit = "%",
+                    displayTransform = { "${(it * 100).toInt()}%" },
+                    onValueChange = { viewModel.setTranslucentAlpha(it) }
                 )
             }
         }

@@ -93,6 +93,7 @@ fun ClipboardPanel(
     onOpenExternal: () -> Unit = {},
     panelOutlineEnabled: Boolean = false,
     translucentMode: Boolean = false,
+    translucentAlpha: Float = 0.80f,
     surfaceTintColor: Long = 0L
 ) {
     val clips by viewModel.clips.collectAsState()
@@ -131,7 +132,7 @@ fun ClipboardPanel(
                 .clip(panelShape)
                 .grain(enabled = translucentMode),
             shape = panelShape,
-            color = if (translucentMode) panelColor.copy(alpha = 0.80f) else panelColor,
+            color = if (translucentMode) panelColor.copy(alpha = translucentAlpha) else panelColor,
             tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 2.dp,
             shadowElevation = 8.dp
         ) {

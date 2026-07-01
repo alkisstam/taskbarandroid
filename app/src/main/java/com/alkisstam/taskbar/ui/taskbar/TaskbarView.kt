@@ -106,6 +106,7 @@ fun TaskbarView(
     val iconSize = taskbarSettings.pinnedIconSizeDp.dp
     val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
     val translucentMode by taskbarViewModel.translucentMode.collectAsState()
+    val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
 
     Box(
         modifier = modifier.fillMaxWidth(),
@@ -164,7 +165,7 @@ fun TaskbarView(
                     }
                 },
             shape = RoundedCornerShape(16.dp),
-            color = if (translucentMode) surfaceColor.copy(alpha = 0.80f) else surfaceColor,
+            color = if (translucentMode) surfaceColor.copy(alpha = translucentAlpha) else surfaceColor,
             tonalElevation = if (translucentMode) 0.dp else 3.dp,
             shadowElevation = 8.dp
         ) {

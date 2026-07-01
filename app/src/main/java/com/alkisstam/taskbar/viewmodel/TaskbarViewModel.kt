@@ -93,6 +93,9 @@ class TaskbarViewModel @Inject constructor(
     val translucentMode: StateFlow<Boolean> = prefsRepository.translucentMode
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
+    val translucentAlpha: StateFlow<Float> = prefsRepository.translucentAlpha
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.80f)
+
     val appGridColumns: StateFlow<Int> = prefsRepository.appGridColumns
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 3)
 
@@ -114,6 +117,10 @@ class TaskbarViewModel @Inject constructor(
             prefsRepository.setTranslucentMode(enabled)
             if (enabled) prefsRepository.setPanelOutlineEnabled(false)
         }
+    }
+
+    fun setTranslucentAlpha(value: Float) {
+        viewModelScope.launch { prefsRepository.setTranslucentAlpha(value) }
     }
 
     fun setAppGridColumns(value: Int) {

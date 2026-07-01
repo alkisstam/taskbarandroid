@@ -181,8 +181,14 @@ internal fun SearchOverlayContent(
 ) {
     val themeMode by taskbarViewModel.themeMode.collectAsState()
     val translucentMode by taskbarViewModel.translucentMode.collectAsState()
+    val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
     TaskBarTheme(themeMode = themeMode) {
-        FloatingSearchBar(viewModel = appMenuViewModel, onHideTaskbar = onHideTaskbar, translucentMode = translucentMode)
+        FloatingSearchBar(
+            viewModel = appMenuViewModel,
+            onHideTaskbar = onHideTaskbar,
+            translucentMode = translucentMode,
+            translucentAlpha = translucentAlpha
+        )
     }
 }
 
@@ -195,6 +201,7 @@ internal fun VolumePanelContent(
     val streams by appMenuViewModel.volumeStreams.collectAsState()
     val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
     val translucentMode by taskbarViewModel.translucentMode.collectAsState()
+    val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
     TaskBarTheme(themeMode = themeMode) {
         VolumePanel(
             streams = streams,
@@ -202,7 +209,8 @@ internal fun VolumePanelContent(
                 appMenuViewModel.setStreamVolume(streamType, value)
             },
             panelOutlineEnabled = panelOutlineEnabled,
-            translucentMode = translucentMode
+            translucentMode = translucentMode,
+            translucentAlpha = translucentAlpha
         )
     }
 }
@@ -217,6 +225,7 @@ internal fun BrightnessPanelContent(
     val quickControlsState by appMenuViewModel.quickControlsState.collectAsState()
     val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
     val translucentMode by taskbarViewModel.translucentMode.collectAsState()
+    val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
     TaskBarTheme(themeMode = themeMode) {
         BrightnessPanel(
             brightnessLevel = brightnessLevel,
@@ -224,7 +233,8 @@ internal fun BrightnessPanelContent(
             autoBrightnessEnabled = quickControlsState.autoBrightness,
             onAutoBrightnessToggle = { appMenuViewModel.toggleAutoBrightness() },
             panelOutlineEnabled = panelOutlineEnabled,
-            translucentMode = translucentMode
+            translucentMode = translucentMode,
+            translucentAlpha = translucentAlpha
         )
     }
 }
@@ -238,6 +248,7 @@ internal fun ClipboardPanelContent(
     val themeMode by taskbarViewModel.themeMode.collectAsState()
     val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
     val translucentMode by taskbarViewModel.translucentMode.collectAsState()
+    val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
     val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
 
     TaskBarTheme(themeMode = themeMode) {
@@ -247,6 +258,7 @@ internal fun ClipboardPanelContent(
             onOpenExternal = appMenuViewModel::dismissClipboardPanelForExternalOpen,
             panelOutlineEnabled = panelOutlineEnabled,
             translucentMode = translucentMode,
+            translucentAlpha = translucentAlpha,
             surfaceTintColor = surfaceTintColor
         )
     }
@@ -284,6 +296,7 @@ internal fun MusicPanelContent(
 
     val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
     val translucentMode by taskbarViewModel.translucentMode.collectAsState()
+    val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
 
     TaskBarTheme(themeMode = themeMode) {
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -295,6 +308,7 @@ internal fun MusicPanelContent(
                     onPrev = appMenuViewModel::prevTrack,
                     panelOutlineEnabled = panelOutlineEnabled,
                     translucentMode = translucentMode,
+                    translucentAlpha = translucentAlpha,
                     modifier = Modifier
                         .onGloballyPositioned { panelHeightPx = it.size.height.toFloat() }
                         .graphicsLayer {

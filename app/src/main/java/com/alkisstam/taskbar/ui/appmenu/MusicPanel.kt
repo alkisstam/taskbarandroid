@@ -47,13 +47,14 @@ fun MusicPanel(
     onPrev: () -> Unit,
     panelOutlineEnabled: Boolean = true,
     translucentMode: Boolean = false,
+    translucentAlpha: Float = 0.80f,
     modifier: Modifier = Modifier
 ) {
     val surfaceColor = MaterialTheme.colorScheme.surface
     val glassBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
     Surface(
         shape = RoundedCornerShape(16.dp),
-        color = if (translucentMode) surfaceColor.copy(alpha = 0.80f) else surfaceColor,
+        color = if (translucentMode) surfaceColor.copy(alpha = translucentAlpha) else surfaceColor,
         contentColor = MaterialTheme.colorScheme.onSurface,
         tonalElevation = if (translucentMode) 0.dp else 3.dp,
         shadowElevation = 8.dp,

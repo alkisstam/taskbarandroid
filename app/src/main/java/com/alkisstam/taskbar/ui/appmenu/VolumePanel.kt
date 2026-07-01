@@ -61,6 +61,7 @@ fun VolumePanel(
     onVolumeChange: (streamType: Int, value: Int) -> Unit,
     panelOutlineEnabled: Boolean = true,
     translucentMode: Boolean = false,
+    translucentAlpha: Float = 0.80f,
     modifier: Modifier = Modifier
 ) {
     val surfaceColor = MaterialTheme.colorScheme.surface
@@ -72,7 +73,7 @@ fun VolumePanel(
             .clip(RoundedCornerShape(20.dp))
             .grain(enabled = translucentMode),
         shape = RoundedCornerShape(20.dp),
-        color = if (translucentMode) surfaceColor.copy(alpha = 0.80f) else surfaceColor,
+        color = if (translucentMode) surfaceColor.copy(alpha = translucentAlpha) else surfaceColor,
         contentColor = MaterialTheme.colorScheme.onSurface,
         tonalElevation = if (translucentMode) 0.dp else 3.dp
     ) {
@@ -177,6 +178,7 @@ fun BrightnessPanel(
     onAutoBrightnessToggle: () -> Unit,
     panelOutlineEnabled: Boolean = true,
     translucentMode: Boolean = false,
+    translucentAlpha: Float = 0.80f,
     modifier: Modifier = Modifier
 ) {
     val maxBrightness = 255
@@ -207,7 +209,7 @@ fun BrightnessPanel(
             .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, RoundedCornerShape(20.dp)) else Modifier)
             .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor2, RoundedCornerShape(20.dp)) else Modifier),
         shape = RoundedCornerShape(20.dp),
-        color = if (translucentMode) surfaceColor2.copy(alpha = 0.80f) else surfaceColor2,
+        color = if (translucentMode) surfaceColor2.copy(alpha = translucentAlpha) else surfaceColor2,
         contentColor = MaterialTheme.colorScheme.onSurface,
         tonalElevation = if (translucentMode) 0.dp else 3.dp
     ) {

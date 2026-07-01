@@ -104,6 +104,7 @@ class PreferencesRepository @Inject constructor(
         private val APP_GRID_ROWS_KEY = intPreferencesKey("app_grid_rows")
         private val PILL_TRIGGER_AREA_KEY = floatPreferencesKey("pill_trigger_area")
         private val TRANSLUCENT_MODE_KEY = booleanPreferencesKey("translucent_mode")
+        private val TRANSLUCENT_ALPHA_KEY = floatPreferencesKey("translucent_alpha")
 
         val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen", "caffeine", "clipboard")
 
@@ -372,6 +373,16 @@ class PreferencesRepository @Inject constructor(
     suspend fun setTranslucentMode(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[TRANSLUCENT_MODE_KEY] = enabled
+        }
+    }
+
+    val translucentAlpha: Flow<Float> = context.dataStore.data.map { prefs ->
+        prefs[TRANSLUCENT_ALPHA_KEY] ?: 0.80f
+    }
+
+    suspend fun setTranslucentAlpha(value: Float) {
+        context.dataStore.edit { prefs ->
+            prefs[TRANSLUCENT_ALPHA_KEY] = value
         }
     }
 
