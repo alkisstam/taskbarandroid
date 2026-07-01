@@ -4,20 +4,20 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
-## [Unreleased]
+## [1.3.5] - 2026-07-01
 
 ### Added
-- **Clipboard / Notes panel** — new Quick Controls tile opens a three-tab floating panel (Clips, Favorites, Notes) reachable from the dock.
-- **Share sheet capture** — any app's share sheet shows "TaskBar Clipboard" as a target; saves text, URLs, images, PDFs, and text files (`.txt`, `.md`, `.csv`, `.html`, etc.).
-- **Clips tab** — card per saved item with type icon, source app label, and timestamp. Supports copy, share, pin, favorite, and delete actions.
-- **Favorites tab** — filtered view of starred clips.
-- **Notes tab** — multiple note cards with copy, share, pin, edit, and delete actions; "+" FAB to compose a new note inline.
+- **Clipboard / Notes panel** — new Quick Controls tile opens a floating panel (Clips, Favorites, Notes) reachable from the dock.
+- **Share sheet capture** — any app's share sheet shows "TaskBar Clipboard" as a target; saves text, URLs, images, PDFs, text files (`.txt`, `.md`, `.csv`, `.html`, etc.), and now Word/Excel/PowerPoint documents (`.docx`, `.doc`, `.xlsx`, `.xls`, `.pptx`, `.ppt`).
+- **Clips tab** — card per saved item with type icon, source app label, timestamp, and (for PDFs, text files, and documents) the original filename. Supports copy, share, pin, favorite, and delete actions.
+- **Category filter** — scrollable All/Text/Images/Files/Links strip at the top of the Clips tab.
+- **Favorites tab** — combined, timestamp-sorted view of starred clips and starred notes.
+- **Notes tab** — multiple note cards with copy, share, pin, favorite, edit, and delete actions; "+" FAB to compose a new note inline.
 - **URL clips** — tapping a URL clip opens it in the default browser.
 - **Image clips** — thumbnail preview; tap to open in the default image viewer.
-- **PDF clips** — placeholder card; tap to open in the default PDF viewer.
-- **Text file clips** — filename + content preview; tap to open in a text viewer.
+- **PDF, document, and text file clips** — filename shown on the card; tap to open in the associated app.
 - **Share from panel** — every clip and note card has a share icon that forwards content to the Android share sheet.
-- **Auto-dismiss on open** — tapping a URL, file, image, PDF, or share icon automatically dismisses the panel and hides the dock so the target app opens unobstructed.
+- **Dock sync** — the dock hides while the clipboard panel is open and reappears when the panel is dismissed (back gesture or tap-outside). Opening a link, file, image, or the share sheet keeps the dock hidden instead of flashing it back in.
 - **Clipboard tile in Controls settings** — the Clipboard tile now appears in the Controls tab so it can be reordered and toggled like other quick controls.
 
 ---
