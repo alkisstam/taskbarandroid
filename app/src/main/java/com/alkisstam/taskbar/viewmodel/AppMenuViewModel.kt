@@ -53,6 +53,25 @@ data class QuickControlsState(
 
 private const val TAG = "AppMenuViewModel"
 
+private fun fuzzyScore(label: String, query: String): Int? {
+    val l = label.lowercase()
+    val q = query.trim().lowercase()
+    if (q.isEmpty()) return 0
+    val idx = l.indexOf(q)
+    if (idx >= 0) return idx
+    var qi = 0
+    var score = 1000
+    var lastMatch = -1
+    for (li in l.indices) {
+        if (qi < q.length && l[li] == q[qi]) {
+            score += if (lastMatch == li - 1) 0 else 2
+            lastMatch = li
+            qi++
+        }
+    }
+    return if (qi == q.length) score else null
+}
+
 @HiltViewModel
 class AppMenuViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
@@ -68,8 +87,11 @@ class AppMenuViewModel @Inject constructor(
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
     val filteredApps: StateFlow<List<AppInfo>> = combine(appRepository.apps, _searchQuery) { apps, query ->
-        val q = query.trim().lowercase()
-        if (q.isEmpty()) apps else apps.filter { it.label.lowercase().contains(q) }
+        val q = query.trim()
+        if (q.isEmpty()) apps
+        else apps.mapNotNull { app -> fuzzyScore(app.label, q)?.let { app to it } }
+            .sortedBy { it.second }
+            .map { it.first }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _quickControlsState = MutableStateFlow(QuickControlsState())

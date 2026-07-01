@@ -44,19 +44,19 @@ private fun String?.toPillEdgePosition() = when (this) {
 
 data class TaskbarSettings(
     val positionYDp: Float = 20f,
-    val heightDp: Float = 70f,
-    val showControlLabels: Boolean = true,
+    val heightDp: Float = 60f,
+    val showControlLabels: Boolean = false,
     val pinnedIconSizeDp: Float = 40f,
-    val quickControlSizeDp: Float = 44f
+    val quickControlSizeDp: Float = 42f
 )
 
 data class PillSettings(
     val swipeUpAction: GestureAction = GestureAction.SHOW_DOCK,
     val swipeDownAction: GestureAction = GestureAction.SHOW_DOCK,
     val doubleTapAction: GestureAction = GestureAction.SHOW_DOCK,
-    val widthDp: Float = 10f,
-    val heightDp: Float = 60f,
-    val alpha: Float = 0.60f,
+    val widthDp: Float = 4f,
+    val heightDp: Float = 50f,
+    val alpha: Float = 0.40f,
     val positionYDp: Float = 80f,
     val positionXPct: Float = 4f,
     val edgePosition: PillEdgePosition = PillEdgePosition.BOTTOM,
@@ -187,9 +187,9 @@ class PreferencesRepository @Inject constructor(
             swipeUpAction    = prefs[PILL_SWIPE_UP_ACTION_KEY].toGestureAction(),
             swipeDownAction  = prefs[PILL_SWIPE_DOWN_ACTION_KEY].toGestureAction(),
             doubleTapAction  = prefs[PILL_DOUBLE_TAP_ACTION_KEY].toGestureAction(),
-            widthDp      = prefs[PILL_WIDTH_KEY]           ?: 10f,
-            heightDp     = prefs[PILL_HEIGHT_KEY]          ?: 60f,
-            alpha        = prefs[PILL_ALPHA_KEY]            ?: 0.60f,
+            widthDp      = prefs[PILL_WIDTH_KEY]           ?: 4f,
+            heightDp     = prefs[PILL_HEIGHT_KEY]          ?: 50f,
+            alpha        = prefs[PILL_ALPHA_KEY]            ?: 0.40f,
             positionYDp      = prefs[PILL_POSITION_Y_KEY]         ?: 80f,
             positionXPct     = prefs[PILL_POSITION_X_PCT_KEY]     ?: 4f,
             edgePosition     = prefs[PILL_EDGE_POSITION_KEY].toPillEdgePosition(),
@@ -251,10 +251,10 @@ class PreferencesRepository @Inject constructor(
     val taskbarSettings: Flow<TaskbarSettings> = context.dataStore.data.map { prefs ->
         TaskbarSettings(
             positionYDp        = prefs[TASKBAR_POSITION_Y_KEY]     ?: 20f,
-            heightDp           = prefs[TASKBAR_HEIGHT_KEY]          ?: 70f,
-            showControlLabels  = prefs[TASKBAR_CONTROL_LABELS_KEY]  ?: true,
+            heightDp           = prefs[TASKBAR_HEIGHT_KEY]          ?: 60f,
+            showControlLabels  = prefs[TASKBAR_CONTROL_LABELS_KEY]  ?: false,
             pinnedIconSizeDp   = prefs[PINNED_ICON_SIZE_KEY]        ?: 40f,
-            quickControlSizeDp = prefs[QUICK_CONTROL_SIZE_KEY]      ?: 44f
+            quickControlSizeDp = prefs[QUICK_CONTROL_SIZE_KEY]      ?: 42f
         )
     }
 
@@ -356,7 +356,7 @@ class PreferencesRepository @Inject constructor(
     }
 
     val panelOutlineEnabled: Flow<Boolean> = context.dataStore.data.map { prefs ->
-        prefs[PANEL_OUTLINE_KEY] ?: true
+        prefs[PANEL_OUTLINE_KEY] ?: false
     }
 
     suspend fun setPanelOutlineEnabled(enabled: Boolean) {
@@ -376,7 +376,7 @@ class PreferencesRepository @Inject constructor(
     }
 
     val appGridColumns: Flow<Int> = context.dataStore.data.map { prefs ->
-        prefs[APP_GRID_COLUMNS_KEY] ?: 3
+        prefs[APP_GRID_COLUMNS_KEY] ?: 4
     }
 
     suspend fun setAppGridColumns(value: Int) {

@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
@@ -47,14 +46,11 @@ import androidx.compose.material.icons.filled.BrightnessMedium
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.DoNotDisturbOff
 import androidx.compose.material.icons.filled.FlashlightOn
 import androidx.compose.material.icons.filled.FreeBreakfast
-import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PhotoCamera
-import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.PowerSettingsNew
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Refresh
@@ -104,7 +100,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.AppInfo
-import com.alkisstam.taskbar.data.ThemeMode
 import com.alkisstam.taskbar.ui.common.AppIconImage
 import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
@@ -245,13 +240,9 @@ private fun GeneralTab(
     bottomPadding: Dp = 0.dp
 ) {
     val overlayEnabled by viewModel.overlayEnabled.collectAsState()
-    val themeMode by viewModel.themeMode.collectAsState()
-    val surfaceTintColor by viewModel.surfaceTintColor.collectAsState()
     val autoHideInFullscreen by viewModel.autoHideInFullscreen.collectAsState()
     val autoHideInLandscape by viewModel.autoHideInLandscape.collectAsState()
     val hapticFeedbackEnabled by viewModel.hapticFeedbackEnabled.collectAsState()
-    val panelOutlineEnabled by viewModel.panelOutlineEnabled.collectAsState()
-    val translucentMode by viewModel.translucentMode.collectAsState()
     val context = LocalContext.current
 
     val backupLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
@@ -315,68 +306,6 @@ private fun GeneralTab(
                         }
                     }
                 }
-            }
-        }
-
-        SettingsCard(title = "Theme") {
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                FilterChip(
-                    selected = themeMode == ThemeMode.LIGHT,
-                    onClick = { viewModel.setThemeMode(ThemeMode.LIGHT) },
-                    label = { Text("Light") },
-                    leadingIcon = { Icon(Icons.Filled.LightMode, contentDescription = null) }
-                )
-                FilterChip(
-                    selected = themeMode == ThemeMode.DARK,
-                    onClick = { viewModel.setThemeMode(ThemeMode.DARK) },
-                    label = { Text("Dark") },
-                    leadingIcon = { Icon(Icons.Filled.DarkMode, contentDescription = null) }
-                )
-                FilterChip(
-                    selected = themeMode == ThemeMode.SYSTEM,
-                    onClick = { viewModel.setThemeMode(ThemeMode.SYSTEM) },
-                    label = { Text("System") },
-                    leadingIcon = { Icon(Icons.Filled.PhoneAndroid, contentDescription = null) }
-                )
-            }
-            Spacer(modifier = Modifier.height(12.dp))
-            SurfaceTintColorPicker(
-                currentColor = surfaceTintColor,
-                onColorSelected = { viewModel.setSurfaceTintColor(it) }
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .alpha(if (translucentMode) 0.38f else 1f),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("Panel Outline", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
-                Switch(
-                    checked = panelOutlineEnabled,
-                    onCheckedChange = { viewModel.setPanelOutlineEnabled(it) },
-                    enabled = !translucentMode
-                )
-            }
-            Spacer(modifier = Modifier.height(4.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text("Translucent panels", style = MaterialTheme.typography.bodyLarge)
-                    Text(
-                        "Semi-transparent dock and panels",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                Switch(
-                    checked = translucentMode,
-                    onCheckedChange = { viewModel.setTranslucentMode(it) }
-                )
             }
         }
 
@@ -1102,183 +1031,3 @@ internal fun SettingsCard(
     }
 }
 
-private val SURFACE_TINT_PRESETS: List<Pair<String, Long>> = listOf(
-    "Default" to 0L,
-    "Black" to 0xFF1A1A2E,
-    "Navy" to 0xFF16213E,
-    "Deep Purple" to 0xFF2D1B69,
-    "Slate" to 0xFF2D3748,
-    "Charcoal" to 0xFF36454F,
-    "Cream" to 0xFFFFF8E7,
-    "Sand" to 0xFFFFF3E0,
-    "Blush" to 0xFFFFE4E1,
-    "Sky" to 0xFFE3F2FD,
-    "Mint" to 0xFFE8F5E9
-)
-
-@Composable
-private fun SurfaceTintColorPicker(
-    currentColor: Long,
-    onColorSelected: (Long) -> Unit
-) {
-    var showCustomPicker by remember { mutableStateOf(false) }
-
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text("Surface Tint Color", style = MaterialTheme.typography.bodyMedium)
-        Text(
-            "Applies to the dock and app menu",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.Top
-        ) {
-            items(SURFACE_TINT_PRESETS) { (label, colorValue) ->
-                val isSelected = currentColor == colorValue
-                val displayColor = if (colorValue == 0L)
-                    MaterialTheme.colorScheme.surface
-                else
-                    Color(colorValue)
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(36.dp)
-                            .background(displayColor, CircleShape)
-                            .then(
-                                if (isSelected) Modifier.border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                                else Modifier
-                            )
-                            .clickable { onColorSelected(colorValue) }
-                    )
-                    Text(
-                        label,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = if (isSelected) MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-            item {
-                val isCustomSelected = SURFACE_TINT_PRESETS.none { it.second == currentColor }
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(36.dp)
-                            .background(
-                                if (isCustomSelected) Color(currentColor) else MaterialTheme.colorScheme.surfaceVariant,
-                                CircleShape
-                            )
-                            .then(
-                                if (isCustomSelected) Modifier.border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                                else Modifier
-                            )
-                            .clickable { showCustomPicker = true },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (!isCustomSelected) {
-                            Text("+", style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        }
-                    }
-                    Text(
-                        "Custom",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = if (isCustomSelected) MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-        }
-    }
-
-    if (showCustomPicker) {
-        CustomColorPickerDialog(
-            initialColor = if (SURFACE_TINT_PRESETS.none { it.second == currentColor } && currentColor != 0L)
-                currentColor else 0xFF808080L,
-            onDismiss = { showCustomPicker = false },
-            onConfirm = { color ->
-                onColorSelected(color)
-                showCustomPicker = false
-            }
-        )
-    }
-}
-
-@Composable
-private fun CustomColorPickerDialog(
-    initialColor: Long,
-    onDismiss: () -> Unit,
-    onConfirm: (Long) -> Unit
-) {
-    var r by remember { mutableFloatStateOf(((initialColor shr 16) and 0xFF).toFloat()) }
-    var g by remember { mutableFloatStateOf(((initialColor shr 8) and 0xFF).toFloat()) }
-    var b by remember { mutableFloatStateOf((initialColor and 0xFF).toFloat()) }
-    val previewColor = Color(
-        red = r / 255f,
-        green = g / 255f,
-        blue = b / 255f
-    )
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Custom Color") },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .background(previewColor, RoundedCornerShape(12.dp))
-                        .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
-                )
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("R: ${r.toInt()}", style = MaterialTheme.typography.labelMedium)
-                    Slider(
-                        value = r,
-                        onValueChange = { r = it },
-                        valueRange = 0f..255f,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("G: ${g.toInt()}", style = MaterialTheme.typography.labelMedium)
-                    Slider(
-                        value = g,
-                        onValueChange = { g = it },
-                        valueRange = 0f..255f,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("B: ${b.toInt()}", style = MaterialTheme.typography.labelMedium)
-                    Slider(
-                        value = b,
-                        onValueChange = { b = it },
-                        valueRange = 0f..255f,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = {
-                val color = (0xFF000000L) or
-                    (r.toLong().coerceIn(0, 255) shl 16) or
-                    (g.toLong().coerceIn(0, 255) shl 8) or
-                    b.toLong().coerceIn(0, 255)
-                onConfirm(color)
-            }) { Text("Apply") }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
-        }
-    )
-}
