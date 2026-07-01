@@ -7,6 +7,7 @@ All notable changes to Floating Dock are documented here.
 ## [1.3.5] - 2026-07-01
 
 ### Added
+- **Transparency slider** — Design > Theme: when Translucent Panels is enabled, a slider (30–100%) controls panel opacity across the dock, app menu, volume, brightness, music, and clipboard panels. Defaults to 80% to match prior behavior.
 - **Clipboard / Notes panel** — new Quick Controls tile opens a floating panel (Clips, Favorites, Notes) reachable from the dock.
 - **Share sheet capture** — any app's share sheet shows "TaskBar Clipboard" as a target; saves text, URLs, images, PDFs, text files (`.txt`, `.md`, `.csv`, `.html`, etc.), and now Word/Excel/PowerPoint documents (`.docx`, `.doc`, `.xlsx`, `.xls`, `.pptx`, `.ppt`).
 - **Clips tab** — card per saved item with type icon, source app label, timestamp, and (for PDFs, text files, and documents) the original filename. Supports copy, share, pin, favorite, and delete actions.
@@ -19,6 +20,9 @@ All notable changes to Floating Dock are documented here.
 - **Share from panel** — every clip and note card has a share icon that forwards content to the Android share sheet.
 - **Dock sync** — the dock hides while the clipboard panel is open and reappears when the panel is dismissed (back gesture or tap-outside). Opening a link, file, image, or the share sheet keeps the dock hidden instead of flashing it back in.
 - **Clipboard tile in Controls settings** — the Clipboard tile now appears in the Controls tab so it can be reordered and toggled like other quick controls.
+
+### Changed
+- **Panel Outline** — now hides entirely (instead of graying out) while Translucent Panels is enabled, since the two modes are mutually exclusive.
 
 ---
 
