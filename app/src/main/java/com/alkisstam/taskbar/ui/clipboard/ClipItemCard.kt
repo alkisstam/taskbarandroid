@@ -89,6 +89,7 @@ fun ClipItemCard(
                             ClipType.PDF -> Icons.Default.PictureAsPdf
                             ClipType.URL -> Icons.Default.Link
                             ClipType.TEXT_FILE -> Icons.Default.Description
+                            ClipType.DOCUMENT -> Icons.Default.Description
                         },
                         contentDescription = null,
                         modifier = Modifier.size(18.dp),
@@ -158,7 +159,7 @@ fun ClipItemCard(
                     }
                 }
                 ClipType.TEXT_FILE -> {
-                    val filename = remember(item.content) { File(item.content).name }
+                    val filename = item.fileName ?: remember(item.content) { File(item.content).name }
                     val preview = remember(item.content) {
                         runCatching { File(item.content).readText(Charsets.UTF_8).take(300) }.getOrNull()
                     }
@@ -231,9 +232,39 @@ fun ClipItemCard(
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                "PDF Document",
+                                item.fileName ?: "PDF Document",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+                }
+                ClipType.DOCUMENT -> {
+                    val mimeType = remember(item.content) { documentMimeType(item.content) }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(120.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.surface)
+                            .clickable { onOpenExternal(); openFile(context, item.content, mimeType) },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(
+                                Icons.Default.Description,
+                                contentDescription = null,
+                                modifier = Modifier.size(48.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                item.fileName ?: "Document",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }
@@ -309,13 +340,14 @@ private fun shareClip(context: Context, item: ClipItem) {
             type = "text/plain"
             putExtra(Intent.EXTRA_TEXT, item.content)
         }
-        ClipType.IMAGE, ClipType.PDF, ClipType.TEXT_FILE -> {
+        ClipType.IMAGE, ClipType.PDF, ClipType.TEXT_FILE, ClipType.DOCUMENT -> {
             val file = File(item.content)
             val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
             Intent(Intent.ACTION_SEND).apply {
                 type = when (item.type) {
                     ClipType.IMAGE -> "image/*"
                     ClipType.PDF -> "application/pdf"
+                    ClipType.DOCUMENT -> documentMimeType(item.content)
                     else -> "text/plain"
                 }
                 putExtra(Intent.EXTRA_STREAM, uri)
@@ -324,6 +356,16 @@ private fun shareClip(context: Context, item: ClipItem) {
         }
     }
     context.startActivity(Intent.createChooser(intent, null).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) })
+}
+
+private fun documentMimeType(path: String): String = when (File(path).extension.lowercase()) {
+    "docx" -> "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    "doc" -> "application/msword"
+    "xlsx" -> "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    "xls" -> "application/vnd.ms-excel"
+    "pptx" -> "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+    "ppt" -> "application/vnd.ms-powerpoint"
+    else -> "application/octet-stream"
 }
 
 private fun formatTimestamp(timestamp: Long): String {

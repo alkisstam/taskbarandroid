@@ -7,6 +7,7 @@ import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,6 +29,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -39,6 +41,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -63,11 +66,25 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.ClipItem
+import com.alkisstam.taskbar.data.ClipType
 import com.alkisstam.taskbar.data.NoteItem
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 import com.alkisstam.taskbar.ui.theme.grain
 import com.alkisstam.taskbar.viewmodel.ClipboardViewModel
+import com.alkisstam.taskbar.viewmodel.FavoriteEntry
 import kotlinx.coroutines.launch
+
+private enum class ClipCategory(val label: String) {
+    ALL("All"), TEXT("Text"), IMAGES("Images"), FILES("Files"), LINKS("Links")
+}
+
+private fun ClipCategory.matches(type: ClipType): Boolean = when (this) {
+    ClipCategory.ALL -> true
+    ClipCategory.TEXT -> type == ClipType.TEXT
+    ClipCategory.IMAGES -> type == ClipType.IMAGE
+    ClipCategory.FILES -> type == ClipType.PDF || type == ClipType.TEXT_FILE || type == ClipType.DOCUMENT
+    ClipCategory.LINKS -> type == ClipType.URL
+}
 
 @Composable
 fun ClipboardPanel(
@@ -86,10 +103,12 @@ fun ClipboardPanel(
     val tabIcons = listOf(Icons.Default.ContentPaste, Icons.Default.Star, Icons.Default.Edit)
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val coroutineScope = rememberCoroutineScope()
+    var selectedCategory by remember { mutableStateOf(ClipCategory.ALL) }
 
     val panelShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
     val panelColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
     val glassBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
+    val navBarBottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
 
     Box(modifier = Modifier.fillMaxSize()) {
         Box(
@@ -106,6 +125,7 @@ fun ClipboardPanel(
                 .fillMaxWidth()
                 .fillMaxHeight(0.85f)
                 .align(Alignment.BottomCenter)
+                .padding(bottom = navBarBottomPadding)
                 .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, panelShape) else Modifier)
                 .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor, panelShape) else Modifier)
                 .clip(panelShape)
@@ -116,31 +136,49 @@ fun ClipboardPanel(
             shadowElevation = 8.dp
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 12.dp, bottom = 4.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Surface(
-                        modifier = Modifier.size(width = 40.dp, height = 4.dp),
-                        shape = RoundedCornerShape(2.dp),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
-                    ) {}
+                if (pagerState.currentPage == 0) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState())
+                            .padding(top = 12.dp, bottom = 4.dp, start = 16.dp, end = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        ClipCategory.entries.forEach { category ->
+                            val selected = category == selectedCategory
+                            Surface(
+                                shape = RoundedCornerShape(16.dp),
+                                color = if (selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                                modifier = Modifier.clickable(
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() }
+                                ) { selectedCategory = category }
+                            ) {
+                                Text(
+                                    category.label,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = if (selected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
+                                )
+                            }
+                        }
+                    }
                 }
 
                 Box(modifier = Modifier.weight(1f)) {
                     HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
                         when (page) {
                             0 -> ClipListTab(
-                                items = clips.sortedWith(
-                                    compareByDescending<ClipItem> { it.isPinned }.thenByDescending { it.timestamp }
-                                ),
+                                items = clips
+                                    .filter { selectedCategory.matches(it.type) }
+                                    .sortedWith(
+                                        compareByDescending<ClipItem> { it.isPinned }.thenByDescending { it.timestamp }
+                                    ),
                                 viewModel = viewModel,
                                 onOpenExternal = onOpenExternal
                             )
-                            1 -> ClipListTab(
-                                items = favorites.sortedByDescending { it.timestamp },
+                            1 -> FavoritesTab(
+                                entries = favorites,
                                 viewModel = viewModel,
                                 onOpenExternal = onOpenExternal
                             )
@@ -150,6 +188,7 @@ fun ClipboardPanel(
                                 ),
                                 onAdd = viewModel::addNote,
                                 onTogglePin = viewModel::toggleNotePin,
+                                onToggleFavorite = viewModel::toggleNoteFavorite,
                                 onDelete = viewModel::removeNote,
                                 onEdit = viewModel::updateNote,
                                 onOpenExternal = onOpenExternal
@@ -160,8 +199,7 @@ fun ClipboardPanel(
 
                 Surface(
                     modifier = Modifier
-                        .padding(bottom = 16.dp, start = 16.dp, end = 16.dp)
-                        .padding(WindowInsets.navigationBars.asPaddingValues()),
+                        .padding(bottom = 16.dp, start = 16.dp, end = 16.dp),
                     shape = RoundedCornerShape(40.dp),
                     tonalElevation = 6.dp,
                     shadowElevation = 16.dp
@@ -265,10 +303,82 @@ private fun ClipListTab(items: List<ClipItem>, viewModel: ClipboardViewModel, on
 }
 
 @Composable
+private fun FavoritesTab(entries: List<FavoriteEntry>, viewModel: ClipboardViewModel, onOpenExternal: () -> Unit) {
+    if (entries.isEmpty()) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    Icons.Default.Star,
+                    contentDescription = null,
+                    modifier = Modifier.size(48.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    "Nothing here yet",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+        return
+    }
+    val context = LocalContext.current
+    LazyColumn(
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.fillMaxSize()
+    ) {
+        items(
+            entries,
+            key = { entry ->
+                when (entry) {
+                    is FavoriteEntry.Clip -> "clip_${entry.item.id}"
+                    is FavoriteEntry.Note -> "note_${entry.item.id}"
+                }
+            }
+        ) { entry ->
+            when (entry) {
+                is FavoriteEntry.Clip -> ClipItemCard(
+                    item = entry.item,
+                    onToggleFavorite = { viewModel.toggleFavorite(entry.item) },
+                    onTogglePin = { viewModel.togglePin(entry.item) },
+                    onDelete = { viewModel.removeClip(entry.item.id) },
+                    onOpenExternal = onOpenExternal
+                )
+                is FavoriteEntry.Note -> NoteItemCard(
+                    note = entry.item,
+                    onCopy = {
+                        val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                        cm.setPrimaryClip(ClipData.newPlainText("note", entry.item.content))
+                    },
+                    onShare = {
+                        onOpenExternal()
+                        val intent = Intent(Intent.ACTION_SEND).apply {
+                            type = "text/plain"
+                            putExtra(Intent.EXTRA_TEXT, entry.item.content)
+                        }
+                        context.startActivity(Intent.createChooser(intent, null).apply {
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        })
+                    },
+                    onTogglePin = { viewModel.toggleNotePin(entry.item) },
+                    onToggleFavorite = { viewModel.toggleNoteFavorite(entry.item) },
+                    onDelete = { viewModel.removeNote(entry.item.id) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun NotesTab(
     noteItems: List<NoteItem>,
     onAdd: (String) -> Unit,
     onTogglePin: (NoteItem) -> Unit,
+    onToggleFavorite: (NoteItem) -> Unit,
     onDelete: (String) -> Unit,
     onEdit: (NoteItem) -> Unit,
     onOpenExternal: () -> Unit
@@ -340,6 +450,7 @@ private fun NotesTab(
                             })
                         },
                         onTogglePin = { onTogglePin(note) },
+                        onToggleFavorite = { onToggleFavorite(note) },
                         onEdit = {
                             composerVisible = false
                             editingNote = note
@@ -409,8 +520,9 @@ private fun NoteItemCard(
     onCopy: () -> Unit,
     onShare: () -> Unit,
     onTogglePin: () -> Unit,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit
+    onToggleFavorite: () -> Unit,
+    onDelete: () -> Unit,
+    onEdit: (() -> Unit)? = null
 ) {
     Surface(
         shape = RoundedCornerShape(12.dp),
@@ -475,14 +587,24 @@ private fun NoteItemCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
-                IconButton(onClick = onEdit) {
-                    Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(20.dp))
+                if (onEdit != null) {
+                    IconButton(onClick = onEdit) {
+                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(20.dp))
+                    }
                 }
                 IconButton(onClick = onCopy) {
                     Icon(Icons.Default.ContentCopy, contentDescription = "Copy", modifier = Modifier.size(20.dp))
                 }
                 IconButton(onClick = onShare) {
                     Icon(Icons.Default.Share, contentDescription = "Share", modifier = Modifier.size(20.dp))
+                }
+                IconButton(onClick = onToggleFavorite) {
+                    Icon(
+                        imageVector = if (note.isFavorite) Icons.Default.Star else Icons.Default.StarBorder,
+                        contentDescription = "Favorite",
+                        modifier = Modifier.size(20.dp),
+                        tint = if (note.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
                 IconButton(onClick = onTogglePin) {
                     Icon(

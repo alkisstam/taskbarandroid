@@ -166,12 +166,25 @@ class AppMenuViewModel @Inject constructor(
         _musicPanelVisible.value = false
     }
 
+    private var clipboardDismissedForExternalOpen = false
+
     fun toggleClipboardPanel() {
         _clipboardPanelVisible.value = !_clipboardPanelVisible.value
     }
 
     fun dismissClipboardPanel() {
         _clipboardPanelVisible.value = false
+    }
+
+    fun dismissClipboardPanelForExternalOpen() {
+        clipboardDismissedForExternalOpen = true
+        _clipboardPanelVisible.value = false
+    }
+
+    fun consumeClipboardDismissedForExternalOpen(): Boolean {
+        val result = clipboardDismissedForExternalOpen
+        clipboardDismissedForExternalOpen = false
+        return result
     }
 
     fun playPause() { mediaRepository.playPause() }

@@ -18,7 +18,7 @@ import javax.inject.Singleton
 
 private val Context.clipboardDataStore: DataStore<Preferences> by preferencesDataStore(name = "clipboard_prefs")
 
-enum class ClipType { TEXT, IMAGE, PDF, URL, TEXT_FILE }
+enum class ClipType { TEXT, IMAGE, PDF, URL, TEXT_FILE, DOCUMENT }
 
 data class ClipItem(
     val id: String,
@@ -27,14 +27,16 @@ data class ClipItem(
     val sourceApp: String,
     val timestamp: Long,
     val isPinned: Boolean = false,
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
+    val fileName: String? = null
 )
 
 data class NoteItem(
     val id: String,
     val content: String,
     val timestamp: Long,
-    val isPinned: Boolean = false
+    val isPinned: Boolean = false,
+    val isFavorite: Boolean = false
 )
 
 @Singleton
@@ -116,7 +118,7 @@ class ClipboardRepository @Inject constructor(
     }
 
     private fun pruneFile(item: ClipItem) {
-        if (item.type == ClipType.IMAGE || item.type == ClipType.PDF) {
+        if (item.type == ClipType.IMAGE || item.type == ClipType.PDF || item.type == ClipType.DOCUMENT) {
             File(item.content).takeIf { it.exists() }?.delete()
         }
     }
@@ -132,6 +134,7 @@ class ClipboardRepository @Inject constructor(
                 put("timestamp", item.timestamp)
                 put("isPinned", item.isPinned)
                 put("isFavorite", item.isFavorite)
+                put("fileName", item.fileName)
             })
         }
         return arr.toString()
@@ -148,7 +151,8 @@ class ClipboardRepository @Inject constructor(
                 sourceApp = obj.getString("sourceApp"),
                 timestamp = obj.getLong("timestamp"),
                 isPinned = obj.optBoolean("isPinned", false),
-                isFavorite = obj.optBoolean("isFavorite", false)
+                isFavorite = obj.optBoolean("isFavorite", false),
+                fileName = if (obj.has("fileName")) obj.getString("fileName") else null
             )
         }
     } catch (e: Exception) { emptyList() }
@@ -161,6 +165,7 @@ class ClipboardRepository @Inject constructor(
                 put("content", item.content)
                 put("timestamp", item.timestamp)
                 put("isPinned", item.isPinned)
+                put("isFavorite", item.isFavorite)
             })
         }
         return arr.toString()
@@ -174,7 +179,8 @@ class ClipboardRepository @Inject constructor(
                 id = obj.getString("id"),
                 content = obj.getString("content"),
                 timestamp = obj.getLong("timestamp"),
-                isPinned = obj.optBoolean("isPinned", false)
+                isPinned = obj.optBoolean("isPinned", false),
+                isFavorite = obj.optBoolean("isFavorite", false)
             )
         }
     } catch (e: Exception) { emptyList() }

@@ -823,6 +823,11 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         serviceScope.launch {
             appMenuViewModel.clipboardPanelVisible.collect { visible ->
                 clipboardPanelView?.visibility = if (visible) View.VISIBLE else View.GONE
+                if (visible) {
+                    taskbarViewModel.hideTaskbar()
+                } else if (!appMenuViewModel.consumeClipboardDismissedForExternalOpen()) {
+                    taskbarViewModel.showTaskbar()
+                }
                 val view = clipboardPanelView ?: return@collect
                 try { windowManager.updateViewLayout(view, searchLayoutParams(focusable = visible)) }
                 catch (e: Exception) { Log.w(TAG, "Failed to update clipboard panel flags", e) }

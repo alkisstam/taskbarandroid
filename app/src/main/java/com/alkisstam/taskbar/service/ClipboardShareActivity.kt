@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.OpenableColumns
 import androidx.activity.ComponentActivity
 import com.alkisstam.taskbar.data.ClipItem
 import com.alkisstam.taskbar.data.ClipType
@@ -17,6 +18,17 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ClipboardShareActivity : ComponentActivity() {
+
+    companion object {
+        private val OFFICE_DOC_EXTENSIONS = mapOf(
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document" to "docx",
+            "application/msword" to "doc",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" to "xlsx",
+            "application/vnd.ms-excel" to "xls",
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation" to "pptx",
+            "application/vnd.ms-powerpoint" to "ppt"
+        )
+    }
 
     @Inject lateinit var clipboardRepository: ClipboardRepository
 
@@ -52,7 +64,7 @@ class ClipboardShareActivity : ComponentActivity() {
                             clipboardRepository.copyStreamToStorage(input, "txt", id)
                         }
                     } catch (e: Exception) { null } ?: return null
-                    ClipItem(id = id, type = ClipType.TEXT_FILE, content = path, sourceApp = sourceApp, timestamp = timestamp)
+                    ClipItem(id = id, type = ClipType.TEXT_FILE, content = path, sourceApp = sourceApp, timestamp = timestamp, fileName = resolveFileName(uri))
                 }
             }
             mimeType.startsWith("text/") -> {
@@ -63,7 +75,7 @@ class ClipboardShareActivity : ComponentActivity() {
                         clipboardRepository.copyStreamToStorage(input, ext, id)
                     }
                 } catch (e: Exception) { null } ?: return null
-                ClipItem(id = id, type = ClipType.TEXT_FILE, content = path, sourceApp = sourceApp, timestamp = timestamp)
+                ClipItem(id = id, type = ClipType.TEXT_FILE, content = path, sourceApp = sourceApp, timestamp = timestamp, fileName = resolveFileName(uri))
             }
             mimeType.startsWith("image/") -> {
                 val uri = intentStream() ?: return null
@@ -81,7 +93,17 @@ class ClipboardShareActivity : ComponentActivity() {
                         clipboardRepository.copyStreamToStorage(input, "pdf", id)
                     }
                 } catch (e: Exception) { null } ?: return null
-                ClipItem(id = id, type = ClipType.PDF, content = path, sourceApp = sourceApp, timestamp = timestamp)
+                ClipItem(id = id, type = ClipType.PDF, content = path, sourceApp = sourceApp, timestamp = timestamp, fileName = resolveFileName(uri))
+            }
+            OFFICE_DOC_EXTENSIONS.containsKey(mimeType) -> {
+                val uri = intentStream() ?: return null
+                val ext = OFFICE_DOC_EXTENSIONS.getValue(mimeType)
+                val path = try {
+                    contentResolver.openInputStream(uri)?.use { input ->
+                        clipboardRepository.copyStreamToStorage(input, ext, id)
+                    }
+                } catch (e: Exception) { null } ?: return null
+                ClipItem(id = id, type = ClipType.DOCUMENT, content = path, sourceApp = sourceApp, timestamp = timestamp, fileName = resolveFileName(uri))
             }
             else -> null
         }
@@ -94,6 +116,17 @@ class ClipboardShareActivity : ComponentActivity() {
             @Suppress("DEPRECATION")
             intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
         }
+    }
+
+    private fun resolveFileName(uri: Uri): String? {
+        val fromResolver = try {
+            contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { cursor ->
+                if (cursor.moveToFirst()) cursor.getString(0) else null
+            }
+        } catch (e: Exception) { null }
+        return fromResolver
+            ?: intent.getStringExtra(Intent.EXTRA_TITLE)
+            ?: intent.getStringExtra(Intent.EXTRA_SUBJECT)
     }
 
     private fun callerPackageLabel(): String {
