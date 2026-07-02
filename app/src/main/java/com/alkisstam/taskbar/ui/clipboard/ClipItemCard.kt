@@ -184,7 +184,7 @@ fun ClipItemCard(
                 }
                 ClipType.IMAGE -> {
                     val bitmap = remember(item.content) {
-                        runCatching { BitmapFactory.decodeFile(item.content) }.getOrNull()
+                        runCatching { decodeSampledBitmapFromFile(item.content, 512, 512) }.getOrNull()
                     }
                     if (bitmap != null) {
                         Image(
@@ -358,6 +358,28 @@ private fun shareClip(context: Context, item: ClipItem) {
         }
     }
     context.startActivity(Intent.createChooser(intent, null).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) })
+}
+
+private fun decodeSampledBitmapFromFile(path: String, reqWidth: Int, reqHeight: Int): android.graphics.Bitmap? {
+    val boundsOptions = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+    BitmapFactory.decodeFile(path, boundsOptions)
+    boundsOptions.inSampleSize = calculateInSampleSize(boundsOptions, reqWidth, reqHeight)
+    boundsOptions.inJustDecodeBounds = false
+    return BitmapFactory.decodeFile(path, boundsOptions)
+}
+
+private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
+    val height = options.outHeight
+    val width = options.outWidth
+    var inSampleSize = 1
+    if (height > reqHeight || width > reqWidth) {
+        val halfHeight = height / 2
+        val halfWidth = width / 2
+        while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
+            inSampleSize *= 2
+        }
+    }
+    return inSampleSize
 }
 
 private fun documentMimeType(path: String): String = when (File(path).extension.lowercase()) {
