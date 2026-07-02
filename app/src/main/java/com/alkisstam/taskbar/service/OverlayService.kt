@@ -91,6 +91,15 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             try { wm.removeView(view); return } catch (_: Exception) {}
         }
     }
+
+    // WindowManager forbids changing LayoutParams.type via updateViewLayout on an already-added
+    // window. overlayWindowType() reads live accessibility-service state, so a stale type here
+    // would crash later on the deferred relayout traversal. Only refreshAllViews() (remove+re-add)
+    // is allowed to change a window's type.
+    private fun WindowManager.updateViewLayoutKeepingType(view: View, params: WindowManager.LayoutParams) {
+        (view.layoutParams as? WindowManager.LayoutParams)?.let { params.type = it.type }
+        updateViewLayout(view, params)
+    }
     private var overlayView: View? = null
     private var taskbarView: View? = null
     private var pillView: View? = null
@@ -296,26 +305,26 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private fun setOverlayFlags(interactive: Boolean, focusable: Boolean) {
         val view = overlayView ?: return
-        try { windowManager.updateViewLayout(view, overlayLayoutParams(interactive, focusable)) }
+        try { windowManager.updateViewLayoutKeepingType(view, overlayLayoutParams(interactive, focusable)) }
         catch (e: Exception) { Log.w(TAG, "Failed to update overlay layout flags", e) }
     }
 
     private fun setTaskbarFlags(interactive: Boolean) {
         taskbarInteractive = interactive
         val view = taskbarView ?: return
-        try { windowManager.updateViewLayout(view, taskbarLayoutParams(interactive)) }
+        try { windowManager.updateViewLayoutKeepingType(view, taskbarLayoutParams(interactive)) }
         catch (e: Exception) { Log.w(TAG, "Failed to update taskbar layout flags", e) }
     }
 
     private fun setSearchFlags(active: Boolean) {
         val view = searchView ?: return
-        try { windowManager.updateViewLayout(view, searchLayoutParams(focusable = active)) }
+        try { windowManager.updateViewLayoutKeepingType(view, searchLayoutParams(focusable = active)) }
         catch (e: Exception) { Log.w(TAG, "Failed to update search layout flags", e) }
     }
 
     private fun setVolumeScrimActive(active: Boolean) {
         val view = volumeScrimView ?: return
-        try { windowManager.updateViewLayout(view, volumeScrimLayoutParams(active = active)) }
+        try { windowManager.updateViewLayoutKeepingType(view, volumeScrimLayoutParams(active = active)) }
         catch (e: Exception) { Log.w(TAG, "Failed to update volume scrim flags", e) }
     }
 
@@ -357,13 +366,13 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         serviceScope.launch {
             taskbarViewModel.pillSettings.collect { settings ->
                 val view = pillView ?: return@collect
-                try { windowManager.updateViewLayout(view, pillLayoutParams(settings, isRight = false)) }
+                try { windowManager.updateViewLayoutKeepingType(view, pillLayoutParams(settings, isRight = false)) }
                 catch (e: Exception) { Log.w(TAG, "Failed to update pill position", e) }
 
                 if (settings.edgePosition == com.alkisstam.taskbar.data.PillEdgePosition.BOTH) {
                     ensurePillView2()
                     val v2 = pillView2 ?: return@collect
-                    try { windowManager.updateViewLayout(v2, pillLayoutParams(settings, isRight = true)) }
+                    try { windowManager.updateViewLayoutKeepingType(v2, pillLayoutParams(settings, isRight = true)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update pill2 position", e) }
                 } else {
                     removePillView2()
@@ -420,7 +429,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             }.collect { yOffset ->
                 musicPanelYOffsetDp = yOffset
                 val view = musicPanelView ?: return@collect
-                try { windowManager.updateViewLayout(view, musicPanelLayoutParams(musicPanelYOffsetDp, translucentModeEnabled)) }
+                try { windowManager.updateViewLayoutKeepingType(view, musicPanelLayoutParams(musicPanelYOffsetDp, translucentModeEnabled)) }
                 catch (e: Exception) { Log.w(TAG, "Failed to update music panel position", e) }
             }
         }
@@ -436,15 +445,15 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 translucentModeEnabled = enabled
                 val yOffset = volumePanelYOffsetDp
                 volumePanelView?.let { view ->
-                    try { windowManager.updateViewLayout(view, volumePanelLayoutParams(yOffset, translucentModeEnabled)) }
+                    try { windowManager.updateViewLayoutKeepingType(view, volumePanelLayoutParams(yOffset, translucentModeEnabled)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update volume panel blur", e) }
                 }
                 brightnessPanelView?.let { view ->
-                    try { windowManager.updateViewLayout(view, volumePanelLayoutParams(yOffset, translucentModeEnabled)) }
+                    try { windowManager.updateViewLayoutKeepingType(view, volumePanelLayoutParams(yOffset, translucentModeEnabled)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update brightness panel blur", e) }
                 }
                 musicPanelView?.let { view ->
-                    try { windowManager.updateViewLayout(view, musicPanelLayoutParams(musicPanelYOffsetDp, translucentModeEnabled)) }
+                    try { windowManager.updateViewLayoutKeepingType(view, musicPanelLayoutParams(musicPanelYOffsetDp, translucentModeEnabled)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update music panel blur", e) }
                 }
             }
@@ -470,14 +479,14 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 volumePanelView?.visibility = if (volumeVisible) View.VISIBLE else View.GONE
                 if (volumeVisible) {
                     val view = volumePanelView ?: return@collect
-                    try { windowManager.updateViewLayout(view, volumePanelLayoutParams(yOffset, translucentModeEnabled)) }
+                    try { windowManager.updateViewLayoutKeepingType(view, volumePanelLayoutParams(yOffset, translucentModeEnabled)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update volume panel position", e) }
                 }
 
                 brightnessPanelView?.visibility = if (brightnessVisible) View.VISIBLE else View.GONE
                 if (brightnessVisible) {
                     val view = brightnessPanelView ?: return@collect
-                    try { windowManager.updateViewLayout(view, volumePanelLayoutParams(yOffset, translucentModeEnabled)) }
+                    try { windowManager.updateViewLayoutKeepingType(view, volumePanelLayoutParams(yOffset, translucentModeEnabled)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update brightness panel position", e) }
                 }
             }
@@ -824,7 +833,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             appMenuViewModel.clipboardPanelVisible.collect { visible ->
                 clipboardPanelView?.visibility = if (visible) View.VISIBLE else View.GONE
                 val view = clipboardPanelView ?: return@collect
-                try { windowManager.updateViewLayout(view, searchLayoutParams(focusable = visible)) }
+                try { windowManager.updateViewLayoutKeepingType(view, searchLayoutParams(focusable = visible)) }
                 catch (e: Exception) { Log.w(TAG, "Failed to update clipboard panel flags", e) }
             }
         }
