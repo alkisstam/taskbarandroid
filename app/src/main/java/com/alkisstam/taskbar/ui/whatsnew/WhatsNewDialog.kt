@@ -19,6 +19,16 @@ data class WhatsNewRelease(
 
 val whatsNewReleases = listOf(
     WhatsNewRelease(
+        versionName = "1.3.5",
+        versionCode = 38,
+        highlights = listOf(
+            "New Clipboard / Notes panel — capture text, links, images, PDFs, and Office docs from any app's share sheet",
+            "Clips, Favorites, and Notes tabs with copy, share, pin, and favorite actions",
+            "Category filter (Text/Images/Files/Links) and a Clipboard quick control tile",
+            "Transparency slider for translucent panels (30–100% opacity)"
+        )
+    ),
+    WhatsNewRelease(
         versionName = "1.3.6",
         versionCode = 39,
         highlights = listOf(
@@ -31,16 +41,24 @@ val whatsNewReleases = listOf(
 )
 
 @Composable
-fun WhatsNewDialog(release: WhatsNewRelease, onDismiss: () -> Unit) {
+fun WhatsNewDialog(releases: List<WhatsNewRelease>, onDismiss: () -> Unit) {
+    val title = if (releases.size == 1) "What's New in ${releases.first().versionName}" else "What's New"
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("What's New in ${release.versionName}") },
+        title = { Text(title) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                release.highlights.forEach { line ->
-                    Row(verticalAlignment = Alignment.Top) {
-                        Text("•  ", style = MaterialTheme.typography.bodyMedium)
-                        Text(line, style = MaterialTheme.typography.bodyMedium)
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                releases.sortedByDescending { it.versionCode }.forEach { release ->
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        if (releases.size > 1) {
+                            Text(release.versionName, style = MaterialTheme.typography.titleSmall)
+                        }
+                        release.highlights.forEach { line ->
+                            Row(verticalAlignment = Alignment.Top) {
+                                Text("•  ", style = MaterialTheme.typography.bodyMedium)
+                                Text(line, style = MaterialTheme.typography.bodyMedium)
+                            }
+                        }
                     }
                 }
             }

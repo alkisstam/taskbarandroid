@@ -112,11 +112,15 @@ class MainActivity : ComponentActivity() {
                     true -> {
                         val currentVersionCode = remember { getAppVersionCode() }
                         var showWhatsNew by remember { mutableStateOf(false) }
+                        var seenAtDialogOpen by remember { mutableStateOf(0) }
                         LaunchedEffect(lastSeenVersionCode) {
                             val seen = lastSeenVersionCode ?: return@LaunchedEffect
                             when {
                                 seen == 0 -> taskbarViewModel.markVersionSeen(currentVersionCode)
-                                seen < currentVersionCode -> showWhatsNew = true
+                                seen < currentVersionCode -> {
+                                    seenAtDialogOpen = seen
+                                    showWhatsNew = true
+                                }
                             }
                         }
                         SettingsScreen(
@@ -127,9 +131,12 @@ class MainActivity : ComponentActivity() {
                             onRequestAccessibilityPermission = ::requestAccessibilityPermission
                         )
                         if (showWhatsNew) {
-                            whatsNewReleases.lastOrNull { it.versionCode <= currentVersionCode }?.let { release ->
+                            val releases = whatsNewReleases.filter {
+                                it.versionCode in (seenAtDialogOpen + 1)..currentVersionCode
+                            }
+                            if (releases.isNotEmpty()) {
                                 WhatsNewDialog(
-                                    release = release,
+                                    releases = releases,
                                     onDismiss = {
                                         showWhatsNew = false
                                         taskbarViewModel.markVersionSeen(currentVersionCode)
