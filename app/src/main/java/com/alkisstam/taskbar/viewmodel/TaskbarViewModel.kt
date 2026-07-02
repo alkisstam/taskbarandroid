@@ -81,6 +81,10 @@ class TaskbarViewModel @Inject constructor(
         .map { it as Boolean? }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
+    val lastSeenVersionCode: StateFlow<Int?> = prefsRepository.lastSeenVersionCode
+        .map { it as Int? }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+
     val musicPanelEnabled: StateFlow<Boolean> = prefsRepository.musicPanelEnabled
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
@@ -133,6 +137,10 @@ class TaskbarViewModel @Inject constructor(
 
     fun completeOnboarding() {
         viewModelScope.launch { prefsRepository.setOnboardingComplete() }
+    }
+
+    fun markVersionSeen(code: Int) {
+        viewModelScope.launch { prefsRepository.setLastSeenVersionCode(code) }
     }
 
     fun setSurfaceTintColor(color: Long) {

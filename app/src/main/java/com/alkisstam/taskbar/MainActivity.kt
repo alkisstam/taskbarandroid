@@ -16,12 +16,15 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.core.content.pm.PackageInfoCompat
 import com.alkisstam.taskbar.data.GestureAction
 import com.alkisstam.taskbar.data.PillEdgePosition
 import com.alkisstam.taskbar.service.OverlayService
@@ -29,6 +32,8 @@ import com.alkisstam.taskbar.ui.onboarding.OnboardingScreen
 import com.alkisstam.taskbar.ui.settings.SettingsScreen
 import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import com.alkisstam.taskbar.ui.theme.TaskBarTheme
+import com.alkisstam.taskbar.ui.whatsnew.WhatsNewDialog
+import com.alkisstam.taskbar.ui.whatsnew.whatsNewReleases
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -70,6 +75,7 @@ class MainActivity : ComponentActivity() {
             val onboardingComplete by taskbarViewModel.onboardingComplete.collectAsState()
             val pillSettings by taskbarViewModel.pillSettings.collectAsState()
             val hapticEnabled by taskbarViewModel.hapticFeedbackEnabled.collectAsState()
+            val lastSeenVersionCode by taskbarViewModel.lastSeenVersionCode.collectAsState()
             TaskBarTheme(themeMode = themeMode) {
               CompositionLocalProvider(LocalHapticEnabled provides hapticEnabled) {
                 when (onboardingComplete) {
@@ -103,13 +109,35 @@ class MainActivity : ComponentActivity() {
                         onRequestBatteryOptimizationExclusion = ::requestBatteryOptimizationExclusion,
                         onComplete = taskbarViewModel::completeOnboarding
                     )
-                    true -> SettingsScreen(
-                        viewModel = taskbarViewModel,
-                        hasOverlayPermission = hasOverlayPermission,
-                        hasAccessibilityPermission = hasAccessibilityPermission,
-                        onRequestOverlayPermission = ::requestOverlayPermission,
-                        onRequestAccessibilityPermission = ::requestAccessibilityPermission
-                    )
+                    true -> {
+                        val currentVersionCode = remember { getAppVersionCode() }
+                        var showWhatsNew by remember { mutableStateOf(false) }
+                        LaunchedEffect(lastSeenVersionCode) {
+                            val seen = lastSeenVersionCode ?: return@LaunchedEffect
+                            when {
+                                seen == 0 -> taskbarViewModel.markVersionSeen(currentVersionCode)
+                                seen < currentVersionCode -> showWhatsNew = true
+                            }
+                        }
+                        SettingsScreen(
+                            viewModel = taskbarViewModel,
+                            hasOverlayPermission = hasOverlayPermission,
+                            hasAccessibilityPermission = hasAccessibilityPermission,
+                            onRequestOverlayPermission = ::requestOverlayPermission,
+                            onRequestAccessibilityPermission = ::requestAccessibilityPermission
+                        )
+                        if (showWhatsNew) {
+                            whatsNewReleases.lastOrNull { it.versionCode <= currentVersionCode }?.let { release ->
+                                WhatsNewDialog(
+                                    release = release,
+                                    onDismiss = {
+                                        showWhatsNew = false
+                                        taskbarViewModel.markVersionSeen(currentVersionCode)
+                                    }
+                                )
+                            }
+                        }
+                    }
                 }
               }
             }
@@ -185,6 +213,11 @@ class MainActivity : ComponentActivity() {
 
     private fun requestNotificationListenerPermission() {
         permissionLauncher.launch(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+    }
+
+    private fun getAppVersionCode(): Int {
+        val packageInfo = packageManager.getPackageInfo(packageName, 0)
+        return PackageInfoCompat.getLongVersionCode(packageInfo).toInt()
     }
 
     private fun getBatteryOptimizationExcluded(): Boolean {

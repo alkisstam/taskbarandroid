@@ -4,6 +4,25 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.3.6] - 2026-07-02
+
+### Added
+- **Bottom pill gesture picker** — Design > Pill Size & Appearance, when edge position is Bottom: choose whether Double Tap or Swipe Up activates the pill (default Double Tap), with a note that Swipe Up works better on 3-button navigation devices.
+- **Position from bottom slider** — Bottom pill can now be lifted off the very bottom edge instead of sitting flush against it.
+- **Restrict Trigger to Pill** — Pill Size & Appearance: confine the touch-trigger area to the pill's own bounds instead of the full screen edge.
+
+### Changed
+- **Clipboard panel now floats above the dock** — instead of hiding the dock while open, the panel renders as a card above it (like the all-apps panel); dock stays visible throughout.
+- **Clipboard panel appearance** — all four corners now rounded (previously only the top), panel fills available height between the status bar (4dp gap) and the dock instead of a fixed 85% fraction, 2dp side margins.
+- **Clipboard panel narrow-screen fixes** — action-button rows (clip cards, notes) and the Clips/Favorites/Notes tab bar now wrap/distribute instead of risking clipping on narrow phones.
+- **Clipboard external-open autohide** — opening a file, image, or link, or tapping Share, now temporarily hides the dock and music panel (if open), matching the existing behavior when launching an app from the all-apps menu.
+- **Bottom pill defaults** — width 220dp, height 20dp, position-from-bottom 12dp (previously 130×8dp, flush at bottom).
+
+### Fixed
+- **Pill height slider clamped at ~18dp** — the bottom pill's touch window height was hardcoded to the Trigger Area size, silently clipping any Height value above it; the window now grows to fit the configured height.
+
+---
+
 ## [1.3.5] - 2026-07-01
 
 ### Added

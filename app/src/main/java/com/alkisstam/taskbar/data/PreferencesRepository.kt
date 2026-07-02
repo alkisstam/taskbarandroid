@@ -97,6 +97,7 @@ class PreferencesRepository @Inject constructor(
         private val CONTROLS_DISABLED_KEY = stringPreferencesKey("controls_disabled_ids")
         private val TASKBAR_VISIBLE_KEY = booleanPreferencesKey("taskbar_visible")
         private val ONBOARDING_COMPLETE_KEY = booleanPreferencesKey("onboarding_complete")
+        private val LAST_SEEN_VERSION_CODE_KEY = intPreferencesKey("last_seen_version_code")
         private val MUSIC_PANEL_ENABLED_KEY = booleanPreferencesKey("music_panel_enabled")
         private val MUSIC_PANEL_OPEN_KEY = booleanPreferencesKey("music_panel_open")
         private val HAPTIC_FEEDBACK_KEY = booleanPreferencesKey("haptic_feedback")
@@ -337,6 +338,16 @@ class PreferencesRepository @Inject constructor(
     suspend fun setOnboardingComplete() {
         context.dataStore.edit { prefs ->
             prefs[ONBOARDING_COMPLETE_KEY] = true
+        }
+    }
+
+    val lastSeenVersionCode: Flow<Int> = context.dataStore.data.map { prefs ->
+        prefs[LAST_SEEN_VERSION_CODE_KEY] ?: 0
+    }
+
+    suspend fun setLastSeenVersionCode(code: Int) {
+        context.dataStore.edit { prefs ->
+            prefs[LAST_SEEN_VERSION_CODE_KEY] = code
         }
     }
 
