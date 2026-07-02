@@ -41,6 +41,9 @@ import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
 import com.alkisstam.taskbar.viewmodel.ClipboardViewModel
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 
+private fun dockAwarePanelBottomPadding(isTaskbarVisible: Boolean, heightDp: Float, expandedRows: Int) =
+    if (isTaskbarVisible) (20f + heightDp * (1 + expandedRows) + 16f + 28f).dp else 0.dp
+
 @Composable
 internal fun OverlayContent(
     taskbarViewModel: TaskbarViewModel,
@@ -55,9 +58,7 @@ internal fun OverlayContent(
     val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
 
     val expandedRows = if (isDockExpanded && quickControlsEnabled) 1 else 0
-    val panelBottomPadding = if (isTaskbarVisible) {
-        (20f + taskbarSettings.heightDp * (1 + expandedRows) + 16f + 28f).dp
-    } else 0.dp
+    val panelBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.heightDp, expandedRows)
 
     TaskBarTheme(themeMode = themeMode) {
         Box(
@@ -250,16 +251,28 @@ internal fun ClipboardPanelContent(
     val translucentMode by taskbarViewModel.translucentMode.collectAsState()
     val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
     val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
+    val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
+    val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
+    val quickControlsEnabled by taskbarViewModel.quickControlsEnabled.collectAsState()
+    val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
+
+    val expandedRows = if (isDockExpanded && quickControlsEnabled) 1 else 0
+    val dockBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.heightDp, expandedRows)
 
     TaskBarTheme(themeMode = themeMode) {
         ClipboardPanel(
             viewModel = clipboardViewModel,
             onDismiss = appMenuViewModel::dismissClipboardPanel,
-            onOpenExternal = appMenuViewModel::dismissClipboardPanelForExternalOpen,
+            onOpenExternal = {
+                appMenuViewModel.dismissClipboardPanelForExternalOpen()
+                taskbarViewModel.hideTaskbar()
+                appMenuViewModel.dismissMusicPanel()
+            },
             panelOutlineEnabled = panelOutlineEnabled,
             translucentMode = translucentMode,
             translucentAlpha = translucentAlpha,
-            surfaceTintColor = surfaceTintColor
+            surfaceTintColor = surfaceTintColor,
+            dockBottomPadding = dockBottomPadding
         )
     }
 }

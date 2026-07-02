@@ -134,6 +134,10 @@ fun TriggerPillView(
                 Box(modifier = Modifier.align(Alignment.Center)) {
                     PillShape(pillSettings = pillSettings)
                 }
+            } else if (pillSettings.restrictTriggerToPill) {
+                Box(modifier = Modifier.align(Alignment.Center)) {
+                    PillShape(pillSettings = pillSettings)
+                }
             } else {
                 val totalH = maxHeight
                 val pillH = pillSettings.heightDp.coerceAtLeast(2f).dp

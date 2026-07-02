@@ -5,6 +5,7 @@ import android.graphics.PixelFormat
 import android.view.Gravity
 import android.view.WindowManager
 import com.alkisstam.taskbar.data.PillEdgePosition
+import com.alkisstam.taskbar.data.PillSettings
 
 internal fun overlayWindowType() =
     if (TaskBarAccessibilityService.instance != null)
@@ -31,24 +32,25 @@ internal fun Context.overlayLayoutParams(interactive: Boolean = true, focusable:
 }
 
 internal fun Context.pillLayoutParams(
-    edgePosition: PillEdgePosition = PillEdgePosition.BOTTOM,
-    isRight: Boolean = false,
-    sidePositionPct: Float = 50f,
-    triggerAreaDp: Float = 18f
+    settings: PillSettings,
+    isRight: Boolean = false
 ): WindowManager.LayoutParams {
     val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
             WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
     val density = resources.displayMetrics.density
-    val triggerPx = (triggerAreaDp * density).toInt()
+    val triggerPx = (settings.triggerAreaDp * density).toInt()
     val sideStripPx = triggerPx
     val bottomStripPx = triggerPx
-    val side = if (edgePosition == PillEdgePosition.BOTH) {
+    val side = if (settings.edgePosition == PillEdgePosition.BOTH) {
         if (isRight) PillEdgePosition.RIGHT else PillEdgePosition.LEFT
-    } else edgePosition
+    } else settings.edgePosition
+    val restrict = settings.restrictTriggerToPill
+    val sideLengthPx = if (restrict) (settings.heightDp * density).toInt() else WindowManager.LayoutParams.MATCH_PARENT
+    val bottomLengthPx = if (restrict) (settings.widthDp * density).toInt() else WindowManager.LayoutParams.MATCH_PARENT
     return WindowManager.LayoutParams(
-        if (side == PillEdgePosition.BOTTOM) WindowManager.LayoutParams.MATCH_PARENT else sideStripPx,
-        if (side == PillEdgePosition.BOTTOM) bottomStripPx else WindowManager.LayoutParams.MATCH_PARENT,
+        if (side == PillEdgePosition.BOTTOM) bottomLengthPx else sideStripPx,
+        if (side == PillEdgePosition.BOTTOM) bottomStripPx else sideLengthPx,
         overlayWindowType(),
         flags,
         PixelFormat.TRANSLUCENT
@@ -57,12 +59,12 @@ internal fun Context.pillLayoutParams(
             PillEdgePosition.LEFT -> {
                 gravity = Gravity.START or Gravity.TOP
                 x = 0
-                y = 0
+                y = if (restrict) sidePositionOffsetPx(settings, density) else 0
             }
             PillEdgePosition.RIGHT -> {
                 gravity = Gravity.END or Gravity.TOP
                 x = 0
-                y = 0
+                y = if (restrict) sidePositionOffsetPx(settings, density) else 0
             }
             else -> {
                 gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
@@ -71,6 +73,13 @@ internal fun Context.pillLayoutParams(
             }
         }
     }
+}
+
+private fun Context.sidePositionOffsetPx(settings: PillSettings, density: Float): Int {
+    val screenHeightPx = resources.displayMetrics.heightPixels
+    val pillHeightPx = (settings.heightDp * density).toInt()
+    val availableH = (screenHeightPx - pillHeightPx).coerceAtLeast(0)
+    return (settings.sidePositionPct / 100f * availableH).toInt()
 }
 
 internal fun Context.searchLayoutParams(focusable: Boolean = false): WindowManager.LayoutParams {

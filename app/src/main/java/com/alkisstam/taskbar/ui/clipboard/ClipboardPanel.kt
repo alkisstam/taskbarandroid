@@ -15,16 +15,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -64,6 +62,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.ClipItem
 import com.alkisstam.taskbar.data.ClipType
@@ -94,7 +93,8 @@ fun ClipboardPanel(
     panelOutlineEnabled: Boolean = false,
     translucentMode: Boolean = false,
     translucentAlpha: Float = 0.80f,
-    surfaceTintColor: Long = 0L
+    surfaceTintColor: Long = 0L,
+    dockBottomPadding: Dp = 0.dp
 ) {
     val clips by viewModel.clips.collectAsState()
     val favorites by viewModel.favorites.collectAsState()
@@ -106,10 +106,9 @@ fun ClipboardPanel(
     val coroutineScope = rememberCoroutineScope()
     var selectedCategory by remember { mutableStateOf(ClipCategory.ALL) }
 
-    val panelShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+    val panelShape = RoundedCornerShape(24.dp)
     val panelColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
     val glassBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
-    val navBarBottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
 
     Box(modifier = Modifier.fillMaxSize()) {
         Box(
@@ -123,10 +122,10 @@ fun ClipboardPanel(
 
         Surface(
             modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.85f)
-                .align(Alignment.BottomCenter)
-                .padding(bottom = navBarBottomPadding)
+                .fillMaxSize()
+                .statusBarsPadding()
+                .padding(top = 4.dp, start = 2.dp, end = 2.dp)
+                .padding(bottom = dockBottomPadding)
                 .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, panelShape) else Modifier)
                 .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor, panelShape) else Modifier)
                 .clip(panelShape)
@@ -200,59 +199,67 @@ fun ClipboardPanel(
 
                 Surface(
                     modifier = Modifier
+                        .fillMaxWidth()
                         .padding(bottom = 16.dp, start = 16.dp, end = 16.dp),
                     shape = RoundedCornerShape(40.dp),
                     tonalElevation = 6.dp,
                     shadowElevation = 16.dp
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp, vertical = 8.dp),
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         tabs.forEachIndexed { index, title ->
                             val selected = pagerState.currentPage == index
-                            if (selected) {
-                                Surface(
-                                    modifier = Modifier.clickable(
-                                        indication = null,
-                                        interactionSource = remember { MutableInteractionSource() }
-                                    ) { coroutineScope.launch { pagerState.animateScrollToPage(index) } },
-                                    shape = RoundedCornerShape(28.dp),
-                                    color = MaterialTheme.colorScheme.primaryContainer
-                                ) {
-                                    Row(
-                                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            Box(
+                                modifier = Modifier.weight(1f),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                if (selected) {
+                                    Surface(
+                                        modifier = Modifier.clickable(
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) { coroutineScope.launch { pagerState.animateScrollToPage(index) } },
+                                        shape = RoundedCornerShape(28.dp),
+                                        color = MaterialTheme.colorScheme.primaryContainer
+                                    ) {
+                                        Row(
+                                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
+                                            Icon(
+                                                tabIcons[index],
+                                                contentDescription = null,
+                                                modifier = Modifier.size(18.dp),
+                                                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                                            )
+                                            Text(
+                                                title,
+                                                style = MaterialTheme.typography.labelMedium,
+                                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                            )
+                                        }
+                                    }
+                                } else {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(48.dp)
+                                            .clip(RoundedCornerShape(24.dp))
+                                            .clickable { coroutineScope.launch { pagerState.animateScrollToPage(index) } },
+                                        contentAlignment = Alignment.Center
                                     ) {
                                         Icon(
                                             tabIcons[index],
-                                            contentDescription = null,
-                                            modifier = Modifier.size(18.dp),
-                                            tint = MaterialTheme.colorScheme.onPrimaryContainer
-                                        )
-                                        Text(
-                                            title,
-                                            style = MaterialTheme.typography.labelMedium,
-                                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                                            contentDescription = title,
+                                            modifier = Modifier.size(22.dp),
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     }
-                                }
-                            } else {
-                                Box(
-                                    modifier = Modifier
-                                        .size(48.dp)
-                                        .clip(RoundedCornerShape(24.dp))
-                                        .clickable { coroutineScope.launch { pagerState.animateScrollToPage(index) } },
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        tabIcons[index],
-                                        contentDescription = title,
-                                        modifier = Modifier.size(22.dp),
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
                                 }
                             }
                         }
@@ -584,9 +591,10 @@ private fun NoteItemCard(
                 overflow = TextOverflow.Ellipsis
             )
 
-            Row(
+            FlowRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.End,
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 if (onEdit != null) {
                     IconButton(onClick = onEdit) {

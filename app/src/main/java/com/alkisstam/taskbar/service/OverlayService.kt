@@ -357,13 +357,13 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         serviceScope.launch {
             taskbarViewModel.pillSettings.collect { settings ->
                 val view = pillView ?: return@collect
-                try { windowManager.updateViewLayout(view, pillLayoutParams(settings.edgePosition, isRight = false, sidePositionPct = settings.sidePositionPct, triggerAreaDp = settings.triggerAreaDp)) }
+                try { windowManager.updateViewLayout(view, pillLayoutParams(settings, isRight = false)) }
                 catch (e: Exception) { Log.w(TAG, "Failed to update pill position", e) }
 
                 if (settings.edgePosition == com.alkisstam.taskbar.data.PillEdgePosition.BOTH) {
                     ensurePillView2()
                     val v2 = pillView2 ?: return@collect
-                    try { windowManager.updateViewLayout(v2, pillLayoutParams(settings.edgePosition, isRight = true, sidePositionPct = settings.sidePositionPct, triggerAreaDp = settings.triggerAreaDp)) }
+                    try { windowManager.updateViewLayout(v2, pillLayoutParams(settings, isRight = true)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update pill2 position", e) }
                 } else {
                     removePillView2()
@@ -386,7 +386,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             pillView2 = composeView
             if (hiddenForLandscape) composeView.visibility = View.GONE
             val settings = taskbarViewModel.pillSettings.value
-            windowManager.addView(composeView, pillLayoutParams(settings.edgePosition, isRight = true, sidePositionPct = settings.sidePositionPct, triggerAreaDp = settings.triggerAreaDp))
+            windowManager.addView(composeView, pillLayoutParams(settings, isRight = true))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add pill2 view", e)
             pillView2 = null
@@ -627,7 +627,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             pillView = composeView
             if (hiddenForLandscape) composeView.visibility = View.GONE
             val initial = taskbarViewModel.pillSettings.value
-            windowManager.addView(composeView, pillLayoutParams(initial.edgePosition, isRight = false, sidePositionPct = initial.sidePositionPct, triggerAreaDp = initial.triggerAreaDp))
+            windowManager.addView(composeView, pillLayoutParams(initial, isRight = false))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add pill view", e)
             pillView = null
@@ -823,11 +823,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         serviceScope.launch {
             appMenuViewModel.clipboardPanelVisible.collect { visible ->
                 clipboardPanelView?.visibility = if (visible) View.VISIBLE else View.GONE
-                if (visible) {
-                    taskbarViewModel.hideTaskbar()
-                } else if (!appMenuViewModel.consumeClipboardDismissedForExternalOpen()) {
-                    taskbarViewModel.showTaskbar()
-                }
                 val view = clipboardPanelView ?: return@collect
                 try { windowManager.updateViewLayout(view, searchLayoutParams(focusable = visible)) }
                 catch (e: Exception) { Log.w(TAG, "Failed to update clipboard panel flags", e) }

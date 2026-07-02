@@ -126,6 +126,25 @@ fun PillSettingsScreen(
                 onValueChange = { viewModel.savePillSettings(pillSettings.copy(triggerAreaDp = it)) }
             )
             Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("Restrict Trigger to Pill", style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        "Only the pill area responds to gestures, not the whole edge",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Switch(
+                    checked = pillSettings.restrictTriggerToPill,
+                    onCheckedChange = { viewModel.savePillSettings(pillSettings.copy(restrictTriggerToPill = it)) }
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
             Text("Position", style = MaterialTheme.typography.bodyMedium)
             Spacer(modifier = Modifier.height(4.dp))
             FlowRow(
@@ -196,7 +215,7 @@ fun PillSettingsScreen(
                 )
             }
             Spacer(modifier = Modifier.height(12.dp))
-            PillPositionPreview(pillSettings.edgePosition, pillSettings.widthDp, pillSettings.heightDp, pillSettings.alpha, pillSettings.sidePositionPct)
+            PillPositionPreview(pillSettings.edgePosition, pillSettings.widthDp, pillSettings.heightDp, pillSettings.alpha, pillSettings.sidePositionPct, pillSettings.restrictTriggerToPill)
             Spacer(modifier = Modifier.height(8.dp))
             if (pillSettings.edgePosition == PillEdgePosition.BOTTOM) {
                 Text(
@@ -329,7 +348,8 @@ private fun PillPositionPreview(
     widthDp: Float,
     heightDp: Float,
     alpha: Float,
-    sidePositionPct: Float = 50f
+    sidePositionPct: Float = 50f,
+    restrictTriggerToPill: Boolean = false
 ) {
     val pillColor = MaterialTheme.colorScheme.primary.copy(alpha = alpha)
     val triggerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)
@@ -352,13 +372,21 @@ private fun PillPositionPreview(
         ) {
             when (edgePosition) {
                 PillEdgePosition.BOTTOM -> {
-                    // Trigger area: full-width 18dp strip at bottom
+                    // Trigger area: full-width 18dp strip at bottom, or pill-only when restricted
                     Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .fillMaxWidth()
-                            .height(10.dp)
-                            .background(triggerColor, RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp))
+                        modifier = if (restrictTriggerToPill) {
+                            Modifier
+                                .align(Alignment.BottomCenter)
+                                .width(28.dp)
+                                .height(10.dp)
+                                .background(triggerColor, RoundedCornerShape(8.dp))
+                        } else {
+                            Modifier
+                                .align(Alignment.BottomCenter)
+                                .fillMaxWidth()
+                                .height(10.dp)
+                                .background(triggerColor, RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp))
+                        }
                     )
                     // Pill indicator
                     Box(
@@ -371,12 +399,14 @@ private fun PillPositionPreview(
                     )
                 }
                 PillEdgePosition.LEFT, PillEdgePosition.BOTH -> {
-                    // Trigger area: 6dp strip on left
+                    val triggerH = if (restrictTriggerToPill) pillH.coerceAtMost(frameH - 4.dp) else frameH
+                    // Trigger area: 6dp strip on left, or pill-only height when restricted
                     Box(
                         modifier = Modifier
                             .align(Alignment.CenterStart)
                             .width(6.dp)
-                            .height(frameH)
+                            .height(triggerH)
+                            .offset(y = if (restrictTriggerToPill) (sideOffsetFraction * frameH.value).dp else 0.dp)
                             .background(triggerColor, RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp))
                     )
                     // Pill indicator
@@ -393,7 +423,8 @@ private fun PillPositionPreview(
                             modifier = Modifier
                                 .align(Alignment.CenterEnd)
                                 .width(6.dp)
-                                .height(frameH)
+                                .height(triggerH)
+                                .offset(y = if (restrictTriggerToPill) (sideOffsetFraction * frameH.value).dp else 0.dp)
                                 .background(triggerColor, RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp))
                         )
                         Box(
@@ -407,12 +438,14 @@ private fun PillPositionPreview(
                     }
                 }
                 PillEdgePosition.RIGHT -> {
-                    // Trigger area: 6dp strip on right
+                    val triggerH = if (restrictTriggerToPill) pillH.coerceAtMost(frameH - 4.dp) else frameH
+                    // Trigger area: 6dp strip on right, or pill-only height when restricted
                     Box(
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
                             .width(6.dp)
-                            .height(frameH)
+                            .height(triggerH)
+                            .offset(y = if (restrictTriggerToPill) (sideOffsetFraction * frameH.value).dp else 0.dp)
                             .background(triggerColor, RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp))
                     )
                     // Pill indicator

@@ -61,7 +61,8 @@ data class PillSettings(
     val positionXPct: Float = 4f,
     val edgePosition: PillEdgePosition = PillEdgePosition.BOTTOM,
     val sidePositionPct: Float = 50f,
-    val triggerAreaDp: Float = 18f
+    val triggerAreaDp: Float = 18f,
+    val restrictTriggerToPill: Boolean = false
 )
 
 @Singleton
@@ -103,6 +104,7 @@ class PreferencesRepository @Inject constructor(
         private val APP_GRID_COLUMNS_KEY = intPreferencesKey("app_grid_columns")
         private val APP_GRID_ROWS_KEY = intPreferencesKey("app_grid_rows")
         private val PILL_TRIGGER_AREA_KEY = floatPreferencesKey("pill_trigger_area")
+        private val PILL_RESTRICT_TRIGGER_KEY = booleanPreferencesKey("pill_restrict_trigger")
         private val TRANSLUCENT_MODE_KEY = booleanPreferencesKey("translucent_mode")
         private val TRANSLUCENT_ALPHA_KEY = floatPreferencesKey("translucent_alpha")
 
@@ -195,7 +197,8 @@ class PreferencesRepository @Inject constructor(
             positionXPct     = prefs[PILL_POSITION_X_PCT_KEY]     ?: 4f,
             edgePosition     = prefs[PILL_EDGE_POSITION_KEY].toPillEdgePosition(),
             sidePositionPct  = prefs[PILL_SIDE_POSITION_PCT_KEY]  ?: 50f,
-            triggerAreaDp    = prefs[PILL_TRIGGER_AREA_KEY]       ?: 18f
+            triggerAreaDp    = prefs[PILL_TRIGGER_AREA_KEY]       ?: 18f,
+            restrictTriggerToPill = prefs[PILL_RESTRICT_TRIGGER_KEY] ?: false
         )
     }
 
@@ -282,6 +285,7 @@ class PreferencesRepository @Inject constructor(
             prefs[PILL_EDGE_POSITION_KEY]      = settings.edgePosition.name
             prefs[PILL_SIDE_POSITION_PCT_KEY]  = settings.sidePositionPct
             prefs[PILL_TRIGGER_AREA_KEY]       = settings.triggerAreaDp
+            prefs[PILL_RESTRICT_TRIGGER_KEY]   = settings.restrictTriggerToPill
         }
     }
 
@@ -439,6 +443,7 @@ class PreferencesRepository @Inject constructor(
             prefs[APP_GRID_COLUMNS_KEY]?.let { put("app_grid_columns", it) }
             prefs[APP_GRID_ROWS_KEY]?.let { put("app_grid_rows", it) }
             prefs[PILL_TRIGGER_AREA_KEY]?.let { put("pill_trigger_area", it) }
+            prefs[PILL_RESTRICT_TRIGGER_KEY]?.let { put("pill_restrict_trigger", it) }
         }.toString()
     }
 
@@ -475,6 +480,7 @@ class PreferencesRepository @Inject constructor(
             if (obj.has("app_grid_columns")) prefs[APP_GRID_COLUMNS_KEY] = obj.getInt("app_grid_columns")
             if (obj.has("app_grid_rows")) prefs[APP_GRID_ROWS_KEY] = obj.getInt("app_grid_rows")
             if (obj.has("pill_trigger_area")) prefs[PILL_TRIGGER_AREA_KEY] = obj.getDouble("pill_trigger_area").toFloat()
+            if (obj.has("pill_restrict_trigger")) prefs[PILL_RESTRICT_TRIGGER_KEY] = obj.getBoolean("pill_restrict_trigger")
         }
     }
 
