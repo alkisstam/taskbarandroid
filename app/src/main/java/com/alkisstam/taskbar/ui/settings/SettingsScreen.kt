@@ -551,6 +551,7 @@ private fun MusicPanelSettingsCard(viewModel: TaskbarViewModel, context: android
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
     val pinnedApps by viewModel.pinnedApps.collectAsState()
@@ -695,7 +696,9 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
                         onValueChange = { localColumns = it },
                         onValueChangeFinished = { viewModel.setAppGridColumns(localColumns.toInt()) },
                         valueRange = 3f..6f,
-                        steps = 2
+                        steps = 2,
+                        track = { FilledPillSliderTrack(it) },
+                        thumb = {}
                     )
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -709,7 +712,9 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
                         onValueChange = { localRows = it },
                         onValueChangeFinished = { viewModel.setAppGridRows(localRows.toInt()) },
                         valueRange = 3f..6f,
-                        steps = 2
+                        steps = 2,
+                        track = { FilledPillSliderTrack(it) },
+                        thumb = {}
                     )
                 }
             }

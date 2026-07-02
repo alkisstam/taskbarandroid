@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.alkisstam.taskbar.ui.settings
 
 import androidx.compose.animation.AnimatedVisibility
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,6 +27,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DarkMode
@@ -35,10 +39,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -88,6 +94,82 @@ fun PillSettingsScreen(
             .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp + bottomPadding),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        ExpandableSection(
+            title = "Theme",
+            expanded = themeExpanded,
+            onToggle = { themeExpanded = !themeExpanded }
+        ) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                FilterChip(
+                    selected = themeMode == ThemeMode.LIGHT,
+                    onClick = { viewModel.setThemeMode(ThemeMode.LIGHT) },
+                    label = { Text("Light") },
+                    leadingIcon = { Icon(Icons.Filled.LightMode, contentDescription = null) }
+                )
+                FilterChip(
+                    selected = themeMode == ThemeMode.DARK,
+                    onClick = { viewModel.setThemeMode(ThemeMode.DARK) },
+                    label = { Text("Dark") },
+                    leadingIcon = { Icon(Icons.Filled.DarkMode, contentDescription = null) }
+                )
+                FilterChip(
+                    selected = themeMode == ThemeMode.SYSTEM,
+                    onClick = { viewModel.setThemeMode(ThemeMode.SYSTEM) },
+                    label = { Text("System") },
+                    leadingIcon = { Icon(Icons.Filled.PhoneAndroid, contentDescription = null) }
+                )
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            SurfaceTintColorPicker(
+                currentColor = surfaceTintColor,
+                onColorSelected = { viewModel.setSurfaceTintColor(it) }
+            )
+            if (!translucentMode) {
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Panel Outline", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+                    Switch(
+                        checked = panelOutlineEnabled,
+                        onCheckedChange = { viewModel.setPanelOutlineEnabled(it) }
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(4.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("Translucent panels", style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        "Semi-transparent dock and panels",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Switch(
+                    checked = translucentMode,
+                    onCheckedChange = { viewModel.setTranslucentMode(it) }
+                )
+            }
+            if (translucentMode) {
+                Spacer(modifier = Modifier.height(8.dp))
+                SettingsSlider(
+                    label = "Transparency",
+                    value = translucentAlpha,
+                    valueRange = 0.3f..1f,
+                    unit = "%",
+                    displayTransform = { "${(it * 100).toInt()}%" },
+                    onValueChange = { viewModel.setTranslucentAlpha(it) }
+                )
+            }
+        }
+
         ExpandableSection(
             title = "Pill Size & Appearance",
             expanded = pillExpanded,
@@ -298,82 +380,6 @@ fun PillSettingsScreen(
                 onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(quickControlSizeDp = it)) }
             )
         }
-
-        ExpandableSection(
-            title = "Theme",
-            expanded = themeExpanded,
-            onToggle = { themeExpanded = !themeExpanded }
-        ) {
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                FilterChip(
-                    selected = themeMode == ThemeMode.LIGHT,
-                    onClick = { viewModel.setThemeMode(ThemeMode.LIGHT) },
-                    label = { Text("Light") },
-                    leadingIcon = { Icon(Icons.Filled.LightMode, contentDescription = null) }
-                )
-                FilterChip(
-                    selected = themeMode == ThemeMode.DARK,
-                    onClick = { viewModel.setThemeMode(ThemeMode.DARK) },
-                    label = { Text("Dark") },
-                    leadingIcon = { Icon(Icons.Filled.DarkMode, contentDescription = null) }
-                )
-                FilterChip(
-                    selected = themeMode == ThemeMode.SYSTEM,
-                    onClick = { viewModel.setThemeMode(ThemeMode.SYSTEM) },
-                    label = { Text("System") },
-                    leadingIcon = { Icon(Icons.Filled.PhoneAndroid, contentDescription = null) }
-                )
-            }
-            Spacer(modifier = Modifier.height(12.dp))
-            SurfaceTintColorPicker(
-                currentColor = surfaceTintColor,
-                onColorSelected = { viewModel.setSurfaceTintColor(it) }
-            )
-            if (!translucentMode) {
-                Spacer(modifier = Modifier.height(12.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Panel Outline", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
-                    Switch(
-                        checked = panelOutlineEnabled,
-                        onCheckedChange = { viewModel.setPanelOutlineEnabled(it) }
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(4.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text("Translucent panels", style = MaterialTheme.typography.bodyLarge)
-                    Text(
-                        "Semi-transparent dock and panels",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                Switch(
-                    checked = translucentMode,
-                    onCheckedChange = { viewModel.setTranslucentMode(it) }
-                )
-            }
-            if (translucentMode) {
-                Spacer(modifier = Modifier.height(8.dp))
-                SettingsSlider(
-                    label = "Transparency",
-                    value = translucentAlpha,
-                    valueRange = 0.3f..1f,
-                    unit = "%",
-                    displayTransform = { "${(it * 100).toInt()}%" },
-                    onValueChange = { viewModel.setTranslucentAlpha(it) }
-                )
-            }
-        }
     }
 }
 
@@ -550,6 +556,27 @@ private fun ExpandableSection(
 }
 
 @Composable
+fun FilledPillSliderTrack(sliderState: SliderState) {
+    val range = sliderState.valueRange
+    val fraction = ((sliderState.value - range.start) / (range.endInclusive - range.start)).coerceIn(0f, 1f)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(40.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f), RoundedCornerShape(20.dp))
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(fraction)
+                .background(MaterialTheme.colorScheme.primary)
+        )
+    }
+}
+
+@Composable
 private fun SettingsSlider(
     label: String,
     value: Float,
@@ -575,7 +602,9 @@ private fun SettingsSlider(
             value = localValue,
             onValueChange = { localValue = it },
             onValueChangeFinished = { onValueChange(localValue) },
-            valueRange = valueRange
+            valueRange = valueRange,
+            track = { FilledPillSliderTrack(it) },
+            thumb = {}
         )
     }
 }
@@ -723,7 +752,9 @@ private fun CustomColorPickerDialog(
                         value = r,
                         onValueChange = { r = it },
                         valueRange = 0f..255f,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        track = { FilledPillSliderTrack(it) },
+                        thumb = {}
                     )
                 }
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -732,7 +763,9 @@ private fun CustomColorPickerDialog(
                         value = g,
                         onValueChange = { g = it },
                         valueRange = 0f..255f,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        track = { FilledPillSliderTrack(it) },
+                        thumb = {}
                     )
                 }
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -741,7 +774,9 @@ private fun CustomColorPickerDialog(
                         value = b,
                         onValueChange = { b = it },
                         valueRange = 0f..255f,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        track = { FilledPillSliderTrack(it) },
+                        thumb = {}
                     )
                 }
             }
