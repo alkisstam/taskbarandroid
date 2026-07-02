@@ -84,7 +84,7 @@ class MainActivity : ComponentActivity() {
                         hasBatteryOptimizationExcluded = hasBatteryOptimizationExcluded,
                         selectedPosition = pillSettings.edgePosition,
                         onPositionSelected = { pos ->
-                            val (w, h) = if (pos == PillEdgePosition.BOTTOM) 80f to 8f else 8f to 40f
+                            val (w, h) = if (pos == PillEdgePosition.BOTTOM) 220f to 20f else 8f to 40f
                             val (swipeUp, swipeDown, doubleTap) = if (pos == PillEdgePosition.BOTTOM)
                                 Triple(GestureAction.DISABLED, GestureAction.DISABLED, GestureAction.SHOW_DOCK)
                             else

@@ -156,7 +156,7 @@ fun PillSettingsScreen(
                     FilterChip(
                         selected = pillSettings.edgePosition == pos,
                         onClick = {
-                            val (w, h) = if (pos == PillEdgePosition.BOTTOM) 130f to 8f else 4f to 60f
+                            val (w, h) = if (pos == PillEdgePosition.BOTTOM) 220f to 20f else 4f to 60f
                             val (swipeUp, swipeDown, doubleTap) = if (pos == PillEdgePosition.BOTTOM)
                                 Triple(GestureAction.DISABLED, GestureAction.DISABLED, GestureAction.SHOW_DOCK)
                             else
@@ -179,6 +179,49 @@ fun PillSettingsScreen(
                         }
                     )
                 }
+            }
+            if (pillSettings.edgePosition == PillEdgePosition.BOTTOM) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("Select Pill Gesture", style = MaterialTheme.typography.bodyMedium)
+                Spacer(modifier = Modifier.height(4.dp))
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    FilterChip(
+                        selected = pillSettings.doubleTapAction == GestureAction.SHOW_DOCK,
+                        onClick = { viewModel.savePillSettings(pillSettings.copy(
+                            doubleTapAction = GestureAction.SHOW_DOCK,
+                            swipeUpAction = GestureAction.DISABLED,
+                            swipeDownAction = GestureAction.DISABLED
+                        )) },
+                        label = { Text("Double Tap", style = MaterialTheme.typography.labelMedium) }
+                    )
+                    FilterChip(
+                        selected = pillSettings.swipeUpAction == GestureAction.SHOW_DOCK,
+                        onClick = { viewModel.savePillSettings(pillSettings.copy(
+                            doubleTapAction = GestureAction.DISABLED,
+                            swipeUpAction = GestureAction.SHOW_DOCK,
+                            swipeDownAction = GestureAction.DISABLED
+                        )) },
+                        label = { Text("Swipe Up", style = MaterialTheme.typography.labelMedium) }
+                    )
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Swipe Up works better on 3-button navigation devices",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                SettingsSlider(
+                    label = "Position from bottom",
+                    value = pillSettings.positionYDp,
+                    valueRange = 0f..heightMax,
+                    unit = "dp",
+                    onValueChange = { viewModel.savePillSettings(pillSettings.copy(positionYDp = it)) }
+                )
             }
             if (pillSettings.edgePosition != PillEdgePosition.BOTTOM) {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -217,15 +260,7 @@ fun PillSettingsScreen(
             Spacer(modifier = Modifier.height(12.dp))
             PillPositionPreview(pillSettings.edgePosition, pillSettings.widthDp, pillSettings.heightDp, pillSettings.alpha, pillSettings.sidePositionPct, pillSettings.restrictTriggerToPill)
             Spacer(modifier = Modifier.height(8.dp))
-            if (pillSettings.edgePosition == PillEdgePosition.BOTTOM) {
-                Text(
-                    text = "Double Tap Home Button/Pill to Activate",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
-            } else {
+            if (pillSettings.edgePosition != PillEdgePosition.BOTTOM) {
                 Text(
                     text = "Swipe Up in Trigger Area to Activate the Dock",
                     style = MaterialTheme.typography.bodySmall,

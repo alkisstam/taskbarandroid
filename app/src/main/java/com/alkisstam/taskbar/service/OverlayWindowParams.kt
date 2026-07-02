@@ -41,7 +41,7 @@ internal fun Context.pillLayoutParams(
     val density = resources.displayMetrics.density
     val triggerPx = (settings.triggerAreaDp * density).toInt()
     val sideStripPx = triggerPx
-    val bottomStripPx = triggerPx
+    val bottomStripPx = maxOf(triggerPx, (settings.heightDp * density).toInt())
     val side = if (settings.edgePosition == PillEdgePosition.BOTH) {
         if (isRight) PillEdgePosition.RIGHT else PillEdgePosition.LEFT
     } else settings.edgePosition
@@ -69,7 +69,7 @@ internal fun Context.pillLayoutParams(
             else -> {
                 gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
                 x = 0
-                y = 0
+                y = (settings.positionYDp * density).toInt()
             }
         }
     }
