@@ -3,6 +3,7 @@ package com.alkisstam.taskbar.data
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -46,6 +47,7 @@ class ClipboardRepository @Inject constructor(
     companion object {
         private val CLIPS_KEY = stringPreferencesKey("clips")
         private val NOTES_LIST_KEY = stringPreferencesKey("notes_list")
+        private val SHARE_HINT_DISMISSED_KEY = booleanPreferencesKey("share_hint_dismissed")
         private const val MAX_CLIPS = 100
     }
 
@@ -58,6 +60,16 @@ class ClipboardRepository @Inject constructor(
 
     val noteItems: Flow<List<NoteItem>> = context.clipboardDataStore.data.map { prefs ->
         prefs[NOTES_LIST_KEY]?.let { deserializeNotes(it) } ?: emptyList()
+    }
+
+    val shareHintDismissed: Flow<Boolean> = context.clipboardDataStore.data.map { prefs ->
+        prefs[SHARE_HINT_DISMISSED_KEY] ?: false
+    }
+
+    suspend fun dismissShareHint() {
+        context.clipboardDataStore.edit { prefs ->
+            prefs[SHARE_HINT_DISMISSED_KEY] = true
+        }
     }
 
     suspend fun addClip(item: ClipItem) {

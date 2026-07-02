@@ -32,6 +32,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.Delete
@@ -99,6 +100,7 @@ fun ClipboardPanel(
     val clips by viewModel.clips.collectAsState()
     val favorites by viewModel.favorites.collectAsState()
     val noteItems by viewModel.noteItems.collectAsState()
+    val shareHintDismissed by viewModel.shareHintDismissed.collectAsState()
 
     val tabs = listOf("Clips", "Favorites", "Notes")
     val tabIcons = listOf(Icons.Default.ContentPaste, Icons.Default.Star, Icons.Default.Edit)
@@ -175,7 +177,9 @@ fun ClipboardPanel(
                                         compareByDescending<ClipItem> { it.isPinned }.thenByDescending { it.timestamp }
                                     ),
                                 viewModel = viewModel,
-                                onOpenExternal = onOpenExternal
+                                onOpenExternal = onOpenExternal,
+                                showShareHint = !shareHintDismissed,
+                                onDismissShareHint = viewModel::dismissShareHint
                             )
                             1 -> FavoritesTab(
                                 entries = favorites,
@@ -271,40 +275,102 @@ fun ClipboardPanel(
 }
 
 @Composable
-private fun ClipListTab(items: List<ClipItem>, viewModel: ClipboardViewModel, onOpenExternal: () -> Unit) {
-    if (items.isEmpty()) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(
-                    Icons.Default.ContentPaste,
-                    contentDescription = null,
-                    modifier = Modifier.size(48.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Text(
-                    "Nothing here yet",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-        return
-    }
+private fun ClipListTab(
+    items: List<ClipItem>,
+    viewModel: ClipboardViewModel,
+    onOpenExternal: () -> Unit,
+    showShareHint: Boolean,
+    onDismissShareHint: () -> Unit
+) {
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.fillMaxSize()
     ) {
-        items(items, key = { it.id }) { item ->
-            ClipItemCard(
-                item = item,
-                onToggleFavorite = { viewModel.toggleFavorite(item) },
-                onTogglePin = { viewModel.togglePin(item) },
-                onDelete = { viewModel.removeClip(item.id) },
-                onOpenExternal = onOpenExternal
+        if (showShareHint) {
+            item(key = "share_hint") { ShareHintCard(onDismiss = onDismissShareHint) }
+        }
+        if (items.isEmpty()) {
+            item(key = "empty_state") {
+                Box(modifier = Modifier.fillParentMaxSize(), contentAlignment = Alignment.Center) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.ContentPaste,
+                            contentDescription = null,
+                            modifier = Modifier.size(48.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            "Nothing here yet",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+        } else {
+            items(items, key = { it.id }) { item ->
+                ClipItemCard(
+                    item = item,
+                    onToggleFavorite = { viewModel.toggleFavorite(item) },
+                    onTogglePin = { viewModel.togglePin(item) },
+                    onDelete = { viewModel.removeClip(item.id) },
+                    onOpenExternal = onOpenExternal
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ShareHintCard(onDismiss: () -> Unit) {
+    Surface(
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.primaryContainer,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.12f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Share,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    "Save from any app",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.weight(1f)
+                )
+                IconButton(onClick = onDismiss, modifier = Modifier.size(24.dp)) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Dismiss",
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                }
+            }
+            Text(
+                "Share text, links, images or files from any app to Floating Dock to save them here.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
     }

@@ -44,6 +44,13 @@ class ClipboardViewModel @Inject constructor(
     val noteItems: StateFlow<List<NoteItem>> = clipboardRepository.noteItems
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    val shareHintDismissed: StateFlow<Boolean> = clipboardRepository.shareHintDismissed
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
+    fun dismissShareHint() {
+        viewModelScope.launch { clipboardRepository.dismissShareHint() }
+    }
+
     fun toggleFavorite(item: ClipItem) {
         viewModelScope.launch { clipboardRepository.updateClip(item.copy(isFavorite = !item.isFavorite)) }
     }
