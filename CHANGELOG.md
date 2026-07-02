@@ -10,6 +10,9 @@ All notable changes to Floating Dock are documented here.
 - **Bottom pill gesture picker** — Design > Pill Size & Appearance, when edge position is Bottom: choose whether Double Tap or Swipe Up activates the pill (default Double Tap), with a note that Swipe Up works better on 3-button navigation devices.
 - **Position from bottom slider** — Bottom pill can now be lifted off the very bottom edge instead of sitting flush against it.
 - **Restrict Trigger to Pill** — Pill Size & Appearance: confine the touch-trigger area to the pill's own bounds instead of the full screen edge.
+- **Share-hint card in Clips tab** — pinned card explaining that any app's Share sheet can save content into the clipboard panel; dismissible, shown until tapped away.
+- **Contact & Feedback button** — General settings: opens an email draft for support/feedback without displaying the address in the UI.
+- **What's New now shows skipped releases** — updating across multiple versions (e.g. straight from 1.3.4) shows the changelog for every version in between, not just the latest.
 
 ### Changed
 - **Clipboard panel now floats above the dock** — instead of hiding the dock while open, the panel renders as a card above it (like the all-apps panel); dock stays visible throughout.
@@ -20,6 +23,7 @@ All notable changes to Floating Dock are documented here.
 
 ### Fixed
 - **Pill height slider clamped at ~18dp** — the bottom pill's touch window height was hardcoded to the Trigger Area size, silently clipping any Height value above it; the window now grows to fit the configured height.
+- **"Window type can not be changed after the window is added" crash** — toggling the accessibility service could change a window's type while other flag/position updates were mid-flight, applying the new type via `updateViewLayout` instead of a fresh add; this is now blocked so only a full remove-and-re-add can change a window's type.
 
 ---
 
