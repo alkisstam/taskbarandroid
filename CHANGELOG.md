@@ -6,6 +6,9 @@ All notable changes to Floating Dock are documented here.
 
 ## [1.3.7] - 2026-07-02
 
+### Added
+- **Wifi, Bluetooth, and Quick Share quick controls** — Wifi opens the system Wi-Fi panel, Bluetooth opens Bluetooth settings, Share launches Quick Share directly for sending files to nearby devices.
+
 ### Changed
 - **Design tab reordered** — Theme section now appears first, above Pill Size & Appearance and Dock Size & Appearance.
 - **Filled-pill slider style** — every slider in the app (Design tab, App Grid rows/columns, RGB color picker) now matches the Volume/Brightness panel look: rounded track with a distinct empty-track tone and subtle outline, primary-colored fill, no visible thumb.
