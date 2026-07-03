@@ -4,6 +4,16 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.3.8] - 2026-07-03
+
+### Fixed
+- **Tapping a saved clip could crash** — opening or sharing a clip (document, PDF, image, or link) with no app installed to handle it now shows a brief message instead of crashing.
+- **App drawer silently stopped refreshing after toggling the dock off and on** — the installed-app list and the live state of the ringer/rotate/brightness tiles stopped updating once the dock was turned off and back on within the same session; they now keep working.
+- **Backup export/restore no longer runs on the main thread** — writing or reading a backup file (especially to cloud storage like Drive) could freeze the UI; the file work now happens off the main thread.
+- **Crash hardening** — foreground-service starts, Quick Share / QR-scanner / email launches, and capturing shared content into the clipboard are now guarded so a missing app or denied permission can no longer crash Floating Dock.
+
+---
+
 ## [1.3.7] - 2026-07-02
 
 ### Added

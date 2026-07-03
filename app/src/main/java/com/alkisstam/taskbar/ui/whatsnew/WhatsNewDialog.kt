@@ -47,6 +47,16 @@ val whatsNewReleases = listOf(
             "Every slider in the app now uses the filled-pill style from the Volume/Brightness panel",
             "Caffeine quick control shows a countdown badge on its icon when labels are off"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.3.8",
+        versionCode = 41,
+        highlights = listOf(
+            "Fixed crashes when opening or sharing saved clips",
+            "App drawer and quick-control tiles keep refreshing after toggling the dock off and on",
+            "Backup and restore no longer risk freezing the UI on cloud storage",
+            "Broad crash hardening across service starts and system launches"
+        )
     )
 )
 
