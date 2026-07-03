@@ -3,6 +3,7 @@ package com.alkisstam.taskbar.ui.settings
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -85,6 +86,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -255,6 +257,14 @@ private fun GeneralTab(
     }
     val restoreLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         uri?.let { viewModel.importBackup(it) }
+    }
+
+    val backupError by viewModel.backupError.collectAsState()
+    LaunchedEffect(backupError) {
+        backupError?.let {
+            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+            viewModel.clearBackupError()
+        }
     }
 
     Column(
@@ -590,8 +600,10 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
                     val hapticEnabled = LocalHapticEnabled.current
                     val reorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
                         val pkgs = pinnedApps.map { it.packageName }.toMutableList()
-                        pkgs.add(to.index, pkgs.removeAt(from.index))
-                        viewModel.reorderPinnedApps(pkgs)
+                        if (from.index in pkgs.indices && to.index in pkgs.indices) {
+                            pkgs.add(to.index, pkgs.removeAt(from.index))
+                            viewModel.reorderPinnedApps(pkgs)
+                        }
                     }
                     LazyRow(
                         state = lazyListState,

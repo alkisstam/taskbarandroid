@@ -138,19 +138,31 @@ class MediaRepository @Inject constructor(
 
     fun playPause() {
         val ctrl = activeController ?: return
-        if (ctrl.playbackState?.state == PlaybackState.STATE_PLAYING) {
-            ctrl.transportControls.pause()
-        } else {
-            ctrl.transportControls.play()
+        try {
+            if (ctrl.playbackState?.state == PlaybackState.STATE_PLAYING) {
+                ctrl.transportControls.pause()
+            } else {
+                ctrl.transportControls.play()
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to play/pause", e)
         }
     }
 
     fun next() {
-        activeController?.transportControls?.skipToNext()
+        try {
+            activeController?.transportControls?.skipToNext()
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to skip to next", e)
+        }
     }
 
     fun prev() {
-        activeController?.transportControls?.skipToPrevious()
+        try {
+            activeController?.transportControls?.skipToPrevious()
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to skip to previous", e)
+        }
     }
 
     fun isNotificationAccessGranted(): Boolean {

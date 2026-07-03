@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.provider.Settings
+import android.util.Log
 import android.view.KeyEvent
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
@@ -35,10 +36,14 @@ class TaskBarAccessibilityService : AccessibilityService() {
         info.flags = info.flags or AccessibilityServiceInfo.FLAG_REQUEST_FILTER_KEY_EVENTS
         serviceInfo = info
         scope.launch {
-            val overlayEnabled = prefsRepository.overlayEnabled.first()
-            if (overlayEnabled && Settings.canDrawOverlays(this@TaskBarAccessibilityService)) {
-                val intent = Intent(this@TaskBarAccessibilityService, OverlayService::class.java)
-                startForegroundService(intent)
+            try {
+                val overlayEnabled = prefsRepository.overlayEnabled.first()
+                if (overlayEnabled && Settings.canDrawOverlays(this@TaskBarAccessibilityService)) {
+                    val intent = Intent(this@TaskBarAccessibilityService, OverlayService::class.java)
+                    startForegroundService(intent)
+                }
+            } catch (e: Exception) {
+                Log.w("TaskBarAccessibilityService", "Failed to start overlay service", e)
             }
         }
         sendBroadcast(

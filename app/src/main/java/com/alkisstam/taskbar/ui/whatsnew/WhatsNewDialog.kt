@@ -37,6 +37,16 @@ val whatsNewReleases = listOf(
             "Restrict the pill's trigger area to just the pill instead of the full screen edge",
             "Fixed the pill height slider getting stuck around 18dp"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.3.7",
+        versionCode = 40,
+        highlights = listOf(
+            "New Wifi, Bluetooth, and Quick Share quick controls",
+            "Design tab reordered — Theme now appears first",
+            "Every slider in the app now uses the filled-pill style from the Volume/Brightness panel",
+            "Caffeine quick control shows a countdown badge on its icon when labels are off"
+        )
     )
 )
 

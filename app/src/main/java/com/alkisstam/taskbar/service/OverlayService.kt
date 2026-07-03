@@ -23,6 +23,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.core.content.ContextCompat
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
@@ -87,8 +88,13 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private fun removeViewFromAnyWM(view: View) {
         val wms = listOfNotNull(_windowManager, TaskBarAccessibilityService.instance?.accessibilityWindowManager)
-        for (wm in wms) {
-            try { wm.removeView(view); return } catch (_: Exception) {}
+        for ((index, wm) in wms.withIndex()) {
+            try {
+                wm.removeView(view)
+                return
+            } catch (e: Exception) {
+                if (index == wms.lastIndex) Log.w(TAG, "Failed to remove view from any WindowManager", e)
+            }
         }
     }
 
@@ -238,11 +244,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             addAction(ACTION_ACCESSIBILITY_CHANGED)
             addAction(ACTION_CLIPBOARD_PANEL_SHOW)
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(lockscreenReceiver, filter, RECEIVER_NOT_EXPORTED)
-        } else {
-            registerReceiver(lockscreenReceiver, filter)
-        }
+        ContextCompat.registerReceiver(this, lockscreenReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
         registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
 
         val factory = OverlayViewModelFactory(

@@ -4,8 +4,11 @@
 
     <!-- Overlay permission -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <!-- List all installed apps -->
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+    <!-- List all installed apps: core app-drawer/dock feature requires enumerating every
+         launchable app, not a fixed set enumerable via <queries>. Declared-use justified
+         in Play Console. -->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
     <!-- Keep overlay service alive -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />

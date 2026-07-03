@@ -13,6 +13,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.UUID
 import javax.inject.Inject
 
@@ -34,19 +35,21 @@ class ClipboardShareActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val item = buildClipItem()
-        if (item != null) {
-            CoroutineScope(Dispatchers.IO).launch { clipboardRepository.addClip(item) }
-            sendBroadcast(
-                Intent(OverlayService.ACTION_CLIPBOARD_PANEL_SHOW).apply { setPackage(packageName) }
-            )
+        CoroutineScope(Dispatchers.IO).launch {
+            val item = buildClipItem()
+            if (item != null) {
+                clipboardRepository.addClip(item)
+                sendBroadcast(
+                    Intent(OverlayService.ACTION_CLIPBOARD_PANEL_SHOW).apply { setPackage(packageName) }
+                )
+            }
+            withContext(Dispatchers.Main) { finish() }
         }
-        finish()
     }
 
     private fun buildClipItem(): ClipItem? {
         if (intent?.action != Intent.ACTION_SEND) return null
-        val mimeType = intent.type ?: return null
+        val mimeType = intent.type?.lowercase() ?: return null
         val id = UUID.randomUUID().toString()
         val timestamp = System.currentTimeMillis()
         val sourceApp = callerPackageLabel()

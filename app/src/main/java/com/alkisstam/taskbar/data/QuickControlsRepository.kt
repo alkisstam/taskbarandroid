@@ -59,17 +59,26 @@ class QuickControlsRepository @Inject constructor(
     @Volatile private var torchState: Boolean = false
 
     init {
-        torchCameraId = cameraManager.cameraIdList.firstOrNull { id ->
-            cameraManager.getCameraCharacteristics(id)
-                .get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true
+        torchCameraId = try {
+            cameraManager.cameraIdList.firstOrNull { id ->
+                cameraManager.getCameraCharacteristics(id)
+                    .get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to enumerate cameras for torch", e)
+            null
         }
         torchCameraId?.let {
-            cameraManager.registerTorchCallback(object : CameraManager.TorchCallback() {
-                override fun onTorchModeChanged(cameraId: String, enabled: Boolean) {
-                    if (cameraId == torchCameraId) torchState = enabled
-                    notifyChanged()
-                }
-            }, null)
+            try {
+                cameraManager.registerTorchCallback(object : CameraManager.TorchCallback() {
+                    override fun onTorchModeChanged(cameraId: String, enabled: Boolean) {
+                        if (cameraId == torchCameraId) torchState = enabled
+                        notifyChanged()
+                    }
+                }, null)
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed to register torch callback", e)
+            }
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             context.registerReceiver(
@@ -217,10 +226,18 @@ class QuickControlsRepository @Inject constructor(
     fun isWifiEnabled(): Boolean = wifiManager.isWifiEnabled
 
     fun openWifiPanel() {
-        val intent = Intent(Settings.Panel.ACTION_WIFI).apply {
+        val action = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            Settings.Panel.ACTION_WIFI
+        else
+            Settings.ACTION_WIFI_SETTINGS
+        val intent = Intent(action).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
-        context.startActivity(intent)
+        try {
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to open wifi panel", e)
+        }
     }
 
     fun isBluetoothEnabled(): Boolean {
@@ -240,7 +257,11 @@ class QuickControlsRepository @Inject constructor(
         val intent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
-        context.startActivity(intent)
+        try {
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to open bluetooth panel", e)
+        }
     }
 
     fun openQuickShare() {

@@ -9,10 +9,13 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.datastore.preferences.core.emptyPreferences
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import java.io.IOException
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -69,6 +72,12 @@ data class PillSettings(
 class PreferencesRepository @Inject constructor(
     @param:ApplicationContext private val context: Context
 ) {
+    // DataStore's .data Flow throws IOException on read/corruption; fall back to
+    // defaults instead of crashing every collector across the app.
+    private val safeData: Flow<Preferences> = context.dataStore.data.catch { e ->
+        if (e is IOException) emit(emptyPreferences()) else throw e
+    }
+
     companion object {
         private val PINNED_APPS_KEY = stringPreferencesKey("pinned_apps")
         private val THEME_MODE_KEY = stringPreferencesKey("theme_mode")
@@ -130,11 +139,11 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
-    val pinnedApps: Flow<List<String>> = context.dataStore.data.map { prefs ->
+    val pinnedApps: Flow<List<String>> = safeData.map { prefs ->
         prefs[PINNED_APPS_KEY]?.let { deserializePinnedApps(it) } ?: emptyList()
     }
 
-    val themeMode: Flow<ThemeMode> = context.dataStore.data.map { prefs ->
+    val themeMode: Flow<ThemeMode> = safeData.map { prefs ->
         when (prefs[THEME_MODE_KEY]) {
             "LIGHT" -> ThemeMode.LIGHT
             "DARK" -> ThemeMode.DARK
@@ -142,7 +151,7 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
-    val overlayEnabled: Flow<Boolean> = context.dataStore.data.map { prefs ->
+    val overlayEnabled: Flow<Boolean> = safeData.map { prefs ->
         prefs[OVERLAY_ENABLED_KEY] ?: false
     }
 
@@ -186,7 +195,7 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
-    val pillSettings: Flow<PillSettings> = context.dataStore.data.map { prefs ->
+    val pillSettings: Flow<PillSettings> = safeData.map { prefs ->
         PillSettings(
             swipeUpAction    = prefs[PILL_SWIPE_UP_ACTION_KEY].toGestureAction(),
             swipeDownAction  = prefs[PILL_SWIPE_DOWN_ACTION_KEY].toGestureAction(),
@@ -203,7 +212,7 @@ class PreferencesRepository @Inject constructor(
         )
     }
 
-    val autoHideInFullscreen: Flow<Boolean> = context.dataStore.data.map { prefs ->
+    val autoHideInFullscreen: Flow<Boolean> = safeData.map { prefs ->
         prefs[AUTO_HIDE_FULLSCREEN_KEY] ?: false
     }
 
@@ -213,7 +222,7 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
-    val autoHideInLandscape: Flow<Boolean> = context.dataStore.data.map { prefs ->
+    val autoHideInLandscape: Flow<Boolean> = safeData.map { prefs ->
         prefs[AUTO_HIDE_LANDSCAPE_KEY] ?: false
     }
 
@@ -223,7 +232,7 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
-    val hapticFeedbackEnabled: Flow<Boolean> = context.dataStore.data.map { prefs ->
+    val hapticFeedbackEnabled: Flow<Boolean> = safeData.map { prefs ->
         prefs[HAPTIC_FEEDBACK_KEY] ?: true
     }
 
@@ -233,7 +242,7 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
-    val quickControlsEnabled: Flow<Boolean> = context.dataStore.data.map { prefs ->
+    val quickControlsEnabled: Flow<Boolean> = safeData.map { prefs ->
         prefs[QUICK_CONTROLS_ENABLED_KEY] ?: true
     }
 
@@ -243,7 +252,7 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
-    val surfaceTintColor: Flow<Long> = context.dataStore.data.map { prefs ->
+    val surfaceTintColor: Flow<Long> = safeData.map { prefs ->
         prefs[SURFACE_TINT_COLOR_KEY]?.toLongOrNull() ?: 0L
     }
 
@@ -253,7 +262,7 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
-    val taskbarSettings: Flow<TaskbarSettings> = context.dataStore.data.map { prefs ->
+    val taskbarSettings: Flow<TaskbarSettings> = safeData.map { prefs ->
         TaskbarSettings(
             positionYDp        = prefs[TASKBAR_POSITION_Y_KEY]     ?: 20f,
             heightDp           = prefs[TASKBAR_HEIGHT_KEY]          ?: 60f,
@@ -290,7 +299,7 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
-    val taskbarVisible: Flow<Boolean> = context.dataStore.data.map { prefs ->
+    val taskbarVisible: Flow<Boolean> = safeData.map { prefs ->
         prefs[TASKBAR_VISIBLE_KEY] ?: true
     }
 
@@ -300,7 +309,7 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
-    val controlsOrder: Flow<List<String>> = context.dataStore.data.map { prefs ->
+    val controlsOrder: Flow<List<String>> = safeData.map { prefs ->
         val saved = prefs[CONTROLS_ORDER_KEY]
             ?.let { deserializeStringList(it) }
             ?.takeIf { it.isNotEmpty() }
@@ -319,7 +328,7 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
-    val controlsDisabledIds: Flow<Set<String>> = context.dataStore.data.map { prefs ->
+    val controlsDisabledIds: Flow<Set<String>> = safeData.map { prefs ->
         prefs[CONTROLS_DISABLED_KEY]
             ?.let { deserializeStringList(it).toSet() }
             ?: emptySet()
@@ -331,7 +340,7 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
-    val onboardingComplete: Flow<Boolean> = context.dataStore.data.map { prefs ->
+    val onboardingComplete: Flow<Boolean> = safeData.map { prefs ->
         prefs[ONBOARDING_COMPLETE_KEY] ?: false
     }
 
@@ -341,7 +350,7 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
-    val lastSeenVersionCode: Flow<Int> = context.dataStore.data.map { prefs ->
+    val lastSeenVersionCode: Flow<Int> = safeData.map { prefs ->
         prefs[LAST_SEEN_VERSION_CODE_KEY] ?: 0
     }
 
@@ -351,7 +360,7 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
-    val musicPanelEnabled: Flow<Boolean> = context.dataStore.data.map { prefs ->
+    val musicPanelEnabled: Flow<Boolean> = safeData.map { prefs ->
         prefs[MUSIC_PANEL_ENABLED_KEY] ?: false
     }
 
@@ -361,7 +370,7 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
-    val musicPanelOpen: Flow<Boolean> = context.dataStore.data.map { prefs ->
+    val musicPanelOpen: Flow<Boolean> = safeData.map { prefs ->
         prefs[MUSIC_PANEL_OPEN_KEY] ?: false
     }
 
@@ -371,7 +380,7 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
-    val panelOutlineEnabled: Flow<Boolean> = context.dataStore.data.map { prefs ->
+    val panelOutlineEnabled: Flow<Boolean> = safeData.map { prefs ->
         prefs[PANEL_OUTLINE_KEY] ?: false
     }
 
@@ -381,7 +390,7 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
-    val translucentMode: Flow<Boolean> = context.dataStore.data.map { prefs ->
+    val translucentMode: Flow<Boolean> = safeData.map { prefs ->
         prefs[TRANSLUCENT_MODE_KEY] ?: false
     }
 
@@ -391,7 +400,7 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
-    val translucentAlpha: Flow<Float> = context.dataStore.data.map { prefs ->
+    val translucentAlpha: Flow<Float> = safeData.map { prefs ->
         prefs[TRANSLUCENT_ALPHA_KEY] ?: 0.80f
     }
 
@@ -401,7 +410,7 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
-    val appGridColumns: Flow<Int> = context.dataStore.data.map { prefs ->
+    val appGridColumns: Flow<Int> = safeData.map { prefs ->
         prefs[APP_GRID_COLUMNS_KEY] ?: 4
     }
 
@@ -411,7 +420,7 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
-    val appGridRows: Flow<Int> = context.dataStore.data.map { prefs ->
+    val appGridRows: Flow<Int> = safeData.map { prefs ->
         prefs[APP_GRID_ROWS_KEY] ?: 4
     }
 
@@ -422,7 +431,7 @@ class PreferencesRepository @Inject constructor(
     }
 
     suspend fun exportToJson(): String {
-        val prefs = context.dataStore.data.first()
+        val prefs = safeData.first()
         return JSONObject().apply {
             prefs[PINNED_APPS_KEY]?.let { put("pinned_apps", it) }
             prefs[THEME_MODE_KEY]?.let { put("theme_mode", it) }

@@ -142,6 +142,10 @@ class MainActivity : ComponentActivity() {
                                         taskbarViewModel.markVersionSeen(currentVersionCode)
                                     }
                                 )
+                            } else {
+                                // No changelog entry for this version range — don't wedge
+                                // lastSeenVersionCode behind currentVersionCode forever.
+                                taskbarViewModel.markVersionSeen(currentVersionCode)
                             }
                         }
                     }
@@ -153,7 +157,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
-        sendBroadcast(Intent(OverlayService.ACTION_SETTINGS_OPEN))
+        sendBroadcast(Intent(OverlayService.ACTION_SETTINGS_OPEN).setPackage(packageName))
     }
 
     override fun onResume() {
@@ -184,7 +188,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onStop() {
         super.onStop()
-        sendBroadcast(Intent(OverlayService.ACTION_SETTINGS_CLOSE))
+        sendBroadcast(Intent(OverlayService.ACTION_SETTINGS_CLOSE).setPackage(packageName))
     }
 
     private fun requestOverlayPermission() {

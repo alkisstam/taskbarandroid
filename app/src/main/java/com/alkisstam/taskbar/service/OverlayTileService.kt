@@ -2,8 +2,10 @@ package com.alkisstam.taskbar.service
 
 import android.content.Intent
 import android.graphics.drawable.Icon
+import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
+import android.util.Log
 import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.PreferencesRepository
 import dagger.hilt.android.AndroidEntryPoint
@@ -60,8 +62,14 @@ class OverlayTileService : TileService() {
         val tile = qsTile ?: return
         tile.state = if (enabled) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
         tile.label = "Floating Dock"
-        tile.subtitle = if (enabled) "On" else "Off"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            tile.subtitle = if (enabled) "On" else "Off"
+        }
         tile.icon = Icon.createWithResource(this, R.drawable.ic_tile)
-        tile.updateTile()
+        try {
+            tile.updateTile()
+        } catch (e: IllegalStateException) {
+            Log.w("OverlayTileService", "updateTile failed, tile may be unbound", e)
+        }
     }
 }

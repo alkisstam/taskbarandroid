@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Build
+import android.util.Log
 import androidx.core.graphics.drawable.toBitmap
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
@@ -61,23 +62,32 @@ class AppRepository @Inject constructor(
 
     private fun loadApps() {
         scope.launch {
-            val pm = context.packageManager
-            val intent = Intent(Intent.ACTION_MAIN, null).apply {
-                addCategory(Intent.CATEGORY_LAUNCHER)
-            }
-            _apps.value = pm.queryIntentActivities(intent, PackageManager.GET_META_DATA)
-                .map { resolveInfo ->
-                    AppInfo(
-                        packageName = resolveInfo.activityInfo.packageName,
-                        label = resolveInfo.loadLabel(pm).toString(),
-                        // toBitmap() can return the system's cached Bitmap instance without
-                        // copying (androidx shortcut when config already matches); that shared
-                        // bitmap can later be recycled by the OS, so copy it to own our instance.
-                        icon = resolveInfo.loadIcon(pm).toBitmap().copy(Bitmap.Config.ARGB_8888, false)
-                    )
+            try {
+                val pm = context.packageManager
+                val intent = Intent(Intent.ACTION_MAIN, null).apply {
+                    addCategory(Intent.CATEGORY_LAUNCHER)
                 }
-                .distinctBy { it.packageName }
-                .sortedBy { it.label.lowercase() }
+                _apps.value = pm.queryIntentActivities(intent, PackageManager.GET_META_DATA)
+                    .mapNotNull { resolveInfo ->
+                        try {
+                            AppInfo(
+                                packageName = resolveInfo.activityInfo.packageName,
+                                label = resolveInfo.loadLabel(pm).toString(),
+                                // toBitmap() can return the system's cached Bitmap instance without
+                                // copying (androidx shortcut when config already matches); that shared
+                                // bitmap can later be recycled by the OS, so copy it to own our instance.
+                                icon = resolveInfo.loadIcon(pm).toBitmap().copy(Bitmap.Config.ARGB_8888, false)
+                            )
+                        } catch (e: Exception) {
+                            Log.w("AppRepository", "Skipping app with broken resources: ${resolveInfo.activityInfo?.packageName}", e)
+                            null
+                        }
+                    }
+                    .distinctBy { it.packageName }
+                    .sortedBy { it.label.lowercase() }
+            } catch (e: Exception) {
+                Log.w("AppRepository", "Failed to load installed apps", e)
+            }
         }
     }
 

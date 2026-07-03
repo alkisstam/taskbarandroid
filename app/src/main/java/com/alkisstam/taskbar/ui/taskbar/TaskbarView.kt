@@ -99,8 +99,10 @@ fun TaskbarView(
     val pinnedListState = rememberLazyListState()
     val reorderableState = rememberReorderableLazyListState(pinnedListState) { from, to ->
         val pkgs = pinnedApps.map { it.packageName }.toMutableList()
-        pkgs.add(to.index, pkgs.removeAt(from.index))
-        taskbarViewModel.reorderPinnedApps(pkgs)
+        if (from.index in pkgs.indices && to.index in pkgs.indices) {
+            pkgs.add(to.index, pkgs.removeAt(from.index))
+            taskbarViewModel.reorderPinnedApps(pkgs)
+        }
     }
 
     val iconSize = taskbarSettings.pinnedIconSizeDp.dp

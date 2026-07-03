@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
+import android.util.Log
 import com.alkisstam.taskbar.data.PreferencesRepository
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -29,6 +30,8 @@ class BootReceiver : BroadcastReceiver() {
                     val serviceIntent = Intent(context, OverlayService::class.java)
                     context.startForegroundService(serviceIntent)
                 }
+            } catch (e: Exception) {
+                Log.w("BootReceiver", "Failed to start overlay service on boot", e)
             } finally {
                 pendingResult.finish()
             }

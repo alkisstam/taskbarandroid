@@ -45,8 +45,10 @@ fun PinnedAppsManager(
 
     val reorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
         val currentPackages = pinnedApps.map { it.packageName }.toMutableList()
-        currentPackages.add(to.index, currentPackages.removeAt(from.index))
-        viewModel.reorderPinnedApps(currentPackages)
+        if (from.index in currentPackages.indices && to.index in currentPackages.indices) {
+            currentPackages.add(to.index, currentPackages.removeAt(from.index))
+            viewModel.reorderPinnedApps(currentPackages)
+        }
     }
 
     LazyColumn(

@@ -7,6 +7,7 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import android.text.TextUtils
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alkisstam.taskbar.data.AppInfo
@@ -232,7 +233,11 @@ class TaskbarViewModel @Inject constructor(
     fun launchApp(packageName: String) {
         val intent = appRepository.getLaunchIntent(packageName) ?: return
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startActivity(intent)
+        try {
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            Log.w("TaskbarViewModel", "Failed to launch $packageName", e)
+        }
     }
 
     fun pinApp(packageName: String) {
@@ -334,17 +339,34 @@ class TaskbarViewModel @Inject constructor(
         context.stopService(intent)
     }
 
+    private val _backupError = MutableStateFlow<String?>(null)
+    val backupError: StateFlow<String?> = _backupError.asStateFlow()
+
+    fun clearBackupError() {
+        _backupError.value = null
+    }
+
     fun exportBackup(uri: android.net.Uri) {
         viewModelScope.launch {
-            val json = prefsRepository.exportToJson()
-            context.contentResolver.openOutputStream(uri)?.use { it.write(json.toByteArray()) }
+            try {
+                val json = prefsRepository.exportToJson()
+                context.contentResolver.openOutputStream(uri)?.use { it.write(json.toByteArray()) }
+            } catch (e: Exception) {
+                Log.w("TaskbarViewModel", "Failed to export backup", e)
+                _backupError.value = "Failed to export backup"
+            }
         }
     }
 
     fun importBackup(uri: android.net.Uri) {
         viewModelScope.launch {
-            val json = context.contentResolver.openInputStream(uri)?.use { it.readBytes().toString(Charsets.UTF_8) } ?: return@launch
-            prefsRepository.importFromJson(json)
+            try {
+                val json = context.contentResolver.openInputStream(uri)?.use { it.readBytes().toString(Charsets.UTF_8) } ?: return@launch
+                prefsRepository.importFromJson(json)
+            } catch (e: Exception) {
+                Log.w("TaskbarViewModel", "Failed to import backup", e)
+                _backupError.value = "Failed to restore backup: invalid file"
+            }
         }
     }
 

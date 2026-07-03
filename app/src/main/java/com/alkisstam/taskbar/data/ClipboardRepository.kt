@@ -1,15 +1,19 @@
 package com.alkisstam.taskbar.data
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import java.io.IOException
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -54,15 +58,19 @@ class ClipboardRepository @Inject constructor(
     private val clipDir: File
         get() = File(context.filesDir, "clipboard").also { it.mkdirs() }
 
-    val clips: Flow<List<ClipItem>> = context.clipboardDataStore.data.map { prefs ->
+    private val safeData: Flow<Preferences> = context.clipboardDataStore.data.catch { e ->
+        if (e is IOException) emit(emptyPreferences()) else throw e
+    }
+
+    val clips: Flow<List<ClipItem>> = safeData.map { prefs ->
         prefs[CLIPS_KEY]?.let { deserializeClips(it) } ?: emptyList()
     }
 
-    val noteItems: Flow<List<NoteItem>> = context.clipboardDataStore.data.map { prefs ->
+    val noteItems: Flow<List<NoteItem>> = safeData.map { prefs ->
         prefs[NOTES_LIST_KEY]?.let { deserializeNotes(it) } ?: emptyList()
     }
 
-    val shareHintDismissed: Flow<Boolean> = context.clipboardDataStore.data.map { prefs ->
+    val shareHintDismissed: Flow<Boolean> = safeData.map { prefs ->
         prefs[SHARE_HINT_DISMISSED_KEY] ?: false
     }
 
@@ -154,20 +162,28 @@ class ClipboardRepository @Inject constructor(
 
     private fun deserializeClips(json: String): List<ClipItem> = try {
         val arr = JSONArray(json)
-        List(arr.length()) { i ->
-            val obj = arr.getJSONObject(i)
-            ClipItem(
-                id = obj.getString("id"),
-                type = ClipType.valueOf(obj.getString("type")),
-                content = obj.getString("content"),
-                sourceApp = obj.getString("sourceApp"),
-                timestamp = obj.getLong("timestamp"),
-                isPinned = obj.optBoolean("isPinned", false),
-                isFavorite = obj.optBoolean("isFavorite", false),
-                fileName = if (obj.has("fileName")) obj.getString("fileName") else null
-            )
+        (0 until arr.length()).mapNotNull { i ->
+            try {
+                val obj = arr.getJSONObject(i)
+                ClipItem(
+                    id = obj.getString("id"),
+                    type = ClipType.valueOf(obj.getString("type")),
+                    content = obj.getString("content"),
+                    sourceApp = obj.getString("sourceApp"),
+                    timestamp = obj.getLong("timestamp"),
+                    isPinned = obj.optBoolean("isPinned", false),
+                    isFavorite = obj.optBoolean("isFavorite", false),
+                    fileName = if (obj.has("fileName")) obj.getString("fileName") else null
+                )
+            } catch (e: Exception) {
+                Log.w("ClipboardRepository", "Skipping corrupt clip record at index $i", e)
+                null
+            }
         }
-    } catch (e: Exception) { emptyList() }
+    } catch (e: Exception) {
+        Log.w("ClipboardRepository", "Failed to parse clips JSON", e)
+        emptyList()
+    }
 
     private fun serializeNotes(notes: List<NoteItem>): String {
         val arr = JSONArray()
@@ -185,15 +201,23 @@ class ClipboardRepository @Inject constructor(
 
     private fun deserializeNotes(json: String): List<NoteItem> = try {
         val arr = JSONArray(json)
-        List(arr.length()) { i ->
-            val obj = arr.getJSONObject(i)
-            NoteItem(
-                id = obj.getString("id"),
-                content = obj.getString("content"),
-                timestamp = obj.getLong("timestamp"),
-                isPinned = obj.optBoolean("isPinned", false),
-                isFavorite = obj.optBoolean("isFavorite", false)
-            )
+        (0 until arr.length()).mapNotNull { i ->
+            try {
+                val obj = arr.getJSONObject(i)
+                NoteItem(
+                    id = obj.getString("id"),
+                    content = obj.getString("content"),
+                    timestamp = obj.getLong("timestamp"),
+                    isPinned = obj.optBoolean("isPinned", false),
+                    isFavorite = obj.optBoolean("isFavorite", false)
+                )
+            } catch (e: Exception) {
+                Log.w("ClipboardRepository", "Skipping corrupt note record at index $i", e)
+                null
+            }
         }
-    } catch (e: Exception) { emptyList() }
+    } catch (e: Exception) {
+        Log.w("ClipboardRepository", "Failed to parse notes JSON", e)
+        emptyList()
+    }
 }

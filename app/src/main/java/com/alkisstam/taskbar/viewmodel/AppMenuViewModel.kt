@@ -278,7 +278,11 @@ class AppMenuViewModel @Inject constructor(
     fun launchApp(packageName: String) {
         val intent = appRepository.getLaunchIntent(packageName) ?: return
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startActivity(intent)
+        try {
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to launch $packageName", e)
+        }
         _menuVisible.value = false
         closeSearch()
     }
@@ -388,7 +392,11 @@ class AppMenuViewModel @Inject constructor(
         val intent = android.content.Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS).apply {
             addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
         }
-        context.startActivity(intent)
+        try {
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to open DND settings", e)
+        }
     }
 
     fun handleQuickControlAction(id: String) {
@@ -401,14 +409,22 @@ class AppMenuViewModel @Inject constructor(
                     data = android.net.Uri.parse("package:${context.packageName}")
                     addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
-                context.startActivity(intent)
+                try {
+                    context.startActivity(intent)
+                } catch (e: Exception) {
+                    Log.w(TAG, "Failed to open write-settings screen", e)
+                }
             }
             "brightness_slider" -> if (_quickControlsState.value.canWriteSettings) toggleBrightnessPanel() else {
                 val intent = android.content.Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
                     data = android.net.Uri.parse("package:${context.packageName}")
                     addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
-                context.startActivity(intent)
+                try {
+                    context.startActivity(intent)
+                } catch (e: Exception) {
+                    Log.w(TAG, "Failed to open write-settings screen", e)
+                }
             }
             "dnd" -> if (_quickControlsState.value.dndPermissionGranted) toggleDnd() else openDndSettings()
             "qr" -> openQrScanner()
