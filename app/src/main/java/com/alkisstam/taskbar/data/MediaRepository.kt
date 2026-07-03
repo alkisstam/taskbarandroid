@@ -118,10 +118,22 @@ class MediaRepository @Inject constructor(
             title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE) ?: "",
             artist = metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)
                 ?: metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST) ?: "",
-            albumArt = metadata?.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
-                ?: metadata?.getBitmap(MediaMetadata.METADATA_KEY_ART),
+            albumArt = safeCopy(
+                metadata?.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
+                    ?: metadata?.getBitmap(MediaMetadata.METADATA_KEY_ART)
+            ),
             hasSession = true
         )
+    }
+
+    private fun safeCopy(bitmap: Bitmap?): Bitmap? {
+        if (bitmap == null) return null
+        return try {
+            if (bitmap.isRecycled) null else bitmap.copy(Bitmap.Config.ARGB_8888, false)
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to copy album art bitmap from external session", e)
+            null
+        }
     }
 
     fun playPause() {

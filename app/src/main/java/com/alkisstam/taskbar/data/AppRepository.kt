@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Build
 import androidx.core.graphics.drawable.toBitmap
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -69,7 +70,10 @@ class AppRepository @Inject constructor(
                     AppInfo(
                         packageName = resolveInfo.activityInfo.packageName,
                         label = resolveInfo.loadLabel(pm).toString(),
-                        icon = resolveInfo.loadIcon(pm).toBitmap()
+                        // toBitmap() can return the system's cached Bitmap instance without
+                        // copying (androidx shortcut when config already matches); that shared
+                        // bitmap can later be recycled by the OS, so copy it to own our instance.
+                        icon = resolveInfo.loadIcon(pm).toBitmap().copy(Bitmap.Config.ARGB_8888, false)
                     )
                 }
                 .distinctBy { it.packageName }
