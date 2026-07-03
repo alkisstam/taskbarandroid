@@ -48,7 +48,9 @@ data class QuickControlsState(
     val canShowPowerMenu: Boolean = false,
     val canTakeScreenshot: Boolean = false,
     val canLockScreen: Boolean = false,
-    val caffeineMinutes: Int = 0
+    val caffeineMinutes: Int = 0,
+    val wifiEnabled: Boolean = false,
+    val bluetoothEnabled: Boolean = false
 )
 
 private const val TAG = "AppMenuViewModel"
@@ -302,7 +304,9 @@ class AppMenuViewModel @Inject constructor(
             canShowPowerMenu = quickControls.canShowPowerMenu(),
             canTakeScreenshot = quickControls.canTakeScreenshot(),
             canLockScreen = quickControls.canLockScreen(),
-            caffeineMinutes = _quickControlsState.value.caffeineMinutes
+            caffeineMinutes = _quickControlsState.value.caffeineMinutes,
+            wifiEnabled = quickControls.isWifiEnabled(),
+            bluetoothEnabled = quickControls.isBluetoothEnabled()
         )
     }
 
@@ -367,6 +371,18 @@ class AppMenuViewModel @Inject constructor(
         quickControls.lockScreen()
     }
 
+    fun openWifiPanel() {
+        quickControls.openWifiPanel()
+    }
+
+    fun openBluetoothPanel() {
+        quickControls.openBluetoothPanel()
+    }
+
+    fun openQuickShare() {
+        quickControls.openQuickShare()
+    }
+
     fun openDndSettings() {
         val intent = android.content.Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS).apply {
             addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -400,6 +416,9 @@ class AppMenuViewModel @Inject constructor(
             "lockscreen" -> lockScreen()
             "caffeine" -> cycleCaffeineTimeout()
             "clipboard" -> toggleClipboardPanel()
+            "wifi" -> openWifiPanel()
+            "bluetooth" -> openBluetoothPanel()
+            "share" -> openQuickShare()
         }
     }
 

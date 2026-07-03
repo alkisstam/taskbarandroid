@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.BrightnessMedium
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.Check
@@ -56,6 +57,8 @@ import androidx.compose.material.icons.filled.PowerSettingsNew
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.ScreenRotationAlt
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.FileDownload
@@ -793,7 +796,10 @@ private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
             Triple("screenshot",        "Screenshot", Icons.Filled.PhotoCamera),
             Triple("lockscreen",        "Lock",       Icons.Filled.Lock),
             Triple("caffeine",          "Caffeine",   Icons.Filled.FreeBreakfast),
-            Triple("clipboard",         "Clipboard",  Icons.Filled.ContentPaste)
+            Triple("clipboard",         "Clipboard",  Icons.Filled.ContentPaste),
+            Triple("wifi",              "Wifi",       Icons.Filled.Wifi),
+            Triple("bluetooth",         "Bluetooth",  Icons.Filled.Bluetooth),
+            Triple("share",             "Share",      Icons.Filled.Share)
         )
     }
     val metaMap = remember(controlMeta) { controlMeta.associateBy { it.first } }

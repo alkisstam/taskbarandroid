@@ -32,6 +32,11 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.FreeBreakfast
 import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Wifi
+import androidx.compose.material.icons.filled.WifiOff
+import androidx.compose.material.icons.filled.Bluetooth
+import androidx.compose.material.icons.filled.BluetoothDisabled
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -129,7 +134,12 @@ fun QuickControlsState.toItems(
             active = caffeineMinutes != 0,
             icon = Icons.Filled.FreeBreakfast),
         "clipboard" to QuickControlItemData(id = "clipboard", label = "Clipboard",
-            active = false, icon = Icons.Filled.ContentPaste)
+            active = false, icon = Icons.Filled.ContentPaste),
+        "wifi" to QuickControlItemData(id = "wifi", label = "Wifi", active = wifiEnabled,
+            icon = if (wifiEnabled) Icons.Filled.Wifi else Icons.Filled.WifiOff),
+        "bluetooth" to QuickControlItemData(id = "bluetooth", label = "Bluetooth", active = bluetoothEnabled,
+            icon = if (bluetoothEnabled) Icons.Filled.Bluetooth else Icons.Filled.BluetoothDisabled),
+        "share" to QuickControlItemData(id = "share", label = "Share", active = false, icon = Icons.Filled.Share)
     )
     val effectiveOrder = order.ifEmpty { PreferencesRepository.ALL_CONTROL_IDS }
     return effectiveOrder

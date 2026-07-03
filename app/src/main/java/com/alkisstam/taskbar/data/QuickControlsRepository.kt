@@ -1,14 +1,19 @@
 package com.alkisstam.taskbar.data
 
+import android.Manifest
+import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import android.app.NotificationManager
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.media.AudioManager
+import android.net.wifi.WifiManager
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
+import androidx.core.content.ContextCompat
 import com.alkisstam.taskbar.service.TaskBarAccessibilityService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -204,6 +209,67 @@ class QuickControlsRepository @Inject constructor(
         else
             NotificationManager.INTERRUPTION_FILTER_PRIORITY
         nm.setInterruptionFilter(next)
+    }
+
+    private val wifiManager = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+    private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
+
+    fun isWifiEnabled(): Boolean = wifiManager.isWifiEnabled
+
+    fun openWifiPanel() {
+        val intent = Intent(Settings.Panel.ACTION_WIFI).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        context.startActivity(intent)
+    }
+
+    fun isBluetoothEnabled(): Boolean {
+        val granted = Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
+            ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED
+        if (!granted) return false
+        return try {
+            bluetoothAdapter?.isEnabled == true
+        } catch (e: SecurityException) {
+            false
+        }
+    }
+
+    fun openBluetoothPanel() {
+        // No Settings.Panel entry exists for Bluetooth (only Wifi/NFC/Volume/Internet) -
+        // full settings screen is the closest available system UI.
+        val intent = Intent(Settings.ACTION_BLUETOOTH_SETTINGS).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        context.startActivity(intent)
+    }
+
+    fun openQuickShare() {
+        val pm = context.packageManager
+        // Google Play services' own Quick Share / Nearby Share entry point - opens the
+        // standalone "Ready to receive files" window with no content attached. Not a
+        // documented SDK constant, but present on virtually all GMS devices (verified
+        // on-device via `adb shell dumpsys package com.google.android.gms`).
+        val gmsQuickShareIntent = Intent("com.google.android.gms.nearby.sharing.UNIFIED").apply {
+            setPackage("com.google.android.gms")
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        if (pm.resolveActivity(gmsQuickShareIntent, 0) != null) {
+            context.startActivity(gmsQuickShareIntent)
+            return
+        }
+        val candidates = listOf(
+            "com.samsung.android.app.sharelive",
+            "com.miui.mishare.connectivity"
+        )
+        for (pkg in candidates) {
+            val intent = pm.getLaunchIntentForPackage(pkg)
+            if (intent != null) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                context.startActivity(intent)
+                return
+            }
+        }
+        Log.w(TAG, "No Quick Share app or Nearby Share settings found on this device")
     }
 
     fun openQrScanner() {
