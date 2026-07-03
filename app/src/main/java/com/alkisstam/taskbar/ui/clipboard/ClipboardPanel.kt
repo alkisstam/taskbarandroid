@@ -487,12 +487,13 @@ private fun NotesTab(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                if (editingNote != null) {
+                val noteBeingEdited = editingNote
+                if (noteBeingEdited != null) {
                     item("editor") {
                         NoteComposer(
-                            initialText = editingNote!!.content,
+                            initialText = noteBeingEdited.content,
                             onSave = { text ->
-                                onEdit(editingNote!!.copy(content = text))
+                                onEdit(noteBeingEdited.copy(content = text))
                                 editingNote = null
                             },
                             onCancel = { editingNote = null }

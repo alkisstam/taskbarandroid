@@ -5,12 +5,13 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.OpenableColumns
+import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.lifecycle.lifecycleScope
 import com.alkisstam.taskbar.data.ClipItem
 import com.alkisstam.taskbar.data.ClipType
 import com.alkisstam.taskbar.data.ClipboardRepository
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -35,15 +36,20 @@ class ClipboardShareActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        CoroutineScope(Dispatchers.IO).launch {
-            val item = buildClipItem()
-            if (item != null) {
-                clipboardRepository.addClip(item)
-                sendBroadcast(
-                    Intent(OverlayService.ACTION_CLIPBOARD_PANEL_SHOW).apply { setPackage(packageName) }
-                )
+        lifecycleScope.launch {
+            try {
+                val item = withContext(Dispatchers.IO) { buildClipItem() }
+                if (item != null) {
+                    withContext(Dispatchers.IO) { clipboardRepository.addClip(item) }
+                    sendBroadcast(
+                        Intent(OverlayService.ACTION_CLIPBOARD_PANEL_SHOW).apply { setPackage(packageName) }
+                    )
+                }
+            } catch (e: Exception) {
+                Log.w("ClipboardShareActivity", "Failed to save shared item", e)
+            } finally {
+                finish()
             }
-            withContext(Dispatchers.Main) { finish() }
         }
     }
 

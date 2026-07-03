@@ -46,8 +46,14 @@ class OverlayTileService : TileService() {
                     updateTile(false)
                 } else {
                     prefsRepository.setOverlayEnabled(true)
-                    startForegroundService(Intent(this@OverlayTileService, OverlayService::class.java))
-                    updateTile(true)
+                    try {
+                        startForegroundService(Intent(this@OverlayTileService, OverlayService::class.java))
+                        updateTile(true)
+                    } catch (e: Exception) {
+                        Log.w("OverlayTileService", "Failed to start overlay service", e)
+                        prefsRepository.setOverlayEnabled(false)
+                        updateTile(false)
+                    }
                 }
             }
         }

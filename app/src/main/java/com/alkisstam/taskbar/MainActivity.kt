@@ -227,8 +227,12 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun getAppVersionCode(): Int {
-        val packageInfo = packageManager.getPackageInfo(packageName, 0)
-        return PackageInfoCompat.getLongVersionCode(packageInfo).toInt()
+        return try {
+            val packageInfo = packageManager.getPackageInfo(packageName, 0)
+            PackageInfoCompat.getLongVersionCode(packageInfo).toInt()
+        } catch (e: Exception) {
+            0
+        }
     }
 
     private fun getBatteryOptimizationExcluded(): Boolean {

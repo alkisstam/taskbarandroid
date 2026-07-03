@@ -2,6 +2,7 @@ package com.alkisstam.taskbar.data
 
 import android.Manifest
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.app.NotificationManager
 import android.content.Intent
@@ -221,7 +222,8 @@ class QuickControlsRepository @Inject constructor(
     }
 
     private val wifiManager = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-    private val bluetoothAdapter: BluetoothAdapter? = BluetoothAdapter.getDefaultAdapter()
+    private val bluetoothAdapter: BluetoothAdapter? =
+        (context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter
 
     fun isWifiEnabled(): Boolean = wifiManager.isWifiEnabled
 
@@ -275,19 +277,25 @@ class QuickControlsRepository @Inject constructor(
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         if (pm.resolveActivity(gmsQuickShareIntent, 0) != null) {
-            context.startActivity(gmsQuickShareIntent)
-            return
+            try {
+                context.startActivity(gmsQuickShareIntent)
+                return
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed to launch GMS Quick Share", e)
+            }
         }
         val candidates = listOf(
             "com.samsung.android.app.sharelive",
             "com.miui.mishare.connectivity"
         )
         for (pkg in candidates) {
-            val intent = pm.getLaunchIntentForPackage(pkg)
-            if (intent != null) {
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            val intent = pm.getLaunchIntentForPackage(pkg) ?: continue
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            try {
                 context.startActivity(intent)
                 return
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed to launch Quick Share app $pkg", e)
             }
         }
         Log.w(TAG, "No Quick Share app or Nearby Share settings found on this device")
@@ -322,8 +330,12 @@ class QuickControlsRepository @Inject constructor(
         for (intent in candidates) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             if (pm.resolveActivity(intent, 0) != null) {
-                context.startActivity(intent)
-                return
+                try {
+                    context.startActivity(intent)
+                    return
+                } catch (e: Exception) {
+                    Log.w(TAG, "Failed to launch QR scanner intent", e)
+                }
             }
         }
         Log.w(TAG, "No QR scanner app found on this device")
@@ -365,14 +377,5 @@ class QuickControlsRepository @Inject constructor(
     }
 
     fun canLockScreen(): Boolean = TaskBarAccessibilityService.isRunning()
-
-    fun cleanup() {
-        try {
-            context.unregisterReceiver(ringerReceiver)
-        } catch (e: Exception) {
-            // Receiver may not be registered
-        }
-        context.contentResolver.unregisterContentObserver(settingsObserver)
-    }
 
 }

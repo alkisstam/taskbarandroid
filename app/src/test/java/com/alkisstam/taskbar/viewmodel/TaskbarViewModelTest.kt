@@ -6,7 +6,6 @@ import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.AppRepository
 import com.alkisstam.taskbar.data.PillSettings
 import com.alkisstam.taskbar.data.PreferencesRepository
-import com.alkisstam.taskbar.data.RecentAppsRepository
 import com.alkisstam.taskbar.data.TaskbarSettings
 import com.alkisstam.taskbar.data.ThemeMode
 import com.alkisstam.taskbar.util.MainDispatcherRule
@@ -34,7 +33,6 @@ class TaskbarViewModelTest {
     private lateinit var context: Context
     private lateinit var appRepo: AppRepository
     private lateinit var prefsRepo: PreferencesRepository
-    private lateinit var recentAppsRepo: RecentAppsRepository
 
     @Before
     fun setUp() {
@@ -50,22 +48,17 @@ class TaskbarViewModelTest {
             every { taskbarSettings } returns flowOf(TaskbarSettings())
             every { autoHideInFullscreen } returns flowOf(false)
             every { autoHideInLandscape } returns flowOf(false)
-            every { quickControlsStripEnabled } returns flowOf(false)
             every { quickControlsEnabled } returns flowOf(true)
             every { controlsOrder } returns flowOf(PreferencesRepository.ALL_CONTROL_IDS)
             every { controlsDisabledIds } returns flowOf(emptySet())
             every { surfaceTintColor } returns flowOf(0L)
             every { onboardingComplete } returns flowOf(true)
             every { musicPanelEnabled } returns flowOf(false)
-            every { recentAppsEnabled } returns flowOf(false)
-        }
-        recentAppsRepo = mockk<RecentAppsRepository>(relaxed = true) {
-            every { isPermissionGranted() } returns false
-            every { getRecentPackages(any(), any()) } returns emptyList()
+            every { taskbarVisible } returns flowOf(true)
         }
     }
 
-    private fun createViewModel() = TaskbarViewModel(context, appRepo, prefsRepo, recentAppsRepo)
+    private fun createViewModel() = TaskbarViewModel(context, appRepo, prefsRepo)
 
     @Test
     fun `showTaskbar sets isTaskbarVisible to true`() = runTest(mainDispatcherRule.dispatcher) {

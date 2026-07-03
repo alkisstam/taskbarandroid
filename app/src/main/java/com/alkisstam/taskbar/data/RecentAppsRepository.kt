@@ -3,6 +3,7 @@ package com.alkisstam.taskbar.data
 import android.app.AppOpsManager
 import android.app.usage.UsageStatsManager
 import android.content.Context
+import android.os.Build
 import android.os.Process
 import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -15,14 +16,16 @@ class RecentAppsRepository @Inject constructor(
 ) {
     fun isPermissionGranted(): Boolean {
         val appOps = context.getSystemService(AppOpsManager::class.java)
-        val mode = appOps.checkOpNoThrow(
-            AppOpsManager.OPSTR_GET_USAGE_STATS,
-            Process.myUid(),
-            context.packageName
-        )
+        val mode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            appOps.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), context.packageName)
+        } else {
+            @Suppress("DEPRECATION")
+            appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), context.packageName)
+        }
         return mode == AppOpsManager.MODE_ALLOWED
     }
 
+    @Suppress("DEPRECATION") // MOVE_TO_FOREGROUND fallback for API < 29
     fun getRecentPackages(limit: Int = 15, excludePackages: Set<String> = emptySet()): List<String> {
         if (!isPermissionGranted()) return emptyList()
         return try {
@@ -31,10 +34,14 @@ class RecentAppsRepository @Inject constructor(
             val start = end - 7L * 24 * 60 * 60 * 1000
             val events = usageStatsManager.queryEvents(start, end)
             val event = android.app.usage.UsageEvents.Event()
+            val foregroundType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                android.app.usage.UsageEvents.Event.ACTIVITY_RESUMED
+            else
+                android.app.usage.UsageEvents.Event.MOVE_TO_FOREGROUND
             val lastUsed = mutableMapOf<String, Long>()
             while (events.hasNextEvent()) {
                 events.getNextEvent(event)
-                if (event.eventType == android.app.usage.UsageEvents.Event.MOVE_TO_FOREGROUND) {
+                if (event.eventType == foregroundType) {
                     val pkg = event.packageName
                     if (event.timeStamp > (lastUsed[pkg] ?: 0L)) lastUsed[pkg] = event.timeStamp
                 }

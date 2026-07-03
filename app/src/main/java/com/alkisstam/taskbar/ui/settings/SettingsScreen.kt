@@ -409,10 +409,14 @@ private fun GeneralTab(
         SettingsCard(title = "Permissions") {
             OutlinedButton(
                 onClick = {
-                    val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
-                        data = Uri.parse("package:${context.packageName}")
+                    try {
+                        val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
+                            data = Uri.parse("package:${context.packageName}")
+                        }
+                        context.startActivity(intent)
+                    } catch (e: Exception) {
+                        Toast.makeText(context, "Couldn't open settings", Toast.LENGTH_SHORT).show()
                     }
-                    context.startActivity(intent)
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -486,8 +490,12 @@ private fun GeneralTab(
                         )
                     )
                     .clickable {
-                        val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:alkisstam@icloud.com"))
-                        context.startActivity(intent)
+                        try {
+                            val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:alkisstam@icloud.com"))
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            Toast.makeText(context, "No email app found", Toast.LENGTH_SHORT).show()
+                        }
                     }
                     .padding(vertical = 14.dp),
                 contentAlignment = Alignment.Center
@@ -551,10 +559,14 @@ private fun MusicPanelSettingsCard(viewModel: TaskbarViewModel, context: android
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedButton(
                 onClick = {
-                    context.startActivity(
-                        android.content.Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
-                            .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-                    )
+                    try {
+                        context.startActivity(
+                            android.content.Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
+                                .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                        )
+                    } catch (e: Exception) {
+                        Toast.makeText(context, "Couldn't open settings", Toast.LENGTH_SHORT).show()
+                    }
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {

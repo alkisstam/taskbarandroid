@@ -233,19 +233,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
         _windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         createNotificationChannel()
-        val filter = IntentFilter().apply {
-            addAction(Intent.ACTION_SCREEN_OFF)
-            addAction(Intent.ACTION_SCREEN_ON)
-            addAction(Intent.ACTION_USER_PRESENT)
-            addAction(Intent.ACTION_CONFIGURATION_CHANGED)
-            addAction(ACTION_SETTINGS_OPEN)
-            addAction(ACTION_SETTINGS_CLOSE)
-            addAction(ACTION_DISMISS_ALL)
-            addAction(ACTION_ACCESSIBILITY_CHANGED)
-            addAction(ACTION_CLIPBOARD_PANEL_SHOW)
-        }
-        ContextCompat.registerReceiver(this, lockscreenReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
-        registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
 
         val factory = OverlayViewModelFactory(
             context = this,
@@ -259,17 +246,42 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         taskbarViewModel = provider[TaskbarViewModel::class.java]
         appMenuViewModel = provider[AppMenuViewModel::class.java]
         clipboardViewModel = provider[ClipboardViewModel::class.java]
+
+        // Register receivers only after the ViewModels exist: the battery filter is a sticky
+        // broadcast whose onReceive touches taskbarViewModel, and other actions reference the
+        // ViewModels too.
+        val filter = IntentFilter().apply {
+            addAction(Intent.ACTION_SCREEN_OFF)
+            addAction(Intent.ACTION_SCREEN_ON)
+            addAction(Intent.ACTION_USER_PRESENT)
+            addAction(Intent.ACTION_CONFIGURATION_CHANGED)
+            addAction(ACTION_SETTINGS_OPEN)
+            addAction(ACTION_SETTINGS_CLOSE)
+            addAction(ACTION_DISMISS_ALL)
+            addAction(ACTION_ACCESSIBILITY_CHANGED)
+            addAction(ACTION_CLIPBOARD_PANEL_SHOW)
+        }
+        ContextCompat.registerReceiver(this, lockscreenReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
+        registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            startForeground(
-                NOTIFICATION_ID,
-                buildNotification(),
-                android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
-            )
-        } else {
-            startForeground(NOTIFICATION_ID, buildNotification())
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                startForeground(
+                    NOTIFICATION_ID,
+                    buildNotification(),
+                    android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+                )
+            } else {
+                startForeground(NOTIFICATION_ID, buildNotification())
+            }
+        } catch (e: Exception) {
+            // ForegroundServiceStartNotAllowedException (background start without exemption) or
+            // a missing-notification-permission error would otherwise crash the process.
+            Log.w(TAG, "startForeground failed; stopping service", e)
+            stopSelf()
+            return START_NOT_STICKY
         }
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
@@ -921,8 +933,11 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         activeWM = null
         serviceScope.cancel()
         _viewModelStore.clear()
-        appRepository.cleanup()
-        quickControlsRepository.cleanup()
+        // AppRepository / QuickControlsRepository are @Singleton (process-scoped) and register
+        // their receivers/observers once in init{}. Tearing them down here left them dead after
+        // a service restart (dock toggled off/on) because init{} never re-runs on the reused
+        // singleton — silently breaking app-list refresh and live control state. Let them live
+        // for the process lifetime instead.
         super.onDestroy()
     }
 

@@ -16,7 +16,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -49,15 +48,6 @@ class AppRepository @Inject constructor(
         } else {
             context.registerReceiver(packageReceiver, filter)
         }
-    }
-
-    fun cleanup() {
-        try {
-            context.unregisterReceiver(packageReceiver)
-        } catch (e: Exception) {
-            // Receiver may not be registered
-        }
-        scope.cancel()
     }
 
     private fun loadApps() {

@@ -20,6 +20,8 @@ import com.alkisstam.taskbar.service.OverlayService
 import com.alkisstam.taskbar.service.TaskBarAccessibilityService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -93,7 +95,7 @@ class TaskbarViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
     val panelOutlineEnabled: StateFlow<Boolean> = prefsRepository.panelOutlineEnabled
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), true)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
     val translucentMode: StateFlow<Boolean> = prefsRepository.translucentMode
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
@@ -102,7 +104,7 @@ class TaskbarViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.80f)
 
     val appGridColumns: StateFlow<Int> = prefsRepository.appGridColumns
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 3)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 4)
 
     val appGridRows: StateFlow<Int> = prefsRepository.appGridRows
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 4)
@@ -268,8 +270,11 @@ class TaskbarViewModel @Inject constructor(
         viewModelScope.launch {
             prefsRepository.setOverlayEnabled(true)
         }
-        val intent = Intent(context, OverlayService::class.java)
-        context.startForegroundService(intent)
+        try {
+            context.startForegroundService(Intent(context, OverlayService::class.java))
+        } catch (e: Exception) {
+            Log.w("TaskbarViewModel", "Failed to start overlay service", e)
+        }
     }
 
     fun savePillSettings(settings: PillSettings) {
@@ -350,7 +355,9 @@ class TaskbarViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val json = prefsRepository.exportToJson()
-                context.contentResolver.openOutputStream(uri)?.use { it.write(json.toByteArray()) }
+                withContext(Dispatchers.IO) {
+                    context.contentResolver.openOutputStream(uri)?.use { it.write(json.toByteArray()) }
+                }
             } catch (e: Exception) {
                 Log.w("TaskbarViewModel", "Failed to export backup", e)
                 _backupError.value = "Failed to export backup"
@@ -361,7 +368,9 @@ class TaskbarViewModel @Inject constructor(
     fun importBackup(uri: android.net.Uri) {
         viewModelScope.launch {
             try {
-                val json = context.contentResolver.openInputStream(uri)?.use { it.readBytes().toString(Charsets.UTF_8) } ?: return@launch
+                val json = withContext(Dispatchers.IO) {
+                    context.contentResolver.openInputStream(uri)?.use { it.readBytes().toString(Charsets.UTF_8) }
+                } ?: return@launch
                 prefsRepository.importFromJson(json)
             } catch (e: Exception) {
                 Log.w("TaskbarViewModel", "Failed to import backup", e)

@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -145,10 +146,14 @@ fun ClipItemCard(
                 ClipType.URL -> {
                     Box(modifier = Modifier.clickable {
                         onOpenExternal()
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.content)).apply {
-                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.content)).apply {
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            }
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            Toast.makeText(context, "No app can open this link", Toast.LENGTH_SHORT).show()
                         }
-                        context.startActivity(intent)
                     }) {
                         Text(
                             text = item.content,
@@ -328,36 +333,44 @@ fun ClipItemCard(
 }
 
 private fun openFile(context: Context, path: String, mimeType: String) {
-    val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", File(path))
-    val intent = Intent(Intent.ACTION_VIEW).apply {
-        setDataAndType(uri, mimeType)
-        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+    try {
+        val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", File(path))
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, mimeType)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        context.startActivity(intent)
+    } catch (e: Exception) {
+        Toast.makeText(context, "No app can open this file", Toast.LENGTH_SHORT).show()
     }
-    context.startActivity(intent)
 }
 
 private fun shareClip(context: Context, item: ClipItem) {
-    val intent = when (item.type) {
-        ClipType.TEXT, ClipType.URL -> Intent(Intent.ACTION_SEND).apply {
-            type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, item.content)
-        }
-        ClipType.IMAGE, ClipType.PDF, ClipType.TEXT_FILE, ClipType.DOCUMENT -> {
-            val file = File(item.content)
-            val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
-            Intent(Intent.ACTION_SEND).apply {
-                type = when (item.type) {
-                    ClipType.IMAGE -> "image/*"
-                    ClipType.PDF -> "application/pdf"
-                    ClipType.DOCUMENT -> documentMimeType(item.content)
-                    else -> "text/plain"
+    try {
+        val intent = when (item.type) {
+            ClipType.TEXT, ClipType.URL -> Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, item.content)
+            }
+            ClipType.IMAGE, ClipType.PDF, ClipType.TEXT_FILE, ClipType.DOCUMENT -> {
+                val file = File(item.content)
+                val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
+                Intent(Intent.ACTION_SEND).apply {
+                    type = when (item.type) {
+                        ClipType.IMAGE -> "image/*"
+                        ClipType.PDF -> "application/pdf"
+                        ClipType.DOCUMENT -> documentMimeType(item.content)
+                        else -> "text/plain"
+                    }
+                    putExtra(Intent.EXTRA_STREAM, uri)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 }
-                putExtra(Intent.EXTRA_STREAM, uri)
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             }
         }
+        context.startActivity(Intent.createChooser(intent, null).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) })
+    } catch (e: Exception) {
+        Toast.makeText(context, "Unable to share this item", Toast.LENGTH_SHORT).show()
     }
-    context.startActivity(Intent.createChooser(intent, null).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) })
 }
 
 private fun decodeSampledBitmapFromFile(path: String, reqWidth: Int, reqHeight: Int): android.graphics.Bitmap? {
