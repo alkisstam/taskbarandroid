@@ -32,7 +32,8 @@ data class QuickControlItemData(
     val id: String,
     val icon: ImageVector,
     val label: String,
-    val active: Boolean
+    val active: Boolean,
+    val badge: String? = null
 )
 
 data class QuickControlsState(
@@ -444,5 +445,11 @@ class AppMenuViewModel @Inject constructor(
                 _quickControlsState.value = _quickControlsState.value.copy(caffeineMinutes = 0)
             }
         }
+    }
+
+    fun deactivateCaffeine() {
+        if (_quickControlsState.value.caffeineMinutes == 0) return
+        if (originalScreenTimeoutMs > 0) quickControls.setScreenTimeout(originalScreenTimeoutMs)
+        _quickControlsState.value = _quickControlsState.value.copy(caffeineMinutes = 0)
     }
 }

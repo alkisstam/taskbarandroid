@@ -124,6 +124,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             when (intent.action) {
                 Intent.ACTION_SCREEN_OFF -> {
                     overlayHiddenForLockscreen = true
+                    if (this@OverlayService::appMenuViewModel.isInitialized) appMenuViewModel.deactivateCaffeine()
                     handler.post {
                         overlayView?.visibility = View.GONE
                         taskbarView?.visibility = View.GONE

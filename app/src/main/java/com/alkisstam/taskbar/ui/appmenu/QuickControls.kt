@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -50,6 +51,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.alkisstam.taskbar.viewmodel.QuickControlItemData
 import com.alkisstam.taskbar.viewmodel.QuickControlsState
 import com.alkisstam.taskbar.data.PreferencesRepository
@@ -92,6 +94,7 @@ fun QuickControls(
                 active = item.active,
                 onClick = { onAction(item.id) },
                 showLabel = showLabels,
+                badge = item.badge,
                 tileSize = tileSize
             )
         }
@@ -132,6 +135,7 @@ fun QuickControlsState.toItems(
         "caffeine" to QuickControlItemData(id = "caffeine",
             label = if (caffeineMinutes == 0) "Caffeine" else "${caffeineMinutes}m",
             active = caffeineMinutes != 0,
+            badge = if (caffeineMinutes != 0) "${caffeineMinutes}m" else null,
             icon = Icons.Filled.FreeBreakfast),
         "clipboard" to QuickControlItemData(id = "clipboard", label = "Clipboard",
             active = false, icon = Icons.Filled.ContentPaste),
@@ -165,6 +169,7 @@ fun QuickControlItem(
         active = item.active,
         onClick = onToggle,
         showLabel = showLabel,
+        badge = item.badge,
         tileSize = tileSize,
         modifier = modifier
     )
@@ -177,6 +182,7 @@ private fun QuickControlTile(
     active: Boolean,
     onClick: () -> Unit,
     showLabel: Boolean = true,
+    badge: String? = null,
     tileSize: Dp = 44.dp,
     modifier: Modifier = Modifier
 ) {
@@ -194,21 +200,39 @@ private fun QuickControlTile(
         modifier = modifier.width(tileSize),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Surface(
-            modifier = Modifier
-                .size(tileSize)
-                .clip(CircleShape)
-                .clickable(onClick = onClick),
-            color = containerColor,
-            shape = CircleShape
-        ) {
-            Box(contentAlignment = Alignment.Center) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = label,
-                    modifier = Modifier.size(tileSize / 2),
-                    tint = contentColor
-                )
+        Box(modifier = Modifier.size(tileSize)) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(CircleShape)
+                    .clickable(onClick = onClick),
+                color = containerColor,
+                shape = CircleShape
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = label,
+                        modifier = Modifier.size(tileSize / 2),
+                        tint = contentColor
+                    )
+                }
+            }
+            if (badge != null && !showLabel) {
+                Surface(
+                    modifier = Modifier.align(Alignment.BottomEnd),
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(4.dp)
+                ) {
+                    Text(
+                        text = badge,
+                        fontSize = 8.sp,
+                        lineHeight = 9.sp,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        maxLines = 1,
+                        modifier = Modifier.padding(horizontal = 2.dp)
+                    )
+                }
             }
         }
         if (showLabel) {
