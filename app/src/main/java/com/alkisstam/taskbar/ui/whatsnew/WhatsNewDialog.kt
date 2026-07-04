@@ -57,6 +57,25 @@ val whatsNewReleases = listOf(
             "Backup and restore no longer risk freezing the UI on cloud storage",
             "Broad crash hardening across service starts and system launches"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.3.9",
+        versionCode = 42,
+        highlights = listOf(
+            "New Dock Corner Radius slider in Design → Dock Size & Appearance",
+            "Dock edge-padding presets (Default / Small / Large) so the dock clears rounded display corners",
+            "Fixed an app-loading crash on some devices caused by a system icon error",
+            "The dock no longer pops up on its own just from opening the app"
+        )
+    ),
+    WhatsNewRelease(
+        versionName = "1.3.10",
+        versionCode = 43,
+        highlights = listOf(
+            "Fixed sharing to the clipboard crashing the app and turning off the accessibility service",
+            "Apps whose icon fails to load now show with a placeholder instead of disappearing from the all-apps menu",
+            "Left/right trigger pill now stays on-screen after rotating to landscape"
+        )
     )
 )
 
