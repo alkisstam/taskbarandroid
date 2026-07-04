@@ -4,6 +4,19 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.3.9] - 2026-07-04
+
+### Added
+- **Dock corner radius** — a new slider in Design → Dock Size & Appearance adjusts how rounded the dock's corners are (0–32dp).
+- **Dock edge padding** — a Default / Small / Large preset insets the dock from the screen edges so its corners clear the rounded display corners on phones like the Pixel 10; the floating panels move up with it.
+
+### Fixed
+- **Crash while loading apps on some devices** — an out-of-memory error thrown by the system while rendering an app icon (seen on certain MIUI builds) no longer crashes the app-list load; the offending app is skipped instead.
+- **Dock appeared on its own when opening the app** — the dock no longer pops up and persists just from launching Floating Dock; it stays hidden until you trigger it.
+- **Dock wouldn't hide while the app was open** — a dock triggered manually while the settings screen is foreground now hides normally instead of lingering.
+
+---
+
 ## [1.3.8] - 2026-07-03
 
 ### Fixed
