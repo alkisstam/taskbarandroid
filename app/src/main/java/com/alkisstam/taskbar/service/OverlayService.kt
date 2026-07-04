@@ -175,7 +175,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 }
                 ACTION_SETTINGS_OPEN -> {
                     taskbarViewModel.setSettingsOpen(true)
-                    taskbarViewModel.showTaskbar()
                 }
                 ACTION_SETTINGS_CLOSE -> {
                     taskbarViewModel.setSettingsOpen(false)

@@ -68,7 +68,10 @@ class AppRepository @Inject constructor(
                                 // bitmap can later be recycled by the OS, so copy it to own our instance.
                                 icon = resolveInfo.loadIcon(pm).toBitmap().copy(Bitmap.Config.ARGB_8888, false)
                             )
-                        } catch (e: Exception) {
+                        } catch (e: Throwable) {
+                            // Throwable, not Exception: MIUI's IconCustomizer inflates huge
+                            // bitmaps and throws OutOfMemoryError (an Error) on some devices;
+                            // skip that app instead of crashing the whole load.
                             Log.w("AppRepository", "Skipping app with broken resources: ${resolveInfo.activityInfo?.packageName}", e)
                             null
                         }
