@@ -13,6 +13,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -50,7 +51,7 @@ class AppRepository @Inject constructor(
         }
     }
 
-    private fun loadApps() {
+    private fun loadApps(retriesLeft: Int = 3) {
         scope.launch {
             try {
                 val pm = context.packageManager
@@ -83,6 +84,14 @@ class AppRepository @Inject constructor(
                     .sortedBy { it.label.lowercase() }
             } catch (e: Exception) {
                 Log.w("AppRepository", "Failed to load installed apps", e)
+                // queryIntentActivities can fail with a transient binder error
+                // (DeadObjectException / binder buffer overflow). If we have no apps
+                // yet, back off and retry so the dock isn't left empty until the next
+                // package broadcast.
+                if (_apps.value.isEmpty() && retriesLeft > 0) {
+                    delay(1000L * (4 - retriesLeft))
+                    loadApps(retriesLeft - 1)
+                }
             }
         }
     }
