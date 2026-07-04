@@ -13,10 +13,14 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun AppIconImage(
-    icon: Bitmap,
+    icon: Bitmap?,
     contentDescription: String?,
     modifier: Modifier = Modifier
 ) {
+    if (icon == null) {
+        AppIconPlaceholder(modifier)
+        return
+    }
     Image(
         bitmap = icon.asImageBitmap(),
         contentDescription = contentDescription,

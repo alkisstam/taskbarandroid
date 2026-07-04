@@ -173,6 +173,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                         pillView?.visibility = View.VISIBLE
                         pillView2?.visibility = View.VISIBLE
                     }
+                    // Recompute pill layout: side-pill y is a percentage of screen height, so a
+                    // stale portrait offset lands off-screen in landscape. Post so resources have
+                    // switched to the new orientation before pillLayoutParams reads displayMetrics.
+                    handler.post { updatePillLayoutForConfig() }
                 }
                 ACTION_SETTINGS_OPEN -> {
                     taskbarViewModel.setSettingsOpen(true)
@@ -393,6 +397,18 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     removePillView2()
                 }
             }
+        }
+    }
+
+    private fun updatePillLayoutForConfig() {
+        val settings = taskbarViewModel.pillSettings.value
+        pillView?.let {
+            try { windowManager.updateViewLayoutKeepingType(it, pillLayoutParams(settings, isRight = false)) }
+            catch (e: Exception) { Log.w(TAG, "Failed to update pill layout on config change", e) }
+        }
+        pillView2?.let {
+            try { windowManager.updateViewLayoutKeepingType(it, pillLayoutParams(settings, isRight = true)) }
+            catch (e: Exception) { Log.w(TAG, "Failed to update pill2 layout on config change", e) }
         }
     }
 

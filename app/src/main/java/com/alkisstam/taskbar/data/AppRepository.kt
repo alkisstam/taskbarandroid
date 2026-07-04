@@ -59,22 +59,25 @@ class AppRepository @Inject constructor(
                 }
                 _apps.value = pm.queryIntentActivities(intent, PackageManager.GET_META_DATA)
                     .mapNotNull { resolveInfo ->
-                        try {
-                            AppInfo(
-                                packageName = resolveInfo.activityInfo.packageName,
-                                label = resolveInfo.loadLabel(pm).toString(),
-                                // toBitmap() can return the system's cached Bitmap instance without
-                                // copying (androidx shortcut when config already matches); that shared
-                                // bitmap can later be recycled by the OS, so copy it to own our instance.
-                                icon = resolveInfo.loadIcon(pm).toBitmap().copy(Bitmap.Config.ARGB_8888, false)
-                            )
+                        val activityInfo = resolveInfo.activityInfo ?: return@mapNotNull null
+                        // Load the icon separately so a broken icon doesn't drop the whole app
+                        // from the list: MIUI's IconCustomizer inflates huge bitmaps and throws
+                        // OutOfMemoryError (an Error, hence Throwable) on some devices. Keep the
+                        // app with a null icon (UI renders a placeholder) instead of hiding it.
+                        val icon = try {
+                            // toBitmap() can return the system's cached Bitmap instance without
+                            // copying (androidx shortcut when config already matches); that shared
+                            // bitmap can later be recycled by the OS, so copy it to own our instance.
+                            resolveInfo.loadIcon(pm).toBitmap().copy(Bitmap.Config.ARGB_8888, false)
                         } catch (e: Throwable) {
-                            // Throwable, not Exception: MIUI's IconCustomizer inflates huge
-                            // bitmaps and throws OutOfMemoryError (an Error) on some devices;
-                            // skip that app instead of crashing the whole load.
-                            Log.w("AppRepository", "Skipping app with broken resources: ${resolveInfo.activityInfo?.packageName}", e)
+                            Log.w("AppRepository", "Icon load failed, keeping app without icon: ${activityInfo.packageName}", e)
                             null
                         }
+                        AppInfo(
+                            packageName = activityInfo.packageName,
+                            label = resolveInfo.loadLabel(pm).toString(),
+                            icon = icon
+                        )
                     }
                     .distinctBy { it.packageName }
                     .sortedBy { it.label.lowercase() }

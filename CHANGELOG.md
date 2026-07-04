@@ -4,6 +4,15 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.3.10] - 2026-07-04
+
+### Fixed
+- **Sharing to Floating Dock crashed the app and stopped the accessibility service** — sharing anything (text, link, image, document) to the dock's clipboard crashed the whole app, which also turned off the accessibility service until it was re-enabled manually. The share now saves silently as intended.
+- **Not all installed apps appeared in the all-apps menu** — on some devices an app whose icon failed to load was dropped from the list entirely; such apps now show with a placeholder icon instead of going missing.
+- **Side trigger pill went off-screen in landscape** — a left/right pill positioned by percentage (e.g. 50%) stayed at its portrait position after rotating, pushing it off or partly off the screen; the pill now repositions correctly when the orientation changes.
+
+---
+
 ## [1.3.9] - 2026-07-04
 
 ### Added
