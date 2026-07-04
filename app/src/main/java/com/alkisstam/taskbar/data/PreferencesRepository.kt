@@ -37,6 +37,22 @@ private fun String?.toGestureAction() = when (this) {
 
 enum class PillEdgePosition { BOTTOM, LEFT, RIGHT, BOTH }
 
+enum class DockPadding { DEFAULT, SMALL, LARGE }
+
+val DockPadding.bottomGapDp: Float
+    get() = when (this) {
+        DockPadding.DEFAULT -> 20f
+        DockPadding.SMALL -> 28f
+        DockPadding.LARGE -> 40f
+    }
+
+val DockPadding.widthFraction: Float
+    get() = when (this) {
+        DockPadding.DEFAULT -> 0.98f
+        DockPadding.SMALL -> 0.94f
+        DockPadding.LARGE -> 0.88f
+    }
+
 private fun String?.toPillEdgePosition() = when (this) {
     "LEFT"   -> PillEdgePosition.LEFT
     "RIGHT"  -> PillEdgePosition.RIGHT
@@ -50,7 +66,9 @@ data class TaskbarSettings(
     val heightDp: Float = 60f,
     val showControlLabels: Boolean = false,
     val pinnedIconSizeDp: Float = 40f,
-    val quickControlSizeDp: Float = 42f
+    val quickControlSizeDp: Float = 42f,
+    val cornerRadiusDp: Float = 16f,
+    val dockPadding: DockPadding = DockPadding.DEFAULT
 )
 
 data class PillSettings(
@@ -98,6 +116,8 @@ class PreferencesRepository @Inject constructor(
         private val TASKBAR_CONTROL_LABELS_KEY = booleanPreferencesKey("taskbar_control_labels")
         private val PINNED_ICON_SIZE_KEY = floatPreferencesKey("pinned_icon_size_dp")
         private val QUICK_CONTROL_SIZE_KEY = floatPreferencesKey("quick_control_size_dp")
+        private val TASKBAR_CORNER_RADIUS_KEY = floatPreferencesKey("taskbar_corner_radius_dp")
+        private val TASKBAR_DOCK_PADDING_KEY = stringPreferencesKey("taskbar_dock_padding")
         private val SURFACE_TINT_COLOR_KEY = stringPreferencesKey("surface_tint_color")
         private val AUTO_HIDE_FULLSCREEN_KEY = booleanPreferencesKey("auto_hide_fullscreen")
         private val AUTO_HIDE_LANDSCAPE_KEY = booleanPreferencesKey("auto_hide_landscape")
@@ -268,7 +288,9 @@ class PreferencesRepository @Inject constructor(
             heightDp           = prefs[TASKBAR_HEIGHT_KEY]          ?: 60f,
             showControlLabels  = prefs[TASKBAR_CONTROL_LABELS_KEY]  ?: false,
             pinnedIconSizeDp   = prefs[PINNED_ICON_SIZE_KEY]        ?: 40f,
-            quickControlSizeDp = prefs[QUICK_CONTROL_SIZE_KEY]      ?: 42f
+            quickControlSizeDp = prefs[QUICK_CONTROL_SIZE_KEY]      ?: 42f,
+            cornerRadiusDp     = prefs[TASKBAR_CORNER_RADIUS_KEY]   ?: 16f,
+            dockPadding        = prefs[TASKBAR_DOCK_PADDING_KEY]?.let { runCatching { DockPadding.valueOf(it) }.getOrNull() } ?: DockPadding.DEFAULT
         )
     }
 
@@ -279,6 +301,8 @@ class PreferencesRepository @Inject constructor(
             prefs[TASKBAR_CONTROL_LABELS_KEY] = settings.showControlLabels
             prefs[PINNED_ICON_SIZE_KEY]       = settings.pinnedIconSizeDp
             prefs[QUICK_CONTROL_SIZE_KEY]     = settings.quickControlSizeDp
+            prefs[TASKBAR_CORNER_RADIUS_KEY]  = settings.cornerRadiusDp
+            prefs[TASKBAR_DOCK_PADDING_KEY]   = settings.dockPadding.name
         }
     }
 
@@ -451,6 +475,8 @@ class PreferencesRepository @Inject constructor(
             prefs[TASKBAR_CONTROL_LABELS_KEY]?.let { put("taskbar_control_labels", it) }
             prefs[PINNED_ICON_SIZE_KEY]?.let { put("pinned_icon_size_dp", it) }
             prefs[QUICK_CONTROL_SIZE_KEY]?.let { put("quick_control_size_dp", it) }
+            prefs[TASKBAR_CORNER_RADIUS_KEY]?.let { put("taskbar_corner_radius_dp", it) }
+            prefs[TASKBAR_DOCK_PADDING_KEY]?.let { put("taskbar_dock_padding", it) }
             prefs[SURFACE_TINT_COLOR_KEY]?.let { put("surface_tint_color", it) }
             prefs[AUTO_HIDE_FULLSCREEN_KEY]?.let { put("auto_hide_fullscreen", it) }
             prefs[AUTO_HIDE_LANDSCAPE_KEY]?.let { put("auto_hide_landscape", it) }
@@ -488,6 +514,8 @@ class PreferencesRepository @Inject constructor(
             if (obj.has("taskbar_control_labels")) prefs[TASKBAR_CONTROL_LABELS_KEY] = obj.getBoolean("taskbar_control_labels")
             if (obj.has("pinned_icon_size_dp")) prefs[PINNED_ICON_SIZE_KEY] = obj.getDouble("pinned_icon_size_dp").toFloat()
             if (obj.has("quick_control_size_dp")) prefs[QUICK_CONTROL_SIZE_KEY] = obj.getDouble("quick_control_size_dp").toFloat()
+            if (obj.has("taskbar_corner_radius_dp")) prefs[TASKBAR_CORNER_RADIUS_KEY] = obj.getDouble("taskbar_corner_radius_dp").toFloat()
+            if (obj.has("taskbar_dock_padding")) prefs[TASKBAR_DOCK_PADDING_KEY] = obj.getString("taskbar_dock_padding")
             if (obj.has("surface_tint_color")) prefs[SURFACE_TINT_COLOR_KEY] = obj.getString("surface_tint_color")
             if (obj.has("auto_hide_fullscreen")) prefs[AUTO_HIDE_FULLSCREEN_KEY] = obj.getBoolean("auto_hide_fullscreen")
             if (obj.has("auto_hide_landscape")) prefs[AUTO_HIDE_LANDSCAPE_KEY] = obj.getBoolean("auto_hide_landscape")

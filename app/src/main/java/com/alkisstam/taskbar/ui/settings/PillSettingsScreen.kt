@@ -61,6 +61,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.data.DockPadding
 import com.alkisstam.taskbar.data.GestureAction
 import com.alkisstam.taskbar.data.PillEdgePosition
 import com.alkisstam.taskbar.data.ThemeMode
@@ -379,6 +380,38 @@ fun PillSettingsScreen(
                 unit = "dp",
                 onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(quickControlSizeDp = it)) }
             )
+            SettingsSlider(
+                label = "Corner Radius",
+                value = taskbarSettings.cornerRadiusDp,
+                valueRange = 0f..32f,
+                unit = "dp",
+                onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(cornerRadiusDp = it)) }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text("Edge Padding", style = MaterialTheme.typography.bodyMedium)
+            Text(
+                "Insets the dock from the screen edges so its corners clear rounded display corners.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                FilterChip(
+                    selected = taskbarSettings.dockPadding == DockPadding.DEFAULT,
+                    onClick = { viewModel.saveTaskbarSettings(taskbarSettings.copy(dockPadding = DockPadding.DEFAULT)) },
+                    label = { Text("Default") }
+                )
+                FilterChip(
+                    selected = taskbarSettings.dockPadding == DockPadding.SMALL,
+                    onClick = { viewModel.saveTaskbarSettings(taskbarSettings.copy(dockPadding = DockPadding.SMALL)) },
+                    label = { Text("Small") }
+                )
+                FilterChip(
+                    selected = taskbarSettings.dockPadding == DockPadding.LARGE,
+                    onClick = { viewModel.saveTaskbarSettings(taskbarSettings.copy(dockPadding = DockPadding.LARGE)) },
+                    label = { Text("Large") }
+                )
+            }
         }
     }
 }

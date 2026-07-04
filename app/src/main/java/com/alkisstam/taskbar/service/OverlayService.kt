@@ -46,6 +46,7 @@ import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.alkisstam.taskbar.MainActivity
 import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.AppRepository
+import com.alkisstam.taskbar.data.bottomGapDp
 import com.alkisstam.taskbar.data.ClipboardRepository
 import com.alkisstam.taskbar.data.MediaRepository
 import com.alkisstam.taskbar.data.PreferencesRepository
@@ -437,7 +438,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 appMenuViewModel.menuVisible,
                 taskbarViewModel.dockExpandProgress
             ) { settings, menuOpen, expandProgress ->
-                val baseY = 20f + settings.heightDp + 16f + 24f + expandProgress * (settings.heightDp + 1f)
+                val baseY = settings.dockPadding.bottomGapDp + settings.heightDp + 16f + 24f + expandProgress * (settings.heightDp + 1f)
                 volumePanelYOffsetDp = baseY
                 if (menuOpen) baseY + 400f else baseY
             }.collect { yOffset ->
@@ -484,7 +485,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             }.collect { (volumeVisible, brightnessVisible) ->
                 val settings = taskbarViewModel.taskbarSettings.value
                 val dockExpanded = taskbarViewModel.isDockExpanded.value
-                val yOffset = 20f + settings.heightDp + 16f + (if (dockExpanded) settings.heightDp + 25f else 24f)
+                val yOffset = settings.dockPadding.bottomGapDp + settings.heightDp + 16f + (if (dockExpanded) settings.heightDp + 25f else 24f)
 
                 val scrimActive = volumeVisible || brightnessVisible
                 setVolumeScrimActive(scrimActive)

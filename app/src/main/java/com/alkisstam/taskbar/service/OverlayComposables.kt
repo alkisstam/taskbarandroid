@@ -27,6 +27,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.data.bottomGapDp
 import com.alkisstam.taskbar.data.GestureAction
 import com.alkisstam.taskbar.ui.appmenu.AppMenuPanel
 import com.alkisstam.taskbar.ui.appmenu.BrightnessPanel
@@ -41,8 +42,8 @@ import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
 import com.alkisstam.taskbar.viewmodel.ClipboardViewModel
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 
-private fun dockAwarePanelBottomPadding(isTaskbarVisible: Boolean, heightDp: Float, expandedRows: Int) =
-    if (isTaskbarVisible) (20f + heightDp * (1 + expandedRows) + 16f + 28f).dp else 0.dp
+private fun dockAwarePanelBottomPadding(isTaskbarVisible: Boolean, heightDp: Float, expandedRows: Int, bottomGapDp: Float) =
+    if (isTaskbarVisible) (bottomGapDp + heightDp * (1 + expandedRows) + 16f + 28f).dp else 0.dp
 
 @Composable
 internal fun OverlayContent(
@@ -58,7 +59,7 @@ internal fun OverlayContent(
     val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
 
     val expandedRows = if (isDockExpanded && quickControlsEnabled) 1 else 0
-    val panelBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.heightDp, expandedRows)
+    val panelBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.heightDp, expandedRows, taskbarSettings.dockPadding.bottomGapDp)
 
     TaskBarTheme(themeMode = themeMode) {
         Box(
@@ -95,6 +96,8 @@ internal fun TaskbarContent(
     val themeMode by taskbarViewModel.themeMode.collectAsState()
     val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
     val dockRevealProgress by taskbarViewModel.dockRevealProgress.collectAsState()
+    val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
+    val dockBottomGap = taskbarSettings.dockPadding.bottomGapDp.dp
 
     val revealAnim = remember { Animatable(0f) }
     var taskbarHeightPx by remember { mutableFloatStateOf(0f) }
@@ -116,7 +119,7 @@ internal fun TaskbarContent(
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        .padding(bottom = 20.dp)
+                        .padding(bottom = dockBottomGap)
                 ) {
                     TaskbarView(
                         taskbarViewModel = taskbarViewModel,
@@ -257,7 +260,7 @@ internal fun ClipboardPanelContent(
     val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
 
     val expandedRows = if (isDockExpanded && quickControlsEnabled) 1 else 0
-    val dockBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.heightDp, expandedRows)
+    val dockBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.heightDp, expandedRows, taskbarSettings.dockPadding.bottomGapDp)
 
     TaskBarTheme(themeMode = themeMode) {
         ClipboardPanel(

@@ -50,6 +50,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.data.widthFraction
 import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import kotlinx.coroutines.delay
 import java.time.LocalDate
@@ -106,6 +107,8 @@ fun TaskbarView(
     }
 
     val iconSize = taskbarSettings.pinnedIconSizeDp.dp
+    val dockCornerShape = RoundedCornerShape(taskbarSettings.cornerRadiusDp.dp)
+    val dockWidthFraction = taskbarSettings.dockPadding.widthFraction
     val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
     val translucentMode by taskbarViewModel.translucentMode.collectAsState()
     val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
@@ -117,11 +120,11 @@ fun TaskbarView(
         val glassBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
         Surface(
             modifier = Modifier
-                .fillMaxWidth(0.98f)
+                .fillMaxWidth(dockWidthFraction)
                 .wrapContentHeight()
-                .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, RoundedCornerShape(16.dp)) else Modifier)
-                .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor, RoundedCornerShape(16.dp)) else Modifier)
-                .clip(RoundedCornerShape(16.dp))
+                .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, dockCornerShape) else Modifier)
+                .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor, dockCornerShape) else Modifier)
+                .clip(dockCornerShape)
                 .grain(enabled = translucentMode)
                 .pointerInput(isDockExpanded, taskbarSettings.heightDp) {
                     val maxDragPx = with(density) { taskbarSettings.heightDp.dp.toPx() }
@@ -166,7 +169,7 @@ fun TaskbarView(
                         }
                     }
                 },
-            shape = RoundedCornerShape(16.dp),
+            shape = dockCornerShape,
             color = if (translucentMode) surfaceColor.copy(alpha = translucentAlpha) else surfaceColor,
             tonalElevation = if (translucentMode) 0.dp else 3.dp,
             shadowElevation = 8.dp

@@ -198,13 +198,11 @@ class TaskbarViewModel @Inject constructor(
         viewModelScope.launch { prefsRepository.setTaskbarVisible(true) }
     }
     fun hideTaskbar() {
-        if (!_isSettingsOpen.value) {
-            _isDockExpanded.value = false
-            _dockExpandProgress.value = 0f
-            _isTaskbarVisible.value = false
-            _dockRevealProgress.value = 0f
-            viewModelScope.launch { prefsRepository.setTaskbarVisible(false) }
-        }
+        _isDockExpanded.value = false
+        _dockExpandProgress.value = 0f
+        _isTaskbarVisible.value = false
+        _dockRevealProgress.value = 0f
+        viewModelScope.launch { prefsRepository.setTaskbarVisible(false) }
     }
 
     init {
