@@ -228,10 +228,31 @@ class AppMenuViewModel @Inject constructor(
 
     fun setStreamVolume(streamType: Int, value: Int) {
         try {
-            audioManager.setStreamVolume(streamType, value, 0)
-            refreshVolumeStreams()
+            // Absolute setStreamVolume is blocked for the media stream on some OEM
+            // ROMs (e.g. ColorOS rejects it as "no setStreamVolume permission").
+            // Step toward the target with adjustStreamVolume — the same path the
+            // hardware volume keys use — which those ROMs do allow.
+            var guard = 0
+            while (guard < 400) {
+                val current = audioManager.getStreamVolume(streamType)
+                if (current == value) break
+                val dir = if (value > current) AudioManager.ADJUST_RAISE else AudioManager.ADJUST_LOWER
+                audioManager.adjustStreamVolume(streamType, dir, 0)
+                val next = audioManager.getStreamVolume(streamType)
+                if (next == current) break // no movement: blocked or at min/max
+                // stop once we reach or pass the target (OEM step size may exceed 1)
+                if ((dir == AudioManager.ADJUST_RAISE && next >= value) ||
+                    (dir == AudioManager.ADJUST_LOWER && next <= value)) break
+                guard++
+            }
         } catch (e: Exception) {
             Log.w(TAG, "Failed to set stream volume", e)
+        }
+        // Reflect the real resulting volume (may differ from target if the OEM
+        // steps coarsely) so the slider settles on the actual position.
+        val actual = audioManager.getStreamVolume(streamType)
+        _volumeStreams.value = _volumeStreams.value.map {
+            if (it.streamType == streamType) it.copy(current = actual) else it
         }
     }
 
