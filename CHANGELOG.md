@@ -7,6 +7,7 @@ All notable changes to Floating Dock are documented here.
 ## [1.4.1] - 2026-07-05
 
 ### Added
+- **Calculator panel** — a new quick control opens a floating calculator above the dock. Shows a running expression with a live preview total; swipe up on the handle to reveal scientific functions (sin, cos, tan, ln, log, ^, π). Follows the same auto-hide rules as the other panels (dismisses on Wifi/Bluetooth/Share, mutually exclusive with Volume/Brightness/Music/Clipboard, tap-outside to dismiss).
 - **Edit clips and notes in the Clipboard panel** — text and link clips, and notes, can now be edited in place instead of only copied, shared, or deleted.
 - **Music Panel matches the dock's design settings** — the floating Music Panel now follows the Corner Radius and Edge Padding settings from Design instead of using fixed values; tapping the album art opens the currently playing app.
 - **Wifi, Bluetooth, and Share now auto-hide the dock** — tapping these quick controls hides the dock and Music Panel, matching the existing behavior for QR, Power, Screenshot, and Lock Screen.
