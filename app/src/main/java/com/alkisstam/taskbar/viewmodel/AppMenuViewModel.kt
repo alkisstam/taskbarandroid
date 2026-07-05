@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.AppRepository
+import com.alkisstam.taskbar.data.LaunchMode
 import com.alkisstam.taskbar.data.MediaRepository
 import com.alkisstam.taskbar.data.MediaState
 import com.alkisstam.taskbar.data.PreferencesRepository
@@ -276,13 +277,19 @@ class AppMenuViewModel @Inject constructor(
     }
 
     fun launchApp(packageName: String) {
-        val intent = appRepository.getLaunchIntent(packageName) ?: return
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        try {
-            context.startActivity(intent)
-        } catch (e: Exception) {
-            Log.w(TAG, "Failed to launch $packageName", e)
-        }
+        appRepository.launchApp(packageName, LaunchMode.NORMAL)
+        _menuVisible.value = false
+        closeSearch()
+    }
+
+    fun launchAppSplit(packageName: String) {
+        appRepository.launchApp(packageName, LaunchMode.SPLIT_SCREEN)
+        _menuVisible.value = false
+        closeSearch()
+    }
+
+    fun launchAppFloating(packageName: String) {
+        appRepository.launchApp(packageName, LaunchMode.FLOATING)
         _menuVisible.value = false
         closeSearch()
     }

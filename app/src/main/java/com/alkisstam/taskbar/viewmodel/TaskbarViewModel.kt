@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.AppRepository
+import com.alkisstam.taskbar.data.LaunchMode
 import com.alkisstam.taskbar.data.PillSettings
 import com.alkisstam.taskbar.data.PreferencesRepository
 import com.alkisstam.taskbar.data.TaskbarSettings
@@ -231,13 +232,15 @@ class TaskbarViewModel @Inject constructor(
     }
 
     fun launchApp(packageName: String) {
-        val intent = appRepository.getLaunchIntent(packageName) ?: return
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        try {
-            context.startActivity(intent)
-        } catch (e: Exception) {
-            Log.w("TaskbarViewModel", "Failed to launch $packageName", e)
-        }
+        appRepository.launchApp(packageName, LaunchMode.NORMAL)
+    }
+
+    fun launchAppSplit(packageName: String) {
+        appRepository.launchApp(packageName, LaunchMode.SPLIT_SCREEN)
+    }
+
+    fun launchAppFloating(packageName: String) {
+        appRepository.launchApp(packageName, LaunchMode.FLOATING)
     }
 
     fun pinApp(packageName: String) {

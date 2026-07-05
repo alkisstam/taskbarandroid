@@ -45,13 +45,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.widthFraction
-import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.LocalTime
@@ -64,8 +61,6 @@ import com.alkisstam.taskbar.util.Constants
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
 import com.alkisstam.taskbar.viewmodel.QuickControlItemData
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
-import sh.calvin.reorderable.ReorderableItem
-import sh.calvin.reorderable.rememberReorderableLazyListState
 import kotlin.math.abs
 
 @Composable
@@ -88,8 +83,6 @@ fun TaskbarView(
     val dockExpandProgress by taskbarViewModel.dockExpandProgress.collectAsState()
     val batteryLevel by taskbarViewModel.batteryLevel.collectAsState()
     val isCharging by taskbarViewModel.isCharging.collectAsState()
-    val haptic = LocalHapticFeedback.current
-    val hapticEnabled = LocalHapticEnabled.current
     val density = LocalDensity.current
 
     val surfaceColor = if (surfaceTintColor != 0L)
@@ -98,13 +91,6 @@ fun TaskbarView(
         MaterialTheme.colorScheme.surface
 
     val pinnedListState = rememberLazyListState()
-    val reorderableState = rememberReorderableLazyListState(pinnedListState) { from, to ->
-        val pkgs = pinnedApps.map { it.packageName }.toMutableList()
-        if (from.index in pkgs.indices && to.index in pkgs.indices) {
-            pkgs.add(to.index, pkgs.removeAt(from.index))
-            taskbarViewModel.reorderPinnedApps(pkgs)
-        }
-    }
 
     val iconSize = taskbarSettings.pinnedIconSizeDp.dp
     val dockCornerShape = RoundedCornerShape(taskbarSettings.cornerRadiusDp.dp)
@@ -278,23 +264,24 @@ fun TaskbarView(
                         contentPadding = PaddingValues(horizontal = 4.dp)
                     ) {
                             items(pinnedApps, key = { it.packageName }) { app ->
-                                ReorderableItem(reorderableState, key = app.packageName) { isDragging ->
-                                    PinnedAppItem(
-                                        app = app,
-                                        iconSize = iconSize,
-                                        showLabel = false,
-                                        isDragging = isDragging,
-                                        dragModifier = Modifier.longPressDraggableHandle(
-                                            onDragStarted = {
-                                                if (hapticEnabled) haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                            }
-                                        ),
-                                        onLaunch = {
-                                            taskbarViewModel.launchApp(app.packageName)
-                                            taskbarViewModel.hideTaskbar()
-                                        }
-                                    )
-                                }
+                                PinnedAppItem(
+                                    app = app,
+                                    iconSize = iconSize,
+                                    showLabel = false,
+                                    onLaunch = {
+                                        taskbarViewModel.launchApp(app.packageName)
+                                        taskbarViewModel.hideTaskbar()
+                                    },
+                                    onLaunchSplit = {
+                                        taskbarViewModel.launchAppSplit(app.packageName)
+                                        taskbarViewModel.hideTaskbar()
+                                    },
+                                    onLaunchFloating = {
+                                        taskbarViewModel.launchAppFloating(app.packageName)
+                                        taskbarViewModel.hideTaskbar()
+                                    },
+                                    onUnpin = { taskbarViewModel.unpinApp(app.packageName) }
+                                )
                             }
                         }
                 }

@@ -1,14 +1,19 @@
 package com.alkisstam.taskbar.data
 
+import android.app.ActivityOptions
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.Rect
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.core.graphics.drawable.toBitmap
+import com.alkisstam.taskbar.service.TaskBarAccessibilityService
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -99,4 +104,83 @@ class AppRepository @Inject constructor(
     fun getLaunchIntent(packageName: String): Intent? =
         context.packageManager.getLaunchIntentForPackage(packageName)
 
+    /**
+     * Launch an app in a given windowing mode.
+     *
+     * - [LaunchMode.NORMAL] — regular fullscreen launch.
+     * - [LaunchMode.FLOATING] — request a freeform/floating window via
+     *   [ActivityOptions.setLaunchBounds]. Only takes effect on devices where
+     *   freeform windowing is enabled (Samsung DeX, some OEM ROMs, or the
+     *   "Enable freeform windows" developer option); otherwise the system
+     *   ignores the bounds and the app opens fullscreen.
+     * - [LaunchMode.SPLIT_SCREEN] — toggle split-screen on the current
+     *   foreground app via the accessibility service, then launch this app
+     *   into the adjacent pane. Requires the accessibility service to be on.
+     */
+    fun launchApp(packageName: String, mode: LaunchMode = LaunchMode.NORMAL) {
+        when (mode) {
+            LaunchMode.NORMAL -> launchNormal(packageName)
+            LaunchMode.FLOATING -> launchFloating(packageName)
+            LaunchMode.SPLIT_SCREEN -> launchSplitScreen(packageName)
+        }
+    }
+
+    private fun launchNormal(packageName: String) {
+        val intent = getLaunchIntent(packageName) ?: return
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        try {
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            Log.w("AppRepository", "Failed to launch $packageName", e)
+        }
+    }
+
+    private fun launchFloating(packageName: String) {
+        val intent = getLaunchIntent(packageName) ?: return
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+        val metrics = context.resources.displayMetrics
+        val w = (metrics.widthPixels * 0.6f).toInt()
+        val h = (metrics.heightPixels * 0.6f).toInt()
+        val left = (metrics.widthPixels - w) / 2
+        val top = (metrics.heightPixels - h) / 2
+        val options = ActivityOptions.makeBasic().apply {
+            launchBounds = Rect(left, top, left + w, top + h)
+        }
+        try {
+            context.startActivity(intent, options.toBundle())
+        } catch (e: Exception) {
+            Log.w("AppRepository", "Failed to launch $packageName in floating window", e)
+        }
+    }
+
+    private fun launchSplitScreen(packageName: String) {
+        val service = TaskBarAccessibilityService.instance
+        if (service == null) {
+            Log.w("AppRepository", "Split-screen needs the accessibility service; launching normally")
+            launchNormal(packageName)
+            return
+        }
+        // Put the current foreground app into split-screen, then launch this app
+        // into the adjacent pane once the split animation has settled.
+        service.enterSplitScreen()
+        Handler(Looper.getMainLooper()).postDelayed({
+            val intent = getLaunchIntent(packageName) ?: return@postDelayed
+            intent.addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT or
+                    Intent.FLAG_ACTIVITY_MULTIPLE_TASK
+            )
+            try {
+                context.startActivity(intent)
+            } catch (e: Exception) {
+                Log.w("AppRepository", "Failed to launch $packageName in split-screen", e)
+            }
+        }, SPLIT_SCREEN_LAUNCH_DELAY_MS)
+    }
+
+    companion object {
+        private const val SPLIT_SCREEN_LAUNCH_DELAY_MS = 350L
+    }
 }
+
+enum class LaunchMode { NORMAL, SPLIT_SCREEN, FLOATING }
