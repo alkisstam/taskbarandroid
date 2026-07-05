@@ -122,10 +122,10 @@ fun AppMenuPanel(
                     apps = apps,
                     pinnedPackages = pinnedPackages,
                     onLaunchApp = { pkg -> viewModel.launchApp(pkg); onHideTaskbar() },
-                    onLaunchSplit = { pkg -> viewModel.launchAppSplit(pkg); onHideTaskbar() },
                     onLaunchFloating = { pkg -> viewModel.launchAppFloating(pkg); onHideTaskbar() },
                     onPinApp = viewModel::pinApp,
                     onUnpinApp = viewModel::unpinApp,
+                    floatingSupported = viewModel.floatingSupported,
                     columns = appGridColumns,
                     modifier = Modifier
                         .fillMaxWidth()

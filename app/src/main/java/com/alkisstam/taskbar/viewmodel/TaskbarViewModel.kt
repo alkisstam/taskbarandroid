@@ -231,12 +231,10 @@ class TaskbarViewModel @Inject constructor(
         return flat.split(':').any { TextUtils.equals(it.trim(), componentName) }
     }
 
+    val floatingSupported: Boolean get() = appRepository.freeformSupported
+
     fun launchApp(packageName: String) {
         appRepository.launchApp(packageName, LaunchMode.NORMAL)
-    }
-
-    fun launchAppSplit(packageName: String) {
-        appRepository.launchApp(packageName, LaunchMode.SPLIT_SCREEN)
     }
 
     fun launchAppFloating(packageName: String) {
