@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.PictureAsPdf
@@ -63,6 +64,7 @@ fun ClipItemCard(
     onTogglePin: () -> Unit,
     onDelete: () -> Unit,
     onOpenExternal: () -> Unit = {},
+    onEdit: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -282,6 +284,11 @@ fun ClipItemCard(
                 horizontalArrangement = Arrangement.End,
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
+                if (onEdit != null) {
+                    IconButton(onClick = onEdit) {
+                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(20.dp))
+                    }
+                }
                 IconButton(onClick = {
                     val textToCopy = when (item.type) {
                         ClipType.TEXT_FILE -> runCatching { File(item.content).readText().take(50_000) }.getOrElse { item.content }

@@ -23,7 +23,8 @@ data class MediaState(
     val title: String = "",
     val artist: String = "",
     val albumArt: Bitmap? = null,
-    val hasSession: Boolean = false
+    val hasSession: Boolean = false,
+    val packageName: String = ""
 )
 
 @Singleton
@@ -122,7 +123,8 @@ class MediaRepository @Inject constructor(
                 metadata?.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
                     ?: metadata?.getBitmap(MediaMetadata.METADATA_KEY_ART)
             ),
-            hasSession = true
+            hasSession = true,
+            packageName = controller.packageName
         )
     }
 

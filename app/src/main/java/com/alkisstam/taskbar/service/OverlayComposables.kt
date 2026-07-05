@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.bottomGapDp
+import com.alkisstam.taskbar.data.widthFraction
 import com.alkisstam.taskbar.data.GestureAction
 import com.alkisstam.taskbar.ui.appmenu.AppMenuPanel
 import com.alkisstam.taskbar.ui.appmenu.BrightnessPanel
@@ -313,6 +314,7 @@ internal fun MusicPanelContent(
     val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
     val translucentMode by taskbarViewModel.translucentMode.collectAsState()
     val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
+    val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
 
     TaskBarTheme(themeMode = themeMode) {
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -325,6 +327,11 @@ internal fun MusicPanelContent(
                     panelOutlineEnabled = panelOutlineEnabled,
                     translucentMode = translucentMode,
                     translucentAlpha = translucentAlpha,
+                    cornerRadiusDp = taskbarSettings.cornerRadiusDp,
+                    dockWidthFraction = taskbarSettings.dockPadding.widthFraction,
+                    onArtworkClick = {
+                        if (mediaState.packageName.isNotEmpty()) appMenuViewModel.launchApp(mediaState.packageName)
+                    },
                     modifier = Modifier
                         .onGloballyPositioned { panelHeightPx = it.size.height.toFloat() }
                         .graphicsLayer {

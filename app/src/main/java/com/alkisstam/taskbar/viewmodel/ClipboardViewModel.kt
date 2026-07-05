@@ -67,6 +67,10 @@ class ClipboardViewModel @Inject constructor(
         viewModelScope.launch { clipboardRepository.removeClip(id) }
     }
 
+    fun updateClip(item: ClipItem) {
+        viewModelScope.launch { clipboardRepository.updateClip(item) }
+    }
+
     fun addNote(content: String) {
         if (content.isBlank()) return
         val item = NoteItem(id = UUID.randomUUID().toString(), content = content.trim(), timestamp = System.currentTimeMillis())

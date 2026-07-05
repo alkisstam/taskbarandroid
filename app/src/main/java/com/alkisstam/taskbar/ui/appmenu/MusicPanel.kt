@@ -48,28 +48,32 @@ fun MusicPanel(
     panelOutlineEnabled: Boolean = true,
     translucentMode: Boolean = false,
     translucentAlpha: Float = 0.80f,
+    cornerRadiusDp: Float = 16f,
+    dockWidthFraction: Float = 0.98f,
+    onArtworkClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val surfaceColor = MaterialTheme.colorScheme.surface
     val glassBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
+    val cornerShape = RoundedCornerShape(cornerRadiusDp.dp)
     Surface(
-        shape = RoundedCornerShape(16.dp),
+        shape = cornerShape,
         color = if (translucentMode) surfaceColor.copy(alpha = translucentAlpha) else surfaceColor,
         contentColor = MaterialTheme.colorScheme.onSurface,
         tonalElevation = if (translucentMode) 0.dp else 3.dp,
         shadowElevation = 8.dp,
         modifier = modifier
-            .fillMaxWidth(0.98f)
-            .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, RoundedCornerShape(16.dp)) else Modifier)
-            .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor, RoundedCornerShape(16.dp)) else Modifier)
-            .clip(RoundedCornerShape(16.dp))
+            .fillMaxWidth(dockWidthFraction)
+            .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, cornerShape) else Modifier)
+            .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor, cornerShape) else Modifier)
+            .clip(cornerShape)
             .grain(enabled = translucentMode)
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            AlbumArt(bitmap = mediaState.albumArt)
+            AlbumArt(bitmap = mediaState.albumArt, onClick = onArtworkClick)
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
@@ -128,12 +132,13 @@ fun MusicPanel(
 }
 
 @Composable
-private fun AlbumArt(bitmap: Bitmap?) {
+private fun AlbumArt(bitmap: Bitmap?, onClick: (() -> Unit)? = null) {
     Box(
         modifier = Modifier
             .size(44.dp)
             .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.surfaceVariant),
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier),
         contentAlignment = Alignment.Center
     ) {
         if (bitmap != null) {

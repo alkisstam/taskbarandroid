@@ -282,6 +282,8 @@ private fun ClipListTab(
     showShareHint: Boolean,
     onDismissShareHint: () -> Unit
 ) {
+    var editingClip by remember { mutableStateOf<ClipItem?>(null) }
+
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -313,13 +315,27 @@ private fun ClipListTab(
             }
         } else {
             items(items, key = { it.id }) { item ->
-                ClipItemCard(
-                    item = item,
-                    onToggleFavorite = { viewModel.toggleFavorite(item) },
-                    onTogglePin = { viewModel.togglePin(item) },
-                    onDelete = { viewModel.removeClip(item.id) },
-                    onOpenExternal = onOpenExternal
-                )
+                if (item.id == editingClip?.id) {
+                    NoteComposer(
+                        initialText = item.content,
+                        onSave = { text ->
+                            viewModel.updateClip(item.copy(content = text))
+                            editingClip = null
+                        },
+                        onCancel = { editingClip = null }
+                    )
+                } else {
+                    ClipItemCard(
+                        item = item,
+                        onToggleFavorite = { viewModel.toggleFavorite(item) },
+                        onTogglePin = { viewModel.togglePin(item) },
+                        onDelete = { viewModel.removeClip(item.id) },
+                        onOpenExternal = onOpenExternal,
+                        onEdit = if (item.type == ClipType.TEXT || item.type == ClipType.URL) {
+                            { editingClip = item }
+                        } else null
+                    )
+                }
             }
         }
     }
@@ -400,6 +416,7 @@ private fun FavoritesTab(entries: List<FavoriteEntry>, viewModel: ClipboardViewM
         return
     }
     val context = LocalContext.current
+    var editingClip by remember { mutableStateOf<ClipItem?>(null) }
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -415,12 +432,24 @@ private fun FavoritesTab(entries: List<FavoriteEntry>, viewModel: ClipboardViewM
             }
         ) { entry ->
             when (entry) {
-                is FavoriteEntry.Clip -> ClipItemCard(
+                is FavoriteEntry.Clip -> if (entry.item.id == editingClip?.id) {
+                    NoteComposer(
+                        initialText = entry.item.content,
+                        onSave = { text ->
+                            viewModel.updateClip(entry.item.copy(content = text))
+                            editingClip = null
+                        },
+                        onCancel = { editingClip = null }
+                    )
+                } else ClipItemCard(
                     item = entry.item,
                     onToggleFavorite = { viewModel.toggleFavorite(entry.item) },
                     onTogglePin = { viewModel.togglePin(entry.item) },
                     onDelete = { viewModel.removeClip(entry.item.id) },
-                    onOpenExternal = onOpenExternal
+                    onOpenExternal = onOpenExternal,
+                    onEdit = if (entry.item.type == ClipType.TEXT || entry.item.type == ClipType.URL) {
+                        { editingClip = entry.item }
+                    } else null
                 )
                 is FavoriteEntry.Note -> NoteItemCard(
                     note = entry.item,
@@ -487,19 +516,7 @@ private fun NotesTab(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                val noteBeingEdited = editingNote
-                if (noteBeingEdited != null) {
-                    item("editor") {
-                        NoteComposer(
-                            initialText = noteBeingEdited.content,
-                            onSave = { text ->
-                                onEdit(noteBeingEdited.copy(content = text))
-                                editingNote = null
-                            },
-                            onCancel = { editingNote = null }
-                        )
-                    }
-                } else if (composerVisible) {
+                if (editingNote == null && composerVisible) {
                     item("composer") {
                         NoteComposer(
                             onSave = { text -> onAdd(text); composerVisible = false },
@@ -508,30 +525,41 @@ private fun NotesTab(
                     }
                 }
                 items(noteItems, key = { it.id }) { note ->
-                    NoteItemCard(
-                        note = note,
-                        onCopy = {
-                            val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                            cm.setPrimaryClip(ClipData.newPlainText("note", note.content))
-                        },
-                        onShare = {
-                            onOpenExternal()
-                            val intent = Intent(Intent.ACTION_SEND).apply {
-                                type = "text/plain"
-                                putExtra(Intent.EXTRA_TEXT, note.content)
-                            }
-                            context.startActivity(Intent.createChooser(intent, null).apply {
-                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            })
-                        },
-                        onTogglePin = { onTogglePin(note) },
-                        onToggleFavorite = { onToggleFavorite(note) },
-                        onEdit = {
-                            composerVisible = false
-                            editingNote = note
-                        },
-                        onDelete = { onDelete(note.id) }
-                    )
+                    if (note.id == editingNote?.id) {
+                        NoteComposer(
+                            initialText = note.content,
+                            onSave = { text ->
+                                onEdit(note.copy(content = text))
+                                editingNote = null
+                            },
+                            onCancel = { editingNote = null }
+                        )
+                    } else {
+                        NoteItemCard(
+                            note = note,
+                            onCopy = {
+                                val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                cm.setPrimaryClip(ClipData.newPlainText("note", note.content))
+                            },
+                            onShare = {
+                                onOpenExternal()
+                                val intent = Intent(Intent.ACTION_SEND).apply {
+                                    type = "text/plain"
+                                    putExtra(Intent.EXTRA_TEXT, note.content)
+                                }
+                                context.startActivity(Intent.createChooser(intent, null).apply {
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                })
+                            },
+                            onTogglePin = { onTogglePin(note) },
+                            onToggleFavorite = { onToggleFavorite(note) },
+                            onEdit = {
+                                composerVisible = false
+                                editingNote = note
+                            },
+                            onDelete = { onDelete(note.id) }
+                        )
+                    }
                 }
             }
         }
