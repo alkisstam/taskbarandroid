@@ -6,6 +6,11 @@ All notable changes to Floating Dock are documented here.
 
 ## [1.4.1] - 2026-07-05
 
+### Added
+- **Edit clips and notes in the Clipboard panel** — text and link clips, and notes, can now be edited in place instead of only copied, shared, or deleted.
+- **Music Panel matches the dock's design settings** — the floating Music Panel now follows the Corner Radius and Edge Padding settings from Design instead of using fixed values; tapping the album art opens the currently playing app.
+- **Wifi, Bluetooth, and Share now auto-hide the dock** — tapping these quick controls hides the dock and Music Panel, matching the existing behavior for QR, Power, Screenshot, and Lock Screen.
+
 ### Fixed
 - **Media volume slider did nothing on Oppo, OnePlus and Realme phones** — on ColorOS-based ROMs the system blocks apps from setting the media stream volume directly, so the Media slider moved but the volume never changed (the Ring, Notification and Alarm sliders were unaffected). The slider now adjusts media volume the same way the hardware volume keys do, which these devices allow.
 

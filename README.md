@@ -31,12 +31,13 @@ A system-overlay dock for Android that renders above all other apps — includin
 ### Quick Controls
 
 - Expandable row above pinned apps (swipe up on dock to reveal)
-- Controls: Music, Torch, Ringer, Rotate, Brightness, DND, QR Code, Power, Volume, Screenshot, Lock Screen, Clipboard
+- Controls: Music, Torch, Ringer, Rotate, Brightness, DND, QR Code, Power, Volume, Screenshot, Lock Screen, Clipboard, Wifi, Bluetooth, Share
 - Reorderable and individually enable/disable in the **Controls** settings tab
-- **Music Panel:** floating player with album art, playback controls (prev/play-pause/next)
+- Tapping Wifi, Bluetooth, or Share auto-hides the dock and Music Panel, same as QR Code, Power, Screenshot, and Lock Screen
+- **Music Panel:** floating player with album art, playback controls (prev/play-pause/next); follows the dock's Corner Radius/Edge Padding design settings; tap the album art to open the currently playing app
 - **Volume Panel:** per-stream vertical sliders (Media, Ring, Alarm)
 - **Brightness Panel:** horizontal slider with auto-brightness toggle
-- **Clipboard Panel:** three-tab panel (Clips / Favorites / Notes) — capture content via the Android share sheet, open URLs/images/PDFs/files in-place, compose and edit notes
+- **Clipboard Panel:** three-tab panel (Clips / Favorites / Notes) — capture content via the Android share sheet, open URLs/images/PDFs/files in-place, compose and edit notes; text/link clips and notes can be edited in place
 
 ### Theming
 
