@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrightnessMedium
+import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.DoNotDisturb
 import androidx.compose.material.icons.filled.DoNotDisturbOff
 import androidx.compose.material.icons.filled.FlashlightOff
@@ -139,6 +140,8 @@ fun QuickControlsState.toItems(
             icon = Icons.Filled.FreeBreakfast),
         "clipboard" to QuickControlItemData(id = "clipboard", label = "Clipboard",
             active = false, icon = Icons.Filled.ContentPaste),
+        "calculator" to QuickControlItemData(id = "calculator", label = "Calculator",
+            active = false, icon = Icons.Filled.Calculate),
         "wifi" to QuickControlItemData(id = "wifi", label = "Wifi", active = wifiEnabled,
             icon = if (wifiEnabled) Icons.Filled.Wifi else Icons.Filled.WifiOff),
         "bluetooth" to QuickControlItemData(id = "bluetooth", label = "Bluetooth", active = bluetoothEnabled,

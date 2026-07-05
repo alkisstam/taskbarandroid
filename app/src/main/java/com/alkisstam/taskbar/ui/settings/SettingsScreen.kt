@@ -45,6 +45,7 @@ import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.BrightnessMedium
+import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -821,6 +822,7 @@ private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
             Triple("lockscreen",        "Lock",       Icons.Filled.Lock),
             Triple("caffeine",          "Caffeine",   Icons.Filled.FreeBreakfast),
             Triple("clipboard",         "Clipboard",  Icons.Filled.ContentPaste),
+            Triple("calculator",        "Calculator", Icons.Filled.Calculate),
             Triple("wifi",              "Wifi",       Icons.Filled.Wifi),
             Triple("bluetooth",         "Bluetooth",  Icons.Filled.Bluetooth),
             Triple("share",             "Share",      Icons.Filled.Share)

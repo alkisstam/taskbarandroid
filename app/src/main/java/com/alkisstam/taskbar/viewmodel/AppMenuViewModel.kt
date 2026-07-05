@@ -123,6 +123,9 @@ class AppMenuViewModel @Inject constructor(
     private val _clipboardPanelVisible = MutableStateFlow(false)
     val clipboardPanelVisible: StateFlow<Boolean> = _clipboardPanelVisible.asStateFlow()
 
+    private val _calculatorPanelVisible = MutableStateFlow(false)
+    val calculatorPanelVisible: StateFlow<Boolean> = _calculatorPanelVisible.asStateFlow()
+
     val mediaState: StateFlow<MediaState> = mediaRepository.mediaState
 
     private val _brightnessLevel = MutableStateFlow(128)
@@ -143,6 +146,7 @@ class AppMenuViewModel @Inject constructor(
         if (nowVisible) {
             refreshVolumeStreams()
             _brightnessPanelVisible.value = false
+            _calculatorPanelVisible.value = false
             _musicWasVisibleBeforeSlider = _musicPanelVisible.value
             _musicPanelVisible.value = false
         } else if (_musicWasVisibleBeforeSlider) {
@@ -165,6 +169,7 @@ class AppMenuViewModel @Inject constructor(
         if (nowVisible) {
             _brightnessLevel.value = quickControls.getBrightness()
             _volumePanelVisible.value = false
+            _calculatorPanelVisible.value = false
             _musicWasVisibleBeforeSlider = _musicPanelVisible.value
             _musicPanelVisible.value = false
         } else if (_musicWasVisibleBeforeSlider) {
@@ -184,6 +189,7 @@ class AppMenuViewModel @Inject constructor(
 
     fun toggleMusicPanel() {
         val newValue = !_musicPanelVisible.value
+        if (newValue) _calculatorPanelVisible.value = false
         _musicPanelVisible.value = newValue
         viewModelScope.launch { prefsRepository.setMusicPanelOpen(newValue) }
     }
@@ -195,11 +201,30 @@ class AppMenuViewModel @Inject constructor(
     private var clipboardDismissedForExternalOpen = false
 
     fun toggleClipboardPanel() {
-        _clipboardPanelVisible.value = !_clipboardPanelVisible.value
+        val newValue = !_clipboardPanelVisible.value
+        if (newValue) _calculatorPanelVisible.value = false
+        _clipboardPanelVisible.value = newValue
     }
 
     fun dismissClipboardPanel() {
         _clipboardPanelVisible.value = false
+    }
+
+    fun toggleCalculatorPanel() {
+        val newValue = !_calculatorPanelVisible.value
+        if (newValue) {
+            _volumePanelVisible.value = false
+            _brightnessPanelVisible.value = false
+            _musicPanelVisible.value = false
+            _clipboardPanelVisible.value = false
+            _menuVisible.value = false
+            _isSearching.value = false
+        }
+        _calculatorPanelVisible.value = newValue
+    }
+
+    fun dismissCalculatorPanel() {
+        _calculatorPanelVisible.value = false
     }
 
     fun dismissClipboardPanelForExternalOpen() {
@@ -259,6 +284,7 @@ class AppMenuViewModel @Inject constructor(
     fun openSearch() {
         _isSearching.value = true
         _menuVisible.value = false
+        _calculatorPanelVisible.value = false
     }
 
     fun closeSearch() {
@@ -289,7 +315,10 @@ class AppMenuViewModel @Inject constructor(
 
     fun toggleMenu() {
         _menuVisible.value = !_menuVisible.value
-        if (_menuVisible.value) refreshQuickControls()
+        if (_menuVisible.value) {
+            refreshQuickControls()
+            _calculatorPanelVisible.value = false
+        }
     }
 
     fun dismissMenu() {
@@ -457,6 +486,7 @@ class AppMenuViewModel @Inject constructor(
             "lockscreen" -> lockScreen()
             "caffeine" -> cycleCaffeineTimeout()
             "clipboard" -> toggleClipboardPanel()
+            "calculator" -> toggleCalculatorPanel()
             "wifi" -> openWifiPanel()
             "bluetooth" -> openBluetoothPanel()
             "share" -> openQuickShare()

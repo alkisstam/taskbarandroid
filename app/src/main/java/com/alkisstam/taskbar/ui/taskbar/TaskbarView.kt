@@ -226,8 +226,10 @@ fun TaskbarView(
                                                 appMenuViewModel.handleQuickControlAction(item.id)
                                                 if (item.id in listOf("qr", "power", "screenshot", "lockscreen", "wifi", "bluetooth", "share"))
                                                     taskbarViewModel.hideTaskbar()
-                                                if (item.id in listOf("wifi", "bluetooth", "share"))
+                                                if (item.id in listOf("wifi", "bluetooth", "share")) {
                                                     appMenuViewModel.dismissMusicPanel()
+                                                    appMenuViewModel.dismissCalculatorPanel()
+                                                }
                                             },
                                             showLabel = taskbarSettings.showControlLabels,
                                             tileSize = taskbarSettings.quickControlSizeDp.dp

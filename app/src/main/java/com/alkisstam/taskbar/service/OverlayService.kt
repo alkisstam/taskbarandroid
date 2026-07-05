@@ -117,6 +117,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private var volumeScrimView: View? = null
     private var musicPanelView: View? = null
     private var clipboardPanelView: View? = null
+    private var calculatorPanelView: View? = null
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var observersStarted = false
 
@@ -143,6 +144,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                         volumePanelView?.visibility = View.GONE
                         brightnessPanelView?.visibility = View.GONE
                         clipboardPanelView?.visibility = View.GONE
+                        calculatorPanelView?.visibility = View.GONE
                     }
                 }
                 Intent.ACTION_USER_PRESENT, Intent.ACTION_SCREEN_ON -> {
@@ -300,6 +302,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         addVolumePanelView()
         addBrightnessPanelView()
         addClipboardPanelView()
+        addCalculatorPanelView()
         if (!observersStarted) {
             observersStarted = true
             observePillPosition()
@@ -487,6 +490,12 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     try { windowManager.updateViewLayoutKeepingType(view, musicPanelLayoutParams(musicPanelYOffsetDp, translucentModeEnabled)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update music panel blur", e) }
                 }
+                calculatorPanelView?.let { view ->
+                    val settings = taskbarViewModel.taskbarSettings.value
+                    val yOffset = settings.dockPadding.bottomGapDp + settings.heightDp + 16f + 24f
+                    try { windowManager.updateViewLayoutKeepingType(view, musicPanelLayoutParams(yOffset, translucentModeEnabled)) }
+                    catch (e: Exception) { Log.w(TAG, "Failed to update calculator panel blur", e) }
+                }
             }
         }
     }
@@ -495,15 +504,16 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         serviceScope.launch {
             kotlinx.coroutines.flow.combine(
                 appMenuViewModel.volumePanelVisible,
-                appMenuViewModel.brightnessPanelVisible
-            ) { volumeVisible, brightnessVisible ->
-                Pair(volumeVisible, brightnessVisible)
-            }.collect { (volumeVisible, brightnessVisible) ->
+                appMenuViewModel.brightnessPanelVisible,
+                appMenuViewModel.calculatorPanelVisible
+            ) { volumeVisible, brightnessVisible, calculatorVisible ->
+                Triple(volumeVisible, brightnessVisible, calculatorVisible)
+            }.collect { (volumeVisible, brightnessVisible, calculatorVisible) ->
                 val settings = taskbarViewModel.taskbarSettings.value
                 val dockExpanded = taskbarViewModel.isDockExpanded.value
                 val yOffset = settings.dockPadding.bottomGapDp + settings.heightDp + 16f + (if (dockExpanded) settings.heightDp + 25f else 24f)
 
-                val scrimActive = volumeVisible || brightnessVisible
+                val scrimActive = volumeVisible || brightnessVisible || calculatorVisible
                 setVolumeScrimActive(scrimActive)
                 volumeScrimView?.visibility = if (scrimActive) View.VISIBLE else View.GONE
 
@@ -519,6 +529,13 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     val view = brightnessPanelView ?: return@collect
                     try { windowManager.updateViewLayoutKeepingType(view, volumePanelLayoutParams(yOffset, translucentModeEnabled)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update brightness panel position", e) }
+                }
+
+                calculatorPanelView?.visibility = if (calculatorVisible) View.VISIBLE else View.GONE
+                if (calculatorVisible) {
+                    val view = calculatorPanelView ?: return@collect
+                    try { windowManager.updateViewLayoutKeepingType(view, musicPanelLayoutParams(yOffset, translucentModeEnabled)) }
+                    catch (e: Exception) { Log.w(TAG, "Failed to update calculator panel position", e) }
                 }
             }
         }
@@ -722,6 +739,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 setOnClickListener {
                     appMenuViewModel.dismissVolumePanel()
                     appMenuViewModel.dismissBrightnessPanel()
+                    appMenuViewModel.dismissCalculatorPanel()
                 }
             }
             view.visibility = View.GONE
@@ -817,6 +835,34 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         }
     }
 
+    private fun addCalculatorPanelView() {
+        if (calculatorPanelView?.isAttachedToWindow == true) return
+        calculatorPanelView?.let { removeViewFromAnyWM(it) }
+        calculatorPanelView = null
+        try {
+            val initialSettings = taskbarViewModel.taskbarSettings.value
+            val yOffset = initialSettings.dockPadding.bottomGapDp + initialSettings.heightDp + 16f + 24f
+            val composeView = ComposeView(this).apply {
+                setBackgroundColor(android.graphics.Color.TRANSPARENT)
+                setViewTreeLifecycleOwner(this@OverlayService)
+                setViewTreeViewModelStoreOwner(this@OverlayService)
+                setViewTreeSavedStateRegistryOwner(this@OverlayService)
+                setContent {
+                    CalculatorPanelContent(
+                        taskbarViewModel = taskbarViewModel,
+                        appMenuViewModel = appMenuViewModel
+                    )
+                }
+            }
+            composeView.visibility = View.GONE
+            calculatorPanelView = composeView
+            windowManager.addView(composeView, musicPanelLayoutParams(yOffset, translucentModeEnabled))
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to add calculator panel view", e)
+            calculatorPanelView = null
+        }
+    }
+
     private fun addClipboardPanelView() {
         if (clipboardPanelView?.isAttachedToWindow == true) return
         clipboardPanelView?.let { removeViewFromAnyWM(it) }
@@ -885,6 +931,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         volumeScrimView?.let { removeViewFromAnyWM(it) }; volumeScrimView = null
         musicPanelView?.let { removeViewFromAnyWM(it) }; musicPanelView = null
         clipboardPanelView?.let { removeViewFromAnyWM(it) }; clipboardPanelView = null
+        calculatorPanelView?.let { removeViewFromAnyWM(it) }; calculatorPanelView = null
     }
 
     private fun refreshAllViews() {
@@ -901,6 +948,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         addVolumePanelView()
         addBrightnessPanelView()
         addClipboardPanelView()
+        addCalculatorPanelView()
     }
 
     // endregion

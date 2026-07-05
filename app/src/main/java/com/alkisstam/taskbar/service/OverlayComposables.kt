@@ -32,6 +32,7 @@ import com.alkisstam.taskbar.data.widthFraction
 import com.alkisstam.taskbar.data.GestureAction
 import com.alkisstam.taskbar.ui.appmenu.AppMenuPanel
 import com.alkisstam.taskbar.ui.appmenu.BrightnessPanel
+import com.alkisstam.taskbar.ui.appmenu.CalculatorPanel
 import com.alkisstam.taskbar.ui.appmenu.FloatingSearchBar
 import com.alkisstam.taskbar.ui.appmenu.MusicPanel
 import com.alkisstam.taskbar.ui.appmenu.VolumePanel
@@ -340,6 +341,29 @@ internal fun MusicPanelContent(
                         }
                 )
             }
+        }
+    }
+}
+
+@Composable
+internal fun CalculatorPanelContent(
+    taskbarViewModel: TaskbarViewModel,
+    appMenuViewModel: AppMenuViewModel
+) {
+    val themeMode by taskbarViewModel.themeMode.collectAsState()
+    val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
+    val translucentMode by taskbarViewModel.translucentMode.collectAsState()
+    val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
+    val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
+    TaskBarTheme(themeMode = themeMode) {
+        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            CalculatorPanel(
+                panelOutlineEnabled = panelOutlineEnabled,
+                translucentMode = translucentMode,
+                translucentAlpha = translucentAlpha,
+                cornerRadiusDp = taskbarSettings.cornerRadiusDp,
+                dockWidthFraction = taskbarSettings.dockPadding.widthFraction
+            )
         }
     }
 }
