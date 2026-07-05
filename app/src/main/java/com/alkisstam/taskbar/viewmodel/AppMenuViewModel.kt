@@ -276,14 +276,10 @@ class AppMenuViewModel @Inject constructor(
         closeSearch()
     }
 
+    val floatingSupported: Boolean get() = appRepository.freeformSupported
+
     fun launchApp(packageName: String) {
         appRepository.launchApp(packageName, LaunchMode.NORMAL)
-        _menuVisible.value = false
-        closeSearch()
-    }
-
-    fun launchAppSplit(packageName: String) {
-        appRepository.launchApp(packageName, LaunchMode.SPLIT_SCREEN)
         _menuVisible.value = false
         closeSearch()
     }

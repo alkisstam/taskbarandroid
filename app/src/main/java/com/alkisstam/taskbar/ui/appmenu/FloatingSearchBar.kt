@@ -145,14 +145,14 @@ fun FloatingSearchBar(
                                 isPinned = pinnedPackages.contains(app.packageName),
                                 isHighlighted = index == 0,
                                 onLaunch = { viewModel.launchApp(app.packageName); onHideTaskbar() },
-                                onLaunchSplit = { viewModel.launchAppSplit(app.packageName); onHideTaskbar() },
                                 onLaunchFloating = { viewModel.launchAppFloating(app.packageName); onHideTaskbar() },
                                 onPin = {
                                     if (pinnedPackages.contains(app.packageName))
                                         viewModel.unpinApp(app.packageName)
                                     else
                                         viewModel.pinApp(app.packageName)
-                                }
+                                },
+                                floatingSupported = viewModel.floatingSupported
                             )
                         }
                     }

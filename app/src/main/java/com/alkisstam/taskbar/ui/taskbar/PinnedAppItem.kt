@@ -40,9 +40,9 @@ fun PinnedAppItem(
     iconSize: Dp = 48.dp,
     showLabel: Boolean = false,
     onLaunch: () -> Unit,
-    onLaunchSplit: () -> Unit,
     onLaunchFloating: () -> Unit,
     onUnpin: () -> Unit,
+    floatingSupported: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     var showMenu by remember { mutableStateOf(false) }
@@ -97,8 +97,7 @@ fun PinnedAppItem(
                 ) {
                     Column {
                         AppMenuAction("Open") { onLaunch(); showMenu = false }
-                        AppMenuAction("Split screen") { onLaunchSplit(); showMenu = false }
-                        AppMenuAction("Floating window") { onLaunchFloating(); showMenu = false }
+                        if (floatingSupported) AppMenuAction("Floating window") { onLaunchFloating(); showMenu = false }
                         AppMenuAction("Unpin from Dock") { onUnpin(); showMenu = false }
                     }
                 }

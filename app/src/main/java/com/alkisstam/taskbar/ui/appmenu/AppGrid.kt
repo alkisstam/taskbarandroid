@@ -45,10 +45,10 @@ fun AppGrid(
     apps: List<AppInfo>,
     pinnedPackages: List<String>,
     onLaunchApp: (String) -> Unit,
-    onLaunchSplit: (String) -> Unit,
     onLaunchFloating: (String) -> Unit,
     onPinApp: (String) -> Unit,
     onUnpinApp: (String) -> Unit,
+    floatingSupported: Boolean = false,
     columns: Int = 3,
     modifier: Modifier = Modifier
 ) {
@@ -65,12 +65,12 @@ fun AppGrid(
                 app = app,
                 isPinned = isPinned,
                 onLaunch = { onLaunchApp(app.packageName) },
-                onLaunchSplit = { onLaunchSplit(app.packageName) },
                 onLaunchFloating = { onLaunchFloating(app.packageName) },
                 onPin = {
                     if (isPinned) onUnpinApp(app.packageName)
                     else onPinApp(app.packageName)
-                }
+                },
+                floatingSupported = floatingSupported
             )
         }
     }
@@ -82,9 +82,9 @@ private fun AppGridItem(
     app: AppInfo,
     isPinned: Boolean,
     onLaunch: () -> Unit,
-    onLaunchSplit: () -> Unit,
     onLaunchFloating: () -> Unit,
     onPin: () -> Unit,
+    floatingSupported: Boolean,
     modifier: Modifier = Modifier
 ) {
     var showMenu by remember { mutableStateOf(false) }
@@ -149,8 +149,7 @@ private fun AppGridItem(
                     modifier = Modifier.width(180.dp)
                 ) {
                     Column {
-                        AppGridMenuAction("Split screen") { onLaunchSplit(); showMenu = false }
-                        AppGridMenuAction("Floating window") { onLaunchFloating(); showMenu = false }
+                        if (floatingSupported) AppGridMenuAction("Floating window") { onLaunchFloating(); showMenu = false }
                         AppGridMenuAction(
                             if (isPinned) "Unpin from Dock" else "Pin to Dock"
                         ) { onPin(); showMenu = false }

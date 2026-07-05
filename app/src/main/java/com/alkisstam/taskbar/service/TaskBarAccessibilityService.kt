@@ -54,9 +54,6 @@ class TaskBarAccessibilityService : AccessibilityService() {
     fun expandNotifications() { performGlobalAction(GLOBAL_ACTION_NOTIFICATIONS) }
     fun expandQuickSettings() { performGlobalAction(GLOBAL_ACTION_QUICK_SETTINGS) }
 
-    /** Toggle split-screen for the current foreground app. Behavior varies by OEM/Android version. */
-    fun enterSplitScreen(): Boolean = performGlobalAction(GLOBAL_ACTION_TOGGLE_SPLIT_SCREEN)
-
     fun showPowerMenu() {
         performGlobalAction(GLOBAL_ACTION_POWER_DIALOG)
     }
