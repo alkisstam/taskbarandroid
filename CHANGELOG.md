@@ -4,6 +4,16 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.4.0] - 2026-07-05
+
+### Added
+- **Open pinned apps in split-screen or a floating window** — long-press a pinned app in the dock to get a menu with *Open*, *Split screen*, *Floating window* and *Unpin*. *Split screen* puts the current app and the tapped app side by side (needs the accessibility service); *Floating window* opens the app in a resizable freeform window on devices that support it (Samsung DeX, some OEM ROMs, or with freeform windows enabled), falling back to fullscreen elsewhere. The same *Split screen* / *Floating window* options were added to the all-apps menu and search results.
+
+### Changed
+- **Reordering pinned apps moved to Settings** — because long-pressing a dock icon now opens the launch menu, drag-to-reorder on the dock was replaced by the existing drag-to-reorder in Settings → Apps → Pinned Apps.
+
+---
+
 ## [1.3.10] - 2026-07-04
 
 ### Fixed

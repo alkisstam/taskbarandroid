@@ -45,6 +45,8 @@ fun AppGrid(
     apps: List<AppInfo>,
     pinnedPackages: List<String>,
     onLaunchApp: (String) -> Unit,
+    onLaunchSplit: (String) -> Unit,
+    onLaunchFloating: (String) -> Unit,
     onPinApp: (String) -> Unit,
     onUnpinApp: (String) -> Unit,
     columns: Int = 3,
@@ -63,6 +65,8 @@ fun AppGrid(
                 app = app,
                 isPinned = isPinned,
                 onLaunch = { onLaunchApp(app.packageName) },
+                onLaunchSplit = { onLaunchSplit(app.packageName) },
+                onLaunchFloating = { onLaunchFloating(app.packageName) },
                 onPin = {
                     if (isPinned) onUnpinApp(app.packageName)
                     else onPinApp(app.packageName)
@@ -78,6 +82,8 @@ private fun AppGridItem(
     app: AppInfo,
     isPinned: Boolean,
     onLaunch: () -> Unit,
+    onLaunchSplit: () -> Unit,
+    onLaunchFloating: () -> Unit,
     onPin: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -140,19 +146,31 @@ private fun AppGridItem(
                     shape = RoundedCornerShape(12.dp),
                     tonalElevation = 8.dp,
                     shadowElevation = 8.dp,
-                    modifier = Modifier.width(140.dp)
+                    modifier = Modifier.width(180.dp)
                 ) {
-                    TextButton(
-                        onClick = { onPin(); showMenu = false },
-                        modifier = Modifier.padding(horizontal = 4.dp)
-                    ) {
-                        Text(
-                            if (isPinned) "Unpin from Dock" else "Pin to Dock",
-                            style = MaterialTheme.typography.bodySmall
-                        )
+                    Column {
+                        AppGridMenuAction("Split screen") { onLaunchSplit(); showMenu = false }
+                        AppGridMenuAction("Floating window") { onLaunchFloating(); showMenu = false }
+                        AppGridMenuAction(
+                            if (isPinned) "Unpin from Dock" else "Pin to Dock"
+                        ) { onPin(); showMenu = false }
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun AppGridMenuAction(label: String, onClick: () -> Unit) {
+    TextButton(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp)
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }

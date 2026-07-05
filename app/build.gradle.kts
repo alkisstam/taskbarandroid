@@ -30,8 +30,8 @@ android {
         applicationId = "com.alkisstam.taskbar"
         minSdk = 26
         targetSdk = 35
-        versionCode = 43
-        versionName = "1.3.10"
+        versionCode = 44
+        versionName = "1.4.0"
         ndk {
             debugSymbolLevel = "FULL"
         }

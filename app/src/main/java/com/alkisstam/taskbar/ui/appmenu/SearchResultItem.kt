@@ -37,6 +37,8 @@ fun SearchResultItem(
     isPinned: Boolean,
     isHighlighted: Boolean = false,
     onLaunch: () -> Unit,
+    onLaunchSplit: () -> Unit,
+    onLaunchFloating: () -> Unit,
     onPin: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -79,6 +81,14 @@ fun SearchResultItem(
             expanded = showMenu,
             onDismissRequest = { showMenu = false }
         ) {
+            DropdownMenuItem(
+                text = { Text("Split screen") },
+                onClick = { onLaunchSplit(); showMenu = false }
+            )
+            DropdownMenuItem(
+                text = { Text("Floating window") },
+                onClick = { onLaunchFloating(); showMenu = false }
+            )
             DropdownMenuItem(
                 text = { Text(if (isPinned) "Unpin from Dock" else "Pin to Dock") },
                 onClick = { onPin(); showMenu = false }
