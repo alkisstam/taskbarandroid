@@ -76,6 +76,21 @@ val whatsNewReleases = listOf(
             "Apps whose icon fails to load now show with a placeholder instead of disappearing from the all-apps menu",
             "Left/right trigger pill now stays on-screen after rotating to landscape"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.4.0",
+        versionCode = 44,
+        highlights = listOf(
+            "Long-press a pinned app to open it in a floating window (on devices that support freeform windows)",
+            "Reordering pinned apps has moved to Settings → Apps → Pinned Apps"
+        )
+    ),
+    WhatsNewRelease(
+        versionName = "1.4.1",
+        versionCode = 45,
+        highlights = listOf(
+            "Fixed the Media volume slider not changing volume on Oppo, OnePlus and Realme phones"
+        )
     )
 )
 

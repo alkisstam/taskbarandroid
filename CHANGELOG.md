@@ -4,6 +4,13 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.4.1] - 2026-07-05
+
+### Fixed
+- **Media volume slider did nothing on Oppo, OnePlus and Realme phones** — on ColorOS-based ROMs the system blocks apps from setting the media stream volume directly, so the Media slider moved but the volume never changed (the Ring, Notification and Alarm sliders were unaffected). The slider now adjusts media volume the same way the hardware volume keys do, which these devices allow.
+
+---
+
 ## [1.4.0] - 2026-07-05
 
 ### Added
