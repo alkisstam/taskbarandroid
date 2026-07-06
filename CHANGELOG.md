@@ -12,18 +12,11 @@ All notable changes to Floating Dock are documented here.
 - **Music Panel matches the dock's design settings** — the floating Music Panel now follows the Corner Radius and Edge Padding settings from Design instead of using fixed values; tapping the album art opens the currently playing app.
 - **Wifi, Bluetooth, and Share now auto-hide the dock** — tapping these quick controls hides the dock and Music Panel, matching the existing behavior for QR, Power, Screenshot, and Lock Screen.
 
+### Changed
+- **Reordering pinned apps moved to Settings** — drag-to-reorder on the dock was replaced by the existing drag-to-reorder in Settings → Apps → Pinned Apps.
+
 ### Fixed
 - **Media volume slider did nothing on Oppo, OnePlus and Realme phones** — on ColorOS-based ROMs the system blocks apps from setting the media stream volume directly, so the Media slider moved but the volume never changed (the Ring, Notification and Alarm sliders were unaffected). The slider now adjusts media volume the same way the hardware volume keys do, which these devices allow.
-
----
-
-## [1.4.0] - 2026-07-05
-
-### Added
-- **Open pinned apps in a floating window** — long-press a pinned app in the dock to get a menu with *Open*, *Floating window* and *Unpin*. *Floating window* opens the app in a resizable freeform window on devices that support it (Samsung DeX, some OEM ROMs, or with freeform windows enabled). The option only appears on devices that report freeform support. The same *Floating window* option was added to the all-apps menu and search results.
-
-### Changed
-- **Reordering pinned apps moved to Settings** — because long-pressing a dock icon now opens the launch menu, drag-to-reorder on the dock was replaced by the existing drag-to-reorder in Settings → Apps → Pinned Apps.
 
 ---
 

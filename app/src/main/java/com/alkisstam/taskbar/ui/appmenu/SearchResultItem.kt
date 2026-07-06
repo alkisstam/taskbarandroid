@@ -37,9 +37,7 @@ fun SearchResultItem(
     isPinned: Boolean,
     isHighlighted: Boolean = false,
     onLaunch: () -> Unit,
-    onLaunchFloating: () -> Unit,
     onPin: () -> Unit,
-    floatingSupported: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     var showMenu by remember { mutableStateOf(false) }
@@ -81,12 +79,6 @@ fun SearchResultItem(
             expanded = showMenu,
             onDismissRequest = { showMenu = false }
         ) {
-            if (floatingSupported) {
-                DropdownMenuItem(
-                    text = { Text("Floating window") },
-                    onClick = { onLaunchFloating(); showMenu = false }
-                )
-            }
             DropdownMenuItem(
                 text = { Text(if (isPinned) "Unpin from Dock" else "Pin to Dock") },
                 onClick = { onPin(); showMenu = false }

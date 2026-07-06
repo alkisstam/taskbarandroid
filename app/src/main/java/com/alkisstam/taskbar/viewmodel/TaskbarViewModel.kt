@@ -12,7 +12,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.AppRepository
-import com.alkisstam.taskbar.data.LaunchMode
 import com.alkisstam.taskbar.data.PillSettings
 import com.alkisstam.taskbar.data.PreferencesRepository
 import com.alkisstam.taskbar.data.TaskbarSettings
@@ -231,14 +230,8 @@ class TaskbarViewModel @Inject constructor(
         return flat.split(':').any { TextUtils.equals(it.trim(), componentName) }
     }
 
-    val floatingSupported: Boolean get() = appRepository.freeformSupported
-
     fun launchApp(packageName: String) {
-        appRepository.launchApp(packageName, LaunchMode.NORMAL)
-    }
-
-    fun launchAppFloating(packageName: String) {
-        appRepository.launchApp(packageName, LaunchMode.FLOATING)
+        appRepository.launchApp(packageName)
     }
 
     fun pinApp(packageName: String) {

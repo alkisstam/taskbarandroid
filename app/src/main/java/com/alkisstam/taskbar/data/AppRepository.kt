@@ -1,13 +1,11 @@
 package com.alkisstam.taskbar.data
 
-import android.app.ActivityOptions
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.Rect
 import android.os.Build
 import android.util.Log
 import androidx.core.graphics.drawable.toBitmap
@@ -101,28 +99,7 @@ class AppRepository @Inject constructor(
     fun getLaunchIntent(packageName: String): Intent? =
         context.packageManager.getLaunchIntentForPackage(packageName)
 
-    /** Freeform/floating windows only work where the platform advertises the feature. */
-    val freeformSupported: Boolean =
-        context.packageManager.hasSystemFeature(PackageManager.FEATURE_FREEFORM_WINDOW_MANAGEMENT)
-
-    /**
-     * Launch an app in a given windowing mode.
-     *
-     * - [LaunchMode.NORMAL] — regular fullscreen launch.
-     * - [LaunchMode.FLOATING] — request a freeform/floating window via
-     *   [ActivityOptions.setLaunchBounds]. Only takes effect on devices where
-     *   freeform windowing is enabled (Samsung DeX, some OEM ROMs, or the
-     *   "Enable freeform windows" developer option); otherwise the system
-     *   ignores the bounds and the app opens fullscreen.
-     */
-    fun launchApp(packageName: String, mode: LaunchMode = LaunchMode.NORMAL) {
-        when (mode) {
-            LaunchMode.NORMAL -> launchNormal(packageName)
-            LaunchMode.FLOATING -> launchFloating(packageName)
-        }
-    }
-
-    private fun launchNormal(packageName: String) {
+    fun launchApp(packageName: String) {
         val intent = getLaunchIntent(packageName) ?: return
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         try {
@@ -132,24 +109,4 @@ class AppRepository @Inject constructor(
         }
     }
 
-    private fun launchFloating(packageName: String) {
-        val intent = getLaunchIntent(packageName) ?: return
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
-        val metrics = context.resources.displayMetrics
-        val w = (metrics.widthPixels * 0.6f).toInt()
-        val h = (metrics.heightPixels * 0.6f).toInt()
-        val left = (metrics.widthPixels - w) / 2
-        val top = (metrics.heightPixels - h) / 2
-        val options = ActivityOptions.makeBasic().apply {
-            launchBounds = Rect(left, top, left + w, top + h)
-        }
-        try {
-            context.startActivity(intent, options.toBundle())
-        } catch (e: Exception) {
-            Log.w("AppRepository", "Failed to launch $packageName in floating window", e)
-        }
-    }
-
 }
-
-enum class LaunchMode { NORMAL, FLOATING }

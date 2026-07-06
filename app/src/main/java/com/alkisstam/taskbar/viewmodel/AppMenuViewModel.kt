@@ -11,7 +11,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.AppRepository
-import com.alkisstam.taskbar.data.LaunchMode
 import com.alkisstam.taskbar.data.MediaRepository
 import com.alkisstam.taskbar.data.MediaState
 import com.alkisstam.taskbar.data.PreferencesRepository
@@ -326,16 +325,8 @@ class AppMenuViewModel @Inject constructor(
         closeSearch()
     }
 
-    val floatingSupported: Boolean get() = appRepository.freeformSupported
-
     fun launchApp(packageName: String) {
-        appRepository.launchApp(packageName, LaunchMode.NORMAL)
-        _menuVisible.value = false
-        closeSearch()
-    }
-
-    fun launchAppFloating(packageName: String) {
-        appRepository.launchApp(packageName, LaunchMode.FLOATING)
+        appRepository.launchApp(packageName)
         _menuVisible.value = false
         closeSearch()
     }

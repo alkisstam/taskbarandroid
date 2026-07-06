@@ -277,12 +277,7 @@ fun TaskbarView(
                                         taskbarViewModel.launchApp(app.packageName)
                                         taskbarViewModel.hideTaskbar()
                                     },
-                                    onLaunchFloating = {
-                                        taskbarViewModel.launchAppFloating(app.packageName)
-                                        taskbarViewModel.hideTaskbar()
-                                    },
-                                    onUnpin = { taskbarViewModel.unpinApp(app.packageName) },
-                                    floatingSupported = taskbarViewModel.floatingSupported
+                                    onUnpin = { taskbarViewModel.unpinApp(app.packageName) }
                                 )
                             }
                         }
