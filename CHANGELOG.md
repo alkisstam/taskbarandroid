@@ -12,6 +12,7 @@ All notable changes to Floating Dock are documented here.
 - **Music Panel matches the dock's design settings** — the floating Music Panel now follows the Corner Radius and Edge Padding settings from Design instead of using fixed values; tapping the album art opens the currently playing app.
 - **Wifi, Bluetooth, and Share now auto-hide the dock** — tapping these quick controls hides the dock and Music Panel, matching the existing behavior for QR, Power, Screenshot, and Lock Screen.
 - **New Search section in General settings** — toggle Fuzzy Search on/off, and toggle Show Recent Apps to see your 5 most recently opened apps when you tap the search bar with nothing typed.
+- **New To-Dos tab in the Clipboard panel** — add to-do items with the same "+" composer as Notes; checking an item off moves it into a collapsed "Completed (N)" section below the open ones.
 
 ### Changed
 - **Reordering pinned apps moved to Settings** — drag-to-reorder on the dock was replaced by the existing drag-to-reorder in Settings → Apps → Pinned Apps.
@@ -23,6 +24,7 @@ All notable changes to Floating Dock are documented here.
 - **Media volume slider did nothing on Oppo, OnePlus and Realme phones** — on ColorOS-based ROMs the system blocks apps from setting the media stream volume directly, so the Media slider moved but the volume never changed (the Ring, Notification and Alarm sliders were unaffected). The slider now adjusts media volume the same way the hardware volume keys do, which these devices allow.
 - **Tapping "Music" with nothing playing silently did nothing** — it now shows a "No Media Playing" toast instead of opening an empty panel.
 - **Music Panel sometimes never appeared even with media playing and notification access granted** (seen on Samsung One UI) — the app could fail to detect the current media session right after the listener connects and never retry. It now retries with backoff and asks the system to reconnect the listener if needed.
+- **Clipboard panel's tab labels wrapped to two lines** once a 4th tab (To-Dos) was added — the selected tab's icon and label now stack vertically instead of side by side so all four tabs fit on one line.
 
 ---
 
