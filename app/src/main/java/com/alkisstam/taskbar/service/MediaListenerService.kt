@@ -2,6 +2,7 @@ package com.alkisstam.taskbar.service
 
 import android.content.ComponentName
 import android.service.notification.NotificationListenerService
+import android.service.notification.StatusBarNotification
 import android.util.Log
 import com.alkisstam.taskbar.data.MediaRepository
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,6 +21,11 @@ class MediaListenerService : NotificationListenerService() {
         mediaRepository.onListenerConnected(
             ComponentName(this, MediaListenerService::class.java)
         )
+    }
+
+    override fun onNotificationPosted(sbn: StatusBarNotification?) {
+        super.onNotificationPosted(sbn)
+        mediaRepository.onNotificationPosted()
     }
 
     override fun onListenerDisconnected() {

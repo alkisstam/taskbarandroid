@@ -8,15 +8,22 @@ import android.media.session.MediaController
 import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
 import android.provider.Settings
+import android.service.notification.NotificationListenerService
 import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
 private const val TAG = "MediaRepository"
+private const val MAX_REFRESH_RETRIES = 3
 
 data class MediaState(
     val isPlaying: Boolean = false,
@@ -39,6 +46,8 @@ class MediaRepository @Inject constructor(
 
     private var listenerComponentName: ComponentName? = null
     private var activeController: MediaController? = null
+    private var refreshRetryCount = 0
+    private val repoScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     private val sessionsChangedListener =
         MediaSessionManager.OnActiveSessionsChangedListener { controllers ->
@@ -86,12 +95,42 @@ class MediaRepository @Inject constructor(
 
     private fun refreshSessions(componentName: ComponentName) {
         val controllers = try {
-            mediaSessionManager.getActiveSessions(componentName)
+            val result = mediaSessionManager.getActiveSessions(componentName)
+            refreshRetryCount = 0
+            result
         } catch (e: Exception) {
-            Log.w(TAG, "Failed to get active sessions", e)
+            Log.w(TAG, "Failed to get active sessions (attempt ${refreshRetryCount + 1})", e)
+            scheduleRefreshRetry(componentName)
             return
         }
         bindController(controllers)
+    }
+
+    private fun scheduleRefreshRetry(componentName: ComponentName) {
+        if (refreshRetryCount >= MAX_REFRESH_RETRIES) {
+            Log.w(TAG, "Max session-fetch retries reached, requesting listener rebind")
+            refreshRetryCount = 0
+            try {
+                NotificationListenerService.requestRebind(componentName)
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed to request listener rebind", e)
+            }
+            return
+        }
+        refreshRetryCount++
+        val delayMs = 1000L shl (refreshRetryCount - 1)
+        repoScope.launch {
+            delay(delayMs)
+            refreshSessions(componentName)
+        }
+    }
+
+    /** Fallback trigger for OEMs (e.g. Samsung One UI) where the sessions-changed
+     * listener can miss the initial media session; any posted notification re-checks. */
+    fun onNotificationPosted() {
+        if (activeController == null) {
+            listenerComponentName?.let { refreshSessions(it) }
+        }
     }
 
     private fun bindController(controllers: List<MediaController>?) {
