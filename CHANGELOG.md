@@ -22,6 +22,7 @@ All notable changes to Floating Dock are documented here.
 ### Fixed
 - **Media volume slider did nothing on Oppo, OnePlus and Realme phones** — on ColorOS-based ROMs the system blocks apps from setting the media stream volume directly, so the Media slider moved but the volume never changed (the Ring, Notification and Alarm sliders were unaffected). The slider now adjusts media volume the same way the hardware volume keys do, which these devices allow.
 - **Tapping "Music" with nothing playing silently did nothing** — it now shows a "No Media Playing" toast instead of opening an empty panel.
+- **Music Panel sometimes never appeared even with media playing and notification access granted** (seen on Samsung One UI) — the app could fail to detect the current media session right after the listener connects and never retry. It now retries with backoff and asks the system to reconnect the listener if needed.
 
 ---
 
