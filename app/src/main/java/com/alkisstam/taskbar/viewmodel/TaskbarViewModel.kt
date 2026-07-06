@@ -91,6 +91,12 @@ class TaskbarViewModel @Inject constructor(
     val musicPanelEnabled: StateFlow<Boolean> = prefsRepository.musicPanelEnabled
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
+    val fuzzySearchEnabled: StateFlow<Boolean> = prefsRepository.fuzzySearchEnabled
+        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
+    val showRecentApps: StateFlow<Boolean> = prefsRepository.showRecentApps
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     val hapticFeedbackEnabled: StateFlow<Boolean> = prefsRepository.hapticFeedbackEnabled
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
@@ -314,6 +320,18 @@ class TaskbarViewModel @Inject constructor(
     fun setMusicPanelEnabled(enabled: Boolean) {
         viewModelScope.launch {
             prefsRepository.setMusicPanelEnabled(enabled)
+        }
+    }
+
+    fun setFuzzySearchEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            prefsRepository.setFuzzySearchEnabled(enabled)
+        }
+    }
+
+    fun setShowRecentApps(enabled: Boolean) {
+        viewModelScope.launch {
+            prefsRepository.setShowRecentApps(enabled)
         }
     }
 

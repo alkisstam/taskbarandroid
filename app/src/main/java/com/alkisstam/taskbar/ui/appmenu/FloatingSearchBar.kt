@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -51,6 +52,8 @@ fun FloatingSearchBar(
     val filteredApps by viewModel.filteredApps.collectAsState()
     val pinnedPackages by viewModel.pinnedPackages.collectAsState()
     val isSearching by viewModel.isSearching.collectAsState()
+    val showRecentApps by viewModel.showRecentApps.collectAsState()
+    val recentApps by viewModel.recentApps.collectAsState()
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -144,6 +147,34 @@ fun FloatingSearchBar(
                                 app = app,
                                 isPinned = pinnedPackages.contains(app.packageName),
                                 isHighlighted = index == 0,
+                                onLaunch = { viewModel.launchApp(app.packageName); onHideTaskbar() },
+                                onPin = {
+                                    if (pinnedPackages.contains(app.packageName))
+                                        viewModel.unpinApp(app.packageName)
+                                    else
+                                        viewModel.pinApp(app.packageName)
+                                }
+                            )
+                        }
+                    }
+                }
+            } else if (showRecentApps && recentApps.isNotEmpty()) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp)
+                        .heightIn(max = 360.dp)
+                        .then(if (translucentMode) Modifier.border(1.dp, glassBorderColor, RoundedCornerShape(16.dp)) else Modifier),
+                    shape = RoundedCornerShape(16.dp),
+                    color = if (translucentMode) surfaceColor.copy(alpha = translucentAlpha) else surfaceColor,
+                    tonalElevation = if (translucentMode) 0.dp else 6.dp,
+                    shadowElevation = 6.dp
+                ) {
+                    LazyColumn(modifier = Modifier.padding(vertical = 4.dp)) {
+                        items(recentApps, key = { it.packageName }) { app ->
+                            SearchResultItem(
+                                app = app,
+                                isPinned = pinnedPackages.contains(app.packageName),
                                 onLaunch = { viewModel.launchApp(app.packageName); onHideTaskbar() },
                                 onPin = {
                                     if (pinnedPackages.contains(app.packageName))

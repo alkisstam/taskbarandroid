@@ -331,7 +331,11 @@ internal fun MusicPanelContent(
                     cornerRadiusDp = taskbarSettings.cornerRadiusDp,
                     dockWidthFraction = taskbarSettings.dockPadding.widthFraction,
                     onArtworkClick = {
-                        if (mediaState.packageName.isNotEmpty()) appMenuViewModel.launchApp(mediaState.packageName)
+                        if (mediaState.packageName.isNotEmpty()) {
+                            appMenuViewModel.launchApp(mediaState.packageName)
+                            taskbarViewModel.hideTaskbar()
+                            appMenuViewModel.dismissMusicPanel()
+                        }
                     },
                     modifier = Modifier
                         .onGloballyPositioned { panelHeightPx = it.size.height.toFloat() }

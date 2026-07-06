@@ -89,12 +89,27 @@ class AppMenuViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
-    val filteredApps: StateFlow<List<AppInfo>> = combine(appRepository.apps, _searchQuery) { apps, query ->
+    val fuzzySearchEnabled: StateFlow<Boolean> = prefsRepository.fuzzySearchEnabled
+        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
+    val showRecentApps: StateFlow<Boolean> = prefsRepository.showRecentApps
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    val recentApps: StateFlow<List<AppInfo>> = combine(prefsRepository.recentOpenedApps, appRepository.apps) { recentPackages, apps ->
+        val byPackage = apps.associateBy { it.packageName }
+        recentPackages.mapNotNull { byPackage[it] }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val filteredApps: StateFlow<List<AppInfo>> = combine(appRepository.apps, _searchQuery, fuzzySearchEnabled) { apps, query, fuzzyEnabled ->
         val q = query.trim()
-        if (q.isEmpty()) apps
-        else apps.mapNotNull { app -> fuzzyScore(app.label, q)?.let { app to it } }
-            .sortedBy { it.second }
-            .map { it.first }
+        when {
+            q.isEmpty() -> apps
+            fuzzyEnabled -> apps.mapNotNull { app -> fuzzyScore(app.label, q)?.let { app to it } }
+                .sortedBy { it.second }
+                .map { it.first }
+            else -> apps.filter { it.label.contains(q, ignoreCase = true) }
+                .sortedBy { it.label.lowercase() }
+        }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _quickControlsState = MutableStateFlow(QuickControlsState())
@@ -117,7 +132,10 @@ class AppMenuViewModel @Inject constructor(
 
     private val _musicPanelVisible = MutableStateFlow(false)
     val musicPanelVisible: StateFlow<Boolean> = _musicPanelVisible.asStateFlow()
-    private var _musicWasVisibleBeforeSlider = false
+    private var _musicWasVisibleBeforeOverlay = false
+
+    private val _noMediaMessage = MutableStateFlow<String?>(null)
+    val noMediaMessage: StateFlow<String?> = _noMediaMessage.asStateFlow()
 
     private val _clipboardPanelVisible = MutableStateFlow(false)
     val clipboardPanelVisible: StateFlow<Boolean> = _clipboardPanelVisible.asStateFlow()
@@ -140,61 +158,73 @@ class AppMenuViewModel @Inject constructor(
         _volumeStreams.value = buildVolumeStreams(audioManager)
     }
 
+    private fun anyOverlayPanelVisible(): Boolean =
+        _volumePanelVisible.value || _brightnessPanelVisible.value || _calculatorPanelVisible.value
+
+    private fun hideMusicForOverlay() {
+        if (!anyOverlayPanelVisible()) _musicWasVisibleBeforeOverlay = _musicPanelVisible.value
+        _musicPanelVisible.value = false
+    }
+
+    private fun restoreMusicAfterOverlay() {
+        if (anyOverlayPanelVisible()) return
+        if (_musicWasVisibleBeforeOverlay) _musicPanelVisible.value = true
+        _musicWasVisibleBeforeOverlay = false
+    }
+
     fun toggleVolumePanel() {
         val nowVisible = !_volumePanelVisible.value
         if (nowVisible) {
             refreshVolumeStreams()
+            hideMusicForOverlay()
             _brightnessPanelVisible.value = false
             _calculatorPanelVisible.value = false
-            _musicWasVisibleBeforeSlider = _musicPanelVisible.value
-            _musicPanelVisible.value = false
-        } else if (_musicWasVisibleBeforeSlider) {
-            _musicPanelVisible.value = true
-            _musicWasVisibleBeforeSlider = false
         }
         _volumePanelVisible.value = nowVisible
+        if (!nowVisible) restoreMusicAfterOverlay()
     }
 
     fun dismissVolumePanel() {
         _volumePanelVisible.value = false
-        if (_musicWasVisibleBeforeSlider) {
-            _musicPanelVisible.value = true
-            _musicWasVisibleBeforeSlider = false
-        }
+        restoreMusicAfterOverlay()
     }
 
     fun toggleBrightnessPanel() {
         val nowVisible = !_brightnessPanelVisible.value
         if (nowVisible) {
             _brightnessLevel.value = quickControls.getBrightness()
+            hideMusicForOverlay()
             _volumePanelVisible.value = false
             _calculatorPanelVisible.value = false
-            _musicWasVisibleBeforeSlider = _musicPanelVisible.value
-            _musicPanelVisible.value = false
-        } else if (_musicWasVisibleBeforeSlider) {
-            _musicPanelVisible.value = true
-            _musicWasVisibleBeforeSlider = false
         }
         _brightnessPanelVisible.value = nowVisible
+        if (!nowVisible) restoreMusicAfterOverlay()
     }
 
     fun dismissBrightnessPanel() {
         _brightnessPanelVisible.value = false
-        if (_musicWasVisibleBeforeSlider) {
-            _musicPanelVisible.value = true
-            _musicWasVisibleBeforeSlider = false
-        }
+        restoreMusicAfterOverlay()
     }
 
     fun toggleMusicPanel() {
+        if (!_musicPanelVisible.value && !mediaState.value.hasSession) {
+            _noMediaMessage.value = "No Media Playing"
+            return
+        }
         val newValue = !_musicPanelVisible.value
         if (newValue) _calculatorPanelVisible.value = false
         _musicPanelVisible.value = newValue
+        _musicWasVisibleBeforeOverlay = false
         viewModelScope.launch { prefsRepository.setMusicPanelOpen(newValue) }
     }
 
     fun dismissMusicPanel() {
         _musicPanelVisible.value = false
+        _musicWasVisibleBeforeOverlay = false
+    }
+
+    fun clearNoMediaMessage() {
+        _noMediaMessage.value = null
     }
 
     private var clipboardDismissedForExternalOpen = false
@@ -212,18 +242,20 @@ class AppMenuViewModel @Inject constructor(
     fun toggleCalculatorPanel() {
         val newValue = !_calculatorPanelVisible.value
         if (newValue) {
+            hideMusicForOverlay()
             _volumePanelVisible.value = false
             _brightnessPanelVisible.value = false
-            _musicPanelVisible.value = false
             _clipboardPanelVisible.value = false
             _menuVisible.value = false
             _isSearching.value = false
         }
         _calculatorPanelVisible.value = newValue
+        if (!newValue) restoreMusicAfterOverlay()
     }
 
     fun dismissCalculatorPanel() {
         _calculatorPanelVisible.value = false
+        restoreMusicAfterOverlay()
     }
 
     fun dismissClipboardPanelForExternalOpen() {
@@ -327,6 +359,7 @@ class AppMenuViewModel @Inject constructor(
 
     fun launchApp(packageName: String) {
         appRepository.launchApp(packageName)
+        viewModelScope.launch { prefsRepository.addRecentOpenedApp(packageName) }
         _menuVisible.value = false
         closeSearch()
     }

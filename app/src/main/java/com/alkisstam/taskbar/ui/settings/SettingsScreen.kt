@@ -384,6 +384,8 @@ private fun GeneralTab(
 
         MusicPanelSettingsCard(viewModel = viewModel, context = context)
 
+        SearchSettingsCard(viewModel = viewModel)
+
         SettingsCard(title = "Navigation Bar Overlay") {
             if (!hasAccessibilityPermission) {
                 Text(
@@ -573,6 +575,50 @@ private fun MusicPanelSettingsCard(viewModel: TaskbarViewModel, context: android
             ) {
                 Text("Grant Notification Access")
             }
+        }
+    }
+}
+
+@Composable
+private fun SearchSettingsCard(viewModel: TaskbarViewModel) {
+    val fuzzySearchEnabled by viewModel.fuzzySearchEnabled.collectAsState()
+    val showRecentApps by viewModel.showRecentApps.collectAsState()
+    SettingsCard(title = "Search") {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text("Fuzzy Search", style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    "Match apps even with typos or partial names",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(
+                checked = fuzzySearchEnabled,
+                onCheckedChange = { viewModel.setFuzzySearchEnabled(it) }
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text("Show Recent Apps", style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    "Show your 5 most recently opened apps when you tap the search bar",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(
+                checked = showRecentApps,
+                onCheckedChange = { viewModel.setShowRecentApps(it) }
+            )
         }
     }
 }

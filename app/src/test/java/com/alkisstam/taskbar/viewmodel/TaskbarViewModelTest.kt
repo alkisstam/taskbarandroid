@@ -78,11 +78,11 @@ class TaskbarViewModelTest {
     }
 
     @Test
-    fun `hideTaskbar does nothing when settings open`() = runTest(mainDispatcherRule.dispatcher) {
+    fun `hideTaskbar hides dock even when settings open`() = runTest(mainDispatcherRule.dispatcher) {
         val vm = createViewModel()
         vm.setSettingsOpen(true)
         vm.hideTaskbar()
-        assertTrue(vm.isTaskbarVisible.value)
+        assertFalse(vm.isTaskbarVisible.value)
     }
 
     @Test

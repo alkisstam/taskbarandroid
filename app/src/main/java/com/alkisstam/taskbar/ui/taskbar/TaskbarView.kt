@@ -1,5 +1,7 @@
 package com.alkisstam.taskbar.ui.taskbar
 
+import android.view.Gravity
+import android.widget.Toast
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -46,8 +48,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.data.bottomGapDp
 import com.alkisstam.taskbar.data.widthFraction
 import kotlinx.coroutines.delay
 import java.time.LocalDate
@@ -84,6 +88,20 @@ fun TaskbarView(
     val batteryLevel by taskbarViewModel.batteryLevel.collectAsState()
     val isCharging by taskbarViewModel.isCharging.collectAsState()
     val density = LocalDensity.current
+
+    val noMediaMessage by appMenuViewModel.noMediaMessage.collectAsState()
+    val context = LocalContext.current
+    LaunchedEffect(noMediaMessage) {
+        noMediaMessage?.let {
+            val yOffsetDp = taskbarSettings.dockPadding.bottomGapDp + taskbarSettings.heightDp + 16f +
+                (if (isDockExpanded) taskbarSettings.heightDp + 25f else 24f)
+            val yOffsetPx = with(density) { yOffsetDp.dp.roundToPx() }
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).apply {
+                setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, yOffsetPx)
+            }.show()
+            appMenuViewModel.clearNoMediaMessage()
+        }
+    }
 
     val surfaceColor = if (surfaceTintColor != 0L)
         Color(surfaceTintColor)

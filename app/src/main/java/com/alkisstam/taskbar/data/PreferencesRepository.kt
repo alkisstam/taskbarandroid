@@ -137,6 +137,9 @@ class PreferencesRepository @Inject constructor(
         private val PILL_RESTRICT_TRIGGER_KEY = booleanPreferencesKey("pill_restrict_trigger")
         private val TRANSLUCENT_MODE_KEY = booleanPreferencesKey("translucent_mode")
         private val TRANSLUCENT_ALPHA_KEY = floatPreferencesKey("translucent_alpha")
+        private val FUZZY_SEARCH_ENABLED_KEY = booleanPreferencesKey("fuzzy_search_enabled")
+        private val SHOW_RECENT_APPS_KEY = booleanPreferencesKey("show_recent_apps")
+        private val RECENT_OPENED_APPS_KEY = stringPreferencesKey("recent_opened_apps")
 
         val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen", "caffeine", "clipboard", "calculator", "wifi", "bluetooth", "share")
 
@@ -404,6 +407,38 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
+    val fuzzySearchEnabled: Flow<Boolean> = safeData.map { prefs ->
+        prefs[FUZZY_SEARCH_ENABLED_KEY] ?: true
+    }
+
+    suspend fun setFuzzySearchEnabled(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[FUZZY_SEARCH_ENABLED_KEY] = enabled
+        }
+    }
+
+    val showRecentApps: Flow<Boolean> = safeData.map { prefs ->
+        prefs[SHOW_RECENT_APPS_KEY] ?: false
+    }
+
+    suspend fun setShowRecentApps(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[SHOW_RECENT_APPS_KEY] = enabled
+        }
+    }
+
+    val recentOpenedApps: Flow<List<String>> = safeData.map { prefs ->
+        prefs[RECENT_OPENED_APPS_KEY]?.let { deserializeStringList(it) } ?: emptyList()
+    }
+
+    suspend fun addRecentOpenedApp(packageName: String) {
+        context.dataStore.edit { prefs ->
+            val current = prefs[RECENT_OPENED_APPS_KEY]?.let { deserializeStringList(it) } ?: emptyList()
+            val updated = (listOf(packageName) + current.filterNot { it == packageName }).take(5)
+            prefs[RECENT_OPENED_APPS_KEY] = serializeStringList(updated)
+        }
+    }
+
     val panelOutlineEnabled: Flow<Boolean> = safeData.map { prefs ->
         prefs[PANEL_OUTLINE_KEY] ?: false
     }
@@ -490,6 +525,8 @@ class PreferencesRepository @Inject constructor(
             prefs[APP_GRID_ROWS_KEY]?.let { put("app_grid_rows", it) }
             prefs[PILL_TRIGGER_AREA_KEY]?.let { put("pill_trigger_area", it) }
             prefs[PILL_RESTRICT_TRIGGER_KEY]?.let { put("pill_restrict_trigger", it) }
+            prefs[FUZZY_SEARCH_ENABLED_KEY]?.let { put("fuzzy_search_enabled", it) }
+            prefs[SHOW_RECENT_APPS_KEY]?.let { put("show_recent_apps", it) }
         }.toString()
     }
 
@@ -529,6 +566,8 @@ class PreferencesRepository @Inject constructor(
             if (obj.has("app_grid_rows")) prefs[APP_GRID_ROWS_KEY] = obj.getInt("app_grid_rows")
             if (obj.has("pill_trigger_area")) prefs[PILL_TRIGGER_AREA_KEY] = obj.getDouble("pill_trigger_area").toFloat()
             if (obj.has("pill_restrict_trigger")) prefs[PILL_RESTRICT_TRIGGER_KEY] = obj.getBoolean("pill_restrict_trigger")
+            if (obj.has("fuzzy_search_enabled")) prefs[FUZZY_SEARCH_ENABLED_KEY] = obj.getBoolean("fuzzy_search_enabled")
+            if (obj.has("show_recent_apps")) prefs[SHOW_RECENT_APPS_KEY] = obj.getBoolean("show_recent_apps")
         }
     }
 
