@@ -82,7 +82,12 @@ val whatsNewReleases = listOf(
         versionCode = 45,
         highlights = listOf(
             "Fixed the Media volume slider not changing volume on Oppo, OnePlus and Realme phones",
-            "Reordering pinned apps has moved to Settings → Apps → Pinned Apps"
+            "Reordering pinned apps has moved to Settings → Apps → Pinned Apps",
+            "New Search settings — toggle Fuzzy Search and Show Recent Apps in General settings",
+            "Music Panel now hides while the Calculator is open, and reappears after",
+            "Tapping the album art now also hides the dock and Music Panel",
+            "Long notes in the Clipboard panel scroll instead of getting cut off",
+            "Tapping Music with nothing playing now shows a \"No Media Playing\" message instead of doing nothing"
         )
     )
 )

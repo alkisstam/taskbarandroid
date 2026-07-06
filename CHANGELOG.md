@@ -11,12 +11,17 @@ All notable changes to Floating Dock are documented here.
 - **Edit clips and notes in the Clipboard panel** — text and link clips, and notes, can now be edited in place instead of only copied, shared, or deleted.
 - **Music Panel matches the dock's design settings** — the floating Music Panel now follows the Corner Radius and Edge Padding settings from Design instead of using fixed values; tapping the album art opens the currently playing app.
 - **Wifi, Bluetooth, and Share now auto-hide the dock** — tapping these quick controls hides the dock and Music Panel, matching the existing behavior for QR, Power, Screenshot, and Lock Screen.
+- **New Search section in General settings** — toggle Fuzzy Search on/off, and toggle Show Recent Apps to see your 5 most recently opened apps when you tap the search bar with nothing typed.
 
 ### Changed
 - **Reordering pinned apps moved to Settings** — drag-to-reorder on the dock was replaced by the existing drag-to-reorder in Settings → Apps → Pinned Apps.
+- **Music Panel now hides while the Calculator panel is open** and reappears once it's closed, matching how it already behaves around Volume and Brightness.
+- **Tapping the album art** now also hides the dock and Music Panel (it already opened the now-playing app), consistent with every other "launch and get out of the way" action.
+- **Long notes in the Clipboard panel scroll instead of getting cut off** — the note card stays the same size, but you can now scroll within it to read the rest.
 
 ### Fixed
 - **Media volume slider did nothing on Oppo, OnePlus and Realme phones** — on ColorOS-based ROMs the system blocks apps from setting the media stream volume directly, so the Media slider moved but the volume never changed (the Ring, Notification and Alarm sliders were unaffected). The slider now adjusts media volume the same way the hardware volume keys do, which these devices allow.
+- **Tapping "Music" with nothing playing silently did nothing** — it now shows a "No Media Playing" toast instead of opening an empty panel.
 
 ---
 
