@@ -44,6 +44,13 @@ data class NoteItem(
     val isFavorite: Boolean = false
 )
 
+data class TodoItem(
+    val id: String,
+    val content: String,
+    val timestamp: Long,
+    val isDone: Boolean = false
+)
+
 @Singleton
 class ClipboardRepository @Inject constructor(
     @param:ApplicationContext private val context: Context
@@ -51,6 +58,7 @@ class ClipboardRepository @Inject constructor(
     companion object {
         private val CLIPS_KEY = stringPreferencesKey("clips")
         private val NOTES_LIST_KEY = stringPreferencesKey("notes_list")
+        private val TODOS_LIST_KEY = stringPreferencesKey("todos_list")
         private val SHARE_HINT_DISMISSED_KEY = booleanPreferencesKey("share_hint_dismissed")
         private const val MAX_CLIPS = 100
     }
@@ -68,6 +76,10 @@ class ClipboardRepository @Inject constructor(
 
     val noteItems: Flow<List<NoteItem>> = safeData.map { prefs ->
         prefs[NOTES_LIST_KEY]?.let { deserializeNotes(it) } ?: emptyList()
+    }
+
+    val todoItems: Flow<List<TodoItem>> = safeData.map { prefs ->
+        prefs[TODOS_LIST_KEY]?.let { deserializeTodos(it) } ?: emptyList()
     }
 
     val shareHintDismissed: Flow<Boolean> = safeData.map { prefs ->
@@ -128,6 +140,27 @@ class ClipboardRepository @Inject constructor(
         context.clipboardDataStore.edit { prefs ->
             val current = prefs[NOTES_LIST_KEY]?.let { deserializeNotes(it) } ?: emptyList()
             prefs[NOTES_LIST_KEY] = serializeNotes(current.map { if (it.id == item.id) item else it })
+        }
+    }
+
+    suspend fun addTodo(item: TodoItem) {
+        context.clipboardDataStore.edit { prefs ->
+            val current = prefs[TODOS_LIST_KEY]?.let { deserializeTodos(it) } ?: emptyList()
+            prefs[TODOS_LIST_KEY] = serializeTodos(listOf(item) + current)
+        }
+    }
+
+    suspend fun removeTodo(id: String) {
+        context.clipboardDataStore.edit { prefs ->
+            val current = prefs[TODOS_LIST_KEY]?.let { deserializeTodos(it) } ?: emptyList()
+            prefs[TODOS_LIST_KEY] = serializeTodos(current.filter { it.id != id })
+        }
+    }
+
+    suspend fun updateTodo(item: TodoItem) {
+        context.clipboardDataStore.edit { prefs ->
+            val current = prefs[TODOS_LIST_KEY]?.let { deserializeTodos(it) } ?: emptyList()
+            prefs[TODOS_LIST_KEY] = serializeTodos(current.map { if (it.id == item.id) item else it })
         }
     }
 
@@ -218,6 +251,40 @@ class ClipboardRepository @Inject constructor(
         }
     } catch (e: Exception) {
         Log.w("ClipboardRepository", "Failed to parse notes JSON", e)
+        emptyList()
+    }
+
+    private fun serializeTodos(todos: List<TodoItem>): String {
+        val arr = JSONArray()
+        todos.forEach { item ->
+            arr.put(JSONObject().apply {
+                put("id", item.id)
+                put("content", item.content)
+                put("timestamp", item.timestamp)
+                put("isDone", item.isDone)
+            })
+        }
+        return arr.toString()
+    }
+
+    private fun deserializeTodos(json: String): List<TodoItem> = try {
+        val arr = JSONArray(json)
+        (0 until arr.length()).mapNotNull { i ->
+            try {
+                val obj = arr.getJSONObject(i)
+                TodoItem(
+                    id = obj.getString("id"),
+                    content = obj.getString("content"),
+                    timestamp = obj.getLong("timestamp"),
+                    isDone = obj.optBoolean("isDone", false)
+                )
+            } catch (e: Exception) {
+                Log.w("ClipboardRepository", "Skipping corrupt todo record at index $i", e)
+                null
+            }
+        }
+    } catch (e: Exception) {
+        Log.w("ClipboardRepository", "Failed to parse todos JSON", e)
         emptyList()
     }
 }

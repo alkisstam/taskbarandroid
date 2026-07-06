@@ -34,6 +34,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ContentPaste
@@ -70,6 +72,7 @@ import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.ClipItem
 import com.alkisstam.taskbar.data.ClipType
 import com.alkisstam.taskbar.data.NoteItem
+import com.alkisstam.taskbar.data.TodoItem
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 import com.alkisstam.taskbar.ui.theme.grain
 import com.alkisstam.taskbar.viewmodel.ClipboardViewModel
@@ -102,10 +105,11 @@ fun ClipboardPanel(
     val clips by viewModel.clips.collectAsState()
     val favorites by viewModel.favorites.collectAsState()
     val noteItems by viewModel.noteItems.collectAsState()
+    val todoItems by viewModel.todoItems.collectAsState()
     val shareHintDismissed by viewModel.shareHintDismissed.collectAsState()
 
-    val tabs = listOf("Clips", "Favorites", "Notes")
-    val tabIcons = listOf(Icons.Default.ContentPaste, Icons.Default.Star, Icons.Default.Edit)
+    val tabs = listOf("Clips", "Favorites", "Notes", "To-Dos")
+    val tabIcons = listOf(Icons.Default.ContentPaste, Icons.Default.Star, Icons.Default.Edit, Icons.Default.CheckCircle)
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val coroutineScope = rememberCoroutineScope()
     var selectedCategory by remember { mutableStateOf(ClipCategory.ALL) }
@@ -199,6 +203,13 @@ fun ClipboardPanel(
                                 onEdit = viewModel::updateNote,
                                 onOpenExternal = onOpenExternal
                             )
+                            3 -> ToDoTab(
+                                todoItems = todoItems,
+                                onAdd = viewModel::addTodo,
+                                onToggleDone = viewModel::toggleTodoDone,
+                                onDelete = viewModel::removeTodo,
+                                onEdit = viewModel::updateTodo
+                            )
                         }
                     }
                 }
@@ -230,13 +241,13 @@ fun ClipboardPanel(
                                             indication = null,
                                             interactionSource = remember { MutableInteractionSource() }
                                         ) { coroutineScope.launch { pagerState.animateScrollToPage(index) } },
-                                        shape = RoundedCornerShape(28.dp),
+                                        shape = RoundedCornerShape(20.dp),
                                         color = MaterialTheme.colorScheme.primaryContainer
                                     ) {
-                                        Row(
-                                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                        Column(
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            verticalArrangement = Arrangement.spacedBy(2.dp)
                                         ) {
                                             Icon(
                                                 tabIcons[index],
@@ -246,8 +257,9 @@ fun ClipboardPanel(
                                             )
                                             Text(
                                                 title,
-                                                style = MaterialTheme.typography.labelMedium,
-                                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                                maxLines = 1
                                             )
                                         }
                                     }
@@ -586,8 +598,139 @@ private fun NotesTab(
 }
 
 @Composable
+private fun ToDoTab(
+    todoItems: List<TodoItem>,
+    onAdd: (String) -> Unit,
+    onToggleDone: (TodoItem) -> Unit,
+    onDelete: (String) -> Unit,
+    onEdit: (TodoItem) -> Unit
+) {
+    var composerVisible by remember { mutableStateOf(false) }
+    var editingTodo by remember { mutableStateOf<TodoItem?>(null) }
+
+    val open = todoItems.filter { !it.isDone }.sortedByDescending { it.timestamp }
+    val completed = todoItems.filter { it.isDone }.sortedByDescending { it.timestamp }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (todoItems.isEmpty() && !composerVisible && editingTodo == null) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        Icons.Default.CheckCircle,
+                        contentDescription = null,
+                        modifier = Modifier.size(48.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        "No to-dos yet",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        } else {
+            LazyColumn(
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 80.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                if (editingTodo == null && composerVisible) {
+                    item("composer") {
+                        NoteComposer(
+                            placeholder = "Add a to-do…",
+                            onSave = { text -> onAdd(text); composerVisible = false },
+                            onCancel = { composerVisible = false }
+                        )
+                    }
+                }
+                items(open, key = { it.id }) { todo ->
+                    TodoListItem(
+                        todo = todo,
+                        isEditing = todo.id == editingTodo?.id,
+                        onStartEdit = { composerVisible = false; editingTodo = todo },
+                        onSaveEdit = { text -> onEdit(todo.copy(content = text)); editingTodo = null },
+                        onCancelEdit = { editingTodo = null },
+                        onToggleDone = { onToggleDone(todo) },
+                        onDelete = { onDelete(todo.id) }
+                    )
+                }
+                if (completed.isNotEmpty()) {
+                    item("completed_header") {
+                        Text(
+                            "Completed (${completed.size})",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+                }
+                items(completed, key = { it.id }) { todo ->
+                    TodoListItem(
+                        todo = todo,
+                        isEditing = todo.id == editingTodo?.id,
+                        onStartEdit = { composerVisible = false; editingTodo = todo },
+                        onSaveEdit = { text -> onEdit(todo.copy(content = text)); editingTodo = null },
+                        onCancelEdit = { editingTodo = null },
+                        onToggleDone = { onToggleDone(todo) },
+                        onDelete = { onDelete(todo.id) }
+                    )
+                }
+            }
+        }
+
+        FloatingActionButton(
+            onClick = {
+                editingTodo = null
+                composerVisible = !composerVisible
+            },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp),
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ) {
+            Icon(
+                if (composerVisible || editingTodo != null) Icons.Default.Edit else Icons.Default.Add,
+                contentDescription = if (composerVisible || editingTodo != null) "Cancel" else "New to-do",
+                tint = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+        }
+    }
+}
+
+@Composable
+private fun TodoListItem(
+    todo: TodoItem,
+    isEditing: Boolean,
+    onStartEdit: () -> Unit,
+    onSaveEdit: (String) -> Unit,
+    onCancelEdit: () -> Unit,
+    onToggleDone: () -> Unit,
+    onDelete: () -> Unit
+) {
+    if (isEditing) {
+        NoteComposer(
+            initialText = todo.content,
+            placeholder = "Add a to-do…",
+            onSave = onSaveEdit,
+            onCancel = onCancelEdit
+        )
+    } else {
+        TodoItemCard(
+            todo = todo,
+            onToggleDone = onToggleDone,
+            onEdit = onStartEdit,
+            onDelete = onDelete
+        )
+    }
+}
+
+@Composable
 private fun NoteComposer(
     initialText: String = "",
+    placeholder: String = "Write a note…",
     onSave: (String) -> Unit,
     onCancel: () -> Unit
 ) {
@@ -602,7 +745,7 @@ private fun NoteComposer(
                 value = text,
                 onValueChange = { text = it },
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Write a note…") },
+                placeholder = { Text(placeholder) },
                 shape = RoundedCornerShape(8.dp),
                 minLines = 3
             )
@@ -730,6 +873,67 @@ private fun NoteItemCard(
                         tint = MaterialTheme.colorScheme.error
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TodoItemCard(
+    todo: TodoItem,
+    onToggleDone: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
+    Surface(
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .clip(CircleShape)
+                    .then(
+                        if (todo.isDone) Modifier.background(MaterialTheme.colorScheme.primary)
+                        else Modifier.border(1.5.dp, MaterialTheme.colorScheme.onSurfaceVariant, CircleShape)
+                    )
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) { onToggleDone() },
+                contentAlignment = Alignment.Center
+            ) {
+                if (todo.isDone) {
+                    Icon(
+                        Icons.Default.Check,
+                        contentDescription = "Completed",
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+            }
+            Spacer(Modifier.width(12.dp))
+            Text(
+                text = todo.content,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (todo.isDone) 0.6f else 1f),
+                modifier = Modifier.weight(1f)
+            )
+            IconButton(onClick = onEdit) {
+                Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(20.dp))
+            }
+            IconButton(onClick = onDelete) {
+                Icon(
+                    Icons.Default.Delete,
+                    contentDescription = "Delete",
+                    modifier = Modifier.size(20.dp),
+                    tint = MaterialTheme.colorScheme.error
+                )
             }
         }
     }

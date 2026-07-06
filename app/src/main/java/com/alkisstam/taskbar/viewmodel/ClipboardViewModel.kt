@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.alkisstam.taskbar.data.ClipItem
 import com.alkisstam.taskbar.data.ClipboardRepository
 import com.alkisstam.taskbar.data.NoteItem
+import com.alkisstam.taskbar.data.TodoItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -42,6 +43,9 @@ class ClipboardViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val noteItems: StateFlow<List<NoteItem>> = clipboardRepository.noteItems
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val todoItems: StateFlow<List<TodoItem>> = clipboardRepository.todoItems
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val shareHintDismissed: StateFlow<Boolean> = clipboardRepository.shareHintDismissed
@@ -87,5 +91,23 @@ class ClipboardViewModel @Inject constructor(
 
     fun updateNote(item: NoteItem) {
         viewModelScope.launch { clipboardRepository.updateNote(item) }
+    }
+
+    fun addTodo(content: String) {
+        if (content.isBlank()) return
+        val item = TodoItem(id = UUID.randomUUID().toString(), content = content.trim(), timestamp = System.currentTimeMillis())
+        viewModelScope.launch { clipboardRepository.addTodo(item) }
+    }
+
+    fun removeTodo(id: String) {
+        viewModelScope.launch { clipboardRepository.removeTodo(id) }
+    }
+
+    fun toggleTodoDone(item: TodoItem) {
+        viewModelScope.launch { clipboardRepository.updateTodo(item.copy(isDone = !item.isDone)) }
+    }
+
+    fun updateTodo(item: TodoItem) {
+        viewModelScope.launch { clipboardRepository.updateTodo(item) }
     }
 }
