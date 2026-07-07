@@ -2,7 +2,7 @@
 
 A system-overlay dock for Android that renders above all other apps — including the system navigation bar when the Accessibility Service is enabled.
 
-**Current version:** 1.3.4 (versionCode 37)
+**Current version:** 1.4.1 (versionCode 45)
 
 ## Features
 
@@ -43,7 +43,7 @@ A system-overlay dock for Android that renders above all other apps — includin
 
 - **Material You** – Dynamic Color (Android 12+), fallback palette for older devices
 - **Dark / Light / System** theme toggle in *General → Theme*
-- **Surface Tint Color** – nine preset color swatches that tint the dock, app menu, and control panels
+- **Surface Tint Color** – nine preset color swatches that tint the dock, app menu, search, volume/brightness, calculator, and clipboard panels
 
 ### Behaviour
 
@@ -51,6 +51,7 @@ A system-overlay dock for Android that renders above all other apps — includin
 - **Auto-hide in Landscape** – hides when the device rotates to landscape
 - **Hide on screen-off / lockscreen** – overlay hidden on screen-off, restored on unlock
 - **Boot autostart** – re-enables the overlay after reboot
+- **Vibrate Feedback** – haptic tick on long-press, drag-reorder, and slider drags; toggle in *General*
 
 ### Settings
 
@@ -71,8 +72,8 @@ Four-tab settings screen: **General**, **Apps**, **Controls**, **Design**
 1. Open the `TaskBarAndroid` directory in Android Studio
 2. Let Gradle sync complete
 3. Run on a physical device (overlay doesn't work on emulators without extra setup)
-4. On first launch, grant **"Draw over other apps"** and optionally **"Modify system settings"**
-5. To draw above the navigation bar, enable **Floating Dock Overlay** in *Settings → Accessibility*
+4. On first launch, grant **"Draw over other apps"** (the only required permission)
+5. Optionally enable **Floating Dock Overlay** in *Settings → Accessibility* to draw above the navigation bar and place the pill at the bottom position — the app works without it
 
 ## Permissions
 

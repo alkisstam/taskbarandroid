@@ -88,7 +88,12 @@ val whatsNewReleases = listOf(
             "Tapping the album art now also hides the dock and Music Panel",
             "Long notes in the Clipboard panel scroll instead of getting cut off",
             "Tapping Music with nothing playing now shows a \"No Media Playing\" message instead of doing nothing",
-            "New To-Dos tab in the Clipboard panel — check items off and they move to a Completed section"
+            "New To-Dos tab in the Clipboard panel — check items off and they move to a Completed section",
+            "Sliders now give haptic feedback while dragging, not just on long-press",
+            "Design tint now also colors Search, Volume/Brightness, and Calculator panels",
+            "New notes/to-dos now open right above the keyboard instead of at the top of the list",
+            "Fixed the app menu getting stuck open when tapping its icon or tapping outside it",
+            "Accessibility Service is now an optional permission — the dock works without it"
         )
     )
 )

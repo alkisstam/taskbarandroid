@@ -4,7 +4,7 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
-## [1.4.1] - 2026-07-05
+## [1.4.1] - 2026-07-07
 
 ### Added
 - **Calculator panel** — a new quick control opens a floating calculator above the dock. Shows a running expression with a live preview total; swipe up on the handle to reveal scientific functions (sin, cos, tan, ln, log, ^, π). Follows the same auto-hide rules as the other panels (dismisses on Wifi/Bluetooth/Share, mutually exclusive with Volume/Brightness/Music/Clipboard, tap-outside to dismiss).
@@ -13,18 +13,23 @@ All notable changes to Floating Dock are documented here.
 - **Wifi, Bluetooth, and Share now auto-hide the dock** — tapping these quick controls hides the dock and Music Panel, matching the existing behavior for QR, Power, Screenshot, and Lock Screen.
 - **New Search section in General settings** — toggle Fuzzy Search on/off, and toggle Show Recent Apps to see your 5 most recently opened apps when you tap the search bar with nothing typed.
 - **New To-Dos tab in the Clipboard panel** — add to-do items with the same "+" composer as Notes; checking an item off moves it into a collapsed "Completed (N)" section below the open ones.
+- **Haptic feedback on slider drags** — dragging any slider (Corner Radius, Transparency, Pill/Dock sizing, App Grid, Volume, Brightness) now gives a tick per step when Vibrate Feedback is on; previously only long-press and drag-reorder triggered it.
 
 ### Changed
 - **Reordering pinned apps moved to Settings** — drag-to-reorder on the dock was replaced by the existing drag-to-reorder in Settings → Apps → Pinned Apps.
 - **Music Panel now hides while the Calculator panel is open** and reappears once it's closed, matching how it already behaves around Volume and Brightness.
 - **Tapping the album art** now also hides the dock and Music Panel (it already opened the now-playing app), consistent with every other "launch and get out of the way" action.
 - **Long notes in the Clipboard panel scroll instead of getting cut off** — the note card stays the same size, but you can now scroll within it to read the rest.
+- **Surface Tint Color now also applies to Search, Volume/Brightness, and Calculator panels** — previously only the Dock, App Menu, and Clipboard panel picked up the tint.
+- **New note/to-do composer docks above the keyboard** — starting a new note or to-do now opens the keyboard automatically and shows the composer just above it, instead of an inline card at the top of the list you had to scroll to and tap into. Saving still puts the new item at the top of the list as before.
+- **Onboarding: Accessibility Service moved to optional permissions** — the dock works without it; it's only needed to draw the pill above the system navigation bar. A confirmation dialog still explains what it's for before requesting it. Added an info dialog when disabling battery optimization (some devices still throttle background activity and may need manual exclusion) and when selecting the bottom pill position (needs Accessibility Service to sit above the nav bar).
 
 ### Fixed
 - **Media volume slider did nothing on Oppo, OnePlus and Realme phones** — on ColorOS-based ROMs the system blocks apps from setting the media stream volume directly, so the Media slider moved but the volume never changed (the Ring, Notification and Alarm sliders were unaffected). The slider now adjusts media volume the same way the hardware volume keys do, which these devices allow.
 - **Tapping "Music" with nothing playing silently did nothing** — it now shows a "No Media Playing" toast instead of opening an empty panel.
 - **Music Panel sometimes never appeared even with media playing and notification access granted** (seen on Samsung One UI) — the app could fail to detect the current media session right after the listener connects and never retry. It now retries with backoff and asks the system to reconnect the listener if needed.
-- **Clipboard panel's tab labels wrapped to two lines** once a 4th tab (To-Dos) was added — the selected tab's icon and label now stack vertically instead of side by side so all four tabs fit on one line.
+- **Clipboard panel's tab labels wrapped to two lines** once a 4th tab (To-Dos) was added — the selected tab's icon and label now stack vertically instead of side by side so all four tabs fit on one line; the pill is also now a fixed size across all four tabs instead of resizing with the label.
+- **The app menu couldn't be dismissed by tapping its icon again or tapping outside it** — only the back gesture closed it. The dock's own window stayed touchable after the menu opened, and the Volume/Brightness/Calculator panel windows stayed touchable even while hidden — both silently absorbed the tap meant to dismiss the menu.
 
 ---
 
