@@ -58,13 +58,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.DockPadding
 import com.alkisstam.taskbar.data.GestureAction
 import com.alkisstam.taskbar.data.PillEdgePosition
 import com.alkisstam.taskbar.data.ThemeMode
+import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 
 @Composable
@@ -619,6 +622,8 @@ private fun SettingsSlider(
     onValueChange: (Float) -> Unit
 ) {
     var localValue by remember(value) { mutableFloatStateOf(value) }
+    val haptic = LocalHapticFeedback.current
+    val hapticEnabled = LocalHapticEnabled.current
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -633,7 +638,16 @@ private fun SettingsSlider(
         }
         Slider(
             value = localValue,
-            onValueChange = { localValue = it },
+            onValueChange = { newValue ->
+                val rangeSize = valueRange.endInclusive - valueRange.start
+                val stepCount = 24
+                val oldStep = ((localValue - valueRange.start) / rangeSize * stepCount).toInt()
+                val newStep = ((newValue - valueRange.start) / rangeSize * stepCount).toInt()
+                if (hapticEnabled && newStep != oldStep) {
+                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                }
+                localValue = newValue
+            },
             onValueChangeFinished = { onValueChange(localValue) },
             valueRange = valueRange,
             track = { FilledPillSliderTrack(it) },

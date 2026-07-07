@@ -35,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -46,7 +47,8 @@ fun FloatingSearchBar(
     viewModel: AppMenuViewModel,
     onHideTaskbar: () -> Unit = {},
     translucentMode: Boolean = false,
-    translucentAlpha: Float = 0.80f
+    translucentAlpha: Float = 0.80f,
+    surfaceTintColor: Long = 0L
 ) {
     val searchQuery by viewModel.searchQuery.collectAsState()
     val filteredApps by viewModel.filteredApps.collectAsState()
@@ -74,7 +76,7 @@ fun FloatingSearchBar(
                     interactionSource = remember { MutableInteractionSource() }
                 ) { viewModel.closeSearch() }
         )
-        val surfaceColor = MaterialTheme.colorScheme.surface
+        val surfaceColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
         val glassBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
         Column(
             modifier = Modifier
@@ -89,7 +91,7 @@ fun FloatingSearchBar(
                     .then(if (translucentMode) Modifier.border(1.dp, glassBorderColor, RoundedCornerShape(16.dp)) else Modifier),
                 shape = RoundedCornerShape(16.dp),
                 color = if (translucentMode) surfaceColor.copy(alpha = translucentAlpha) else surfaceColor,
-                tonalElevation = if (translucentMode) 0.dp else 8.dp,
+                tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 8.dp,
                 shadowElevation = 8.dp
             ) {
                 // Show keyboard reliably when search field is laid out

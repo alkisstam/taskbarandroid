@@ -188,12 +188,14 @@ internal fun SearchOverlayContent(
     val themeMode by taskbarViewModel.themeMode.collectAsState()
     val translucentMode by taskbarViewModel.translucentMode.collectAsState()
     val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
+    val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
     TaskBarTheme(themeMode = themeMode) {
         FloatingSearchBar(
             viewModel = appMenuViewModel,
             onHideTaskbar = onHideTaskbar,
             translucentMode = translucentMode,
-            translucentAlpha = translucentAlpha
+            translucentAlpha = translucentAlpha,
+            surfaceTintColor = surfaceTintColor
         )
     }
 }
@@ -208,6 +210,7 @@ internal fun VolumePanelContent(
     val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
     val translucentMode by taskbarViewModel.translucentMode.collectAsState()
     val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
+    val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
     TaskBarTheme(themeMode = themeMode) {
         VolumePanel(
             streams = streams,
@@ -216,7 +219,8 @@ internal fun VolumePanelContent(
             },
             panelOutlineEnabled = panelOutlineEnabled,
             translucentMode = translucentMode,
-            translucentAlpha = translucentAlpha
+            translucentAlpha = translucentAlpha,
+            surfaceTintColor = surfaceTintColor
         )
     }
 }
@@ -232,6 +236,7 @@ internal fun BrightnessPanelContent(
     val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
     val translucentMode by taskbarViewModel.translucentMode.collectAsState()
     val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
+    val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
     TaskBarTheme(themeMode = themeMode) {
         BrightnessPanel(
             brightnessLevel = brightnessLevel,
@@ -240,7 +245,8 @@ internal fun BrightnessPanelContent(
             onAutoBrightnessToggle = { appMenuViewModel.toggleAutoBrightness() },
             panelOutlineEnabled = panelOutlineEnabled,
             translucentMode = translucentMode,
-            translucentAlpha = translucentAlpha
+            translucentAlpha = translucentAlpha,
+            surfaceTintColor = surfaceTintColor
         )
     }
 }
@@ -358,6 +364,7 @@ internal fun CalculatorPanelContent(
     val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
     val translucentMode by taskbarViewModel.translucentMode.collectAsState()
     val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
+    val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
     TaskBarTheme(themeMode = themeMode) {
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -365,6 +372,7 @@ internal fun CalculatorPanelContent(
                 panelOutlineEnabled = panelOutlineEnabled,
                 translucentMode = translucentMode,
                 translucentAlpha = translucentAlpha,
+                surfaceTintColor = surfaceTintColor,
                 cornerRadiusDp = taskbarSettings.cornerRadiusDp,
                 dockWidthFraction = taskbarSettings.dockPadding.widthFraction
             )

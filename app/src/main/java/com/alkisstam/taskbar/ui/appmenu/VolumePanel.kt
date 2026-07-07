@@ -41,9 +41,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 import com.alkisstam.taskbar.ui.theme.grain
 
@@ -62,9 +66,10 @@ fun VolumePanel(
     panelOutlineEnabled: Boolean = true,
     translucentMode: Boolean = false,
     translucentAlpha: Float = 0.80f,
+    surfaceTintColor: Long = 0L,
     modifier: Modifier = Modifier
 ) {
-    val surfaceColor = MaterialTheme.colorScheme.surface
+    val surfaceColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
     val glassBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
     Surface(
         modifier = modifier
@@ -75,7 +80,7 @@ fun VolumePanel(
         shape = RoundedCornerShape(20.dp),
         color = if (translucentMode) surfaceColor.copy(alpha = translucentAlpha) else surfaceColor,
         contentColor = MaterialTheme.colorScheme.onSurface,
-        tonalElevation = if (translucentMode) 0.dp else 3.dp
+        tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 3.dp
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
@@ -105,6 +110,8 @@ private fun VolumeSliderColumn(
     SideEffect { if (!isDragging) localCurrent = stream.current }
     val fraction = if (stream.max > 0) localCurrent.toFloat() / stream.max else 0f
     var dragAccumulator by remember(stream.streamType) { mutableFloatStateOf(0f) }
+    val haptic = LocalHapticFeedback.current
+    val hapticEnabled = LocalHapticEnabled.current
     val draggableState = rememberDraggableState { delta ->
         if (stream.max <= 0) return@rememberDraggableState
         val pxPerStep = trackHeightPx / stream.max
@@ -116,6 +123,7 @@ private fun VolumeSliderColumn(
             if (newVal != localCurrent) {
                 localCurrent = newVal
                 onVolumeChange(newVal)
+                if (hapticEnabled) haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
             }
         }
     }
@@ -179,6 +187,7 @@ fun BrightnessPanel(
     panelOutlineEnabled: Boolean = true,
     translucentMode: Boolean = false,
     translucentAlpha: Float = 0.80f,
+    surfaceTintColor: Long = 0L,
     modifier: Modifier = Modifier
 ) {
     val maxBrightness = 255
@@ -188,6 +197,9 @@ fun BrightnessPanel(
     SideEffect { if (!isDragging) localCurrent = brightnessLevel }
     val fraction = localCurrent.toFloat() / maxBrightness
     var dragAccumulator by remember { mutableFloatStateOf(0f) }
+    val haptic = LocalHapticFeedback.current
+    val hapticEnabled = LocalHapticEnabled.current
+    val hapticStepCount = 24
     val draggableState = rememberDraggableState { delta ->
         val pxPerStep = trackWidthPx / maxBrightness
         dragAccumulator += delta
@@ -196,13 +208,18 @@ fun BrightnessPanel(
             dragAccumulator -= steps * pxPerStep
             val newVal = (localCurrent + steps).coerceIn(1, maxBrightness)
             if (newVal != localCurrent) {
+                val oldHapticStep = localCurrent * hapticStepCount / maxBrightness
+                val newHapticStep = newVal * hapticStepCount / maxBrightness
                 localCurrent = newVal
                 onBrightnessChange(newVal)
+                if (hapticEnabled && newHapticStep != oldHapticStep) {
+                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                }
             }
         }
     }
 
-    val surfaceColor2 = MaterialTheme.colorScheme.surface
+    val surfaceColor2 = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
     val glassBorderColor2 = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
     Surface(
         modifier = modifier
@@ -211,7 +228,7 @@ fun BrightnessPanel(
         shape = RoundedCornerShape(20.dp),
         color = if (translucentMode) surfaceColor2.copy(alpha = translucentAlpha) else surfaceColor2,
         contentColor = MaterialTheme.colorScheme.onSurface,
-        tonalElevation = if (translucentMode) 0.dp else 3.dp
+        tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 3.dp
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),

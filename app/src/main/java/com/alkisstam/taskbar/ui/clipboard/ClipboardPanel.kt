@@ -15,10 +15,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -55,6 +58,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -64,9 +68,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.ClipItem
@@ -113,6 +121,8 @@ fun ClipboardPanel(
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val coroutineScope = rememberCoroutineScope()
     var selectedCategory by remember { mutableStateOf(ClipCategory.ALL) }
+    val density = LocalDensity.current
+    var tabBarHeight by remember { mutableStateOf(0.dp) }
 
     val panelShape = RoundedCornerShape(24.dp)
     val panelColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
@@ -201,14 +211,16 @@ fun ClipboardPanel(
                                 onToggleFavorite = viewModel::toggleNoteFavorite,
                                 onDelete = viewModel::removeNote,
                                 onEdit = viewModel::updateNote,
-                                onOpenExternal = onOpenExternal
+                                onOpenExternal = onOpenExternal,
+                                tabBarHeight = tabBarHeight
                             )
                             3 -> ToDoTab(
                                 todoItems = todoItems,
                                 onAdd = viewModel::addTodo,
                                 onToggleDone = viewModel::toggleTodoDone,
                                 onDelete = viewModel::removeTodo,
-                                onEdit = viewModel::updateTodo
+                                onEdit = viewModel::updateTodo,
+                                tabBarHeight = tabBarHeight
                             )
                         }
                     }
@@ -216,6 +228,9 @@ fun ClipboardPanel(
 
                 Surface(
                     modifier = Modifier
+                        .onGloballyPositioned { coordinates ->
+                            tabBarHeight = with(density) { coordinates.size.height.toDp() }
+                        }
                         .fillMaxWidth()
                         .padding(bottom = 16.dp, start = 16.dp, end = 16.dp),
                     shape = RoundedCornerShape(40.dp),
@@ -237,17 +252,19 @@ fun ClipboardPanel(
                             ) {
                                 if (selected) {
                                     Surface(
-                                        modifier = Modifier.clickable(
-                                            indication = null,
-                                            interactionSource = remember { MutableInteractionSource() }
-                                        ) { coroutineScope.launch { pagerState.animateScrollToPage(index) } },
+                                        modifier = Modifier
+                                            .size(width = 72.dp, height = 56.dp)
+                                            .clickable(
+                                                indication = null,
+                                                interactionSource = remember { MutableInteractionSource() }
+                                            ) { coroutineScope.launch { pagerState.animateScrollToPage(index) } },
                                         shape = RoundedCornerShape(20.dp),
                                         color = MaterialTheme.colorScheme.primaryContainer
                                     ) {
                                         Column(
-                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
+                                            modifier = Modifier.fillMaxSize(),
                                             horizontalAlignment = Alignment.CenterHorizontally,
-                                            verticalArrangement = Arrangement.spacedBy(2.dp)
+                                            verticalArrangement = Arrangement.Center
                                         ) {
                                             Icon(
                                                 tabIcons[index],
@@ -498,11 +515,15 @@ private fun NotesTab(
     onToggleFavorite: (NoteItem) -> Unit,
     onDelete: (String) -> Unit,
     onEdit: (NoteItem) -> Unit,
-    onOpenExternal: () -> Unit
+    onOpenExternal: () -> Unit,
+    tabBarHeight: Dp = 0.dp
 ) {
     var composerVisible by remember { mutableStateOf(false) }
     var editingNote by remember { mutableStateOf<NoteItem?>(null) }
     val context = LocalContext.current
+    val density = LocalDensity.current
+    val imeHeight = with(density) { WindowInsets.ime.getBottom(density).toDp() }
+    val composerLift = (imeHeight - tabBarHeight).coerceAtLeast(0.dp)
 
     Box(modifier = Modifier.fillMaxSize()) {
         if (noteItems.isEmpty() && !composerVisible && editingNote == null) {
@@ -530,14 +551,6 @@ private fun NotesTab(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                if (editingNote == null && composerVisible) {
-                    item("composer") {
-                        NoteComposer(
-                            onSave = { text -> onAdd(text); composerVisible = false },
-                            onCancel = { composerVisible = false }
-                        )
-                    }
-                }
                 items(noteItems, key = { it.id }) { note ->
                     if (note.id == editingNote?.id) {
                         NoteComposer(
@@ -578,21 +591,39 @@ private fun NotesTab(
             }
         }
 
-        FloatingActionButton(
-            onClick = {
-                editingNote = null
-                composerVisible = !composerVisible
-            },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp),
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ) {
-            Icon(
-                if (composerVisible || editingNote != null) Icons.Default.Edit else Icons.Default.Add,
-                contentDescription = if (composerVisible || editingNote != null) "Cancel" else "New note",
-                tint = MaterialTheme.colorScheme.onPrimaryContainer
-            )
+        if (editingNote == null && composerVisible) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .offset(y = -composerLift)
+            ) {
+                NoteComposer(
+                    autoFocus = true,
+                    onSave = { text -> onAdd(text); composerVisible = false },
+                    onCancel = { composerVisible = false }
+                )
+            }
+        }
+
+        if (!composerVisible) {
+            FloatingActionButton(
+                onClick = {
+                    editingNote = null
+                    composerVisible = true
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp),
+                containerColor = MaterialTheme.colorScheme.primaryContainer
+            ) {
+                Icon(
+                    if (editingNote != null) Icons.Default.Edit else Icons.Default.Add,
+                    contentDescription = if (editingNote != null) "Cancel" else "New note",
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
         }
     }
 }
@@ -603,10 +634,14 @@ private fun ToDoTab(
     onAdd: (String) -> Unit,
     onToggleDone: (TodoItem) -> Unit,
     onDelete: (String) -> Unit,
-    onEdit: (TodoItem) -> Unit
+    onEdit: (TodoItem) -> Unit,
+    tabBarHeight: Dp = 0.dp
 ) {
     var composerVisible by remember { mutableStateOf(false) }
     var editingTodo by remember { mutableStateOf<TodoItem?>(null) }
+    val density = LocalDensity.current
+    val imeHeight = with(density) { WindowInsets.ime.getBottom(density).toDp() }
+    val composerLift = (imeHeight - tabBarHeight).coerceAtLeast(0.dp)
 
     val open = todoItems.filter { !it.isDone }.sortedByDescending { it.timestamp }
     val completed = todoItems.filter { it.isDone }.sortedByDescending { it.timestamp }
@@ -637,15 +672,6 @@ private fun ToDoTab(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                if (editingTodo == null && composerVisible) {
-                    item("composer") {
-                        NoteComposer(
-                            placeholder = "Add a to-do…",
-                            onSave = { text -> onAdd(text); composerVisible = false },
-                            onCancel = { composerVisible = false }
-                        )
-                    }
-                }
                 items(open, key = { it.id }) { todo ->
                     TodoListItem(
                         todo = todo,
@@ -681,21 +707,40 @@ private fun ToDoTab(
             }
         }
 
-        FloatingActionButton(
-            onClick = {
-                editingTodo = null
-                composerVisible = !composerVisible
-            },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp),
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ) {
-            Icon(
-                if (composerVisible || editingTodo != null) Icons.Default.Edit else Icons.Default.Add,
-                contentDescription = if (composerVisible || editingTodo != null) "Cancel" else "New to-do",
-                tint = MaterialTheme.colorScheme.onPrimaryContainer
-            )
+        if (editingTodo == null && composerVisible) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .offset(y = -composerLift)
+            ) {
+                NoteComposer(
+                    placeholder = "Add a to-do…",
+                    autoFocus = true,
+                    onSave = { text -> onAdd(text); composerVisible = false },
+                    onCancel = { composerVisible = false }
+                )
+            }
+        }
+
+        if (!composerVisible) {
+            FloatingActionButton(
+                onClick = {
+                    editingTodo = null
+                    composerVisible = true
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp),
+                containerColor = MaterialTheme.colorScheme.primaryContainer
+            ) {
+                Icon(
+                    if (editingTodo != null) Icons.Default.Edit else Icons.Default.Add,
+                    contentDescription = if (editingTodo != null) "Cancel" else "New to-do",
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
         }
     }
 }
@@ -731,10 +776,20 @@ private fun TodoListItem(
 private fun NoteComposer(
     initialText: String = "",
     placeholder: String = "Write a note…",
+    autoFocus: Boolean = false,
     onSave: (String) -> Unit,
     onCancel: () -> Unit
 ) {
     var text by remember(initialText) { mutableStateOf(initialText) }
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    if (autoFocus) {
+        LaunchedEffect(Unit) {
+            focusRequester.requestFocus()
+            keyboardController?.show()
+        }
+    }
 
     Surface(
         shape = RoundedCornerShape(12.dp),
@@ -744,7 +799,7 @@ private fun NoteComposer(
             OutlinedTextField(
                 value = text,
                 onValueChange = { text = it },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
                 placeholder = { Text(placeholder) },
                 shape = RoundedCornerShape(8.dp),
                 minLines = 3

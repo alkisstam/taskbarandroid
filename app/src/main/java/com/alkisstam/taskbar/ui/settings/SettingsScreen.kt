@@ -103,7 +103,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -757,6 +759,8 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
             SettingsCard(title = "App Grid") {
                 var localColumns by remember(appGridColumns) { androidx.compose.runtime.mutableFloatStateOf(appGridColumns.toFloat()) }
                 var localRows by remember(appGridRows) { androidx.compose.runtime.mutableFloatStateOf(appGridRows.toFloat()) }
+                val haptic = LocalHapticFeedback.current
+                val hapticEnabled = LocalHapticEnabled.current
                 Column {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -767,7 +771,12 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
                     }
                     Slider(
                         value = localColumns,
-                        onValueChange = { localColumns = it },
+                        onValueChange = { newValue ->
+                            if (hapticEnabled && newValue != localColumns) {
+                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            }
+                            localColumns = newValue
+                        },
                         onValueChangeFinished = { viewModel.setAppGridColumns(localColumns.toInt()) },
                         valueRange = 3f..6f,
                         steps = 2,
@@ -783,7 +792,12 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
                     }
                     Slider(
                         value = localRows,
-                        onValueChange = { localRows = it },
+                        onValueChange = { newValue ->
+                            if (hapticEnabled && newValue != localRows) {
+                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            }
+                            localRows = newValue
+                        },
                         onValueChangeFinished = { viewModel.setAppGridRows(localRows.toInt()) },
                         valueRange = 3f..6f,
                         steps = 2,

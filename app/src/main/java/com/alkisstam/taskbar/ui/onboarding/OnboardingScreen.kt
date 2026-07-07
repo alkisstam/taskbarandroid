@@ -96,16 +96,16 @@ fun OnboardingScreen(
                     )
                     2 -> RequiredPermissionPage(
                         hasOverlayPermission = hasOverlayPermission,
-                        hasAccessibilityPermission = hasAccessibilityPermission,
-                        onRequestOverlayPermission = onRequestOverlayPermission,
-                        onRequestAccessibilityPermission = onRequestAccessibilityPermission
+                        onRequestOverlayPermission = onRequestOverlayPermission
                     )
                     else -> OptionalPermissionsPage(
+                        hasAccessibilityPermission = hasAccessibilityPermission,
                         hasWriteSettingsPermission = hasWriteSettingsPermission,
                         hasNotificationPolicyPermission = hasNotificationPolicyPermission,
                         hasNotificationsPermission = hasNotificationsPermission,
                         hasNotificationListenerPermission = hasNotificationListenerPermission,
                         hasBatteryOptimizationExcluded = hasBatteryOptimizationExcluded,
+                        onRequestAccessibilityPermission = onRequestAccessibilityPermission,
                         onRequestWriteSettingsPermission = onRequestWriteSettingsPermission,
                         onRequestNotificationPolicyPermission = onRequestNotificationPolicyPermission,
                         onRequestNotificationsPermission = onRequestNotificationsPermission,
@@ -196,6 +196,40 @@ private fun HandlePositionPage(
     selectedPosition: PillEdgePosition,
     onPositionSelected: (PillEdgePosition) -> Unit
 ) {
+    var showBottomPositionDialog by remember { mutableStateOf(false) }
+
+    if (showBottomPositionDialog) {
+        AlertDialog(
+            onDismissRequest = { showBottomPositionDialog = false },
+            title = {
+                Text(
+                    "Bottom Position",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            },
+            text = {
+                Text(
+                    "Placing the handle on the bottom requires the Accessibility Service permission to draw it on top of the system navigation bar. Without that permission, the handle may end up behind the navigation bar.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            dismissButton = {
+                TextButton(onClick = { showBottomPositionDialog = false }) {
+                    Text("BACK")
+                }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    showBottomPositionDialog = false
+                    onPositionSelected(PillEdgePosition.BOTTOM)
+                }) {
+                    Text("OKAY")
+                }
+            }
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -232,16 +266,20 @@ private fun HandlePositionPage(
                 PillEdgePosition.BOTTOM to "Bottom"
             ).forEach { (pos, label) ->
                 val isSelected = selectedPosition == pos
+                val onClick = {
+                    if (pos == PillEdgePosition.BOTTOM) showBottomPositionDialog = true
+                    else onPositionSelected(pos)
+                }
                 if (isSelected) {
                     Button(
-                        onClick = { onPositionSelected(pos) },
+                        onClick = onClick,
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(label.uppercase(), style = MaterialTheme.typography.labelLarge)
                     }
                 } else {
                     OutlinedButton(
-                        onClick = { onPositionSelected(pos) },
+                        onClick = onClick,
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(label.uppercase(), style = MaterialTheme.typography.labelLarge)
@@ -332,44 +370,8 @@ private fun PhoneWithDockGraphic() {
 @Composable
 private fun RequiredPermissionPage(
     hasOverlayPermission: Boolean,
-    hasAccessibilityPermission: Boolean,
-    onRequestOverlayPermission: () -> Unit,
-    onRequestAccessibilityPermission: () -> Unit
+    onRequestOverlayPermission: () -> Unit
 ) {
-    var showAccessibilityDialog by remember { mutableStateOf(false) }
-
-    if (showAccessibilityDialog) {
-        AlertDialog(
-            onDismissRequest = { showAccessibilityDialog = false },
-            title = {
-                Text(
-                    "Accessibility Service",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            },
-            text = {
-                Text(
-                    "Required to draw the dock above the navigation bar and enable screenshots and lock screen controls.",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            },
-            dismissButton = {
-                TextButton(onClick = { showAccessibilityDialog = false }) {
-                    Text("Cancel")
-                }
-            },
-            confirmButton = {
-                Button(onClick = {
-                    showAccessibilityDialog = false
-                    onRequestAccessibilityPermission()
-                }) {
-                    Text("Accept")
-                }
-            }
-        )
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -382,13 +384,13 @@ private fun RequiredPermissionPage(
         Spacer(modifier = Modifier.height(40.dp))
 
         Text(
-            text = "Two permissions required",
+            text = "One permission required",
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = "These two permissions are needed for the dock to work. Without them, nothing will function.",
+            text = "This permission is needed for the dock to work. Without it, nothing will function.",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -407,23 +409,6 @@ private fun RequiredPermissionPage(
             description = "Required to display the dock above all other apps.",
             granted = hasOverlayPermission,
             onGrant = onRequestOverlayPermission
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        PermissionCard(
-            icon = {
-                Icon(
-                    Icons.Filled.Accessibility,
-                    contentDescription = null,
-                    modifier = Modifier.size(28.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            },
-            title = "Accessibility Service",
-            description = "Required to draw the dock above the navigation bar and enable screenshots and lock screen controls.",
-            granted = hasAccessibilityPermission,
-            onGrant = { showAccessibilityDialog = true }
         )
     }
 }
@@ -496,17 +481,86 @@ private fun ThreePillPositionsGraphic() {
 
 @Composable
 private fun OptionalPermissionsPage(
+    hasAccessibilityPermission: Boolean,
     hasWriteSettingsPermission: Boolean,
     hasNotificationPolicyPermission: Boolean,
     hasNotificationsPermission: Boolean,
     hasNotificationListenerPermission: Boolean,
     hasBatteryOptimizationExcluded: Boolean,
+    onRequestAccessibilityPermission: () -> Unit,
     onRequestWriteSettingsPermission: () -> Unit,
     onRequestNotificationPolicyPermission: () -> Unit,
     onRequestNotificationsPermission: () -> Unit,
     onRequestNotificationListenerPermission: () -> Unit,
     onRequestBatteryOptimizationExclusion: () -> Unit
 ) {
+    var showAccessibilityDialog by remember { mutableStateOf(false) }
+    var showBatteryDialog by remember { mutableStateOf(false) }
+
+    if (showAccessibilityDialog) {
+        AlertDialog(
+            onDismissRequest = { showAccessibilityDialog = false },
+            title = {
+                Text(
+                    "Accessibility Service",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            },
+            text = {
+                Text(
+                    "Required to draw the dock above the navigation bar and enable screenshots and lock screen controls.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            dismissButton = {
+                TextButton(onClick = { showAccessibilityDialog = false }) {
+                    Text("Cancel")
+                }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    showAccessibilityDialog = false
+                    onRequestAccessibilityPermission()
+                }) {
+                    Text("Accept")
+                }
+            }
+        )
+    }
+
+    if (showBatteryDialog) {
+        AlertDialog(
+            onDismissRequest = { showBatteryDialog = false },
+            title = {
+                Text(
+                    "Disable Battery Optimization",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            },
+            text = {
+                Text(
+                    "Some devices keep optimizing background activity for this app even after you grant this. If the dock stops working in the background, you may need to exclude it from battery optimization manually in your phone's system settings.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            dismissButton = {
+                TextButton(onClick = { showBatteryDialog = false }) {
+                    Text("Cancel")
+                }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    showBatteryDialog = false
+                    onRequestBatteryOptimizationExclusion()
+                }) {
+                    Text("Accept")
+                }
+            }
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -528,6 +582,21 @@ private fun OptionalPermissionsPage(
         )
 
         Spacer(modifier = Modifier.height(8.dp))
+
+        PermissionCard(
+            icon = {
+                Icon(
+                    Icons.Filled.Accessibility,
+                    contentDescription = null,
+                    modifier = Modifier.size(28.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            },
+            title = "Accessibility Service",
+            description = "Required to draw the dock above the navigation bar and enable screenshots and lock screen controls.",
+            granted = hasAccessibilityPermission,
+            onGrant = { showAccessibilityDialog = true }
+        )
 
         PermissionCard(
             icon = {
@@ -601,7 +670,7 @@ private fun OptionalPermissionsPage(
             title = "Disable Battery Optimization",
             description = "Prevents the system from killing the dock when running in the background.",
             granted = hasBatteryOptimizationExcluded,
-            onGrant = onRequestBatteryOptimizationExclusion
+            onGrant = { showBatteryDialog = true }
         )
 
         Spacer(modifier = Modifier.height(8.dp))

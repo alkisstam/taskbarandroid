@@ -99,10 +99,11 @@ internal fun Context.searchLayoutParams(focusable: Boolean = false): WindowManag
     }
 }
 
-internal fun Context.volumePanelLayoutParams(yOffsetDp: Float, translucentMode: Boolean = false): WindowManager.LayoutParams {
+internal fun Context.volumePanelLayoutParams(yOffsetDp: Float, translucentMode: Boolean = false, active: Boolean = true): WindowManager.LayoutParams {
     val flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
+            (if (!active) WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE else 0)
     val density = resources.displayMetrics.density
     return WindowManager.LayoutParams(
         WindowManager.LayoutParams.WRAP_CONTENT,
@@ -151,11 +152,12 @@ internal fun Context.volumeScrimLayoutParams(active: Boolean = false): WindowMan
     }
 }
 
-internal fun Context.musicPanelLayoutParams(yOffsetDp: Float, translucentMode: Boolean = false): WindowManager.LayoutParams {
+internal fun Context.musicPanelLayoutParams(yOffsetDp: Float, translucentMode: Boolean = false, active: Boolean = true): WindowManager.LayoutParams {
     val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
             WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
+            (if (!active) WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE else 0)
     val density = resources.displayMetrics.density
     return WindowManager.LayoutParams(
         WindowManager.LayoutParams.MATCH_PARENT,

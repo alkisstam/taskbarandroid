@@ -198,6 +198,7 @@ fun CalculatorPanel(
     panelOutlineEnabled: Boolean = true,
     translucentMode: Boolean = false,
     translucentAlpha: Float = 0.80f,
+    surfaceTintColor: Long = 0L,
     cornerRadiusDp: Float = 16f,
     dockWidthFraction: Float = 0.98f,
     modifier: Modifier = Modifier
@@ -205,7 +206,7 @@ fun CalculatorPanel(
     var state by remember { mutableStateOf(CalculatorState()) }
     var sciExpanded by rememberSaveable { mutableStateOf(false) }
 
-    val surfaceColor = MaterialTheme.colorScheme.surface
+    val surfaceColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
     val glassBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
     val cornerShape = RoundedCornerShape(cornerRadiusDp.dp)
 
@@ -213,7 +214,7 @@ fun CalculatorPanel(
         shape = cornerShape,
         color = if (translucentMode) surfaceColor.copy(alpha = translucentAlpha) else surfaceColor,
         contentColor = MaterialTheme.colorScheme.onSurface,
-        tonalElevation = if (translucentMode) 0.dp else 3.dp,
+        tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 3.dp,
         shadowElevation = 8.dp,
         modifier = modifier
             .fillMaxWidth(dockWidthFraction)

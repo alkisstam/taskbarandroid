@@ -377,10 +377,17 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private fun observeTaskbarInteractivity() {
         serviceScope.launch {
-            taskbarViewModel.isTaskbarVisible.collect { interactive ->
-                isTaskbarVisibleForBack = interactive
-                setTaskbarFlags(interactive = interactive)
-            }
+            kotlinx.coroutines.flow.combine(
+                taskbarViewModel.isTaskbarVisible,
+                appMenuViewModel.menuVisible
+            ) { taskbarVisible, menuOpen -> taskbarVisible to menuOpen }
+                .collect { (taskbarVisible, menuOpen) ->
+                    isTaskbarVisibleForBack = taskbarVisible
+                    // The dock window must stop intercepting touches while the app menu is
+                    // open, otherwise taps meant for the menu's dismiss-scrim (in overlayView,
+                    // stacked above it) never reach it and the menu can only be closed via back.
+                    setTaskbarFlags(interactive = taskbarVisible && !menuOpen)
+                }
         }
     }
 
@@ -479,11 +486,11 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 translucentModeEnabled = enabled
                 val yOffset = volumePanelYOffsetDp
                 volumePanelView?.let { view ->
-                    try { windowManager.updateViewLayoutKeepingType(view, volumePanelLayoutParams(yOffset, translucentModeEnabled)) }
+                    try { windowManager.updateViewLayoutKeepingType(view, volumePanelLayoutParams(yOffset, translucentModeEnabled, active = appMenuViewModel.volumePanelVisible.value)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update volume panel blur", e) }
                 }
                 brightnessPanelView?.let { view ->
-                    try { windowManager.updateViewLayoutKeepingType(view, volumePanelLayoutParams(yOffset, translucentModeEnabled)) }
+                    try { windowManager.updateViewLayoutKeepingType(view, volumePanelLayoutParams(yOffset, translucentModeEnabled, active = appMenuViewModel.brightnessPanelVisible.value)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update brightness panel blur", e) }
                 }
                 musicPanelView?.let { view ->
@@ -493,7 +500,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 calculatorPanelView?.let { view ->
                     val settings = taskbarViewModel.taskbarSettings.value
                     val yOffset = settings.dockPadding.bottomGapDp + settings.heightDp + 16f + 24f
-                    try { windowManager.updateViewLayoutKeepingType(view, musicPanelLayoutParams(yOffset, translucentModeEnabled)) }
+                    try { windowManager.updateViewLayoutKeepingType(view, musicPanelLayoutParams(yOffset, translucentModeEnabled, active = appMenuViewModel.calculatorPanelVisible.value)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update calculator panel blur", e) }
                 }
             }
@@ -518,23 +525,20 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 volumeScrimView?.visibility = if (scrimActive) View.VISIBLE else View.GONE
 
                 volumePanelView?.visibility = if (volumeVisible) View.VISIBLE else View.GONE
-                if (volumeVisible) {
-                    val view = volumePanelView ?: return@collect
-                    try { windowManager.updateViewLayoutKeepingType(view, volumePanelLayoutParams(yOffset, translucentModeEnabled)) }
+                volumePanelView?.let { view ->
+                    try { windowManager.updateViewLayoutKeepingType(view, volumePanelLayoutParams(yOffset, translucentModeEnabled, active = volumeVisible)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update volume panel position", e) }
                 }
 
                 brightnessPanelView?.visibility = if (brightnessVisible) View.VISIBLE else View.GONE
-                if (brightnessVisible) {
-                    val view = brightnessPanelView ?: return@collect
-                    try { windowManager.updateViewLayoutKeepingType(view, volumePanelLayoutParams(yOffset, translucentModeEnabled)) }
+                brightnessPanelView?.let { view ->
+                    try { windowManager.updateViewLayoutKeepingType(view, volumePanelLayoutParams(yOffset, translucentModeEnabled, active = brightnessVisible)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update brightness panel position", e) }
                 }
 
                 calculatorPanelView?.visibility = if (calculatorVisible) View.VISIBLE else View.GONE
-                if (calculatorVisible) {
-                    val view = calculatorPanelView ?: return@collect
-                    try { windowManager.updateViewLayoutKeepingType(view, musicPanelLayoutParams(yOffset, translucentModeEnabled)) }
+                calculatorPanelView?.let { view ->
+                    try { windowManager.updateViewLayoutKeepingType(view, musicPanelLayoutParams(yOffset, translucentModeEnabled, active = calculatorVisible)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update calculator panel position", e) }
                 }
             }
@@ -772,7 +776,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             }
             composeView.visibility = View.GONE
             volumePanelView = composeView
-            windowManager.addView(composeView, volumePanelLayoutParams(volumePanelYOffsetDp, translucentModeEnabled))
+            windowManager.addView(composeView, volumePanelLayoutParams(volumePanelYOffsetDp, translucentModeEnabled, active = false))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add volume panel view", e)
             volumePanelView = null
@@ -800,7 +804,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             }
             composeView.visibility = View.GONE
             brightnessPanelView = composeView
-            windowManager.addView(composeView, volumePanelLayoutParams(yOffset, translucentModeEnabled))
+            windowManager.addView(composeView, volumePanelLayoutParams(yOffset, translucentModeEnabled, active = false))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add brightness panel view", e)
             brightnessPanelView = null
@@ -856,7 +860,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             }
             composeView.visibility = View.GONE
             calculatorPanelView = composeView
-            windowManager.addView(composeView, musicPanelLayoutParams(yOffset, translucentModeEnabled))
+            windowManager.addView(composeView, musicPanelLayoutParams(yOffset, translucentModeEnabled, active = false))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add calculator panel view", e)
             calculatorPanelView = null
