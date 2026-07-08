@@ -49,6 +49,7 @@ fun AppMenuPanel(
     val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
     val translucentMode by taskbarViewModel.translucentMode.collectAsState()
     val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
+    val grainAlpha by taskbarViewModel.grainAlpha.collectAsState()
     val appGridColumns by taskbarViewModel.appGridColumns.collectAsState()
     val appGridRows by taskbarViewModel.appGridRows.collectAsState()
     val panelColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
@@ -80,7 +81,7 @@ fun AppMenuPanel(
                     .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, RoundedCornerShape(20.dp)) else Modifier)
                     .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor, RoundedCornerShape(20.dp)) else Modifier)
                     .clip(RoundedCornerShape(20.dp))
-                    .grain(enabled = translucentMode),
+                    .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha),
                 shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 20.dp, bottomEnd = 20.dp),
                 color = if (translucentMode) panelColor.copy(alpha = translucentAlpha) else panelColor,
                 tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 4.dp,

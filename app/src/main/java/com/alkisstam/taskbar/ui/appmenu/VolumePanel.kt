@@ -66,6 +66,7 @@ fun VolumePanel(
     panelOutlineEnabled: Boolean = true,
     translucentMode: Boolean = false,
     translucentAlpha: Float = 0.80f,
+    grainAlpha: Float = 0.10f,
     surfaceTintColor: Long = 0L,
     modifier: Modifier = Modifier
 ) {
@@ -76,7 +77,7 @@ fun VolumePanel(
             .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, RoundedCornerShape(20.dp)) else Modifier)
             .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor, RoundedCornerShape(20.dp)) else Modifier)
             .clip(RoundedCornerShape(20.dp))
-            .grain(enabled = translucentMode),
+            .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha),
         shape = RoundedCornerShape(20.dp),
         color = if (translucentMode) surfaceColor.copy(alpha = translucentAlpha) else surfaceColor,
         contentColor = MaterialTheme.colorScheme.onSurface,
@@ -187,6 +188,7 @@ fun BrightnessPanel(
     panelOutlineEnabled: Boolean = true,
     translucentMode: Boolean = false,
     translucentAlpha: Float = 0.80f,
+    grainAlpha: Float = 0.10f,
     surfaceTintColor: Long = 0L,
     modifier: Modifier = Modifier
 ) {
@@ -224,7 +226,9 @@ fun BrightnessPanel(
     Surface(
         modifier = modifier
             .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, RoundedCornerShape(20.dp)) else Modifier)
-            .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor2, RoundedCornerShape(20.dp)) else Modifier),
+            .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor2, RoundedCornerShape(20.dp)) else Modifier)
+            .clip(RoundedCornerShape(20.dp))
+            .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha),
         shape = RoundedCornerShape(20.dp),
         color = if (translucentMode) surfaceColor2.copy(alpha = translucentAlpha) else surfaceColor2,
         contentColor = MaterialTheme.colorScheme.onSurface,

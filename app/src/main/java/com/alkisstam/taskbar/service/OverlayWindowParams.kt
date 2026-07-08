@@ -2,6 +2,7 @@ package com.alkisstam.taskbar.service
 
 import android.content.Context
 import android.graphics.PixelFormat
+import android.os.Build
 import android.view.Gravity
 import android.view.WindowManager
 import com.alkisstam.taskbar.data.PillEdgePosition
@@ -12,6 +13,14 @@ internal fun overlayWindowType() =
         WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
     else
         WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+
+private fun Context.applyBlurBehind(params: WindowManager.LayoutParams, blur: Boolean) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return
+    if (blur && getSystemService(WindowManager::class.java)?.isCrossWindowBlurEnabled == true) {
+        params.flags = params.flags or WindowManager.LayoutParams.FLAG_BLUR_BEHIND
+        params.blurBehindRadius = (24 * resources.displayMetrics.density).toInt()
+    }
+}
 
 internal fun Context.overlayLayoutParams(interactive: Boolean = true, focusable: Boolean = false): WindowManager.LayoutParams {
     val flags = (if (!focusable) WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE else 0) or
@@ -82,7 +91,7 @@ private fun Context.sidePositionOffsetPx(settings: PillSettings, density: Float)
     return (settings.sidePositionPct / 100f * availableH).toInt()
 }
 
-internal fun Context.searchLayoutParams(focusable: Boolean = false): WindowManager.LayoutParams {
+internal fun Context.searchLayoutParams(focusable: Boolean = false, blurBehind: Boolean = false): WindowManager.LayoutParams {
     val flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
@@ -96,6 +105,7 @@ internal fun Context.searchLayoutParams(focusable: Boolean = false): WindowManag
         PixelFormat.TRANSLUCENT
     ).apply {
         gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+        applyBlurBehind(this, blurBehind)
     }
 }
 

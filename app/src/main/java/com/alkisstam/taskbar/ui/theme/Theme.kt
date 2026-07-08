@@ -61,7 +61,7 @@ fun TaskBarTheme(
 fun Modifier.grain(enabled: Boolean = true, alpha: Float = 0.10f): Modifier {
     if (!enabled) return this
     return composed {
-        val noiseBitmap: ImageBitmap = remember {
+        val noiseBitmap: ImageBitmap = remember(alpha) {
             val tileSize = 128
             val bmp = android.graphics.Bitmap.createBitmap(tileSize, tileSize, android.graphics.Bitmap.Config.ARGB_8888)
             val pixels = IntArray(tileSize * tileSize)

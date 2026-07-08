@@ -8,11 +8,13 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,18 +24,18 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.AlertDialog
@@ -43,6 +45,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderState
 import androidx.compose.material3.Switch
@@ -52,12 +55,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -83,6 +89,7 @@ fun PillSettingsScreen(
     val panelOutlineEnabled by viewModel.panelOutlineEnabled.collectAsState()
     val translucentMode by viewModel.translucentMode.collectAsState()
     val translucentAlpha by viewModel.translucentAlpha.collectAsState()
+    val grainAlpha by viewModel.grainAlpha.collectAsState()
     val configuration = LocalConfiguration.current
     val widthMax = configuration.screenWidthDp.toFloat()
     val heightMax = (configuration.screenHeightDp / 2).toFloat()
@@ -90,6 +97,7 @@ fun PillSettingsScreen(
     var pillExpanded by remember { mutableStateOf(false) }
     var dockExpanded by remember { mutableStateOf(false) }
     var themeExpanded by remember { mutableStateOf(false) }
+    var showStyleDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -106,19 +114,35 @@ fun PillSettingsScreen(
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 FilterChip(
                     selected = themeMode == ThemeMode.LIGHT,
-                    onClick = { viewModel.setThemeMode(ThemeMode.LIGHT) },
+                    onClick = {
+                        viewModel.setThemeMode(ThemeMode.LIGHT)
+                        if (surfaceTintColor != 0L && DARK_TINT_PRESETS.any { it.second == surfaceTintColor }) {
+                            viewModel.setSurfaceTintColor(0L)
+                        }
+                    },
                     label = { Text("Light") },
                     leadingIcon = { Icon(Icons.Filled.LightMode, contentDescription = null) }
                 )
                 FilterChip(
                     selected = themeMode == ThemeMode.DARK,
-                    onClick = { viewModel.setThemeMode(ThemeMode.DARK) },
+                    onClick = {
+                        viewModel.setThemeMode(ThemeMode.DARK)
+                        if (surfaceTintColor != 0L && LIGHT_TINT_PRESETS.any { it.second == surfaceTintColor }) {
+                            viewModel.setSurfaceTintColor(0L)
+                        }
+                    },
                     label = { Text("Dark") },
                     leadingIcon = { Icon(Icons.Filled.DarkMode, contentDescription = null) }
                 )
                 FilterChip(
                     selected = themeMode == ThemeMode.SYSTEM,
-                    onClick = { viewModel.setThemeMode(ThemeMode.SYSTEM) },
+                    onClick = {
+                        viewModel.setThemeMode(ThemeMode.SYSTEM)
+                        if (surfaceTintColor != 0L &&
+                            (LIGHT_TINT_PRESETS + DARK_TINT_PRESETS).any { it.second == surfaceTintColor }) {
+                            viewModel.setSurfaceTintColor(0L)
+                        }
+                    },
                     label = { Text("System") },
                     leadingIcon = { Icon(Icons.Filled.PhoneAndroid, contentDescription = null) }
                 )
@@ -126,10 +150,46 @@ fun PillSettingsScreen(
             Spacer(modifier = Modifier.height(12.dp))
             SurfaceTintColorPicker(
                 currentColor = surfaceTintColor,
+                themeMode = themeMode,
                 onColorSelected = { viewModel.setSurfaceTintColor(it) }
             )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text("Theme Style", style = MaterialTheme.typography.bodyMedium)
+            Spacer(modifier = Modifier.height(8.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(28.dp))
+                    .background(
+                        Brush.horizontalGradient(
+                            listOf(
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.colorScheme.tertiary
+                            )
+                        )
+                    )
+                    .clickable { showStyleDialog = true }
+                    .padding(vertical = 14.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        Icons.Filled.Palette,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                    Text(
+                        if (translucentMode) "Transparent" else "Solid",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+            }
             if (!translucentMode) {
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -141,27 +201,7 @@ fun PillSettingsScreen(
                         onCheckedChange = { viewModel.setPanelOutlineEnabled(it) }
                     )
                 }
-            }
-            Spacer(modifier = Modifier.height(4.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text("Translucent panels", style = MaterialTheme.typography.bodyLarge)
-                    Text(
-                        "Semi-transparent dock and panels",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                Switch(
-                    checked = translucentMode,
-                    onCheckedChange = { viewModel.setTranslucentMode(it) }
-                )
-            }
-            if (translucentMode) {
+            } else {
                 Spacer(modifier = Modifier.height(8.dp))
                 SettingsSlider(
                     label = "Transparency",
@@ -171,7 +211,26 @@ fun PillSettingsScreen(
                     displayTransform = { "${(it * 100).toInt()}%" },
                     onValueChange = { viewModel.setTranslucentAlpha(it) }
                 )
+                SettingsSlider(
+                    label = "Grain",
+                    value = grainAlpha,
+                    valueRange = 0f..0.3f,
+                    unit = "%",
+                    displayTransform = { "${(it * 100).toInt()}%" },
+                    onValueChange = { viewModel.setGrainAlpha(it) }
+                )
             }
+        }
+
+        if (showStyleDialog) {
+            ThemeStyleDialog(
+                translucentMode = translucentMode,
+                onSelect = { transparent ->
+                    viewModel.setTranslucentMode(transparent)
+                    showStyleDialog = false
+                },
+                onDismiss = { showStyleDialog = false }
+            )
         }
 
         ExpandableSection(
@@ -656,26 +715,51 @@ private fun SettingsSlider(
     }
 }
 
-private val SURFACE_TINT_PRESETS: List<Pair<String, Long>> = listOf(
-    "Default" to 0L,
-    "Black" to 0xFF1A1A2E,
-    "Navy" to 0xFF16213E,
-    "Deep Purple" to 0xFF2D1B69,
-    "Slate" to 0xFF2D3748,
-    "Charcoal" to 0xFF36454F,
+private val LIGHT_TINT_PRESETS: List<Pair<String, Long>> = listOf(
+    "Auto" to 0L,
     "Cream" to 0xFFFFF8E7,
     "Sand" to 0xFFFFF3E0,
     "Blush" to 0xFFFFE4E1,
     "Sky" to 0xFFE3F2FD,
-    "Mint" to 0xFFE8F5E9
+    "Mint" to 0xFFE8F5E9,
+    "Lavender" to 0xFFF3E5F5,
+    "Pearl" to 0xFFECEFF1
+)
+
+private val DARK_TINT_PRESETS: List<Pair<String, Long>> = listOf(
+    "Auto" to 0L,
+    "Midnight" to 0xFF1A1A2E,
+    "Navy" to 0xFF16213E,
+    "Deep Purple" to 0xFF2D1B69,
+    "Slate" to 0xFF2D3748,
+    "Charcoal" to 0xFF36454F,
+    "Forest" to 0xFF1B3A2F,
+    "Espresso" to 0xFF2C221B
 )
 
 @Composable
 private fun SurfaceTintColorPicker(
     currentColor: Long,
+    themeMode: ThemeMode,
     onColorSelected: (Long) -> Unit
 ) {
     var showCustomPicker by remember { mutableStateOf(false) }
+    val darkTheme = when (themeMode) {
+        ThemeMode.DARK -> true
+        ThemeMode.LIGHT -> false
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+    }
+    var selectedTab by remember {
+        mutableIntStateOf(
+            if (currentColor != 0L && DARK_TINT_PRESETS.any { it.second == currentColor }) 1
+            else if (currentColor == 0L && darkTheme) 1
+            else 0
+        )
+    }
+    val presets = if (selectedTab == 0) LIGHT_TINT_PRESETS else DARK_TINT_PRESETS
+    val isCustomSelected = currentColor != 0L &&
+        LIGHT_TINT_PRESETS.none { it.second == currentColor } &&
+        DARK_TINT_PRESETS.none { it.second == currentColor }
 
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text("Surface Tint Color", style = MaterialTheme.typography.bodyMedium)
@@ -684,70 +768,40 @@ private fun SurfaceTintColorPicker(
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+            TintTab("Light", selectedTab == 0) { selectedTab = 0 }
+            TintTab("Dark", selectedTab == 1) { selectedTab = 1 }
+        }
         Spacer(modifier = Modifier.height(4.dp))
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.Top
-        ) {
-            items(SURFACE_TINT_PRESETS) { (label, colorValue) ->
-                val isSelected = currentColor == colorValue
-                val displayColor = if (colorValue == 0L)
-                    MaterialTheme.colorScheme.surface
-                else
-                    Color(colorValue)
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(36.dp)
-                            .background(displayColor, CircleShape)
-                            .then(
-                                if (isSelected) Modifier.border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                                else Modifier
+        val cells: List<Pair<String, Long>?> = presets + null
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            cells.chunked(3).forEach { rowCells ->
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    rowCells.forEach { cell ->
+                        if (cell == null) {
+                            TintCell(
+                                label = "Custom",
+                                swatchColor = if (isCustomSelected) Color(currentColor)
+                                              else MaterialTheme.colorScheme.surface,
+                                isSelected = isCustomSelected,
+                                showPlus = !isCustomSelected,
+                                onClick = { showCustomPicker = true }
                             )
-                            .clickable { onColorSelected(colorValue) }
-                    )
-                    Text(
-                        label,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = if (isSelected) MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-            item {
-                val isCustomSelected = SURFACE_TINT_PRESETS.none { it.second == currentColor }
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(36.dp)
-                            .background(
-                                if (isCustomSelected) Color(currentColor) else MaterialTheme.colorScheme.surfaceVariant,
-                                CircleShape
+                        } else {
+                            val (label, colorValue) = cell
+                            TintCell(
+                                label = label,
+                                swatchColor = when {
+                                    colorValue != 0L -> Color(colorValue)
+                                    selectedTab == 0 -> Color.White
+                                    else -> Color(0xFF121212)
+                                },
+                                isSelected = currentColor == colorValue,
+                                onClick = { onColorSelected(colorValue) }
                             )
-                            .then(
-                                if (isCustomSelected) Modifier.border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                                else Modifier
-                            )
-                            .clickable { showCustomPicker = true },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (!isCustomSelected) {
-                            Text("+", style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
-                    Text(
-                        "Custom",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = if (isCustomSelected) MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
                 }
             }
         }
@@ -755,14 +809,162 @@ private fun SurfaceTintColorPicker(
 
     if (showCustomPicker) {
         CustomColorPickerDialog(
-            initialColor = if (SURFACE_TINT_PRESETS.none { it.second == currentColor } && currentColor != 0L)
-                currentColor else 0xFF808080L,
+            initialColor = if (isCustomSelected) currentColor else 0xFF808080L,
             onDismiss = { showCustomPicker = false },
             onConfirm = { color ->
                 onColorSelected(color)
                 showCustomPicker = false
             }
         )
+    }
+}
+
+@Composable
+private fun TintTab(label: String, selected: Boolean, onClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 4.dp, vertical = 4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            label,
+            style = MaterialTheme.typography.titleSmall,
+            color = if (selected) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.height(3.dp))
+        Box(
+            modifier = Modifier
+                .width(32.dp)
+                .height(2.dp)
+                .background(
+                    if (selected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                    CircleShape
+                )
+        )
+    }
+}
+
+@Composable
+private fun RowScope.TintCell(
+    label: String,
+    swatchColor: Color,
+    isSelected: Boolean,
+    showPlus: Boolean = false,
+    onClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .weight(1f)
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .clickable(onClick = onClick)
+            .padding(vertical = 12.dp, horizontal = 4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Box {
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(swatchColor, CircleShape)
+                    .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                if (showPlus) {
+                    Text(
+                        "+",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+            if (isSelected) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .size(16.dp)
+                        .background(MaterialTheme.colorScheme.primary, CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        Icons.Filled.Check,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(11.dp)
+                    )
+                }
+            }
+        }
+        Text(
+            label,
+            style = MaterialTheme.typography.labelSmall,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            color = if (isSelected) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
+private fun ThemeStyleDialog(
+    translucentMode: Boolean,
+    onSelect: (Boolean) -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Theme Style") },
+        text = {
+            Column {
+                ThemeStyleOption(
+                    label = "Solid",
+                    description = "Opaque dock and panels",
+                    selected = !translucentMode,
+                    onClick = { onSelect(false) }
+                )
+                ThemeStyleOption(
+                    label = "Transparent",
+                    description = "Semi-transparent dock and panels",
+                    selected = translucentMode,
+                    onClick = { onSelect(true) }
+                )
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Cancel") }
+        }
+    )
+}
+
+@Composable
+private fun ThemeStyleOption(
+    label: String,
+    description: String,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .clickable(onClick = onClick)
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RadioButton(selected = selected, onClick = onClick)
+        Column {
+            Text(label, style = MaterialTheme.typography.bodyLarge)
+            Text(
+                description,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }
 

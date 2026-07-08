@@ -137,6 +137,7 @@ class PreferencesRepository @Inject constructor(
         private val PILL_RESTRICT_TRIGGER_KEY = booleanPreferencesKey("pill_restrict_trigger")
         private val TRANSLUCENT_MODE_KEY = booleanPreferencesKey("translucent_mode")
         private val TRANSLUCENT_ALPHA_KEY = floatPreferencesKey("translucent_alpha")
+        private val GRAIN_ALPHA_KEY = floatPreferencesKey("grain_alpha")
         private val FUZZY_SEARCH_ENABLED_KEY = booleanPreferencesKey("fuzzy_search_enabled")
         private val SHOW_RECENT_APPS_KEY = booleanPreferencesKey("show_recent_apps")
         private val RECENT_OPENED_APPS_KEY = stringPreferencesKey("recent_opened_apps")
@@ -483,6 +484,16 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
+    val grainAlpha: Flow<Float> = safeData.map { prefs ->
+        prefs[GRAIN_ALPHA_KEY] ?: 0.10f
+    }
+
+    suspend fun setGrainAlpha(value: Float) {
+        context.dataStore.edit { prefs ->
+            prefs[GRAIN_ALPHA_KEY] = value
+        }
+    }
+
     val appGridColumns: Flow<Int> = safeData.map { prefs ->
         prefs[APP_GRID_COLUMNS_KEY] ?: 4
     }
@@ -543,6 +554,7 @@ class PreferencesRepository @Inject constructor(
             prefs[SHOW_RECENT_APPS_KEY]?.let { put("show_recent_apps", it) }
             prefs[TRANSLUCENT_MODE_KEY]?.let { put("translucent_mode", it) }
             prefs[TRANSLUCENT_ALPHA_KEY]?.let { put("translucent_alpha", it) }
+            prefs[GRAIN_ALPHA_KEY]?.let { put("grain_alpha", it) }
         }.toString()
     }
 
@@ -586,6 +598,7 @@ class PreferencesRepository @Inject constructor(
             if (obj.has("show_recent_apps")) prefs[SHOW_RECENT_APPS_KEY] = obj.getBoolean("show_recent_apps")
             if (obj.has("translucent_mode")) prefs[TRANSLUCENT_MODE_KEY] = obj.getBoolean("translucent_mode")
             if (obj.has("translucent_alpha")) prefs[TRANSLUCENT_ALPHA_KEY] = obj.getDouble("translucent_alpha").toFloat()
+            if (obj.has("grain_alpha")) prefs[GRAIN_ALPHA_KEY] = obj.getDouble("grain_alpha").toFloat()
         }
     }
 

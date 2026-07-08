@@ -198,6 +198,7 @@ fun CalculatorPanel(
     panelOutlineEnabled: Boolean = true,
     translucentMode: Boolean = false,
     translucentAlpha: Float = 0.80f,
+    grainAlpha: Float = 0.10f,
     surfaceTintColor: Long = 0L,
     cornerRadiusDp: Float = 16f,
     dockWidthFraction: Float = 0.98f,
@@ -221,7 +222,7 @@ fun CalculatorPanel(
             .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, cornerShape) else Modifier)
             .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor, cornerShape) else Modifier)
             .clip(cornerShape)
-            .grain(enabled = translucentMode)
+            .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
     ) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
             Text(

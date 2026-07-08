@@ -342,7 +342,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private fun setSearchFlags(active: Boolean) {
         val view = searchView ?: return
-        try { windowManager.updateViewLayoutKeepingType(view, searchLayoutParams(focusable = active)) }
+        try { windowManager.updateViewLayoutKeepingType(view, searchLayoutParams(focusable = active, blurBehind = translucentModeEnabled && active)) }
         catch (e: Exception) { Log.w(TAG, "Failed to update search layout flags", e) }
     }
 
@@ -504,6 +504,16 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     val yOffset = settings.dockPadding.bottomGapDp + settings.heightDp + 16f + 24f
                     try { windowManager.updateViewLayoutKeepingType(view, musicPanelLayoutParams(yOffset, translucentModeEnabled, active = appMenuViewModel.calculatorPanelVisible.value)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update calculator panel blur", e) }
+                }
+                clipboardPanelView?.let { view ->
+                    val visible = appMenuViewModel.clipboardPanelVisible.value
+                    try { windowManager.updateViewLayoutKeepingType(view, searchLayoutParams(focusable = visible, blurBehind = enabled && visible)) }
+                    catch (e: Exception) { Log.w(TAG, "Failed to update clipboard panel blur", e) }
+                }
+                searchView?.let { view ->
+                    val searching = appMenuViewModel.isSearching.value
+                    try { windowManager.updateViewLayoutKeepingType(view, searchLayoutParams(focusable = searching, blurBehind = enabled && searching)) }
+                    catch (e: Exception) { Log.w(TAG, "Failed to update search blur", e) }
                 }
             }
         }
@@ -728,7 +738,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             wrapper.addView(composeView)
             wrapper.visibility = if (appMenuViewModel.isSearching.value) View.VISIBLE else View.GONE
             searchView = wrapper
-            windowManager.addView(wrapper, searchLayoutParams(focusable = appMenuViewModel.isSearching.value))
+            val searching = appMenuViewModel.isSearching.value
+            windowManager.addView(wrapper, searchLayoutParams(focusable = searching, blurBehind = translucentModeEnabled && searching))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add search view", e)
             searchView = null
@@ -916,7 +927,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             appMenuViewModel.clipboardPanelVisible.collect { visible ->
                 clipboardPanelView?.visibility = if (visible) View.VISIBLE else View.GONE
                 val view = clipboardPanelView ?: return@collect
-                try { windowManager.updateViewLayoutKeepingType(view, searchLayoutParams(focusable = visible)) }
+                try { windowManager.updateViewLayoutKeepingType(view, searchLayoutParams(focusable = visible, blurBehind = translucentModeEnabled && visible)) }
                 catch (e: Exception) { Log.w(TAG, "Failed to update clipboard panel flags", e) }
             }
         }

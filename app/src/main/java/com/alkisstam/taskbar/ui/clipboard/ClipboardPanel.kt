@@ -107,6 +107,7 @@ fun ClipboardPanel(
     panelOutlineEnabled: Boolean = false,
     translucentMode: Boolean = false,
     translucentAlpha: Float = 0.80f,
+    grainAlpha: Float = 0.10f,
     surfaceTintColor: Long = 0L,
     dockBottomPadding: Dp = 0.dp
 ) {
@@ -147,7 +148,7 @@ fun ClipboardPanel(
                 .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, panelShape) else Modifier)
                 .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor, panelShape) else Modifier)
                 .clip(panelShape)
-                .grain(enabled = translucentMode),
+                .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha),
             shape = panelShape,
             color = if (translucentMode) panelColor.copy(alpha = translucentAlpha) else panelColor,
             tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 2.dp,

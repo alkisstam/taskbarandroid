@@ -188,6 +188,7 @@ internal fun SearchOverlayContent(
     val themeMode by taskbarViewModel.themeMode.collectAsState()
     val translucentMode by taskbarViewModel.translucentMode.collectAsState()
     val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
+    val grainAlpha by taskbarViewModel.grainAlpha.collectAsState()
     val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
     TaskBarTheme(themeMode = themeMode) {
         FloatingSearchBar(
@@ -195,6 +196,7 @@ internal fun SearchOverlayContent(
             onHideTaskbar = onHideTaskbar,
             translucentMode = translucentMode,
             translucentAlpha = translucentAlpha,
+            grainAlpha = grainAlpha,
             surfaceTintColor = surfaceTintColor
         )
     }
@@ -210,6 +212,7 @@ internal fun VolumePanelContent(
     val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
     val translucentMode by taskbarViewModel.translucentMode.collectAsState()
     val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
+    val grainAlpha by taskbarViewModel.grainAlpha.collectAsState()
     val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
     TaskBarTheme(themeMode = themeMode) {
         VolumePanel(
@@ -220,6 +223,7 @@ internal fun VolumePanelContent(
             panelOutlineEnabled = panelOutlineEnabled,
             translucentMode = translucentMode,
             translucentAlpha = translucentAlpha,
+            grainAlpha = grainAlpha,
             surfaceTintColor = surfaceTintColor
         )
     }
@@ -236,6 +240,7 @@ internal fun BrightnessPanelContent(
     val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
     val translucentMode by taskbarViewModel.translucentMode.collectAsState()
     val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
+    val grainAlpha by taskbarViewModel.grainAlpha.collectAsState()
     val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
     TaskBarTheme(themeMode = themeMode) {
         BrightnessPanel(
@@ -246,6 +251,7 @@ internal fun BrightnessPanelContent(
             panelOutlineEnabled = panelOutlineEnabled,
             translucentMode = translucentMode,
             translucentAlpha = translucentAlpha,
+            grainAlpha = grainAlpha,
             surfaceTintColor = surfaceTintColor
         )
     }
@@ -261,6 +267,7 @@ internal fun ClipboardPanelContent(
     val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
     val translucentMode by taskbarViewModel.translucentMode.collectAsState()
     val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
+    val grainAlpha by taskbarViewModel.grainAlpha.collectAsState()
     val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
     val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
@@ -282,6 +289,7 @@ internal fun ClipboardPanelContent(
             panelOutlineEnabled = panelOutlineEnabled,
             translucentMode = translucentMode,
             translucentAlpha = translucentAlpha,
+            grainAlpha = grainAlpha,
             surfaceTintColor = surfaceTintColor,
             dockBottomPadding = dockBottomPadding
         )
@@ -321,6 +329,7 @@ internal fun MusicPanelContent(
     val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
     val translucentMode by taskbarViewModel.translucentMode.collectAsState()
     val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
+    val grainAlpha by taskbarViewModel.grainAlpha.collectAsState()
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
 
     TaskBarTheme(themeMode = themeMode) {
@@ -334,6 +343,7 @@ internal fun MusicPanelContent(
                     panelOutlineEnabled = panelOutlineEnabled,
                     translucentMode = translucentMode,
                     translucentAlpha = translucentAlpha,
+                    grainAlpha = grainAlpha,
                     cornerRadiusDp = taskbarSettings.cornerRadiusDp,
                     dockWidthFraction = taskbarSettings.dockPadding.widthFraction,
                     onArtworkClick = {
@@ -364,6 +374,7 @@ internal fun CalculatorPanelContent(
     val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
     val translucentMode by taskbarViewModel.translucentMode.collectAsState()
     val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
+    val grainAlpha by taskbarViewModel.grainAlpha.collectAsState()
     val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
     TaskBarTheme(themeMode = themeMode) {
@@ -372,6 +383,7 @@ internal fun CalculatorPanelContent(
                 panelOutlineEnabled = panelOutlineEnabled,
                 translucentMode = translucentMode,
                 translucentAlpha = translucentAlpha,
+                grainAlpha = grainAlpha,
                 surfaceTintColor = surfaceTintColor,
                 cornerRadiusDp = taskbarSettings.cornerRadiusDp,
                 dockWidthFraction = taskbarSettings.dockPadding.widthFraction

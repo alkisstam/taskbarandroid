@@ -112,6 +112,7 @@ fun TaskbarView(
     val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
     val translucentMode by taskbarViewModel.translucentMode.collectAsState()
     val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
+    val grainAlpha by taskbarViewModel.grainAlpha.collectAsState()
 
     Box(
         modifier = modifier.fillMaxWidth(),
@@ -125,7 +126,7 @@ fun TaskbarView(
                 .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, dockCornerShape) else Modifier)
                 .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor, dockCornerShape) else Modifier)
                 .clip(dockCornerShape)
-                .grain(enabled = translucentMode)
+                .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
                 .pointerInput(isDockExpanded, taskbarSettings.heightDp) {
                     val maxDragPx = with(density) { taskbarSettings.heightDp.dp.toPx() }
                     var totalDragY = 0f
