@@ -4,6 +4,19 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.4.3] - 2026-07-08
+
+Design update — the Theme section in Design has been redesigned.
+
+### Added
+- **Light and Dark color preset tabs** — surface tint presets are now grouped into Light and Dark tabs, each a 3×3 grid of swatch cards with a check badge on the active one. Two new presets per side: Lavender and Pearl (light), Forest and Espresso (dark).
+- **Auto preset** — the first cell in each tab. It follows your theme: switch between Light, Dark, or System and the dock and panels adapt automatically. Picking a Light/Dark/System theme mode also resets a mismatched preset (e.g. a dark preset while switching to Light) back to Auto; custom colors are always kept.
+- **Theme Style** — a new button under the color presets opens a Solid / Transparent chooser, replacing the old "Translucent panels" toggle. Solid shows the Panel Outline toggle; Transparent shows the Transparency and Grain sliders.
+- **Grain slider** — control the film-grain texture on transparent surfaces from 0% (off) to 30%; previously fixed at 10%. Grain now also covers the Brightness panel and the search bar, which were missing it.
+- **Frosted backdrop for Clipboard and Search** — with Transparent style on Android 12+, the screen behind the Clipboard panel and the app search blurs while they're open (respects the system's cross-window blur setting; falls back to the regular translucent look where unavailable).
+
+---
+
 ## [1.4.2] - 2026-07-08
 
 Stability release — a full crash/ANR audit of the app, with every finding fixed.

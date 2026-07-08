@@ -109,6 +109,17 @@ val whatsNewReleases = listOf(
             "Backup now includes Translucent Mode and Transparency",
             "Lower memory use from app icons"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.4.3",
+        versionCode = 47,
+        highlights = listOf(
+            "Theme section redesigned — Light and Dark color presets in swatch grids, with four new colors",
+            "New Auto preset follows your Light/Dark/System theme automatically",
+            "New Theme Style chooser — Solid or Transparent, replacing the Translucent toggle",
+            "New Grain slider (0–30%) for transparent surfaces; grain now also covers Brightness and Search",
+            "Frosted blur behind the Clipboard panel and app search on Android 12+ when Transparent is on"
+        )
     )
 )
 
