@@ -120,6 +120,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private var volumeScrimView: View? = null
     private var musicPanelView: View? = null
     private var clipboardPanelView: View? = null
+    private var clipboardBlurView: View? = null
     private var calculatorPanelView: View? = null
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var observersStarted = false
@@ -295,6 +296,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
         hiddenForLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE && taskbarViewModel.autoHideInLandscape.value
+        addClipboardBlurView()
         addTaskbarView()
         addOverlayView()
         addPillView()
@@ -505,10 +507,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     try { windowManager.updateViewLayoutKeepingType(view, musicPanelLayoutParams(yOffset, translucentModeEnabled, active = appMenuViewModel.calculatorPanelVisible.value)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update calculator panel blur", e) }
                 }
-                clipboardPanelView?.let { view ->
+                clipboardBlurView?.let { blur ->
                     val visible = appMenuViewModel.clipboardPanelVisible.value
-                    try { windowManager.updateViewLayoutKeepingType(view, searchLayoutParams(focusable = visible, blurBehind = enabled && visible)) }
-                    catch (e: Exception) { Log.w(TAG, "Failed to update clipboard panel blur", e) }
+                    try { windowManager.updateViewLayoutKeepingType(blur, clipboardBlurLayoutParams(blurBehind = enabled && visible)) }
+                    catch (e: Exception) { Log.w(TAG, "Failed to update clipboard blur", e) }
                 }
                 searchView?.let { view ->
                     val searching = appMenuViewModel.isSearching.value
@@ -880,6 +882,23 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         }
     }
 
+    // Transparent, non-touchable window kept below the dock in z-order. FLAG_BLUR_BEHIND frosts
+    // everything behind (wallpaper/apps) but not windows above it, so the dock and pill stay crisp
+    // while the clipboard panel's translucent surface still samples the frosted backdrop.
+    private fun addClipboardBlurView() {
+        if (clipboardBlurView?.isAttachedToWindow == true) return
+        clipboardBlurView?.let { removeViewFromAnyWM(it) }
+        clipboardBlurView = null
+        try {
+            val view = View(this)
+            clipboardBlurView = view
+            windowManager.addView(view, clipboardBlurLayoutParams(blurBehind = false))
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to add clipboard blur view", e)
+            clipboardBlurView = null
+        }
+    }
+
     private fun addClipboardPanelView() {
         if (clipboardPanelView?.isAttachedToWindow == true) return
         clipboardPanelView?.let { removeViewFromAnyWM(it) }
@@ -926,9 +945,14 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         serviceScope.launch {
             appMenuViewModel.clipboardPanelVisible.collect { visible ->
                 clipboardPanelView?.visibility = if (visible) View.VISIBLE else View.GONE
-                val view = clipboardPanelView ?: return@collect
-                try { windowManager.updateViewLayoutKeepingType(view, searchLayoutParams(focusable = visible, blurBehind = translucentModeEnabled && visible)) }
-                catch (e: Exception) { Log.w(TAG, "Failed to update clipboard panel flags", e) }
+                clipboardPanelView?.let { view ->
+                    try { windowManager.updateViewLayoutKeepingType(view, searchLayoutParams(focusable = visible)) }
+                    catch (e: Exception) { Log.w(TAG, "Failed to update clipboard panel flags", e) }
+                }
+                clipboardBlurView?.let { blur ->
+                    try { windowManager.updateViewLayoutKeepingType(blur, clipboardBlurLayoutParams(blurBehind = translucentModeEnabled && visible)) }
+                    catch (e: Exception) { Log.w(TAG, "Failed to update clipboard blur", e) }
+                }
             }
         }
     }
@@ -948,12 +972,14 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         volumeScrimView?.let { removeViewFromAnyWM(it) }; volumeScrimView = null
         musicPanelView?.let { removeViewFromAnyWM(it) }; musicPanelView = null
         clipboardPanelView?.let { removeViewFromAnyWM(it) }; clipboardPanelView = null
+        clipboardBlurView?.let { removeViewFromAnyWM(it) }; clipboardBlurView = null
         calculatorPanelView?.let { removeViewFromAnyWM(it) }; calculatorPanelView = null
     }
 
     private fun refreshAllViews() {
         if (!observersStarted) return
         removeOverlayView()
+        addClipboardBlurView()
         addTaskbarView()
         addOverlayView()
         addPillView()

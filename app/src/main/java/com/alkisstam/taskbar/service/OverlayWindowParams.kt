@@ -109,6 +109,24 @@ internal fun Context.searchLayoutParams(focusable: Boolean = false, blurBehind: 
     }
 }
 
+internal fun Context.clipboardBlurLayoutParams(blurBehind: Boolean = false): WindowManager.LayoutParams {
+    val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+    return WindowManager.LayoutParams(
+        WindowManager.LayoutParams.MATCH_PARENT,
+        WindowManager.LayoutParams.MATCH_PARENT,
+        overlayWindowType(),
+        flags,
+        PixelFormat.TRANSLUCENT
+    ).apply {
+        gravity = Gravity.TOP or Gravity.START
+        applyBlurBehind(this, blurBehind)
+    }
+}
+
 internal fun Context.volumePanelLayoutParams(yOffsetDp: Float, translucentMode: Boolean = false, active: Boolean = true): WindowManager.LayoutParams {
     val flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
