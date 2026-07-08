@@ -83,9 +83,12 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         get() = savedStateRegistryController.savedStateRegistry
 
     private lateinit var _windowManager: WindowManager
-    private var activeWM: WindowManager? = null
+    // Resolved live, not cached: overlayWindowType() also reads the a11y instance, and both
+    // that instance and this getter are only touched on the main thread, so a params/addView
+    // pair inside one handler message can never mix an a11y window type with the app WM
+    // (or vice versa). A cached WM set at onStartCommand could diverge and BadTokenException.
     private val windowManager: WindowManager
-        get() = activeWM ?: TaskBarAccessibilityService.instance?.accessibilityWindowManager ?: _windowManager
+        get() = TaskBarAccessibilityService.instance?.accessibilityWindowManager ?: _windowManager
 
     private fun removeViewFromAnyWM(view: View) {
         val wms = listOfNotNull(_windowManager, TaskBarAccessibilityService.instance?.accessibilityWindowManager)
@@ -190,7 +193,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     if (this@OverlayService::appMenuViewModel.isInitialized) dismissAll()
                 }
                 ACTION_ACCESSIBILITY_CHANGED -> {
-                    Handler(Looper.getMainLooper()).post { refreshAllViews() }
+                    handler.post { refreshAllViews() }
                 }
                 ACTION_CLIPBOARD_PANEL_SHOW -> {
                     if (this@OverlayService::appMenuViewModel.isInitialized)
@@ -292,7 +295,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
         hiddenForLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE && taskbarViewModel.autoHideInLandscape.value
-        activeWM = TaskBarAccessibilityService.instance?.accessibilityWindowManager ?: _windowManager
         addTaskbarView()
         addOverlayView()
         addPillView()
@@ -941,7 +943,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private fun refreshAllViews() {
         if (!observersStarted) return
         removeOverlayView()
-        activeWM = TaskBarAccessibilityService.instance?.accessibilityWindowManager ?: _windowManager
         addTaskbarView()
         addOverlayView()
         addPillView()
@@ -995,10 +996,16 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
         observersStarted = false
-        unregisterReceiver(lockscreenReceiver)
-        unregisterReceiver(batteryReceiver)
+        // A SCREEN_ON post queued just before destroy would otherwise run after this method
+        // and re-add windows that nothing ever removes (dead ViewModels, cancelled scope).
+        handler.removeCallbacksAndMessages(null)
+        try {
+            unregisterReceiver(lockscreenReceiver)
+            unregisterReceiver(batteryReceiver)
+        } catch (e: IllegalArgumentException) {
+            Log.w(TAG, "Receiver already unregistered", e)
+        }
         removeOverlayView()
-        activeWM = null
         serviceScope.cancel()
         _viewModelStore.clear()
         // AppRepository / QuickControlsRepository are @Singleton (process-scoped) and register

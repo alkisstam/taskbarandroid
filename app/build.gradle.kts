@@ -30,8 +30,8 @@ android {
         applicationId = "com.alkisstam.taskbar"
         minSdk = 26
         targetSdk = 35
-        versionCode = 45
-        versionName = "1.4.1"
+        versionCode = 46
+        versionName = "1.4.2"
         ndk {
             debugSymbolLevel = "FULL"
         }
@@ -100,4 +100,7 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
+    // Real org.json for unit tests: the android.jar stubs return defaults
+    // (isReturnDefaultValues), which would make JSON round-trip tests pass vacuously.
+    testImplementation("org.json:json:20240303")
 }

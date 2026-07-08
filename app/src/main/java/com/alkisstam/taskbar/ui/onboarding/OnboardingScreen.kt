@@ -541,7 +541,7 @@ private fun OptionalPermissionsPage(
             },
             text = {
                 Text(
-                    "Some devices keep optimizing background activity for this app even after you grant this. If the dock stops working in the background, you may need to exclude it from battery optimization manually in your phone's system settings.",
+                    "The next screen lists battery optimization for all apps. Find Floating Dock and choose \"Don't optimize\" so the system doesn't kill the dock in the background. Some devices may additionally require excluding it manually in system settings.",
                     style = MaterialTheme.typography.bodyMedium
                 )
             },
@@ -555,7 +555,7 @@ private fun OptionalPermissionsPage(
                     showBatteryDialog = false
                     onRequestBatteryOptimizationExclusion()
                 }) {
-                    Text("Accept")
+                    Text("Open Settings")
                 }
             }
         )

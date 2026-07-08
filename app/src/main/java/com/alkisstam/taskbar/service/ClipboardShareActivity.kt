@@ -62,7 +62,9 @@ class ClipboardShareActivity : ComponentActivity() {
 
         return when {
             mimeType == "text/plain" -> {
-                val text = intent.getStringExtra(Intent.EXTRA_TEXT)
+                // Inline text lives in the DataStore prefs blob; cap it so one giant share
+                // can't balloon the file every subsequent read has to load.
+                val text = intent.getStringExtra(Intent.EXTRA_TEXT)?.take(100_000)
                 if (text != null) {
                     val type = if (text.startsWith("http://") || text.startsWith("https://")) ClipType.URL else ClipType.TEXT
                     ClipItem(id = id, type = type, content = text, sourceApp = sourceApp, timestamp = timestamp)

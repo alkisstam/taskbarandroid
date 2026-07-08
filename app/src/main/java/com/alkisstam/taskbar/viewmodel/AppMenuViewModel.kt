@@ -18,6 +18,7 @@ import com.alkisstam.taskbar.data.QuickControlsChangeListener
 import com.alkisstam.taskbar.data.QuickControlsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -26,6 +27,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
 data class QuickControlItemData(
@@ -149,6 +152,7 @@ class AppMenuViewModel @Inject constructor(
     val brightnessLevel: StateFlow<Int> = _brightnessLevel.asStateFlow()
 
     private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    private val volumeMutex = Mutex()
     private var originalScreenTimeoutMs: Int = -1
 
     private val _volumeStreams = MutableStateFlow<List<VolumeStreamInfo>>(emptyList())
@@ -283,32 +287,38 @@ class AppMenuViewModel @Inject constructor(
     }
 
     fun setStreamVolume(streamType: Int, value: Int) {
-        try {
-            // Absolute setStreamVolume is blocked for the media stream on some OEM
-            // ROMs (e.g. ColorOS rejects it as "no setStreamVolume permission").
-            // Step toward the target with adjustStreamVolume — the same path the
-            // hardware volume keys use — which those ROMs do allow.
-            var guard = 0
-            while (guard < 400) {
-                val current = audioManager.getStreamVolume(streamType)
-                if (current == value) break
-                val dir = if (value > current) AudioManager.ADJUST_RAISE else AudioManager.ADJUST_LOWER
-                audioManager.adjustStreamVolume(streamType, dir, 0)
-                val next = audioManager.getStreamVolume(streamType)
-                if (next == current) break // no movement: blocked or at min/max
-                // stop once we reach or pass the target (OEM step size may exceed 1)
-                if ((dir == AudioManager.ADJUST_RAISE && next >= value) ||
-                    (dir == AudioManager.ADJUST_LOWER && next <= value)) break
-                guard++
+        // Off the main thread: a large jump means up to hundreds of synchronous binder
+        // calls. Mutex keeps rapid slider events from interleaving their adjust loops.
+        viewModelScope.launch(Dispatchers.Default) {
+            volumeMutex.withLock {
+                try {
+                    // Absolute setStreamVolume is blocked for the media stream on some OEM
+                    // ROMs (e.g. ColorOS rejects it as "no setStreamVolume permission").
+                    // Step toward the target with adjustStreamVolume — the same path the
+                    // hardware volume keys use — which those ROMs do allow.
+                    var guard = 0
+                    while (guard < 400) {
+                        val current = audioManager.getStreamVolume(streamType)
+                        if (current == value) break
+                        val dir = if (value > current) AudioManager.ADJUST_RAISE else AudioManager.ADJUST_LOWER
+                        audioManager.adjustStreamVolume(streamType, dir, 0)
+                        val next = audioManager.getStreamVolume(streamType)
+                        if (next == current) break // no movement: blocked or at min/max
+                        // stop once we reach or pass the target (OEM step size may exceed 1)
+                        if ((dir == AudioManager.ADJUST_RAISE && next >= value) ||
+                            (dir == AudioManager.ADJUST_LOWER && next <= value)) break
+                        guard++
+                    }
+                } catch (e: Exception) {
+                    Log.w(TAG, "Failed to set stream volume", e)
+                }
+                // Reflect the real resulting volume (may differ from target if the OEM
+                // steps coarsely) so the slider settles on the actual position.
+                val actual = audioManager.getStreamVolume(streamType)
+                _volumeStreams.value = _volumeStreams.value.map {
+                    if (it.streamType == streamType) it.copy(current = actual) else it
+                }
             }
-        } catch (e: Exception) {
-            Log.w(TAG, "Failed to set stream volume", e)
-        }
-        // Reflect the real resulting volume (may differ from target if the OEM
-        // steps coarsely) so the slider settles on the actual position.
-        val actual = audioManager.getStreamVolume(streamType)
-        _volumeStreams.value = _volumeStreams.value.map {
-            if (it.streamType == streamType) it.copy(current = actual) else it
         }
     }
 
@@ -330,6 +340,15 @@ class AppMenuViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             _musicPanelVisible.value = prefsRepository.musicPanelOpen.first()
+        }
+        viewModelScope.launch {
+            // Leftover value means the process died while caffeine was active; put the
+            // user's real screen timeout back.
+            val storedTimeout = prefsRepository.caffeineOriginalTimeout.first()
+            if (storedTimeout != null) {
+                if (quickControls.canWriteSettings()) quickControls.setScreenTimeout(storedTimeout)
+                prefsRepository.setCaffeineOriginalTimeout(null)
+            }
         }
         refreshQuickControls()
         quickControls.addChangeListener(quickControlsChangeListener)
@@ -523,6 +542,7 @@ class AppMenuViewModel @Inject constructor(
         when (current) {
             0 -> {
                 originalScreenTimeoutMs = quickControls.getScreenTimeout()
+                viewModelScope.launch { prefsRepository.setCaffeineOriginalTimeout(originalScreenTimeoutMs) }
                 quickControls.setScreenTimeout(3 * 60 * 1000)
                 _quickControlsState.value = _quickControlsState.value.copy(caffeineMinutes = 3)
             }
@@ -536,6 +556,7 @@ class AppMenuViewModel @Inject constructor(
             }
             else -> {
                 if (originalScreenTimeoutMs > 0) quickControls.setScreenTimeout(originalScreenTimeoutMs)
+                viewModelScope.launch { prefsRepository.setCaffeineOriginalTimeout(null) }
                 _quickControlsState.value = _quickControlsState.value.copy(caffeineMinutes = 0)
             }
         }
@@ -544,6 +565,7 @@ class AppMenuViewModel @Inject constructor(
     fun deactivateCaffeine() {
         if (_quickControlsState.value.caffeineMinutes == 0) return
         if (originalScreenTimeoutMs > 0) quickControls.setScreenTimeout(originalScreenTimeoutMs)
+        viewModelScope.launch { prefsRepository.setCaffeineOriginalTimeout(null) }
         _quickControlsState.value = _quickControlsState.value.copy(caffeineMinutes = 0)
     }
 }

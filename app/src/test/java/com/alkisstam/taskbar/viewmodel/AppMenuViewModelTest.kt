@@ -53,6 +53,7 @@ class AppMenuViewModelTest {
         prefsRepo = mockk<PreferencesRepository>(relaxed = true) {
             every { pinnedApps } returns flowOf(emptyList())
             every { musicPanelOpen } returns flowOf(false)
+            every { caffeineOriginalTimeout } returns flowOf(null)
         }
         quickControls = mockk<QuickControlsRepository>(relaxed = true) {
             every { getRingerMode() } returns AudioManager.RINGER_MODE_NORMAL

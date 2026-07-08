@@ -95,6 +95,20 @@ val whatsNewReleases = listOf(
             "Fixed the app menu getting stuck open when tapping its icon or tapping outside it",
             "Accessibility Service is now an optional permission — the dock works without it"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.4.2",
+        versionCode = 46,
+        highlights = listOf(
+            "Stability release — full crash audit, every finding fixed",
+            "Permission buttons no longer crash on devices missing a settings screen",
+            "Fixed Notification Access / Accessibility showing as not granted on some devices",
+            "Music Panel no longer crashes if the playing app closes at the wrong moment",
+            "Caffeine now restores your original screen timeout even after a restart",
+            "Clipboard panel scrolls smoothly — previews load in the background",
+            "Backup now includes Translucent Mode and Transparency",
+            "Lower memory use from app icons"
+        )
     )
 )
 

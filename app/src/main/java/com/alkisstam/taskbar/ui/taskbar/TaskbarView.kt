@@ -1,6 +1,5 @@
 package com.alkisstam.taskbar.ui.taskbar
 
-import android.view.Gravity
 import android.widget.Toast
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -91,14 +90,11 @@ fun TaskbarView(
 
     val noMediaMessage by appMenuViewModel.noMediaMessage.collectAsState()
     val context = LocalContext.current
+    // setGravity is a no-op for text toasts on API 30+, so positioning above the dock
+    // never worked on modern devices; default placement everywhere is at least consistent.
     LaunchedEffect(noMediaMessage) {
         noMediaMessage?.let {
-            val yOffsetDp = taskbarSettings.dockPadding.bottomGapDp + taskbarSettings.heightDp + 16f +
-                (if (isDockExpanded) taskbarSettings.heightDp + 25f else 24f)
-            val yOffsetPx = with(density) { yOffsetDp.dp.roundToPx() }
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).apply {
-                setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, yOffsetPx)
-            }.show()
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             appMenuViewModel.clearNoMediaMessage()
         }
     }

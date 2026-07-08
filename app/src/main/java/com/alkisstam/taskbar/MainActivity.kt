@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -127,6 +128,7 @@ class MainActivity : ComponentActivity() {
                             viewModel = taskbarViewModel,
                             hasOverlayPermission = hasOverlayPermission,
                             hasAccessibilityPermission = hasAccessibilityPermission,
+                            hasNotificationListenerPermission = hasNotificationListenerPermission,
                             onRequestOverlayPermission = ::requestOverlayPermission,
                             onRequestAccessibilityPermission = ::requestAccessibilityPermission
                         )
@@ -191,39 +193,44 @@ class MainActivity : ComponentActivity() {
         sendBroadcast(Intent(OverlayService.ACTION_SETTINGS_CLOSE).setPackage(packageName))
     }
 
+    private fun launchPermissionIntent(intent: Intent) {
+        try {
+            permissionLauncher.launch(intent)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Couldn't open settings", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun requestOverlayPermission() {
-        val intent = Intent(
+        launchPermissionIntent(Intent(
             Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
             Uri.parse("package:$packageName")
-        )
-        permissionLauncher.launch(intent)
+        ))
     }
 
     private fun requestAccessibilityPermission() {
-        permissionLauncher.launch(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+        launchPermissionIntent(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
     }
 
     private fun requestWriteSettingsPermission() {
-        val intent = Intent(
+        launchPermissionIntent(Intent(
             Settings.ACTION_MANAGE_WRITE_SETTINGS,
             Uri.parse("package:$packageName")
-        )
-        permissionLauncher.launch(intent)
+        ))
     }
 
     private fun requestNotificationPolicyPermission() {
-        val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
-        permissionLauncher.launch(intent)
+        launchPermissionIntent(Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS))
     }
 
     private fun getNotificationListenerPermission(): Boolean {
         val flat = Settings.Secure.getString(contentResolver, "enabled_notification_listeners") ?: return false
-        val cn = ComponentName(this, com.alkisstam.taskbar.service.MediaListenerService::class.java).flattenToString()
-        return flat.split(":").any { it == cn }
+        val cn = ComponentName(this, com.alkisstam.taskbar.service.MediaListenerService::class.java)
+        return flat.split(":").any { ComponentName.unflattenFromString(it.trim()) == cn }
     }
 
     private fun requestNotificationListenerPermission() {
-        permissionLauncher.launch(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+        launchPermissionIntent(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
     }
 
     private fun getAppVersionCode(): Int {
@@ -241,10 +248,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun requestBatteryOptimizationExclusion() {
-        val intent = Intent(
-            Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-            Uri.parse("package:$packageName")
-        )
-        permissionLauncher.launch(intent)
+        // The list screen instead of the direct-request dialog: the dialog needs
+        // REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, which Play policy restricts.
+        launchPermissionIntent(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
     }
 }

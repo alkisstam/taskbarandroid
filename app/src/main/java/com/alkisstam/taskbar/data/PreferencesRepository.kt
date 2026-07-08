@@ -140,18 +140,19 @@ class PreferencesRepository @Inject constructor(
         private val FUZZY_SEARCH_ENABLED_KEY = booleanPreferencesKey("fuzzy_search_enabled")
         private val SHOW_RECENT_APPS_KEY = booleanPreferencesKey("show_recent_apps")
         private val RECENT_OPENED_APPS_KEY = stringPreferencesKey("recent_opened_apps")
+        private val CAFFEINE_ORIGINAL_TIMEOUT_KEY = intPreferencesKey("caffeine_original_timeout")
 
         val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen", "caffeine", "clipboard", "calculator", "wifi", "bluetooth", "share")
 
-        private fun serializeStringList(list: List<String>): String = JSONArray(list).toString()
-        private fun deserializeStringList(stored: String): List<String> =
+        internal fun serializeStringList(list: List<String>): String = JSONArray(list).toString()
+        internal fun deserializeStringList(stored: String): List<String> =
             try { val a = JSONArray(stored); List(a.length()) { a.getString(it) } }
             catch (e: JSONException) { emptyList() }
 
-        private fun serializePinnedApps(packages: List<String>): String =
+        internal fun serializePinnedApps(packages: List<String>): String =
             JSONArray(packages).toString()
 
-        private fun deserializePinnedApps(stored: String): List<String> {
+        internal fun deserializePinnedApps(stored: String): List<String> {
             return try {
                 val arr = JSONArray(stored)
                 List(arr.length()) { arr.getString(it) }
@@ -439,6 +440,19 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
+    // Non-null only while caffeine is active; survives process death so the user's real
+    // screen timeout can be restored on the next start instead of staying forced.
+    val caffeineOriginalTimeout: Flow<Int?> = safeData.map { prefs ->
+        prefs[CAFFEINE_ORIGINAL_TIMEOUT_KEY]
+    }
+
+    suspend fun setCaffeineOriginalTimeout(ms: Int?) {
+        context.dataStore.edit { prefs ->
+            if (ms == null) prefs.remove(CAFFEINE_ORIGINAL_TIMEOUT_KEY)
+            else prefs[CAFFEINE_ORIGINAL_TIMEOUT_KEY] = ms
+        }
+    }
+
     val panelOutlineEnabled: Flow<Boolean> = safeData.map { prefs ->
         prefs[PANEL_OUTLINE_KEY] ?: false
     }
@@ -527,6 +541,8 @@ class PreferencesRepository @Inject constructor(
             prefs[PILL_RESTRICT_TRIGGER_KEY]?.let { put("pill_restrict_trigger", it) }
             prefs[FUZZY_SEARCH_ENABLED_KEY]?.let { put("fuzzy_search_enabled", it) }
             prefs[SHOW_RECENT_APPS_KEY]?.let { put("show_recent_apps", it) }
+            prefs[TRANSLUCENT_MODE_KEY]?.let { put("translucent_mode", it) }
+            prefs[TRANSLUCENT_ALPHA_KEY]?.let { put("translucent_alpha", it) }
         }.toString()
     }
 
@@ -568,14 +584,20 @@ class PreferencesRepository @Inject constructor(
             if (obj.has("pill_restrict_trigger")) prefs[PILL_RESTRICT_TRIGGER_KEY] = obj.getBoolean("pill_restrict_trigger")
             if (obj.has("fuzzy_search_enabled")) prefs[FUZZY_SEARCH_ENABLED_KEY] = obj.getBoolean("fuzzy_search_enabled")
             if (obj.has("show_recent_apps")) prefs[SHOW_RECENT_APPS_KEY] = obj.getBoolean("show_recent_apps")
+            if (obj.has("translucent_mode")) prefs[TRANSLUCENT_MODE_KEY] = obj.getBoolean("translucent_mode")
+            if (obj.has("translucent_alpha")) prefs[TRANSLUCENT_ALPHA_KEY] = obj.getDouble("translucent_alpha").toFloat()
         }
     }
 
     suspend fun resetAllSettings() {
         context.dataStore.edit { prefs ->
             val onboarding = prefs[ONBOARDING_COMPLETE_KEY]
+            // Clearing this while the service keeps running would leave the settings
+            // screen showing "stopped" under a live dock.
+            val overlayEnabled = prefs[OVERLAY_ENABLED_KEY]
             prefs.clear()
             if (onboarding == true) prefs[ONBOARDING_COMPLETE_KEY] = true
+            if (overlayEnabled == true) prefs[OVERLAY_ENABLED_KEY] = true
         }
     }
 

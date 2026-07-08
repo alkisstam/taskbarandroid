@@ -1,12 +1,12 @@
 package com.alkisstam.taskbar.viewmodel
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.database.ContentObserver
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
-import android.text.TextUtils
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -232,8 +232,8 @@ class TaskbarViewModel @Inject constructor(
             context.contentResolver,
             Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
         ) ?: return false
-        val componentName = "${context.packageName}/${TaskBarAccessibilityService::class.java.name}"
-        return flat.split(':').any { TextUtils.equals(it.trim(), componentName) }
+        val componentName = ComponentName(context, TaskBarAccessibilityService::class.java)
+        return flat.split(':').any { ComponentName.unflattenFromString(it.trim()) == componentName }
     }
 
     fun launchApp(packageName: String) {

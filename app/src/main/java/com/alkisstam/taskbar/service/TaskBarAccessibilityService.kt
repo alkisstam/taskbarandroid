@@ -74,17 +74,33 @@ class TaskBarAccessibilityService : AccessibilityService() {
         }
     }
 
-    private val launcherPackages: Set<String> by lazy {
-        val intent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
-        packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-            .map { it.activityInfo.packageName }
-            .toSet()
+    // Refreshed on a TTL instead of computed once: the default launcher can change while
+    // the service runs, and an early-boot query can come back empty — either way a stale
+    // set silently breaks dismiss-on-home for the rest of the service's life.
+    private var launcherPackages: Set<String> = emptySet()
+    private var launcherPackagesFetchedAt = 0L
+
+    private fun launcherPackages(): Set<String> {
+        val now = android.os.SystemClock.elapsedRealtime()
+        if (launcherPackages.isEmpty() || now - launcherPackagesFetchedAt > 60_000) {
+            launcherPackages = try {
+                val intent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
+                packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+                    .mapNotNull { it.activityInfo?.packageName }
+                    .toSet()
+            } catch (e: Exception) {
+                Log.w("TaskBarAccessibilityService", "Failed to query launcher packages", e)
+                emptySet()
+            }
+            launcherPackagesFetchedAt = now
+        }
+        return launcherPackages
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             val pkg = event.packageName?.toString() ?: return
-            if (pkg in launcherPackages) {
+            if (pkg in launcherPackages()) {
                 sendBroadcast(
                     Intent(OverlayService.ACTION_DISMISS_ALL).setPackage(packageName)
                 )

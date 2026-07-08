@@ -4,6 +4,29 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.4.2] - 2026-07-08
+
+Stability release — a full crash/ANR audit of the app, with every finding fixed.
+
+### Fixed
+- **Permission buttons crashed on some devices** — tapping a "Grant Permission" button in onboarding or Settings crashed the app on devices missing the corresponding system settings screen (seen with battery optimization and write-settings on some OEM builds). All permission requests now fail gracefully with a message instead.
+- **Ghost dock after unlocking** — stopping the dock right after unlocking the screen could leave untouchable dock windows stuck on screen until the app was force-closed.
+- **Music Panel could crash when the playing app closed** — reading the media session at the exact moment the music app died could crash the whole dock; it now just clears the panel. Also fixed a race in the session-retry logic that could leave stale playback state.
+- **"Permission not granted" loops on some OEMs** — Notification Access and Accessibility Service could show as not granted even after granting, because some devices store the setting in a shortened format. Affected onboarding, the Music Panel settings card, and the media listener itself.
+- **Caffeine could permanently change your screen timeout** — if the system killed the app while Caffeine was active, your original screen timeout was never restored. It's now saved and restored on the next start.
+- **Clipboard panel stuttered while scrolling** — image thumbnails and file previews were loaded on the UI thread; they now load in the background.
+- **Backup didn't include Translucent Mode and Transparency** — both are now exported and restored.
+- **Drag-to-reorder could snap back** — reordering pinned apps or active controls quickly could occasionally save a stale order; the order is now saved once, when you drop.
+- **Dock stopped dismissing on home press after switching launchers** — the list of launcher apps was only read once; it now refreshes periodically.
+
+### Changed
+- **Battery optimization step now opens the system list** — instead of the direct request dialog (restricted by Play policy), onboarding opens the battery optimization list; find Floating Dock and choose "Don't optimize".
+- **Shared files are capped at 50 MB and shared text at 100,000 characters** — prevents a mislabeled huge share from silently filling storage.
+- **Lower memory use** — app icons are now stored at a fixed size instead of whatever size the system provides (some themed icons were 1024px+).
+- **Reset Settings no longer shows the dock as stopped while it's still running.**
+
+---
+
 ## [1.4.1] - 2026-07-07
 
 ### Added

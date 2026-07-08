@@ -47,7 +47,10 @@ class MediaRepository @Inject constructor(
     private var listenerComponentName: ComponentName? = null
     private var activeController: MediaController? = null
     private var refreshRetryCount = 0
-    private val repoScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    // Main dispatcher: activeController/refreshRetryCount are also mutated by the
+    // session-manager and controller callbacks, which run on the main looper. Keeping
+    // the retry path on the same thread avoids racing those mutations.
+    private val repoScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     private val sessionsChangedListener =
         MediaSessionManager.OnActiveSessionsChangedListener { controllers ->
@@ -134,16 +137,20 @@ class MediaRepository @Inject constructor(
     }
 
     private fun bindController(controllers: List<MediaController>?) {
-        val preferred = controllers?.firstOrNull {
-            it.playbackState?.state == PlaybackState.STATE_PLAYING
-        } ?: controllers?.firstOrNull()
+        try {
+            val preferred = controllers?.firstOrNull {
+                it.playbackState?.state == PlaybackState.STATE_PLAYING
+            } ?: controllers?.firstOrNull()
 
-        if (preferred?.sessionToken != activeController?.sessionToken) {
-            activeController?.unregisterCallback(controllerCallback)
-            activeController = preferred
-            preferred?.registerCallback(controllerCallback)
+            if (preferred?.sessionToken != activeController?.sessionToken) {
+                activeController?.unregisterCallback(controllerCallback)
+                activeController = preferred
+                preferred?.registerCallback(controllerCallback)
+            }
+            updateState(preferred)
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to bind media controller", e)
         }
-        updateState(preferred)
     }
 
     private fun updateState(controller: MediaController?) {
@@ -151,20 +158,27 @@ class MediaRepository @Inject constructor(
             _mediaState.value = MediaState()
             return
         }
-        val pbState = controller.playbackState
-        val metadata = controller.metadata
-        _mediaState.value = MediaState(
-            isPlaying = pbState?.state == PlaybackState.STATE_PLAYING,
-            title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE) ?: "",
-            artist = metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)
-                ?: metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST) ?: "",
-            albumArt = safeCopy(
-                metadata?.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
-                    ?: metadata?.getBitmap(MediaMetadata.METADATA_KEY_ART)
-            ),
-            hasSession = true,
-            packageName = controller.packageName
-        )
+        try {
+            val pbState = controller.playbackState
+            val metadata = controller.metadata
+            _mediaState.value = MediaState(
+                isPlaying = pbState?.state == PlaybackState.STATE_PLAYING,
+                title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE) ?: "",
+                artist = metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)
+                    ?: metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST) ?: "",
+                albumArt = safeCopy(
+                    metadata?.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
+                        ?: metadata?.getBitmap(MediaMetadata.METADATA_KEY_ART)
+                ),
+                hasSession = true,
+                packageName = controller.packageName
+            )
+        } catch (e: Exception) {
+            // playbackState/metadata are binder calls into the media app; they throw if
+            // its session died between the callback firing and us reading it.
+            Log.w(TAG, "Failed to read media session state", e)
+            _mediaState.value = MediaState()
+        }
     }
 
     private fun safeCopy(bitmap: Bitmap?): Bitmap? {
@@ -211,8 +225,9 @@ class MediaRepository @Inject constructor(
             context.contentResolver,
             "enabled_notification_listeners"
         ) ?: return false
+        // Settings may store either the full or the short flattened form ("pkg/.service.X")
+        // depending on which UI wrote it; unflatten each entry so both forms match.
         val component = ComponentName(context, "com.alkisstam.taskbar.service.MediaListenerService")
-            .flattenToString()
-        return enabled.split(":").any { it.trim() == component }
+        return enabled.split(":").any { ComponentName.unflattenFromString(it.trim()) == component }
     }
 }

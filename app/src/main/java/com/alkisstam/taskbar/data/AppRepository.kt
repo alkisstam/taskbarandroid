@@ -21,6 +21,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
+private const val ICON_SIZE_PX = 160
+
 @Singleton
 class AppRepository @Inject constructor(
     @param:ApplicationContext private val context: Context
@@ -66,10 +68,14 @@ class AppRepository @Inject constructor(
                         // OutOfMemoryError (an Error, hence Throwable) on some devices. Keep the
                         // app with a null icon (UI renders a placeholder) instead of hiding it.
                         val icon = try {
+                            // Rendered at a fixed size: intrinsic-size bitmaps for every installed
+                            // app add up to tens of MB (and themed OEM icons can be 1024px+).
+                            // 160px covers the largest dock icon setting on 1080p densities.
                             // toBitmap() can return the system's cached Bitmap instance without
                             // copying (androidx shortcut when config already matches); that shared
                             // bitmap can later be recycled by the OS, so copy it to own our instance.
-                            resolveInfo.loadIcon(pm).toBitmap().copy(Bitmap.Config.ARGB_8888, false)
+                            resolveInfo.loadIcon(pm).toBitmap(ICON_SIZE_PX, ICON_SIZE_PX)
+                                .copy(Bitmap.Config.ARGB_8888, false)
                         } catch (e: Throwable) {
                             Log.w("AppRepository", "Icon load failed, keeping app without icon: ${activityInfo.packageName}", e)
                             null

@@ -83,7 +83,7 @@ private fun evaluate(tokens: List<String>): Double {
     return total
 }
 
-private data class CalculatorState(
+internal data class CalculatorState(
     val expression: String = "0",
     val justEvaluated: Boolean = false
 ) {

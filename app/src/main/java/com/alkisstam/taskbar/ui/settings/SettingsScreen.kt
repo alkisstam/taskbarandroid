@@ -122,6 +122,7 @@ fun SettingsScreen(
     viewModel: TaskbarViewModel,
     hasOverlayPermission: Boolean,
     hasAccessibilityPermission: Boolean,
+    hasNotificationListenerPermission: Boolean,
     onRequestOverlayPermission: () -> Unit,
     onRequestAccessibilityPermission: () -> Unit,
     modifier: Modifier = Modifier
@@ -164,6 +165,7 @@ fun SettingsScreen(
                         viewModel = viewModel,
                         hasOverlayPermission = hasOverlayPermission,
                         hasAccessibilityPermission = hasAccessibilityPermission,
+                        hasNotificationListenerPermission = hasNotificationListenerPermission,
                         onRequestOverlayPermission = onRequestOverlayPermission,
                         onRequestAccessibilityPermission = onRequestAccessibilityPermission,
                         bottomPadding = navBottomPadding
@@ -245,6 +247,7 @@ private fun GeneralTab(
     viewModel: TaskbarViewModel,
     hasOverlayPermission: Boolean,
     hasAccessibilityPermission: Boolean,
+    hasNotificationListenerPermission: Boolean,
     onRequestOverlayPermission: () -> Unit,
     onRequestAccessibilityPermission: () -> Unit,
     bottomPadding: Dp = 0.dp
@@ -384,7 +387,11 @@ private fun GeneralTab(
             }
         }
 
-        MusicPanelSettingsCard(viewModel = viewModel, context = context)
+        MusicPanelSettingsCard(
+            viewModel = viewModel,
+            context = context,
+            notificationAccessGranted = hasNotificationListenerPermission
+        )
 
         SearchSettingsCard(viewModel = viewModel)
 
@@ -524,16 +531,12 @@ private fun GeneralTab(
 }
 
 @Composable
-private fun MusicPanelSettingsCard(viewModel: TaskbarViewModel, context: android.content.Context) {
+private fun MusicPanelSettingsCard(
+    viewModel: TaskbarViewModel,
+    context: android.content.Context,
+    notificationAccessGranted: Boolean
+) {
     val musicPanelEnabled by viewModel.musicPanelEnabled.collectAsState()
-    val notificationAccessGranted = remember {
-        val enabled = android.provider.Settings.Secure.getString(
-            context.contentResolver,
-            "enabled_notification_listeners"
-        ) ?: ""
-        val component = "${context.packageName}/com.alkisstam.taskbar.service.MediaListenerService"
-        enabled.split(":").any { it.trim() == component }
-    }
 
     SettingsCard(title = "Music Panel") {
         Row(
@@ -659,11 +662,12 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
                     val lazyListState = rememberLazyListState()
                     val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
                     val hapticEnabled = LocalHapticEnabled.current
+                    // Local working copy during a drag: persisting per-swap races the async
+                    // DataStore save and can store a stale intermediate order.
+                    var localPinned by remember(pinnedApps) { mutableStateOf(pinnedApps) }
                     val reorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
-                        val pkgs = pinnedApps.map { it.packageName }.toMutableList()
-                        if (from.index in pkgs.indices && to.index in pkgs.indices) {
-                            pkgs.add(to.index, pkgs.removeAt(from.index))
-                            viewModel.reorderPinnedApps(pkgs)
+                        localPinned = localPinned.toMutableList().apply {
+                            if (from.index in indices && to.index in indices) add(to.index, removeAt(from.index))
                         }
                     }
                     LazyRow(
@@ -671,7 +675,7 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         contentPadding = PaddingValues(vertical = 4.dp)
                     ) {
-                        items(pinnedApps, key = { it.packageName }) { app ->
+                        items(localPinned, key = { it.packageName }) { app ->
                             ReorderableItem(reorderableState, key = app.packageName) { isDragging ->
                                 Column(
                                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -680,6 +684,9 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
                                         .longPressDraggableHandle(
                                             onDragStarted = {
                                                 if (hapticEnabled) haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                                            },
+                                            onDragStopped = {
+                                                viewModel.reorderPinnedApps(localPinned.map { it.packageName })
                                             }
                                         )
                                 ) {
@@ -952,15 +959,10 @@ private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
                     val lazyListState = rememberLazyListState()
                     val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
                     val hapticEnabled = LocalHapticEnabled.current
+                    var localActiveIds by remember(activeIds) { mutableStateOf(activeIds) }
                     val reorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
-                        val newOrder = controlsOrder.toMutableList()
-                        val fromId = activeIds[from.index]
-                        val toId = activeIds[to.index]
-                        val fromGlobal = newOrder.indexOf(fromId)
-                        val toGlobal = newOrder.indexOf(toId)
-                        if (fromGlobal >= 0 && toGlobal >= 0) {
-                            newOrder.add(toGlobal, newOrder.removeAt(fromGlobal))
-                            viewModel.saveControlsOrder(newOrder)
+                        localActiveIds = localActiveIds.toMutableList().apply {
+                            if (from.index in indices && to.index in indices) add(to.index, removeAt(from.index))
                         }
                     }
                     LazyRow(
@@ -968,7 +970,7 @@ private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         contentPadding = PaddingValues(vertical = 4.dp)
                     ) {
-                        items(activeIds, key = { it }) { id ->
+                        items(localActiveIds, key = { it }) { id ->
                             ReorderableItem(reorderableState, key = id) { isDragging ->
                                 val meta = metaMap[id] ?: return@ReorderableItem
                                 ActiveControlItem(
@@ -979,6 +981,11 @@ private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
                                         onDragStarted = {
                                             if (hapticEnabled) haptic.performHapticFeedback(
                                                 androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress
+                                            )
+                                        },
+                                        onDragStopped = {
+                                            viewModel.saveControlsOrder(
+                                                localActiveIds + controlsOrder.filter { it in controlsDisabledIds }
                                             )
                                         }
                                     )

@@ -61,6 +61,7 @@ class ClipboardRepository @Inject constructor(
         private val TODOS_LIST_KEY = stringPreferencesKey("todos_list")
         private val SHARE_HINT_DISMISSED_KEY = booleanPreferencesKey("share_hint_dismissed")
         private const val MAX_CLIPS = 100
+        private const val MAX_FILE_BYTES = 50L * 1024 * 1024
     }
 
     private val clipDir: File
@@ -166,7 +167,23 @@ class ClipboardRepository @Inject constructor(
 
     fun copyStreamToStorage(input: InputStream, extension: String, id: String): String {
         val file = File(clipDir, "$id.$extension")
-        file.outputStream().use { input.copyTo(it) }
+        try {
+            file.outputStream().use { out ->
+                val buffer = ByteArray(64 * 1024)
+                var total = 0L
+                while (true) {
+                    val n = input.read(buffer)
+                    if (n < 0) break
+                    total += n
+                    // Uncapped, a mislabeled multi-GB share would silently fill internal storage.
+                    if (total > MAX_FILE_BYTES) throw IOException("Shared file exceeds $MAX_FILE_BYTES bytes")
+                    out.write(buffer, 0, n)
+                }
+            }
+        } catch (e: Exception) {
+            file.delete()
+            throw e
+        }
         return file.absolutePath
     }
 
@@ -176,7 +193,7 @@ class ClipboardRepository @Inject constructor(
         }
     }
 
-    private fun serializeClips(clips: List<ClipItem>): String {
+    internal fun serializeClips(clips: List<ClipItem>): String {
         val arr = JSONArray()
         clips.forEach { item ->
             arr.put(JSONObject().apply {
@@ -193,7 +210,7 @@ class ClipboardRepository @Inject constructor(
         return arr.toString()
     }
 
-    private fun deserializeClips(json: String): List<ClipItem> = try {
+    internal fun deserializeClips(json: String): List<ClipItem> = try {
         val arr = JSONArray(json)
         (0 until arr.length()).mapNotNull { i ->
             try {
@@ -218,7 +235,7 @@ class ClipboardRepository @Inject constructor(
         emptyList()
     }
 
-    private fun serializeNotes(notes: List<NoteItem>): String {
+    internal fun serializeNotes(notes: List<NoteItem>): String {
         val arr = JSONArray()
         notes.forEach { item ->
             arr.put(JSONObject().apply {
@@ -232,7 +249,7 @@ class ClipboardRepository @Inject constructor(
         return arr.toString()
     }
 
-    private fun deserializeNotes(json: String): List<NoteItem> = try {
+    internal fun deserializeNotes(json: String): List<NoteItem> = try {
         val arr = JSONArray(json)
         (0 until arr.length()).mapNotNull { i ->
             try {
@@ -254,7 +271,7 @@ class ClipboardRepository @Inject constructor(
         emptyList()
     }
 
-    private fun serializeTodos(todos: List<TodoItem>): String {
+    internal fun serializeTodos(todos: List<TodoItem>): String {
         val arr = JSONArray()
         todos.forEach { item ->
             arr.put(JSONObject().apply {
@@ -267,7 +284,7 @@ class ClipboardRepository @Inject constructor(
         return arr.toString()
     }
 
-    private fun deserializeTodos(json: String): List<TodoItem> = try {
+    internal fun deserializeTodos(json: String): List<TodoItem> = try {
         val arr = JSONArray(json)
         (0 until arr.length()).mapNotNull { i ->
             try {

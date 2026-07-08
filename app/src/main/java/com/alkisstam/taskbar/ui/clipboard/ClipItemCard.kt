@@ -43,7 +43,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,6 +61,9 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import com.alkisstam.taskbar.data.ClipItem
 import com.alkisstam.taskbar.data.ClipType
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 @Composable
@@ -68,6 +77,7 @@ fun ClipItemCard(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val copyScope = rememberCoroutineScope()
 
     Surface(
         shape = RoundedCornerShape(12.dp),
@@ -168,8 +178,10 @@ fun ClipItemCard(
                 }
                 ClipType.TEXT_FILE -> {
                     val filename = item.fileName ?: remember(item.content) { File(item.content).name }
-                    val preview = remember(item.content) {
-                        runCatching { File(item.content).readText(Charsets.UTF_8).take(300) }.getOrNull()
+                    val preview by produceState<String?>(initialValue = null, item.content) {
+                        value = withContext(Dispatchers.IO) {
+                            runCatching { File(item.content).readText(Charsets.UTF_8).take(300) }.getOrNull()
+                        }
                     }
                     Box(modifier = Modifier.clickable { onOpenExternal(); openFile(context, item.content, "text/plain") }) {
                         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -178,9 +190,10 @@ fun ClipItemCard(
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.primary
                             )
-                            if (preview != null) {
+                            val previewText = preview
+                            if (previewText != null) {
                                 Text(
-                                    text = preview,
+                                    text = previewText,
                                     style = MaterialTheme.typography.bodyMedium,
                                     maxLines = 4,
                                     overflow = TextOverflow.Ellipsis
@@ -190,12 +203,18 @@ fun ClipItemCard(
                     }
                 }
                 ClipType.IMAGE -> {
-                    val bitmap = remember(item.content) {
-                        runCatching { decodeSampledBitmapFromFile(item.content, 512, 512) }.getOrNull()
+                    var bitmap by remember(item.content) { mutableStateOf<android.graphics.Bitmap?>(null) }
+                    var loadFailed by remember(item.content) { mutableStateOf(false) }
+                    LaunchedEffect(item.content) {
+                        val decoded = withContext(Dispatchers.IO) {
+                            runCatching { decodeSampledBitmapFromFile(item.content, 512, 512) }.getOrNull()
+                        }
+                        if (decoded != null) bitmap = decoded else loadFailed = true
                     }
-                    if (bitmap != null) {
+                    val loadedBitmap = bitmap
+                    if (loadedBitmap != null) {
                         Image(
-                            bitmap = bitmap.asImageBitmap(),
+                            bitmap = loadedBitmap.asImageBitmap(),
                             contentDescription = null,
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -213,12 +232,14 @@ fun ClipItemCard(
                                 .background(MaterialTheme.colorScheme.surface),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(
-                                Icons.Default.BrokenImage,
-                                contentDescription = null,
-                                modifier = Modifier.size(36.dp),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                            if (loadFailed) {
+                                Icon(
+                                    Icons.Default.BrokenImage,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(36.dp),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
                         }
                     }
                 }
@@ -290,12 +311,16 @@ fun ClipItemCard(
                     }
                 }
                 IconButton(onClick = {
-                    val textToCopy = when (item.type) {
-                        ClipType.TEXT_FILE -> runCatching { File(item.content).readText().take(50_000) }.getOrElse { item.content }
-                        else -> item.content
+                    copyScope.launch {
+                        val textToCopy = when (item.type) {
+                            ClipType.TEXT_FILE -> withContext(Dispatchers.IO) {
+                                runCatching { File(item.content).readText().take(50_000) }.getOrElse { item.content }
+                            }
+                            else -> item.content
+                        }
+                        val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                        cm.setPrimaryClip(ClipData.newPlainText("clip", textToCopy))
                     }
-                    val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    cm.setPrimaryClip(ClipData.newPlainText("clip", textToCopy))
                 }) {
                     Icon(
                         Icons.Default.ContentCopy,
