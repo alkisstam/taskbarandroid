@@ -54,12 +54,14 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.FlashlightOn
 import androidx.compose.material.icons.filled.FreeBreakfast
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.PowerSettingsNew
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.ScreenRotationAlt
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.SignalCellular4Bar
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.FileUpload
@@ -892,7 +894,9 @@ private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
             Triple("calculator",        "Calculator", Icons.Filled.Calculate),
             Triple("wifi",              "Wifi",       Icons.Filled.Wifi),
             Triple("bluetooth",         "Bluetooth",  Icons.Filled.Bluetooth),
-            Triple("share",             "Share",      Icons.Filled.Share)
+            Triple("mobile_data",       "Mobile Data", Icons.Filled.SignalCellular4Bar),
+            Triple("share",             "Share",      Icons.Filled.Share),
+            Triple("notif_history",     "Notifications", Icons.Filled.Notifications)
         )
     }
     val metaMap = remember(controlMeta) { controlMeta.associateBy { it.first } }

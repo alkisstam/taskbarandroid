@@ -49,11 +49,13 @@ import com.alkisstam.taskbar.data.AppRepository
 import com.alkisstam.taskbar.data.bottomGapDp
 import com.alkisstam.taskbar.data.ClipboardRepository
 import com.alkisstam.taskbar.data.MediaRepository
+import com.alkisstam.taskbar.data.NotificationHistoryRepository
 import com.alkisstam.taskbar.data.PreferencesRepository
 import com.alkisstam.taskbar.data.QuickControlsRepository
 import com.alkisstam.taskbar.util.Constants
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
 import com.alkisstam.taskbar.viewmodel.ClipboardViewModel
+import com.alkisstam.taskbar.viewmodel.NotificationHistoryViewModel
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -71,6 +73,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     @Inject lateinit var quickControlsRepository: QuickControlsRepository
     @Inject lateinit var mediaRepository: MediaRepository
     @Inject lateinit var clipboardRepository: ClipboardRepository
+    @Inject lateinit var notificationHistoryRepository: NotificationHistoryRepository
 
     private val lifecycleRegistry = LifecycleRegistry(this)
     override val lifecycle: Lifecycle get() = lifecycleRegistry
@@ -122,6 +125,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private var clipboardPanelView: View? = null
     private var clipboardBlurView: View? = null
     private var calculatorPanelView: View? = null
+    private var notificationPanelView: View? = null
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var observersStarted = false
 
@@ -149,6 +153,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                         brightnessPanelView?.visibility = View.GONE
                         clipboardPanelView?.visibility = View.GONE
                         calculatorPanelView?.visibility = View.GONE
+                        notificationPanelView?.visibility = View.GONE
                     }
                 }
                 Intent.ACTION_USER_PRESENT, Intent.ACTION_SCREEN_ON -> {
@@ -223,6 +228,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private lateinit var taskbarViewModel: TaskbarViewModel
     private lateinit var appMenuViewModel: AppMenuViewModel
     private lateinit var clipboardViewModel: ClipboardViewModel
+    private lateinit var notificationHistoryViewModel: NotificationHistoryViewModel
 
     companion object {
         private const val TAG = "OverlayService"
@@ -250,12 +256,14 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             prefsRepository = prefsRepository,
             quickControlsRepository = quickControlsRepository,
             mediaRepository = mediaRepository,
-            clipboardRepository = clipboardRepository
+            clipboardRepository = clipboardRepository,
+            notificationHistoryRepository = notificationHistoryRepository
         )
         val provider = ViewModelProvider(this, factory)
         taskbarViewModel = provider[TaskbarViewModel::class.java]
         appMenuViewModel = provider[AppMenuViewModel::class.java]
         clipboardViewModel = provider[ClipboardViewModel::class.java]
+        notificationHistoryViewModel = provider[NotificationHistoryViewModel::class.java]
 
         // Register receivers only after the ViewModels exist: the battery filter is a sticky
         // broadcast whose onReceive touches taskbarViewModel, and other actions reference the
@@ -311,6 +319,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         addVolumePanelView()
         addBrightnessPanelView()
         addClipboardPanelView()
+        addNotificationPanelView()
         addCalculatorPanelView()
         if (!observersStarted) {
             observersStarted = true
@@ -323,6 +332,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             observeMusicPanelVisibility()
             observeTranslucentMode()
             observeClipboardPanel()
+            observeNotificationPanel()
         }
         return START_STICKY
     }
@@ -512,11 +522,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     try { windowManager.updateViewLayoutKeepingType(view, musicPanelLayoutParams(yOffset, translucentModeEnabled, active = appMenuViewModel.calculatorPanelVisible.value)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update calculator panel blur", e) }
                 }
-                clipboardBlurView?.let { blur ->
-                    val visible = appMenuViewModel.clipboardPanelVisible.value
-                    try { windowManager.updateViewLayoutKeepingType(blur, clipboardBlurLayoutParams(blurBehind = enabled && visible)) }
-                    catch (e: Exception) { Log.w(TAG, "Failed to update clipboard blur", e) }
-                }
+                updateClipboardBlur()
                 searchView?.let { view ->
                     val searching = appMenuViewModel.isSearching.value
                     try { windowManager.updateViewLayoutKeepingType(view, searchLayoutParams(focusable = searching, blurBehind = enabled && searching)) }
@@ -903,8 +909,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         try {
             val view = View(this)
             clipboardBlurView = view
-            val blurBehind = translucentModeEnabled && appMenuViewModel.clipboardPanelVisible.value
-            windowManager.addView(view, clipboardBlurLayoutParams(blurBehind = blurBehind))
+            windowManager.addView(view, clipboardBlurLayoutParams(blurBehind = fullScreenPanelBlurActive()))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add clipboard blur view", e)
             clipboardBlurView = null
@@ -962,11 +967,76 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     try { windowManager.updateViewLayoutKeepingType(view, searchLayoutParams(focusable = visible)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update clipboard panel flags", e) }
                 }
-                clipboardBlurView?.let { blur ->
-                    try { windowManager.updateViewLayoutKeepingType(blur, clipboardBlurLayoutParams(blurBehind = translucentModeEnabled && visible)) }
-                    catch (e: Exception) { Log.w(TAG, "Failed to update clipboard blur", e) }
+                updateClipboardBlur()
+            }
+        }
+    }
+
+    private fun addNotificationPanelView() {
+        if (notificationPanelView?.isAttachedToWindow == true) return
+        notificationPanelView?.let { removeViewFromAnyWM(it) }
+        notificationPanelView = null
+        try {
+            val composeView = ComposeView(this).apply {
+                setViewTreeLifecycleOwner(this@OverlayService)
+                setViewTreeViewModelStoreOwner(this@OverlayService)
+                setViewTreeSavedStateRegistryOwner(this@OverlayService)
+                setContent {
+                    val hapticEnabled by taskbarViewModel.hapticFeedbackEnabled.collectAsState()
+                    CompositionLocalProvider(LocalHapticEnabled provides hapticEnabled) {
+                        NotificationHistoryPanelContent(
+                            taskbarViewModel = taskbarViewModel,
+                            appMenuViewModel = appMenuViewModel,
+                            notificationHistoryViewModel = notificationHistoryViewModel
+                        )
+                    }
                 }
             }
+            val wrapper = object : FrameLayout(this) {
+                override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+                    if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+                        appMenuViewModel.dismissNotificationPanel()
+                        return true
+                    }
+                    return super.dispatchKeyEvent(event)
+                }
+            }
+            wrapper.setViewTreeLifecycleOwner(this@OverlayService)
+            wrapper.setViewTreeViewModelStoreOwner(this@OverlayService)
+            wrapper.setViewTreeSavedStateRegistryOwner(this@OverlayService)
+            wrapper.addView(composeView)
+            val visible = appMenuViewModel.notificationPanelVisible.value
+            wrapper.visibility = if (visible) View.VISIBLE else View.GONE
+            notificationPanelView = wrapper
+            windowManager.addView(wrapper, searchLayoutParams(focusable = visible))
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to add notification panel view", e)
+            notificationPanelView = null
+        }
+    }
+
+    private fun observeNotificationPanel() {
+        serviceScope.launch {
+            appMenuViewModel.notificationPanelVisible.collect { visible ->
+                notificationPanelView?.visibility = if (visible) View.VISIBLE else View.GONE
+                notificationPanelView?.let { view ->
+                    try { windowManager.updateViewLayoutKeepingType(view, searchLayoutParams(focusable = visible)) }
+                    catch (e: Exception) { Log.w(TAG, "Failed to update notification panel flags", e) }
+                }
+                updateClipboardBlur()
+            }
+        }
+    }
+
+    // The clipboard blur window frosts behind whichever full-screen panel is open.
+    private fun fullScreenPanelBlurActive(): Boolean =
+        translucentModeEnabled &&
+            (appMenuViewModel.clipboardPanelVisible.value || appMenuViewModel.notificationPanelVisible.value)
+
+    private fun updateClipboardBlur() {
+        clipboardBlurView?.let { blur ->
+            try { windowManager.updateViewLayoutKeepingType(blur, clipboardBlurLayoutParams(blurBehind = fullScreenPanelBlurActive())) }
+            catch (e: Exception) { Log.w(TAG, "Failed to update clipboard blur", e) }
         }
     }
 
@@ -985,6 +1055,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         volumeScrimView?.let { removeViewFromAnyWM(it) }; volumeScrimView = null
         musicPanelView?.let { removeViewFromAnyWM(it) }; musicPanelView = null
         clipboardPanelView?.let { removeViewFromAnyWM(it) }; clipboardPanelView = null
+        notificationPanelView?.let { removeViewFromAnyWM(it) }; notificationPanelView = null
         clipboardBlurView?.let { removeViewFromAnyWM(it) }; clipboardBlurView = null
         calculatorPanelView?.let { removeViewFromAnyWM(it) }; calculatorPanelView = null
     }
@@ -1003,6 +1074,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         addVolumePanelView()
         addBrightnessPanelView()
         addClipboardPanelView()
+        addNotificationPanelView()
         addCalculatorPanelView()
     }
 

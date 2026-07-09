@@ -5,6 +5,7 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
 import com.alkisstam.taskbar.data.MediaRepository
+import com.alkisstam.taskbar.data.NotificationHistoryRepository
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -14,6 +15,7 @@ private const val TAG = "MediaListenerService"
 class MediaListenerService : NotificationListenerService() {
 
     @Inject lateinit var mediaRepository: MediaRepository
+    @Inject lateinit var notificationHistoryRepository: NotificationHistoryRepository
 
     override fun onListenerConnected() {
         super.onListenerConnected()
@@ -26,6 +28,7 @@ class MediaListenerService : NotificationListenerService() {
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         super.onNotificationPosted(sbn)
         mediaRepository.onNotificationPosted()
+        sbn?.let { notificationHistoryRepository.record(it) }
     }
 
     override fun onListenerDisconnected() {

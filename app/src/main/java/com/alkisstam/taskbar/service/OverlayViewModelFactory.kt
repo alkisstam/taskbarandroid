@@ -6,10 +6,12 @@ import androidx.lifecycle.ViewModelProvider
 import com.alkisstam.taskbar.data.AppRepository
 import com.alkisstam.taskbar.data.ClipboardRepository
 import com.alkisstam.taskbar.data.MediaRepository
+import com.alkisstam.taskbar.data.NotificationHistoryRepository
 import com.alkisstam.taskbar.data.PreferencesRepository
 import com.alkisstam.taskbar.data.QuickControlsRepository
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
 import com.alkisstam.taskbar.viewmodel.ClipboardViewModel
+import com.alkisstam.taskbar.viewmodel.NotificationHistoryViewModel
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 
 class OverlayViewModelFactory(
@@ -18,7 +20,8 @@ class OverlayViewModelFactory(
     private val prefsRepository: PreferencesRepository,
     private val quickControlsRepository: QuickControlsRepository,
     private val mediaRepository: MediaRepository,
-    private val clipboardRepository: ClipboardRepository
+    private val clipboardRepository: ClipboardRepository,
+    private val notificationHistoryRepository: NotificationHistoryRepository
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -30,6 +33,8 @@ class OverlayViewModelFactory(
                 AppMenuViewModel(context.applicationContext, appRepository, prefsRepository, quickControlsRepository, mediaRepository) as T
             modelClass.isAssignableFrom(ClipboardViewModel::class.java) ->
                 ClipboardViewModel(clipboardRepository) as T
+            modelClass.isAssignableFrom(NotificationHistoryViewModel::class.java) ->
+                NotificationHistoryViewModel(notificationHistoryRepository) as T
             else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
     }

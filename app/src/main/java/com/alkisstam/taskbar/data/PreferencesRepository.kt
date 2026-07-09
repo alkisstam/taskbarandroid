@@ -143,7 +143,7 @@ class PreferencesRepository @Inject constructor(
         private val RECENT_OPENED_APPS_KEY = stringPreferencesKey("recent_opened_apps")
         private val CAFFEINE_ORIGINAL_TIMEOUT_KEY = intPreferencesKey("caffeine_original_timeout")
 
-        val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen", "caffeine", "clipboard", "calculator", "wifi", "bluetooth", "share")
+        val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen", "caffeine", "clipboard", "calculator", "wifi", "bluetooth", "mobile_data", "share", "notif_history")
 
         internal fun serializeStringList(list: List<String>): String = JSONArray(list).toString()
         internal fun deserializeStringList(stored: String): List<String> =

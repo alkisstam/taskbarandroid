@@ -34,7 +34,10 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.FreeBreakfast
 import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.SignalCellular4Bar
+import androidx.compose.material.icons.filled.SignalCellularOff
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material.icons.filled.Bluetooth
@@ -146,7 +149,11 @@ fun QuickControlsState.toItems(
             icon = if (wifiEnabled) Icons.Filled.Wifi else Icons.Filled.WifiOff),
         "bluetooth" to QuickControlItemData(id = "bluetooth", label = "Bluetooth", active = bluetoothEnabled,
             icon = if (bluetoothEnabled) Icons.Filled.Bluetooth else Icons.Filled.BluetoothDisabled),
-        "share" to QuickControlItemData(id = "share", label = "Share", active = false, icon = Icons.Filled.Share)
+        "mobile_data" to QuickControlItemData(id = "mobile_data", label = "Data", active = mobileDataEnabled,
+            icon = if (mobileDataEnabled) Icons.Filled.SignalCellular4Bar else Icons.Filled.SignalCellularOff),
+        "share" to QuickControlItemData(id = "share", label = "Share", active = false, icon = Icons.Filled.Share),
+        "notif_history" to QuickControlItemData(id = "notif_history", label = "Notifs",
+            active = false, icon = Icons.Filled.Notifications)
     )
     val effectiveOrder = order.ifEmpty { PreferencesRepository.ALL_CONTROL_IDS }
     return effectiveOrder

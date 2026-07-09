@@ -37,11 +37,13 @@ import com.alkisstam.taskbar.ui.appmenu.FloatingSearchBar
 import com.alkisstam.taskbar.ui.appmenu.MusicPanel
 import com.alkisstam.taskbar.ui.appmenu.VolumePanel
 import com.alkisstam.taskbar.ui.clipboard.ClipboardPanel
+import com.alkisstam.taskbar.ui.notifications.NotificationHistoryPanel
 import com.alkisstam.taskbar.ui.taskbar.TaskbarView
 import com.alkisstam.taskbar.ui.taskbar.TriggerPillView
 import com.alkisstam.taskbar.ui.theme.TaskBarTheme
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
 import com.alkisstam.taskbar.viewmodel.ClipboardViewModel
+import com.alkisstam.taskbar.viewmodel.NotificationHistoryViewModel
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 
 private fun dockAwarePanelBottomPadding(isTaskbarVisible: Boolean, heightDp: Float, expandedRows: Int, bottomGapDp: Float) =
@@ -285,6 +287,49 @@ internal fun ClipboardPanelContent(
                 appMenuViewModel.dismissClipboardPanelForExternalOpen()
                 taskbarViewModel.hideTaskbar()
                 appMenuViewModel.dismissMusicPanel()
+            },
+            panelOutlineEnabled = panelOutlineEnabled,
+            translucentMode = translucentMode,
+            translucentAlpha = translucentAlpha,
+            grainAlpha = grainAlpha,
+            surfaceTintColor = surfaceTintColor,
+            dockBottomPadding = dockBottomPadding
+        )
+    }
+}
+
+@Composable
+internal fun NotificationHistoryPanelContent(
+    taskbarViewModel: TaskbarViewModel,
+    appMenuViewModel: AppMenuViewModel,
+    notificationHistoryViewModel: NotificationHistoryViewModel
+) {
+    val themeMode by taskbarViewModel.themeMode.collectAsState()
+    val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
+    val translucentMode by taskbarViewModel.translucentMode.collectAsState()
+    val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
+    val grainAlpha by taskbarViewModel.grainAlpha.collectAsState()
+    val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
+    val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
+    val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
+    val quickControlsEnabled by taskbarViewModel.quickControlsEnabled.collectAsState()
+    val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
+    val allApps by appMenuViewModel.allApps.collectAsState()
+
+    val appsByPackage = remember(allApps) { allApps.associateBy { it.packageName } }
+
+    val expandedRows = if (isDockExpanded && quickControlsEnabled) 1 else 0
+    val dockBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.heightDp, expandedRows, taskbarSettings.dockPadding.bottomGapDp)
+
+    TaskBarTheme(themeMode = themeMode) {
+        NotificationHistoryPanel(
+            viewModel = notificationHistoryViewModel,
+            iconForPackage = { pkg -> appsByPackage[pkg]?.icon },
+            onDismiss = appMenuViewModel::dismissNotificationPanel,
+            onOpenApp = { pkg ->
+                appMenuViewModel.launchApp(pkg)
+                appMenuViewModel.dismissNotificationPanel()
+                taskbarViewModel.hideTaskbar()
             },
             panelOutlineEnabled = panelOutlineEnabled,
             translucentMode = translucentMode,

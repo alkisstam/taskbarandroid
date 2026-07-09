@@ -54,7 +54,8 @@ data class QuickControlsState(
     val canLockScreen: Boolean = false,
     val caffeineMinutes: Int = 0,
     val wifiEnabled: Boolean = false,
-    val bluetoothEnabled: Boolean = false
+    val bluetoothEnabled: Boolean = false,
+    val mobileDataEnabled: Boolean = false
 )
 
 private const val TAG = "AppMenuViewModel"
@@ -146,6 +147,9 @@ class AppMenuViewModel @Inject constructor(
     private val _calculatorPanelVisible = MutableStateFlow(false)
     val calculatorPanelVisible: StateFlow<Boolean> = _calculatorPanelVisible.asStateFlow()
 
+    private val _notificationPanelVisible = MutableStateFlow(false)
+    val notificationPanelVisible: StateFlow<Boolean> = _notificationPanelVisible.asStateFlow()
+
     val mediaState: StateFlow<MediaState> = mediaRepository.mediaState
 
     private val _brightnessLevel = MutableStateFlow(128)
@@ -235,7 +239,10 @@ class AppMenuViewModel @Inject constructor(
 
     fun toggleClipboardPanel() {
         val newValue = !_clipboardPanelVisible.value
-        if (newValue) _calculatorPanelVisible.value = false
+        if (newValue) {
+            _calculatorPanelVisible.value = false
+            _notificationPanelVisible.value = false
+        }
         _clipboardPanelVisible.value = newValue
     }
 
@@ -250,6 +257,7 @@ class AppMenuViewModel @Inject constructor(
             _volumePanelVisible.value = false
             _brightnessPanelVisible.value = false
             _clipboardPanelVisible.value = false
+            _notificationPanelVisible.value = false
             _menuVisible.value = false
             _isSearching.value = false
         }
@@ -260,6 +268,19 @@ class AppMenuViewModel @Inject constructor(
     fun dismissCalculatorPanel() {
         _calculatorPanelVisible.value = false
         restoreMusicAfterOverlay()
+    }
+
+    fun toggleNotificationPanel() {
+        val newValue = !_notificationPanelVisible.value
+        if (newValue) {
+            _calculatorPanelVisible.value = false
+            _clipboardPanelVisible.value = false
+        }
+        _notificationPanelVisible.value = newValue
+    }
+
+    fun dismissNotificationPanel() {
+        _notificationPanelVisible.value = false
     }
 
     fun dismissClipboardPanelForExternalOpen() {
@@ -407,7 +428,8 @@ class AppMenuViewModel @Inject constructor(
             canLockScreen = quickControls.canLockScreen(),
             caffeineMinutes = _quickControlsState.value.caffeineMinutes,
             wifiEnabled = quickControls.isWifiEnabled(),
-            bluetoothEnabled = quickControls.isBluetoothEnabled()
+            bluetoothEnabled = quickControls.isBluetoothEnabled(),
+            mobileDataEnabled = quickControls.isMobileDataEnabled()
         )
     }
 
@@ -480,6 +502,10 @@ class AppMenuViewModel @Inject constructor(
         quickControls.openBluetoothPanel()
     }
 
+    fun openMobileDataPanel() {
+        quickControls.openMobileDataPanel()
+    }
+
     fun openQuickShare() {
         quickControls.openQuickShare()
     }
@@ -532,7 +558,9 @@ class AppMenuViewModel @Inject constructor(
             "calculator" -> toggleCalculatorPanel()
             "wifi" -> openWifiPanel()
             "bluetooth" -> openBluetoothPanel()
+            "mobile_data" -> openMobileDataPanel()
             "share" -> openQuickShare()
+            "notif_history" -> toggleNotificationPanel()
         }
     }
 
