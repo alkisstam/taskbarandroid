@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -38,6 +37,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 import com.alkisstam.taskbar.ui.theme.grain
@@ -281,7 +281,7 @@ fun CalculatorPanel(
                 modifier = Modifier
                     .fillMaxWidth()
                     .animateContentSize(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 if (sciExpanded) {
                     SciRow(
@@ -318,7 +318,7 @@ fun CalculatorPanel(
             val equalsColor = MaterialTheme.colorScheme.primary
             val onEqualsColor = MaterialTheme.colorScheme.onPrimary
 
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 CalcRow {
                     CalcButton("AC", digitColor, onDigitColor, Modifier.weight(1f)) { state = CalculatorState() }
                     CalcButton("%", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.percent() }
@@ -358,7 +358,7 @@ fun CalculatorPanel(
 private fun CalcRow(content: @Composable RowScope.() -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         content = content
     )
 }
@@ -369,7 +369,7 @@ private fun SciRow(keys: List<String>, onClick: (String) -> Unit) {
     val onSciColor = MaterialTheme.colorScheme.onTertiaryContainer
     CalcRow {
         keys.forEach { label ->
-            CalcButton(label, sciColor, onSciColor, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium) { onClick(label) }
+            CalcButton(label, sciColor, onSciColor, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, height = 44.dp) { onClick(label) }
         }
     }
 }
@@ -381,11 +381,12 @@ private fun CalcButton(
     contentColor: Color,
     modifier: Modifier = Modifier,
     style: TextStyle = MaterialTheme.typography.titleLarge,
+    height: Dp = 52.dp,
     onClick: () -> Unit
 ) {
     Box(
         modifier = modifier
-            .aspectRatio(1f)
+            .height(height)
             .clip(CircleShape)
             .background(containerColor)
             .clickable(onClick = onClick),
@@ -405,7 +406,7 @@ private fun CalcIconButton(
 ) {
     Box(
         modifier = modifier
-            .aspectRatio(1f)
+            .height(52.dp)
             .clip(CircleShape)
             .background(containerColor)
             .clickable(onClick = onClick),
