@@ -121,7 +121,11 @@ val whatsNewReleases = listOf(
             "Frosted blur behind the Clipboard panel and app search on Android 12+ when Transparent is on",
             "New Notification History quick control — browse recent notifications, tap to open the app",
             "New Mobile Data quick control — see data status and open the system Internet panel",
-            "Compact calculator keys — the expanded scientific rows now fit on screen"
+            "Compact calculator keys — the expanded scientific rows now fit on screen",
+            "Theme Style, Pill Position, and Dock Edge Padding are now dropdown menus instead of buttons or a popup",
+            "Light/Dark/System is now a single segmented pill button",
+            "All Apps preview in Settings resized to a 4-row view",
+            "New \"Show Recent Apps in All Apps Panel\" toggle — adds a row of recent apps under the search bar, aligned to your App Grid columns"
         )
     )
 )

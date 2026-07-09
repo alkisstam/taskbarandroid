@@ -16,6 +16,10 @@ Design update — the Theme section in Design has been redesigned — plus two n
 - **Theme Style** — a new button under the color presets opens a Solid / Transparent chooser, replacing the old "Translucent panels" toggle. Solid shows the Panel Outline toggle; Transparent shows the Transparency and Grain sliders.
 - **Grain slider** — control the film-grain texture on transparent surfaces from 0% (off) to 30%; previously fixed at 10%. Grain now also covers the Brightness panel and the search bar, which were missing it.
 - **Frosted backdrop for Clipboard and Search** — with Transparent style on Android 12+, the screen behind the Clipboard panel and the app search blurs while they're open (respects the system's cross-window blur setting; falls back to the regular translucent look where unavailable).
+- **Dropdown pickers in Design** — Theme Style, Pill Position, and Dock Edge Padding now open as a dropdown menu from a single gradient pill, replacing the old popup dialog and button rows.
+- **Segmented Light/Dark/System toggle** — the three theme buttons are now one connected pill with the active option highlighted.
+- **Recent apps row in the App Menu** — new "Show Recent Apps in All Apps Panel" toggle in Settings → Apps adds a row of recently-opened apps under the search bar, separated by a divider and aligned to the App Grid's column count.
+- **All Apps preview resized** — the All Apps list in Settings → Apps now shows a 4-row view instead of a taller fixed height.
 
 ### Fixed
 - **Expanded calculator no longer extends past the top of the screen** — buttons had grown with screen width, so revealing the scientific rows pushed the panel off-screen; keys now use a compact fixed height.
