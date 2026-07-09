@@ -115,9 +115,11 @@ internal fun Context.clipboardBlurLayoutParams(blurBehind: Boolean = false): Win
             WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+    // Collapse to 0x0 when idle so the always-attached window has no surface to composite.
+    val size = if (blurBehind) WindowManager.LayoutParams.MATCH_PARENT else 0
     return WindowManager.LayoutParams(
-        WindowManager.LayoutParams.MATCH_PARENT,
-        WindowManager.LayoutParams.MATCH_PARENT,
+        size,
+        size,
         overlayWindowType(),
         flags,
         PixelFormat.TRANSLUCENT

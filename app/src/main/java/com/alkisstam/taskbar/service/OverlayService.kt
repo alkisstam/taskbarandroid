@@ -296,6 +296,11 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
         hiddenForLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE && taskbarViewModel.autoHideInLandscape.value
+        // The blur window must sit below the dock; re-adding it alone while the dock is still
+        // attached would stack it on top, so rebuild everything in order instead.
+        if (taskbarView?.isAttachedToWindow == true && clipboardBlurView?.isAttachedToWindow != true) {
+            removeOverlayView()
+        }
         addClipboardBlurView()
         addTaskbarView()
         addOverlayView()
@@ -761,9 +766,12 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     appMenuViewModel.dismissCalculatorPanel()
                 }
             }
-            view.visibility = View.GONE
+            val active = appMenuViewModel.volumePanelVisible.value ||
+                    appMenuViewModel.brightnessPanelVisible.value ||
+                    appMenuViewModel.calculatorPanelVisible.value
+            view.visibility = if (active) View.VISIBLE else View.GONE
             volumeScrimView = view
-            windowManager.addView(view, volumeScrimLayoutParams())
+            windowManager.addView(view, volumeScrimLayoutParams(active = active))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add volume scrim view", e)
             volumeScrimView = null
@@ -789,9 +797,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     )
                 }
             }
-            composeView.visibility = View.GONE
+            val visible = appMenuViewModel.volumePanelVisible.value
+            composeView.visibility = if (visible) View.VISIBLE else View.GONE
             volumePanelView = composeView
-            windowManager.addView(composeView, volumePanelLayoutParams(volumePanelYOffsetDp, translucentModeEnabled, active = false))
+            windowManager.addView(composeView, volumePanelLayoutParams(volumePanelYOffsetDp, translucentModeEnabled, active = visible))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add volume panel view", e)
             volumePanelView = null
@@ -817,9 +826,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     )
                 }
             }
-            composeView.visibility = View.GONE
+            val visible = appMenuViewModel.brightnessPanelVisible.value
+            composeView.visibility = if (visible) View.VISIBLE else View.GONE
             brightnessPanelView = composeView
-            windowManager.addView(composeView, volumePanelLayoutParams(yOffset, translucentModeEnabled, active = false))
+            windowManager.addView(composeView, volumePanelLayoutParams(yOffset, translucentModeEnabled, active = visible))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add brightness panel view", e)
             brightnessPanelView = null
@@ -845,7 +855,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     )
                 }
             }
-            composeView.visibility = View.GONE
+            composeView.visibility = View.VISIBLE
             musicPanelView = composeView
             windowManager.addView(composeView, musicPanelLayoutParams(musicPanelYOffsetDp, translucentModeEnabled))
         } catch (e: Exception) {
@@ -873,9 +883,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     )
                 }
             }
-            composeView.visibility = View.GONE
+            val visible = appMenuViewModel.calculatorPanelVisible.value
+            composeView.visibility = if (visible) View.VISIBLE else View.GONE
             calculatorPanelView = composeView
-            windowManager.addView(composeView, musicPanelLayoutParams(yOffset, translucentModeEnabled, active = false))
+            windowManager.addView(composeView, musicPanelLayoutParams(yOffset, translucentModeEnabled, active = visible))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add calculator panel view", e)
             calculatorPanelView = null
@@ -892,7 +903,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         try {
             val view = View(this)
             clipboardBlurView = view
-            windowManager.addView(view, clipboardBlurLayoutParams(blurBehind = false))
+            val blurBehind = translucentModeEnabled && appMenuViewModel.clipboardPanelVisible.value
+            windowManager.addView(view, clipboardBlurLayoutParams(blurBehind = blurBehind))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add clipboard blur view", e)
             clipboardBlurView = null
@@ -932,9 +944,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             wrapper.setViewTreeViewModelStoreOwner(this@OverlayService)
             wrapper.setViewTreeSavedStateRegistryOwner(this@OverlayService)
             wrapper.addView(composeView)
-            wrapper.visibility = View.GONE
+            val visible = appMenuViewModel.clipboardPanelVisible.value
+            wrapper.visibility = if (visible) View.VISIBLE else View.GONE
             clipboardPanelView = wrapper
-            windowManager.addView(wrapper, searchLayoutParams(focusable = false))
+            windowManager.addView(wrapper, searchLayoutParams(focusable = visible))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add clipboard panel view", e)
             clipboardPanelView = null
