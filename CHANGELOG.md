@@ -15,6 +15,10 @@ Design update — the Theme section in Design has been redesigned.
 - **Grain slider** — control the film-grain texture on transparent surfaces from 0% (off) to 30%; previously fixed at 10%. Grain now also covers the Brightness panel and the search bar, which were missing it.
 - **Frosted backdrop for Clipboard and Search** — with Transparent style on Android 12+, the screen behind the Clipboard panel and the app search blurs while they're open (respects the system's cross-window blur setting; falls back to the regular translucent look where unavailable).
 
+### Fixed
+- **Clipboard frosted backdrop no longer blurs the dock** — the blur now sits behind the dock and pill, so they stay crisp while the screen behind the Clipboard panel frosts. The blur layer is also fully released while idle instead of staying on screen invisibly.
+- **Open panels no longer vanish when the Accessibility Service toggles** — turning the Accessibility Service on or off while the Clipboard, Volume, Brightness, or Calculator panel was open made it disappear until reopened, and could hide the Music Panel permanently. All panels now come back exactly as they were.
+
 ---
 
 ## [1.4.2] - 2026-07-08
