@@ -118,7 +118,10 @@ val whatsNewReleases = listOf(
             "New Auto preset follows your Light/Dark/System theme automatically",
             "New Theme Style chooser — Solid or Transparent, replacing the Translucent toggle",
             "New Grain slider (0–30%) for transparent surfaces; grain now also covers Brightness and Search",
-            "Frosted blur behind the Clipboard panel and app search on Android 12+ when Transparent is on"
+            "Frosted blur behind the Clipboard panel and app search on Android 12+ when Transparent is on",
+            "New Notification History quick control — browse recent notifications, tap to open the app",
+            "New Mobile Data quick control — see data status and open the system Internet panel",
+            "Compact calculator keys — the expanded scientific rows now fit on screen"
         )
     )
 )
