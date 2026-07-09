@@ -638,6 +638,7 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
     val pinnedPackages = remember(pinnedApps) { pinnedApps.map { it.packageName }.toSet() }
     val appGridColumns by viewModel.appGridColumns.collectAsState()
     val appGridRows by viewModel.appGridRows.collectAsState()
+    val showRecentAppsRow by viewModel.showRecentAppsRow.collectAsState()
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -744,7 +745,7 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
             SettingsCard(title = "All Apps (${allApps.size})") {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(4),
-                    modifier = Modifier.height(400.dp),
+                    modifier = Modifier.height(340.dp), // ~4 rows: (80dp row * 4) + (4dp gap * 3) + (4dp padding * 2)
                     contentPadding = PaddingValues(4.dp),
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -761,6 +762,28 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
                             }
                         )
                     }
+                }
+            }
+        }
+        item {
+            SettingsCard(title = "Recent Apps") {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("Show Recent Apps in All Apps Panel", style = MaterialTheme.typography.bodyLarge)
+                        Text(
+                            "Adds a row of recently opened apps under the search bar",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Switch(
+                        checked = showRecentAppsRow,
+                        onCheckedChange = { viewModel.setShowRecentAppsRow(it) }
+                    )
                 }
             }
         }

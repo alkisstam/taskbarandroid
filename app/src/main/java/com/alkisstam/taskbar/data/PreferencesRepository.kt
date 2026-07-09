@@ -140,6 +140,7 @@ class PreferencesRepository @Inject constructor(
         private val GRAIN_ALPHA_KEY = floatPreferencesKey("grain_alpha")
         private val FUZZY_SEARCH_ENABLED_KEY = booleanPreferencesKey("fuzzy_search_enabled")
         private val SHOW_RECENT_APPS_KEY = booleanPreferencesKey("show_recent_apps")
+        private val SHOW_RECENT_APPS_ROW_KEY = booleanPreferencesKey("show_recent_apps_row")
         private val RECENT_OPENED_APPS_KEY = stringPreferencesKey("recent_opened_apps")
         private val CAFFEINE_ORIGINAL_TIMEOUT_KEY = intPreferencesKey("caffeine_original_timeout")
 
@@ -429,6 +430,16 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
+    val showRecentAppsRow: Flow<Boolean> = safeData.map { prefs ->
+        prefs[SHOW_RECENT_APPS_ROW_KEY] ?: false
+    }
+
+    suspend fun setShowRecentAppsRow(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[SHOW_RECENT_APPS_ROW_KEY] = enabled
+        }
+    }
+
     val recentOpenedApps: Flow<List<String>> = safeData.map { prefs ->
         prefs[RECENT_OPENED_APPS_KEY]?.let { deserializeStringList(it) } ?: emptyList()
     }
@@ -552,6 +563,7 @@ class PreferencesRepository @Inject constructor(
             prefs[PILL_RESTRICT_TRIGGER_KEY]?.let { put("pill_restrict_trigger", it) }
             prefs[FUZZY_SEARCH_ENABLED_KEY]?.let { put("fuzzy_search_enabled", it) }
             prefs[SHOW_RECENT_APPS_KEY]?.let { put("show_recent_apps", it) }
+            prefs[SHOW_RECENT_APPS_ROW_KEY]?.let { put("show_recent_apps_row", it) }
             prefs[TRANSLUCENT_MODE_KEY]?.let { put("translucent_mode", it) }
             prefs[TRANSLUCENT_ALPHA_KEY]?.let { put("translucent_alpha", it) }
             prefs[GRAIN_ALPHA_KEY]?.let { put("grain_alpha", it) }
@@ -596,6 +608,7 @@ class PreferencesRepository @Inject constructor(
             if (obj.has("pill_restrict_trigger")) prefs[PILL_RESTRICT_TRIGGER_KEY] = obj.getBoolean("pill_restrict_trigger")
             if (obj.has("fuzzy_search_enabled")) prefs[FUZZY_SEARCH_ENABLED_KEY] = obj.getBoolean("fuzzy_search_enabled")
             if (obj.has("show_recent_apps")) prefs[SHOW_RECENT_APPS_KEY] = obj.getBoolean("show_recent_apps")
+            if (obj.has("show_recent_apps_row")) prefs[SHOW_RECENT_APPS_ROW_KEY] = obj.getBoolean("show_recent_apps_row")
             if (obj.has("translucent_mode")) prefs[TRANSLUCENT_MODE_KEY] = obj.getBoolean("translucent_mode")
             if (obj.has("translucent_alpha")) prefs[TRANSLUCENT_ALPHA_KEY] = obj.getDouble("translucent_alpha").toFloat()
             if (obj.has("grain_alpha")) prefs[GRAIN_ALPHA_KEY] = obj.getDouble("grain_alpha").toFloat()

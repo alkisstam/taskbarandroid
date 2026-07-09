@@ -7,16 +7,21 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -30,6 +35,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.data.AppInfo
+import com.alkisstam.taskbar.ui.common.AppIconImage
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 import com.alkisstam.taskbar.ui.theme.grain
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
@@ -52,6 +59,8 @@ fun AppMenuPanel(
     val grainAlpha by taskbarViewModel.grainAlpha.collectAsState()
     val appGridColumns by taskbarViewModel.appGridColumns.collectAsState()
     val appGridRows by taskbarViewModel.appGridRows.collectAsState()
+    val showRecentAppsRow by viewModel.showRecentAppsRow.collectAsState()
+    val recentApps by viewModel.recentApps.collectAsState()
     val panelColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
     val gridHeight = (appGridRows * 84).dp
 
@@ -119,6 +128,33 @@ fun AppMenuPanel(
                     }
                 }
 
+                if (showRecentAppsRow && recentApps.isNotEmpty()) {
+                    // Same contentPadding + horizontalArrangement as AppGrid's LazyVerticalGrid
+                    // below, so each icon's column center lines up with the grid's columns.
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 4.dp, vertical = 4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        repeat(appGridColumns) { index ->
+                            Box(
+                                modifier = Modifier.weight(1f),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                recentApps.getOrNull(index)?.let { app ->
+                                    RecentAppIcon(app = app, onLaunch = { viewModel.launchApp(app.packageName); onHideTaskbar() })
+                                }
+                            }
+                        }
+                    }
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 12.dp),
+                        thickness = 1.dp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+                    )
+                }
+
                 AppGrid(
                     apps = apps,
                     pinnedPackages = pinnedPackages,
@@ -134,4 +170,16 @@ fun AppMenuPanel(
             }   // Surface
             }   // inner Box (margin wrapper)
     }           // AnimatedVisibility
+}
+
+@Composable
+private fun RecentAppIcon(app: AppInfo, onLaunch: () -> Unit) {
+    AppIconImage(
+        icon = app.icon,
+        contentDescription = app.label,
+        modifier = Modifier
+            .size(44.dp)
+            .clip(CircleShape)
+            .clickable(onClick = onLaunch)
+    )
 }

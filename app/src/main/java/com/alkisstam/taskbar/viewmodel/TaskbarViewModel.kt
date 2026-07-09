@@ -97,6 +97,9 @@ class TaskbarViewModel @Inject constructor(
     val showRecentApps: StateFlow<Boolean> = prefsRepository.showRecentApps
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
+    val showRecentAppsRow: StateFlow<Boolean> = prefsRepository.showRecentAppsRow
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     val hapticFeedbackEnabled: StateFlow<Boolean> = prefsRepository.hapticFeedbackEnabled
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
@@ -339,6 +342,12 @@ class TaskbarViewModel @Inject constructor(
     fun setShowRecentApps(enabled: Boolean) {
         viewModelScope.launch {
             prefsRepository.setShowRecentApps(enabled)
+        }
+    }
+
+    fun setShowRecentAppsRow(enabled: Boolean) {
+        viewModelScope.launch {
+            prefsRepository.setShowRecentAppsRow(enabled)
         }
     }
 

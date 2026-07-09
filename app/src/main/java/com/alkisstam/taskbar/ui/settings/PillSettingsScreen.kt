@@ -30,22 +30,29 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.PhoneAndroid
+import androidx.compose.material.icons.filled.Straighten
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderState
 import androidx.compose.material3.Switch
@@ -97,7 +104,6 @@ fun PillSettingsScreen(
     var pillExpanded by remember { mutableStateOf(false) }
     var dockExpanded by remember { mutableStateOf(false) }
     var themeExpanded by remember { mutableStateOf(false) }
-    var showStyleDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -111,41 +117,31 @@ fun PillSettingsScreen(
             expanded = themeExpanded,
             onToggle = { themeExpanded = !themeExpanded }
         ) {
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                FilterChip(
-                    selected = themeMode == ThemeMode.LIGHT,
-                    onClick = {
-                        viewModel.setThemeMode(ThemeMode.LIGHT)
-                        if (surfaceTintColor != 0L && DARK_TINT_PRESETS.any { it.second == surfaceTintColor }) {
-                            viewModel.setSurfaceTintColor(0L)
-                        }
-                    },
-                    label = { Text("Light") },
-                    leadingIcon = { Icon(Icons.Filled.LightMode, contentDescription = null) }
+            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                val themeEntries = listOf(
+                    Triple(ThemeMode.LIGHT, "Light", Icons.Filled.LightMode),
+                    Triple(ThemeMode.DARK, "Dark", Icons.Filled.DarkMode),
+                    Triple(ThemeMode.SYSTEM, "System", Icons.Filled.PhoneAndroid)
                 )
-                FilterChip(
-                    selected = themeMode == ThemeMode.DARK,
-                    onClick = {
-                        viewModel.setThemeMode(ThemeMode.DARK)
-                        if (surfaceTintColor != 0L && LIGHT_TINT_PRESETS.any { it.second == surfaceTintColor }) {
-                            viewModel.setSurfaceTintColor(0L)
-                        }
-                    },
-                    label = { Text("Dark") },
-                    leadingIcon = { Icon(Icons.Filled.DarkMode, contentDescription = null) }
-                )
-                FilterChip(
-                    selected = themeMode == ThemeMode.SYSTEM,
-                    onClick = {
-                        viewModel.setThemeMode(ThemeMode.SYSTEM)
-                        if (surfaceTintColor != 0L &&
-                            (LIGHT_TINT_PRESETS + DARK_TINT_PRESETS).any { it.second == surfaceTintColor }) {
-                            viewModel.setSurfaceTintColor(0L)
-                        }
-                    },
-                    label = { Text("System") },
-                    leadingIcon = { Icon(Icons.Filled.PhoneAndroid, contentDescription = null) }
-                )
+                themeEntries.forEachIndexed { index, (mode, label, icon) ->
+                    SegmentedButton(
+                        selected = themeMode == mode,
+                        onClick = {
+                            viewModel.setThemeMode(mode)
+                            val incompatiblePresets = when (mode) {
+                                ThemeMode.LIGHT -> DARK_TINT_PRESETS
+                                ThemeMode.DARK -> LIGHT_TINT_PRESETS
+                                ThemeMode.SYSTEM -> LIGHT_TINT_PRESETS + DARK_TINT_PRESETS
+                            }
+                            if (surfaceTintColor != 0L && incompatiblePresets.any { it.second == surfaceTintColor }) {
+                                viewModel.setSurfaceTintColor(0L)
+                            }
+                        },
+                        shape = SegmentedButtonDefaults.itemShape(index = index, count = themeEntries.size),
+                        icon = { Icon(icon, contentDescription = null, modifier = Modifier.size(18.dp)) },
+                        label = { Text(label) }
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(12.dp))
             SurfaceTintColorPicker(
@@ -156,38 +152,13 @@ fun PillSettingsScreen(
             Spacer(modifier = Modifier.height(16.dp))
             Text("Theme Style", style = MaterialTheme.typography.bodyMedium)
             Spacer(modifier = Modifier.height(8.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(28.dp))
-                    .background(
-                        Brush.horizontalGradient(
-                            listOf(
-                                MaterialTheme.colorScheme.primary,
-                                MaterialTheme.colorScheme.tertiary
-                            )
-                        )
-                    )
-                    .clickable { showStyleDialog = true }
-                    .padding(vertical = 14.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        Icons.Filled.Palette,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                    Text(
-                        if (translucentMode) "Transparent" else "Solid",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
-            }
+            GradientDropdownField(
+                icon = Icons.Filled.Palette,
+                selectedLabel = if (translucentMode) "Transparent" else "Solid",
+                options = listOf("Solid" to false, "Transparent" to true),
+                isSelected = { it == translucentMode },
+                onSelect = { viewModel.setTranslucentMode(it) }
+            )
             if (!translucentMode) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
@@ -220,17 +191,6 @@ fun PillSettingsScreen(
                     onValueChange = { viewModel.setGrainAlpha(it) }
                 )
             }
-        }
-
-        if (showStyleDialog) {
-            ThemeStyleDialog(
-                translucentMode = translucentMode,
-                onSelect = { transparent ->
-                    viewModel.setTranslucentMode(transparent)
-                    showStyleDialog = false
-                },
-                onDismiss = { showStyleDialog = false }
-            )
         }
 
         ExpandableSection(
@@ -292,39 +252,33 @@ fun PillSettingsScreen(
             Spacer(modifier = Modifier.height(8.dp))
             Text("Position", style = MaterialTheme.typography.bodyMedium)
             Spacer(modifier = Modifier.height(4.dp))
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                PillEdgePosition.entries.forEach { pos ->
-                    FilterChip(
-                        selected = pillSettings.edgePosition == pos,
-                        onClick = {
-                            val (w, h) = if (pos == PillEdgePosition.BOTTOM) 220f to 20f else 4f to 60f
-                            val (swipeUp, swipeDown, doubleTap) = if (pos == PillEdgePosition.BOTTOM)
-                                Triple(GestureAction.DISABLED, GestureAction.DISABLED, GestureAction.SHOW_DOCK)
-                            else
-                                Triple(GestureAction.SHOW_DOCK, GestureAction.DISABLED, GestureAction.DISABLED)
-                            viewModel.savePillSettings(pillSettings.copy(
-                                edgePosition = pos, widthDp = w, heightDp = h,
-                                swipeUpAction = swipeUp, swipeDownAction = swipeDown, doubleTapAction = doubleTap
-                            ))
-                        },
-                        label = {
-                            Text(
-                                when (pos) {
-                                    PillEdgePosition.BOTTOM -> "Bottom"
-                                    PillEdgePosition.LEFT   -> "Left"
-                                    PillEdgePosition.RIGHT  -> "Right"
-                                    PillEdgePosition.BOTH   -> "Both"
-                                },
-                                style = MaterialTheme.typography.labelMedium
-                            )
-                        }
-                    )
+            GradientDropdownField(
+                icon = Icons.Filled.DragIndicator,
+                selectedLabel = when (pillSettings.edgePosition) {
+                    PillEdgePosition.BOTTOM -> "Bottom"
+                    PillEdgePosition.LEFT   -> "Left"
+                    PillEdgePosition.RIGHT  -> "Right"
+                    PillEdgePosition.BOTH   -> "Both"
+                },
+                options = listOf(
+                    "Bottom" to PillEdgePosition.BOTTOM,
+                    "Left" to PillEdgePosition.LEFT,
+                    "Right" to PillEdgePosition.RIGHT,
+                    "Both" to PillEdgePosition.BOTH
+                ),
+                isSelected = { it == pillSettings.edgePosition },
+                onSelect = { pos ->
+                    val (w, h) = if (pos == PillEdgePosition.BOTTOM) 220f to 20f else 4f to 60f
+                    val (swipeUp, swipeDown, doubleTap) = if (pos == PillEdgePosition.BOTTOM)
+                        Triple(GestureAction.DISABLED, GestureAction.DISABLED, GestureAction.SHOW_DOCK)
+                    else
+                        Triple(GestureAction.SHOW_DOCK, GestureAction.DISABLED, GestureAction.DISABLED)
+                    viewModel.savePillSettings(pillSettings.copy(
+                        edgePosition = pos, widthDp = w, heightDp = h,
+                        swipeUpAction = swipeUp, swipeDownAction = swipeDown, doubleTapAction = doubleTap
+                    ))
                 }
-            }
+            )
             if (pillSettings.edgePosition == PillEdgePosition.BOTTOM) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text("Select Pill Gesture", style = MaterialTheme.typography.bodyMedium)
@@ -457,23 +411,21 @@ fun PillSettingsScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(4.dp))
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                FilterChip(
-                    selected = taskbarSettings.dockPadding == DockPadding.DEFAULT,
-                    onClick = { viewModel.saveTaskbarSettings(taskbarSettings.copy(dockPadding = DockPadding.DEFAULT)) },
-                    label = { Text("Default") }
-                )
-                FilterChip(
-                    selected = taskbarSettings.dockPadding == DockPadding.SMALL,
-                    onClick = { viewModel.saveTaskbarSettings(taskbarSettings.copy(dockPadding = DockPadding.SMALL)) },
-                    label = { Text("Small") }
-                )
-                FilterChip(
-                    selected = taskbarSettings.dockPadding == DockPadding.LARGE,
-                    onClick = { viewModel.saveTaskbarSettings(taskbarSettings.copy(dockPadding = DockPadding.LARGE)) },
-                    label = { Text("Large") }
-                )
-            }
+            GradientDropdownField(
+                icon = Icons.Filled.Straighten,
+                selectedLabel = when (taskbarSettings.dockPadding) {
+                    DockPadding.DEFAULT -> "Default"
+                    DockPadding.SMALL -> "Small"
+                    DockPadding.LARGE -> "Large"
+                },
+                options = listOf(
+                    "Default" to DockPadding.DEFAULT,
+                    "Small" to DockPadding.SMALL,
+                    "Large" to DockPadding.LARGE
+                ),
+                isSelected = { it == taskbarSettings.dockPadding },
+                onSelect = { viewModel.saveTaskbarSettings(taskbarSettings.copy(dockPadding = it)) }
+            )
         }
     }
 }
@@ -910,60 +862,65 @@ private fun RowScope.TintCell(
 }
 
 @Composable
-private fun ThemeStyleDialog(
-    translucentMode: Boolean,
-    onSelect: (Boolean) -> Unit,
-    onDismiss: () -> Unit
+private fun <T> GradientDropdownField(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    selectedLabel: String,
+    options: List<Pair<String, T>>,
+    isSelected: (T) -> Boolean,
+    onSelect: (T) -> Unit
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Theme Style") },
-        text = {
-            Column {
-                ThemeStyleOption(
-                    label = "Solid",
-                    description = "Opaque dock and panels",
-                    selected = !translucentMode,
-                    onClick = { onSelect(false) }
+    var expanded by remember { mutableStateOf(false) }
+    Box {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(28.dp))
+                .background(
+                    Brush.horizontalGradient(
+                        listOf(
+                            MaterialTheme.colorScheme.primary,
+                            MaterialTheme.colorScheme.tertiary
+                        )
+                    )
                 )
-                ThemeStyleOption(
-                    label = "Transparent",
-                    description = "Semi-transparent dock and panels",
-                    selected = translucentMode,
-                    onClick = { onSelect(true) }
+                .clickable { expanded = true }
+                .padding(vertical = 14.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
+                Text(
+                    selectedLabel,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+                Icon(
+                    Icons.Filled.ArrowDropDown,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
-        },
-        confirmButton = {},
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
         }
-    )
-}
-
-@Composable
-private fun ThemeStyleOption(
-    label: String,
-    description: String,
-    selected: Boolean,
-    onClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .clickable(onClick = onClick)
-            .padding(vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        RadioButton(selected = selected, onClick = onClick)
-        Column {
-            Text(label, style = MaterialTheme.typography.bodyLarge)
-            Text(
-                description,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.fillMaxWidth(0.9f)
+        ) {
+            options.forEach { (label, value) ->
+                DropdownMenuItem(
+                    text = { Text(label) },
+                    leadingIcon = if (isSelected(value)) {
+                        { Icon(Icons.Filled.Check, contentDescription = null) }
+                    } else null,
+                    onClick = {
+                        onSelect(value)
+                        expanded = false
+                    }
+                )
+            }
         }
     }
 }
