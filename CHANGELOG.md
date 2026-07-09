@@ -4,11 +4,13 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
-## [1.4.3] - 2026-07-08
+## [1.4.3] - 2026-07-09
 
-Design update — the Theme section in Design has been redesigned.
+Design update — the Theme section in Design has been redesigned — plus two new quick controls.
 
 ### Added
+- **Notification History panel** — a new "Notifs" quick control opens a panel listing recent notifications (up to 100): app icon and name, title, message, and relative time. Tap an entry to open the app, delete entries individually, or Clear all. Uses the Notification Access permission already granted for the Music Panel; ongoing, media, and silent housekeeping notifications are filtered out. History starts from when this version is installed.
+- **Mobile Data quick control** — shows whether mobile data is on; tapping opens the system Internet panel to toggle Wi-Fi or mobile data (Android 10+; older versions open network settings).
 - **Light and Dark color preset tabs** — surface tint presets are now grouped into Light and Dark tabs, each a 3×3 grid of swatch cards with a check badge on the active one. Two new presets per side: Lavender and Pearl (light), Forest and Espresso (dark).
 - **Auto preset** — the first cell in each tab. It follows your theme: switch between Light, Dark, or System and the dock and panels adapt automatically. Picking a Light/Dark/System theme mode also resets a mismatched preset (e.g. a dark preset while switching to Light) back to Auto; custom colors are always kept.
 - **Theme Style** — a new button under the color presets opens a Solid / Transparent chooser, replacing the old "Translucent panels" toggle. Solid shows the Panel Outline toggle; Transparent shows the Transparency and Grain sliders.
@@ -16,6 +18,7 @@ Design update — the Theme section in Design has been redesigned.
 - **Frosted backdrop for Clipboard and Search** — with Transparent style on Android 12+, the screen behind the Clipboard panel and the app search blurs while they're open (respects the system's cross-window blur setting; falls back to the regular translucent look where unavailable).
 
 ### Fixed
+- **Expanded calculator no longer extends past the top of the screen** — buttons had grown with screen width, so revealing the scientific rows pushed the panel off-screen; keys now use a compact fixed height.
 - **Clipboard frosted backdrop no longer blurs the dock** — the blur now sits behind the dock and pill, so they stay crisp while the screen behind the Clipboard panel frosts. The blur layer is also fully released while idle instead of staying on screen invisibly.
 - **Open panels no longer vanish when the Accessibility Service toggles** — turning the Accessibility Service on or off while the Clipboard, Volume, Brightness, or Calculator panel was open made it disappear until reopened, and could hide the Music Panel permanently. All panels now come back exactly as they were.
 
