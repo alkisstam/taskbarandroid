@@ -25,7 +25,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -216,20 +215,7 @@ private fun SwipeableNotificationCard(
                     .background(
                         if (direction != null) MaterialTheme.colorScheme.errorContainer else Color.Transparent
                     )
-                    .padding(horizontal = 16.dp),
-                contentAlignment = if (direction == SwipeToDismissBoxValue.EndToStart)
-                    Alignment.CenterEnd
-                else
-                    Alignment.CenterStart
-            ) {
-                if (direction != null) {
-                    Icon(
-                        Icons.Default.Delete,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onErrorContainer
-                    )
-                }
-            }
+            )
         }
     ) {
         Surface(

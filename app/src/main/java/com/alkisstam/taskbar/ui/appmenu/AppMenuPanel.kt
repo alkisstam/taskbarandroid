@@ -161,6 +161,7 @@ fun AppMenuPanel(
                     onLaunchApp = { pkg -> viewModel.launchApp(pkg); onHideTaskbar() },
                     onPinApp = viewModel::pinApp,
                     onUnpinApp = viewModel::unpinApp,
+                    onHideApp = viewModel::hideApp,
                     columns = appGridColumns,
                     modifier = Modifier
                         .fillMaxWidth()

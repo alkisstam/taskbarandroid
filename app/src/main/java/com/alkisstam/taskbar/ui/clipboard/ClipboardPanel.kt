@@ -44,14 +44,18 @@ import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -219,6 +223,7 @@ fun ClipboardPanel(
                                 todoItems = todoItems,
                                 onAdd = viewModel::addTodo,
                                 onToggleDone = viewModel::toggleTodoDone,
+                                onTogglePin = viewModel::toggleTodoPin,
                                 onDelete = viewModel::removeTodo,
                                 onEdit = viewModel::updateTodo,
                                 tabBarHeight = tabBarHeight
@@ -634,6 +639,7 @@ private fun ToDoTab(
     todoItems: List<TodoItem>,
     onAdd: (String) -> Unit,
     onToggleDone: (TodoItem) -> Unit,
+    onTogglePin: (TodoItem) -> Unit,
     onDelete: (String) -> Unit,
     onEdit: (TodoItem) -> Unit,
     tabBarHeight: Dp = 0.dp
@@ -644,7 +650,8 @@ private fun ToDoTab(
     val imeHeight = with(density) { WindowInsets.ime.getBottom(density).toDp() }
     val composerLift = (imeHeight - tabBarHeight).coerceAtLeast(0.dp)
 
-    val open = todoItems.filter { !it.isDone }.sortedByDescending { it.timestamp }
+    val open = todoItems.filter { !it.isDone }
+        .sortedWith(compareByDescending<TodoItem> { it.isPinned }.thenByDescending { it.timestamp })
     val completed = todoItems.filter { it.isDone }.sortedByDescending { it.timestamp }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -681,6 +688,7 @@ private fun ToDoTab(
                         onSaveEdit = { text -> onEdit(todo.copy(content = text)); editingTodo = null },
                         onCancelEdit = { editingTodo = null },
                         onToggleDone = { onToggleDone(todo) },
+                        onTogglePin = { onTogglePin(todo) },
                         onDelete = { onDelete(todo.id) }
                     )
                 }
@@ -702,6 +710,7 @@ private fun ToDoTab(
                         onSaveEdit = { text -> onEdit(todo.copy(content = text)); editingTodo = null },
                         onCancelEdit = { editingTodo = null },
                         onToggleDone = { onToggleDone(todo) },
+                        onTogglePin = { onTogglePin(todo) },
                         onDelete = { onDelete(todo.id) }
                     )
                 }
@@ -754,6 +763,7 @@ private fun TodoListItem(
     onSaveEdit: (String) -> Unit,
     onCancelEdit: () -> Unit,
     onToggleDone: () -> Unit,
+    onTogglePin: () -> Unit,
     onDelete: () -> Unit
 ) {
     if (isEditing) {
@@ -768,6 +778,7 @@ private fun TodoListItem(
             todo = todo,
             onToggleDone = onToggleDone,
             onEdit = onStartEdit,
+            onTogglePin = onTogglePin,
             onDelete = onDelete
         )
     }
@@ -939,6 +950,7 @@ private fun TodoItemCard(
     todo: TodoItem,
     onToggleDone: () -> Unit,
     onEdit: () -> Unit,
+    onTogglePin: () -> Unit,
     onDelete: () -> Unit
 ) {
     Surface(
@@ -980,16 +992,49 @@ private fun TodoItemCard(
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (todo.isDone) 0.6f else 1f),
                 modifier = Modifier.weight(1f)
             )
-            IconButton(onClick = onEdit) {
-                Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(20.dp))
-            }
-            IconButton(onClick = onDelete) {
+            if (todo.isPinned) {
                 Icon(
-                    Icons.Default.Delete,
-                    contentDescription = "Delete",
-                    modifier = Modifier.size(20.dp),
-                    tint = MaterialTheme.colorScheme.error
+                    Icons.Default.PushPin,
+                    contentDescription = null,
+                    modifier = Modifier.size(14.dp),
+                    tint = MaterialTheme.colorScheme.primary
                 )
+                Spacer(Modifier.width(4.dp))
+            }
+            var menuExpanded by remember { mutableStateOf(false) }
+            Box {
+                IconButton(onClick = { menuExpanded = true }) {
+                    Icon(Icons.Default.MoreVert, contentDescription = "More options", modifier = Modifier.size(20.dp))
+                }
+                DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
+                    DropdownMenuItem(
+                        text = { Text("Edit") },
+                        leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null) },
+                        onClick = { onEdit(); menuExpanded = false }
+                    )
+                    DropdownMenuItem(
+                        text = { Text(if (todo.isPinned) "Unpin" else "Pin") },
+                        leadingIcon = {
+                            Icon(
+                                Icons.Default.PushPin,
+                                contentDescription = null,
+                                tint = if (todo.isPinned) MaterialTheme.colorScheme.primary else LocalContentColor.current
+                            )
+                        },
+                        onClick = { onTogglePin(); menuExpanded = false }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Delete", color = MaterialTheme.colorScheme.error) },
+                        leadingIcon = {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        },
+                        onClick = { onDelete(); menuExpanded = false }
+                    )
+                }
             }
         }
     }

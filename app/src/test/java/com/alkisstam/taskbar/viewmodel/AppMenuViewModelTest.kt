@@ -54,6 +54,7 @@ class AppMenuViewModelTest {
             every { pinnedApps } returns flowOf(emptyList())
             every { musicPanelOpen } returns flowOf(false)
             every { caffeineOriginalTimeout } returns flowOf(null)
+            every { hiddenApps } returns flowOf(emptySet())
         }
         quickControls = mockk<QuickControlsRepository>(relaxed = true) {
             every { getRingerMode() } returns AudioManager.RINGER_MODE_NORMAL

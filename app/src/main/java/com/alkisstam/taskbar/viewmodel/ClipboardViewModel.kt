@@ -107,6 +107,10 @@ class ClipboardViewModel @Inject constructor(
         viewModelScope.launch { clipboardRepository.updateTodo(item.copy(isDone = !item.isDone)) }
     }
 
+    fun toggleTodoPin(item: TodoItem) {
+        viewModelScope.launch { clipboardRepository.updateTodo(item.copy(isPinned = !item.isPinned)) }
+    }
+
     fun updateTodo(item: TodoItem) {
         viewModelScope.launch { clipboardRepository.updateTodo(item) }
     }

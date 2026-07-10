@@ -662,6 +662,7 @@ private fun SearchSettingsCard(viewModel: TaskbarViewModel) {
 private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
     val pinnedApps by viewModel.pinnedApps.collectAsState()
     val allApps by viewModel.allApps.collectAsState()
+    val hiddenApps by viewModel.hiddenAppsInfo.collectAsState()
     val pinnedPackages = remember(pinnedApps) { pinnedApps.map { it.packageName }.toSet() }
     val appGridColumns by viewModel.appGridColumns.collectAsState()
     val appGridRows by viewModel.appGridRows.collectAsState()
@@ -762,6 +763,57 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
                                         textAlign = androidx.compose.ui.text.style.TextAlign.Center
                                     )
                                 }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (hiddenApps.isNotEmpty()) {
+            item {
+                SettingsCard(title = "Hidden Apps (${hiddenApps.size})") {
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(vertical = 4.dp)
+                    ) {
+                        items(hiddenApps, key = { it.packageName }) { app ->
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Box {
+                                    AppIconImage(
+                                        icon = app.icon,
+                                        contentDescription = app.label,
+                                        modifier = Modifier.size(48.dp).clip(CircleShape)
+                                    )
+                                    Box(
+                                        modifier = Modifier
+                                            .align(Alignment.TopEnd)
+                                            .size(16.dp)
+                                            .background(
+                                                color = MaterialTheme.colorScheme.secondary,
+                                                shape = CircleShape
+                                            )
+                                            .clickable { viewModel.unhideApp(app.packageName) },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Close,
+                                            contentDescription = "Unhide",
+                                            tint = MaterialTheme.colorScheme.onSecondary,
+                                            modifier = Modifier.size(10.dp)
+                                        )
+                                    }
+                                }
+                                Text(
+                                    text = app.label,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    maxLines = 1,
+                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                                    modifier = Modifier.width(48.dp),
+                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                )
                             }
                         }
                     }

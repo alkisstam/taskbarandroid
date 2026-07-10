@@ -48,7 +48,8 @@ data class TodoItem(
     val id: String,
     val content: String,
     val timestamp: Long,
-    val isDone: Boolean = false
+    val isDone: Boolean = false,
+    val isPinned: Boolean = false
 )
 
 @Singleton
@@ -279,6 +280,7 @@ class ClipboardRepository @Inject constructor(
                 put("content", item.content)
                 put("timestamp", item.timestamp)
                 put("isDone", item.isDone)
+                put("isPinned", item.isPinned)
             })
         }
         return arr.toString()
@@ -293,7 +295,8 @@ class ClipboardRepository @Inject constructor(
                     id = obj.getString("id"),
                     content = obj.getString("content"),
                     timestamp = obj.getLong("timestamp"),
-                    isDone = obj.optBoolean("isDone", false)
+                    isDone = obj.optBoolean("isDone", false),
+                    isPinned = obj.optBoolean("isPinned", false)
                 )
             } catch (e: Exception) {
                 Log.w("ClipboardRepository", "Skipping corrupt todo record at index $i", e)

@@ -40,7 +40,20 @@ class TaskbarViewModel @Inject constructor(
     private val prefsRepository: PreferencesRepository
 ) : ViewModel() {
 
-    val allApps: StateFlow<List<AppInfo>> = appRepository.apps
+    val allApps: StateFlow<List<AppInfo>> = combine(
+        appRepository.apps,
+        prefsRepository.hiddenApps
+    ) { apps, hidden ->
+        apps.filter { it.packageName !in hidden }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val hiddenAppsInfo: StateFlow<List<AppInfo>> = combine(
+        prefsRepository.hiddenApps,
+        appRepository.apps
+    ) { hidden, apps ->
+        val appMap = apps.associateBy { it.packageName }
+        hidden.mapNotNull { pkg -> appMap[pkg] }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val pinnedApps: StateFlow<List<AppInfo>> = combine(
         prefsRepository.pinnedApps,
@@ -259,6 +272,18 @@ class TaskbarViewModel @Inject constructor(
     fun unpinApp(packageName: String) {
         viewModelScope.launch {
             prefsRepository.unpinApp(packageName)
+        }
+    }
+
+    fun hideApp(packageName: String) {
+        viewModelScope.launch {
+            prefsRepository.hideApp(packageName)
+        }
+    }
+
+    fun unhideApp(packageName: String) {
+        viewModelScope.launch {
+            prefsRepository.unhideApp(packageName)
         }
     }
 

@@ -39,6 +39,8 @@ enum class PillEdgePosition { BOTTOM, LEFT, RIGHT, BOTH }
 
 enum class DockPadding { DEFAULT, SMALL, LARGE }
 
+enum class AppMenuButtonSide { LEFT, RIGHT }
+
 val DockPadding.bottomGapDp: Float
     get() = when (this) {
         DockPadding.DEFAULT -> 20f
@@ -69,7 +71,8 @@ data class TaskbarSettings(
     val pinnedIconPaddingDp: Float = 4f,
     val quickControlSizeDp: Float = 42f,
     val cornerRadiusDp: Float = 16f,
-    val dockPadding: DockPadding = DockPadding.DEFAULT
+    val dockPadding: DockPadding = DockPadding.DEFAULT,
+    val appMenuButtonSide: AppMenuButtonSide = AppMenuButtonSide.LEFT
 )
 
 data class PillSettings(
@@ -80,7 +83,7 @@ data class PillSettings(
     val heightDp: Float = 50f,
     val alpha: Float = 0.40f,
     val positionYDp: Float = 12f,
-    val positionXPct: Float = 4f,
+    val positionXPct: Float = 50f,
     val edgePosition: PillEdgePosition = PillEdgePosition.BOTTOM,
     val sidePositionPct: Float = 50f,
     val triggerAreaDp: Float = 18f,
@@ -120,6 +123,8 @@ class PreferencesRepository @Inject constructor(
         private val QUICK_CONTROL_SIZE_KEY = floatPreferencesKey("quick_control_size_dp")
         private val TASKBAR_CORNER_RADIUS_KEY = floatPreferencesKey("taskbar_corner_radius_dp")
         private val TASKBAR_DOCK_PADDING_KEY = stringPreferencesKey("taskbar_dock_padding")
+        private val TASKBAR_APP_MENU_SIDE_KEY = stringPreferencesKey("taskbar_app_menu_side")
+        private val HIDDEN_APPS_KEY = stringPreferencesKey("hidden_apps")
         private val SURFACE_TINT_COLOR_KEY = stringPreferencesKey("surface_tint_color")
         private val AUTO_HIDE_FULLSCREEN_KEY = booleanPreferencesKey("auto_hide_fullscreen")
         private val AUTO_HIDE_LANDSCAPE_KEY = booleanPreferencesKey("auto_hide_landscape")
@@ -223,6 +228,24 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
+    val hiddenApps: Flow<Set<String>> = safeData.map { prefs ->
+        prefs[HIDDEN_APPS_KEY]?.let { deserializeStringList(it).toSet() } ?: emptySet()
+    }
+
+    suspend fun hideApp(packageName: String) {
+        context.dataStore.edit { prefs ->
+            val current = prefs[HIDDEN_APPS_KEY]?.let { deserializeStringList(it).toSet() } ?: emptySet()
+            prefs[HIDDEN_APPS_KEY] = serializeStringList((current + packageName).toList())
+        }
+    }
+
+    suspend fun unhideApp(packageName: String) {
+        context.dataStore.edit { prefs ->
+            val current = prefs[HIDDEN_APPS_KEY]?.let { deserializeStringList(it).toSet() } ?: emptySet()
+            prefs[HIDDEN_APPS_KEY] = serializeStringList((current - packageName).toList())
+        }
+    }
+
     val pillSettings: Flow<PillSettings> = safeData.map { prefs ->
         PillSettings(
             swipeUpAction    = prefs[PILL_SWIPE_UP_ACTION_KEY].toGestureAction(),
@@ -299,7 +322,8 @@ class PreferencesRepository @Inject constructor(
             pinnedIconPaddingDp = prefs[PINNED_ICON_PADDING_KEY]    ?: 4f,
             quickControlSizeDp = prefs[QUICK_CONTROL_SIZE_KEY]      ?: 42f,
             cornerRadiusDp     = prefs[TASKBAR_CORNER_RADIUS_KEY]   ?: 16f,
-            dockPadding        = prefs[TASKBAR_DOCK_PADDING_KEY]?.let { runCatching { DockPadding.valueOf(it) }.getOrNull() } ?: DockPadding.DEFAULT
+            dockPadding        = prefs[TASKBAR_DOCK_PADDING_KEY]?.let { runCatching { DockPadding.valueOf(it) }.getOrNull() } ?: DockPadding.DEFAULT,
+            appMenuButtonSide  = prefs[TASKBAR_APP_MENU_SIDE_KEY]?.let { runCatching { AppMenuButtonSide.valueOf(it) }.getOrNull() } ?: AppMenuButtonSide.LEFT
         )
     }
 
@@ -313,6 +337,7 @@ class PreferencesRepository @Inject constructor(
             prefs[QUICK_CONTROL_SIZE_KEY]     = settings.quickControlSizeDp
             prefs[TASKBAR_CORNER_RADIUS_KEY]  = settings.cornerRadiusDp
             prefs[TASKBAR_DOCK_PADDING_KEY]   = settings.dockPadding.name
+            prefs[TASKBAR_APP_MENU_SIDE_KEY]  = settings.appMenuButtonSide.name
         }
     }
 
@@ -553,6 +578,8 @@ class PreferencesRepository @Inject constructor(
             prefs[QUICK_CONTROL_SIZE_KEY]?.let { put("quick_control_size_dp", it) }
             prefs[TASKBAR_CORNER_RADIUS_KEY]?.let { put("taskbar_corner_radius_dp", it) }
             prefs[TASKBAR_DOCK_PADDING_KEY]?.let { put("taskbar_dock_padding", it) }
+            prefs[TASKBAR_APP_MENU_SIDE_KEY]?.let { put("taskbar_app_menu_side", it) }
+            prefs[HIDDEN_APPS_KEY]?.let { put("hidden_apps", it) }
             prefs[SURFACE_TINT_COLOR_KEY]?.let { put("surface_tint_color", it) }
             prefs[AUTO_HIDE_FULLSCREEN_KEY]?.let { put("auto_hide_fullscreen", it) }
             prefs[AUTO_HIDE_LANDSCAPE_KEY]?.let { put("auto_hide_landscape", it) }
@@ -599,6 +626,8 @@ class PreferencesRepository @Inject constructor(
             if (obj.has("quick_control_size_dp")) prefs[QUICK_CONTROL_SIZE_KEY] = obj.getDouble("quick_control_size_dp").toFloat()
             if (obj.has("taskbar_corner_radius_dp")) prefs[TASKBAR_CORNER_RADIUS_KEY] = obj.getDouble("taskbar_corner_radius_dp").toFloat()
             if (obj.has("taskbar_dock_padding")) prefs[TASKBAR_DOCK_PADDING_KEY] = obj.getString("taskbar_dock_padding")
+            if (obj.has("taskbar_app_menu_side")) prefs[TASKBAR_APP_MENU_SIDE_KEY] = obj.getString("taskbar_app_menu_side")
+            if (obj.has("hidden_apps")) prefs[HIDDEN_APPS_KEY] = obj.getString("hidden_apps")
             if (obj.has("surface_tint_color")) prefs[SURFACE_TINT_COLOR_KEY] = obj.getString("surface_tint_color")
             if (obj.has("auto_hide_fullscreen")) prefs[AUTO_HIDE_FULLSCREEN_KEY] = obj.getBoolean("auto_hide_fullscreen")
             if (obj.has("auto_hide_landscape")) prefs[AUTO_HIDE_LANDSCAPE_KEY] = obj.getBoolean("auto_hide_landscape")

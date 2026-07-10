@@ -47,6 +47,7 @@ fun AppGrid(
     onLaunchApp: (String) -> Unit,
     onPinApp: (String) -> Unit,
     onUnpinApp: (String) -> Unit,
+    onHideApp: (String) -> Unit,
     columns: Int = 3,
     modifier: Modifier = Modifier
 ) {
@@ -66,7 +67,8 @@ fun AppGrid(
                 onPin = {
                     if (isPinned) onUnpinApp(app.packageName)
                     else onPinApp(app.packageName)
-                }
+                },
+                onHide = { onHideApp(app.packageName) }
             )
         }
     }
@@ -79,6 +81,7 @@ private fun AppGridItem(
     isPinned: Boolean,
     onLaunch: () -> Unit,
     onPin: () -> Unit,
+    onHide: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showMenu by remember { mutableStateOf(false) }
@@ -146,6 +149,7 @@ private fun AppGridItem(
                         AppGridMenuAction(
                             if (isPinned) "Unpin from Dock" else "Pin to Dock"
                         ) { onPin(); showMenu = false }
+                        AppGridMenuAction("Hide App") { onHide(); showMenu = false }
                     }
                 }
             }

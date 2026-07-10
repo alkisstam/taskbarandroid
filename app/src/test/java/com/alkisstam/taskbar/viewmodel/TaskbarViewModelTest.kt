@@ -55,6 +55,7 @@ class TaskbarViewModelTest {
             every { onboardingComplete } returns flowOf(true)
             every { musicPanelEnabled } returns flowOf(false)
             every { taskbarVisible } returns flowOf(true)
+            every { hiddenApps } returns flowOf(emptySet())
         }
     }
 

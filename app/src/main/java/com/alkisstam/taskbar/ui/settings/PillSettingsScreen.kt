@@ -40,6 +40,7 @@ import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Straighten
+import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -76,6 +77,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.data.AppMenuButtonSide
 import com.alkisstam.taskbar.data.DockPadding
 import com.alkisstam.taskbar.data.GestureAction
 import com.alkisstam.taskbar.data.PillEdgePosition
@@ -321,6 +323,15 @@ fun PillSettingsScreen(
                     unit = "dp",
                     onValueChange = { viewModel.savePillSettings(pillSettings.copy(positionYDp = it)) }
                 )
+                Spacer(modifier = Modifier.height(8.dp))
+                SettingsSlider(
+                    label = "Position along edge",
+                    value = pillSettings.positionXPct,
+                    valueRange = 0f..100f,
+                    unit = "%",
+                    displayTransform = { "${it.toInt()}%" },
+                    onValueChange = { viewModel.savePillSettings(pillSettings.copy(positionXPct = it)) }
+                )
             }
             if (pillSettings.edgePosition != PillEdgePosition.BOTTOM) {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -357,7 +368,7 @@ fun PillSettingsScreen(
                 )
             }
             Spacer(modifier = Modifier.height(12.dp))
-            PillPositionPreview(pillSettings.edgePosition, pillSettings.widthDp, pillSettings.heightDp, pillSettings.alpha, pillSettings.sidePositionPct, pillSettings.restrictTriggerToPill)
+            PillPositionPreview(pillSettings.edgePosition, pillSettings.widthDp, pillSettings.heightDp, pillSettings.alpha, pillSettings.sidePositionPct, pillSettings.restrictTriggerToPill, pillSettings.positionXPct)
             Spacer(modifier = Modifier.height(8.dp))
             if (pillSettings.edgePosition != PillEdgePosition.BOTTOM) {
                 Text(
@@ -433,6 +444,22 @@ fun PillSettingsScreen(
                 isSelected = { it == taskbarSettings.dockPadding },
                 onSelect = { viewModel.saveTaskbarSettings(taskbarSettings.copy(dockPadding = it)) }
             )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text("All Apps Button", style = MaterialTheme.typography.bodyMedium)
+            Spacer(modifier = Modifier.height(4.dp))
+            GradientDropdownField(
+                icon = Icons.Filled.SwapHoriz,
+                selectedLabel = when (taskbarSettings.appMenuButtonSide) {
+                    AppMenuButtonSide.LEFT -> "Left"
+                    AppMenuButtonSide.RIGHT -> "Right"
+                },
+                options = listOf(
+                    "Left" to AppMenuButtonSide.LEFT,
+                    "Right" to AppMenuButtonSide.RIGHT
+                ),
+                isSelected = { it == taskbarSettings.appMenuButtonSide },
+                onSelect = { viewModel.saveTaskbarSettings(taskbarSettings.copy(appMenuButtonSide = it)) }
+            )
         }
     }
 }
@@ -444,7 +471,8 @@ private fun PillPositionPreview(
     heightDp: Float,
     alpha: Float,
     sidePositionPct: Float = 50f,
-    restrictTriggerToPill: Boolean = false
+    restrictTriggerToPill: Boolean = false,
+    positionXPct: Float = 50f
 ) {
     val pillColor = MaterialTheme.colorScheme.primary.copy(alpha = alpha)
     val triggerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)
@@ -453,6 +481,7 @@ private fun PillPositionPreview(
     val frameH = 100.dp
     val pillH = heightDp.coerceIn(2f, 50f).dp
     val sideOffsetFraction = (sidePositionPct - 50f) / 100f
+    val bottomOffsetFraction = (positionXPct - 50f) / 100f
 
     Box(
         modifier = Modifier
@@ -489,7 +518,7 @@ private fun PillPositionPreview(
                             .align(Alignment.BottomCenter)
                             .width(28.dp)
                             .height(4.dp)
-                            .offset(y = (-3).dp)
+                            .offset(x = (bottomOffsetFraction * frameW.value).dp, y = (-3).dp)
                             .background(pillColor, RoundedCornerShape(percent = 50))
                     )
                 }

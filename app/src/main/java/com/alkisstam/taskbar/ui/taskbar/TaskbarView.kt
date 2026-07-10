@@ -50,6 +50,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.data.AppMenuButtonSide
 import com.alkisstam.taskbar.data.bottomGapDp
 import com.alkisstam.taskbar.data.widthFraction
 import kotlinx.coroutines.delay
@@ -261,6 +262,7 @@ fun TaskbarView(
                     }
                 }
 
+                val buttonOnLeft = taskbarSettings.appMenuButtonSide == AppMenuButtonSide.LEFT
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -269,12 +271,14 @@ fun TaskbarView(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start
                 ) {
-                    AppMenuButton(
-                        menuOpen = menuVisible,
-                        onClick = { appMenuViewModel.toggleMenu() },
-                        size = iconSize,
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
+                    if (buttonOnLeft) {
+                        AppMenuButton(
+                            menuOpen = menuVisible,
+                            onClick = { appMenuViewModel.toggleMenu() },
+                            size = iconSize,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
 
                     LazyRow(
                         state = pinnedListState,
@@ -296,6 +300,15 @@ fun TaskbarView(
                                 )
                             }
                         }
+
+                    if (!buttonOnLeft) {
+                        AppMenuButton(
+                            menuOpen = menuVisible,
+                            onClick = { appMenuViewModel.toggleMenu() },
+                            size = iconSize,
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                    }
                 }
 
                 StatusBarRow(batteryLevel = batteryLevel, isCharging = isCharging)

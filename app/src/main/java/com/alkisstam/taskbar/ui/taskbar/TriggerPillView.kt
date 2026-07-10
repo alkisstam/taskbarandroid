@@ -131,7 +131,12 @@ fun TriggerPillView(
                 }
         ) {
             if (isBottom) {
-                Box(modifier = Modifier.align(Alignment.Center)) {
+                val totalW = maxWidth
+                val pillW = pillSettings.widthDp.coerceAtLeast(2f).dp
+                val availableW = totalW - pillW
+                val xOffset = (pillSettings.positionXPct / 100f * availableW.value).dp
+                    .coerceIn(0.dp, availableW.coerceAtLeast(0.dp))
+                Box(modifier = Modifier.offset(x = xOffset).align(Alignment.CenterStart)) {
                     PillShape(pillSettings = pillSettings)
                 }
             } else if (pillSettings.restrictTriggerToPill) {

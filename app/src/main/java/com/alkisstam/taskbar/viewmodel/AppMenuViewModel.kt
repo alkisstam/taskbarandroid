@@ -107,7 +107,11 @@ class AppMenuViewModel @Inject constructor(
         recentPackages.mapNotNull { byPackage[it] }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val filteredApps: StateFlow<List<AppInfo>> = combine(appRepository.apps, _searchQuery, fuzzySearchEnabled) { apps, query, fuzzyEnabled ->
+    val hiddenApps: StateFlow<Set<String>> = prefsRepository.hiddenApps
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet())
+
+    val filteredApps: StateFlow<List<AppInfo>> = combine(appRepository.apps, _searchQuery, fuzzySearchEnabled, prefsRepository.hiddenApps) { allApps, query, fuzzyEnabled, hidden ->
+        val apps = allApps.filter { it.packageName !in hidden }
         val q = query.trim()
         when {
             q.isEmpty() -> apps
@@ -413,6 +417,14 @@ class AppMenuViewModel @Inject constructor(
 
     fun unpinApp(packageName: String) {
         viewModelScope.launch { prefsRepository.unpinApp(packageName) }
+    }
+
+    fun hideApp(packageName: String) {
+        viewModelScope.launch { prefsRepository.hideApp(packageName) }
+    }
+
+    fun unhideApp(packageName: String) {
+        viewModelScope.launch { prefsRepository.unhideApp(packageName) }
     }
 
     fun refreshQuickControls() {
