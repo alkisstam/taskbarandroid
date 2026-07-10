@@ -1,6 +1,10 @@
 package com.alkisstam.taskbar.ui.notifications
 
 import android.graphics.Bitmap
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -22,15 +26,22 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +57,7 @@ import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 import com.alkisstam.taskbar.ui.theme.grain
 import com.alkisstam.taskbar.viewmodel.NotificationHistoryViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotificationHistoryPanel(
     viewModel: NotificationHistoryViewModel,
@@ -60,6 +72,8 @@ fun NotificationHistoryPanel(
     dockBottomPadding: Dp = 0.dp
 ) {
     val notifications by viewModel.notifications.collectAsState()
+    val grouped = remember(notifications) { notifications.groupBy { it.packageName } }
+    val expandedMap = remember { mutableStateMapOf<String, Boolean>() }
 
     val panelShape = RoundedCornerShape(24.dp)
     val panelColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
@@ -99,7 +113,7 @@ fun NotificationHistoryPanel(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Notifications",
+                        text = "Notification History",
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.weight(1f)
                     )
@@ -127,13 +141,47 @@ fun NotificationHistoryPanel(
                         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(notifications, key = { it.id }) { entry ->
-                            NotificationEntryCard(
-                                entry = entry,
-                                icon = iconForPackage(entry.packageName),
-                                onClick = { onOpenApp(entry.packageName) },
-                                onDelete = { viewModel.remove(entry.id) }
-                            )
+                        grouped.forEach { (packageName, entries) ->
+                            if (entries.size == 1) {
+                                val entry = entries[0]
+                                item(key = entry.id) {
+                                    SwipeableNotificationCard(
+                                        onClick = { onOpenApp(packageName) },
+                                        onDelete = { viewModel.remove(entry.id) }
+                                    ) {
+                                        NotificationEntryContent(
+                                            entry = entry,
+                                            icon = iconForPackage(packageName),
+                                            showAppRow = true
+                                        )
+                                    }
+                                }
+                            } else {
+                                val expanded = expandedMap[packageName] == true
+                                item(key = "group_$packageName") {
+                                    NotificationGroupHeader(
+                                        appLabel = entries[0].appLabel,
+                                        icon = iconForPackage(packageName),
+                                        count = entries.size,
+                                        expanded = expanded,
+                                        onToggle = { expandedMap[packageName] = !expanded }
+                                    )
+                                }
+                                if (expanded) {
+                                    items(entries, key = { it.id }) { entry ->
+                                        SwipeableNotificationCard(
+                                            onClick = { onOpenApp(packageName) },
+                                            onDelete = { viewModel.remove(entry.id) }
+                                        ) {
+                                            NotificationEntryContent(
+                                                entry = entry,
+                                                icon = null,
+                                                showAppRow = false
+                                            )
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -142,12 +190,69 @@ fun NotificationHistoryPanel(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun NotificationEntryCard(
-    entry: NotificationEntry,
-    icon: Bitmap?,
+private fun SwipeableNotificationCard(
     onClick: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    content: @Composable () -> Unit
+) {
+    val dismissState = rememberSwipeToDismissBoxState(
+        confirmValueChange = { value ->
+            if (value == SwipeToDismissBoxValue.StartToEnd || value == SwipeToDismissBoxValue.EndToStart) {
+                onDelete()
+            }
+            true
+        }
+    )
+    SwipeToDismissBox(
+        state = dismissState,
+        backgroundContent = {
+            val direction = dismissState.dismissDirection
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(
+                        if (direction != null) MaterialTheme.colorScheme.errorContainer else Color.Transparent
+                    )
+                    .padding(horizontal = 16.dp),
+                contentAlignment = if (direction == SwipeToDismissBoxValue.EndToStart)
+                    Alignment.CenterEnd
+                else
+                    Alignment.CenterStart
+            ) {
+                if (direction != null) {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onErrorContainer
+                    )
+                }
+            }
+        }
+    ) {
+        Surface(
+            shape = RoundedCornerShape(12.dp),
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+            contentColor = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(12.dp))
+                .clickable(onClick = onClick)
+        ) {
+            content()
+        }
+    }
+}
+
+@Composable
+private fun NotificationGroupHeader(
+    appLabel: String,
+    icon: Bitmap?,
+    count: Int,
+    expanded: Boolean,
+    onToggle: () -> Unit
 ) {
     Surface(
         shape = RoundedCornerShape(12.dp),
@@ -156,20 +261,62 @@ private fun NotificationEntryCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .clickable(onClick = onClick)
+            .clickable(onClick = onToggle)
     ) {
         Row(
-            modifier = Modifier.padding(start = 12.dp, end = 4.dp, top = 10.dp, bottom = 10.dp),
+            modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 10.dp, bottom = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            AppIconImage(
+                icon = icon,
+                contentDescription = appLabel,
+                modifier = Modifier.size(32.dp)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = appLabel,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = "$count notifications",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Icon(
+                imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                contentDescription = if (expanded) "Collapse" else "Expand",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun NotificationEntryContent(
+    entry: NotificationEntry,
+    icon: Bitmap?,
+    showAppRow: Boolean
+) {
+    Row(
+        modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 10.dp, bottom = 10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (showAppRow) {
             AppIconImage(
                 icon = icon,
                 contentDescription = entry.appLabel,
                 modifier = Modifier.size(32.dp)
             )
             Spacer(modifier = Modifier.width(12.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (showAppRow) {
                     Text(
                         text = entry.appLabel,
                         style = MaterialTheme.typography.labelSmall,
@@ -179,37 +326,31 @@ private fun NotificationEntryCard(
                         modifier = Modifier.weight(1f, fill = false)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = formatTimestamp(entry.timestamp),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                } else {
+                    Spacer(modifier = Modifier.weight(1f))
                 }
-                if (entry.title.isNotBlank()) {
-                    Text(
-                        text = entry.title,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-                if (entry.text.isNotBlank()) {
-                    Text(
-                        text = entry.text,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
+                Text(
+                    text = formatTimestamp(entry.timestamp),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
-            IconButton(onClick = onDelete) {
-                Icon(
-                    Icons.Default.Delete,
-                    contentDescription = "Delete",
-                    modifier = Modifier.size(20.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+            if (entry.title.isNotBlank()) {
+                Text(
+                    text = entry.title,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            if (entry.text.isNotBlank()) {
+                Text(
+                    text = entry.text,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }

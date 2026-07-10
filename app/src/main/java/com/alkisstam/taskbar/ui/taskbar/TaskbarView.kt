@@ -279,7 +279,7 @@ fun TaskbarView(
                     LazyRow(
                         state = pinnedListState,
                         modifier = Modifier.weight(1f),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
+                        horizontalArrangement = Arrangement.spacedBy(taskbarSettings.pinnedIconPaddingDp.dp, Alignment.CenterHorizontally),
                         verticalAlignment = Alignment.CenterVertically,
                         contentPadding = PaddingValues(horizontal = 4.dp)
                     ) {
