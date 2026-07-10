@@ -22,11 +22,22 @@ Design update — the Theme section in Design has been redesigned — plus two n
 - **Segmented Light/Dark/System toggle** — the three theme buttons are now one connected pill with the active option highlighted.
 - **Recent apps row in the App Menu** — new "Show Recent Apps in All Apps Panel" toggle in Settings → Apps adds a row of recently-opened apps under the search bar, separated by a divider and aligned to the App Grid's column count.
 - **All Apps preview resized** — the All Apps list in Settings → Apps now shows a 4-row view instead of a taller fixed height.
+- **Telegram button in General settings** — a circular Telegram button (t.me/floatingdock) now sits next to Contact & Feedback.
+- **Pinned Icon Padding slider** — Design → Dock Size & Appearance now has a slider (2-12dp) controlling the gap between pinned app icons independently of icon size.
+- **Notification History grouping and swipe-to-dismiss** — notifications from the same app are grouped under an expandable arrow when there's more than one; swipe a notification left or right to remove it.
+- **All Apps button side** — Design → Dock Size & Appearance now has a Left/Right dropdown for where the all-apps button sits in the dock row.
+- **Pill position along the bottom edge** — when the trigger pill is set to the Bottom edge position, a new "Position along edge" slider moves it left-to-right instead of always centering it.
+- **Hide App** — long-press an app in the App Menu for a new "Hide App" option; hidden apps disappear from the app grid and search, and can be unhidden from a new "Hidden Apps" list in Settings → Apps.
+- **Scrollable clip text cards** — clip and note cards in the Clipboard panel and Clips tab now scroll internally instead of truncating when the text is longer than the card.
+- **To-do overflow menu** — each to-do now has a three-dot menu (Edit, Pin, Delete) instead of separate icon buttons; pinned to-dos sort to the top of the list.
 
 ### Fixed
 - **Expanded calculator no longer extends past the top of the screen** — buttons had grown with screen width, so revealing the scientific rows pushed the panel off-screen; keys now use a compact fixed height.
 - **Clipboard frosted backdrop no longer blurs the dock** — the blur now sits behind the dock and pill, so they stay crisp while the screen behind the Clipboard panel frosts. The blur layer is also fully released while idle instead of staying on screen invisibly.
 - **Open panels no longer vanish when the Accessibility Service toggles** — turning the Accessibility Service on or off while the Clipboard, Volume, Brightness, or Calculator panel was open made it disappear until reopened, and could hide the Music Panel permanently. All panels now come back exactly as they were.
+- **Stray icon glyph in Notification History text** — some notifications (weather, sports scores) embed inline icons that left behind a leftover placeholder character rendered as a stray icon over the title/text; it's now stripped.
+- **Removed the overlapping delete icon in Notification History** — a delete icon was rendering on top of the notification text at rest instead of only during a swipe; swiping still shows a red background as feedback.
+- Silenced an `OnBackInvokedCallback` warning surfaced in Firebase Test Lab logs by enabling predictive back in the manifest.
 
 ---
 

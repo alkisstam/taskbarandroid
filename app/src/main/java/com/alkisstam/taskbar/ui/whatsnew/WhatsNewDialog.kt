@@ -128,7 +128,12 @@ val whatsNewReleases = listOf(
             "New \"Show Recent Apps in All Apps Panel\" toggle — adds a row of recent apps under the search bar, aligned to your App Grid columns",
             "New Telegram button next to Contact & Feedback in General settings",
             "New Pinned Icon Padding slider in Design → Dock Size & Appearance",
-            "Notification History panel groups multiple notifications per app under an expandable arrow, and swipe now removes a notification instead of a delete button"
+            "Notification History panel groups multiple notifications per app under an expandable arrow, and swipe now removes a notification instead of a delete button",
+            "New All Apps button Left/Right setting in Design → Dock Size & Appearance",
+            "Bottom trigger pill now has a Position along edge slider instead of always centering",
+            "New \"Hide App\" long-press option in the App Menu, plus a Hidden Apps list in Settings → Apps",
+            "Long clip and note text now scrolls inside its card instead of getting cut off",
+            "To-dos now have a three-dot menu (Edit, Pin, Delete) and pinned to-dos sort to the top"
         )
     )
 )
