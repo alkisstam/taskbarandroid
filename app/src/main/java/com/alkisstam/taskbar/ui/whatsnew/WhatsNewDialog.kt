@@ -125,7 +125,10 @@ val whatsNewReleases = listOf(
             "Theme Style, Pill Position, and Dock Edge Padding are now dropdown menus instead of buttons or a popup",
             "Light/Dark/System is now a single segmented pill button",
             "All Apps preview in Settings resized to a 4-row view",
-            "New \"Show Recent Apps in All Apps Panel\" toggle — adds a row of recent apps under the search bar, aligned to your App Grid columns"
+            "New \"Show Recent Apps in All Apps Panel\" toggle — adds a row of recent apps under the search bar, aligned to your App Grid columns",
+            "New Telegram button next to Contact & Feedback in General settings",
+            "New Pinned Icon Padding slider in Design → Dock Size & Appearance",
+            "Notification History panel groups multiple notifications per app under an expandable arrow, and swipe now removes a notification instead of a delete button"
         )
     )
 )

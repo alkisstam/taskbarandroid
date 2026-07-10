@@ -2,7 +2,7 @@
 
 A system-overlay dock for Android that renders above all other apps — including the system navigation bar when the Accessibility Service is enabled.
 
-**Current version:** 1.4.1 (versionCode 45)
+**Current version:** 1.4.3 (versionCode 47)
 
 ## Features
 
@@ -31,13 +31,16 @@ A system-overlay dock for Android that renders above all other apps — includin
 ### Quick Controls
 
 - Expandable row above pinned apps (swipe up on dock to reveal)
-- Controls: Music, Torch, Ringer, Rotate, Brightness, DND, QR Code, Power, Volume, Screenshot, Lock Screen, Clipboard, Wifi, Bluetooth, Share
+- Controls: Music, Torch, Ringer, Rotate, Brightness, DND, QR Code, Power, Volume, Screenshot, Lock Screen, Clipboard, Wifi, Bluetooth, Share, Mobile Data, Notification History, Calculator
 - Reorderable and individually enable/disable in the **Controls** settings tab
 - Tapping Wifi, Bluetooth, or Share auto-hides the dock and Music Panel, same as QR Code, Power, Screenshot, and Lock Screen
 - **Music Panel:** floating player with album art, playback controls (prev/play-pause/next); follows the dock's Corner Radius/Edge Padding design settings; tap the album art to open the currently playing app
 - **Volume Panel:** per-stream vertical sliders (Media, Ring, Alarm)
 - **Brightness Panel:** horizontal slider with auto-brightness toggle
 - **Clipboard Panel:** three-tab panel (Clips / Favorites / Notes) — capture content via the Android share sheet, open URLs/images/PDFs/files in-place, compose and edit notes; text/link clips and notes can be edited in place
+- **Calculator Panel:** floating calculator with a live running total; swipe up on the handle to reveal scientific functions
+- **Notification History Panel:** browse recent notifications (up to 100); notifications from the same app are grouped under an expandable arrow; tap an entry to open the app, swipe to remove it, or Clear all
+- **Mobile Data control:** shows mobile data status; tap to open the system Internet panel
 
 ### Theming
 
@@ -59,7 +62,7 @@ Four-tab settings screen: **General**, **Apps**, **Controls**, **Design**
 
 - **Apps** tab: manage pinned apps (drag-to-reorder, tap to pin/unpin); browse all installed apps
 - **Controls** tab: Quick Controls master toggle, show/hide labels, reorder Active Controls, enable/disable individual controls
-- **Design** tab: Pill Size & Appearance, Dock Size & Appearance
+- **Design** tab: Pill Size & Appearance, Dock Size & Appearance (Height, Pinned App Icon Size, Pinned Icon Padding, Quick Controls Size, Corner Radius, Edge Padding)
 
 ## Requirements
 
