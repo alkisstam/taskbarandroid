@@ -64,9 +64,9 @@ class NotificationHistoryRepository @Inject constructor(
         if (sbn.packageName == context.packageName) return
         if (notification.category == Notification.CATEGORY_TRANSPORT) return
         val extras = notification.extras
-        val title = extras.getCharSequence(Notification.EXTRA_TITLE)?.toString().orEmpty()
-        val text = extras.getCharSequence(Notification.EXTRA_TEXT)?.toString()
-            ?: extras.getCharSequence(Notification.EXTRA_BIG_TEXT)?.toString().orEmpty()
+        val title = extras.getCharSequence(Notification.EXTRA_TITLE)?.toString().orEmpty().stripImageSpanChar()
+        val text = (extras.getCharSequence(Notification.EXTRA_TEXT)?.toString()
+            ?: extras.getCharSequence(Notification.EXTRA_BIG_TEXT)?.toString().orEmpty()).stripImageSpanChar()
         if (title.isBlank() && text.isBlank()) return
 
         val entry = NotificationEntry(
@@ -102,6 +102,8 @@ class NotificationHistoryRepository @Inject constructor(
             prefs[NOTIFICATIONS_KEY] = serializeEntries(emptyList())
         }
     }
+
+    private fun String.stripImageSpanChar(): String = replace("￼", "").trim()
 
     private fun resolveAppLabel(packageName: String): String =
         labelCache.getOrPut(packageName) {
