@@ -77,7 +77,7 @@ internal fun Context.pillLayoutParams(
             }
             else -> {
                 gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-                x = 0
+                x = bottomPositionOffsetPx(settings, density)
                 y = (settings.positionYDp * density).toInt()
             }
         }
@@ -89,6 +89,13 @@ private fun Context.sidePositionOffsetPx(settings: PillSettings, density: Float)
     val pillHeightPx = (settings.heightDp * density).toInt()
     val availableH = (screenHeightPx - pillHeightPx).coerceAtLeast(0)
     return (settings.sidePositionPct / 100f * availableH).toInt()
+}
+
+private fun Context.bottomPositionOffsetPx(settings: PillSettings, density: Float): Int {
+    val screenWidthPx = resources.displayMetrics.widthPixels
+    val pillWidthPx = (settings.widthDp * density).toInt()
+    val availableW = (screenWidthPx - pillWidthPx).coerceAtLeast(0)
+    return ((settings.positionXPct - 50f) / 100f * availableW).toInt()
 }
 
 internal fun Context.searchLayoutParams(focusable: Boolean = false, blurBehind: Boolean = false): WindowManager.LayoutParams {
