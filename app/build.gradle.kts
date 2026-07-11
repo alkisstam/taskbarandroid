@@ -30,7 +30,7 @@ android {
         applicationId = "com.alkisstam.taskbar"
         minSdk = 26
         targetSdk = 35
-        versionCode = 47
+        versionCode = 48
         versionName = "1.4.3"
         ndk {
             debugSymbolLevel = "FULL"
@@ -96,6 +96,8 @@ dependencies {
     implementation(libs.reorderable)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.app.update.ktx)
     debugImplementation(libs.androidx.ui.tooling)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)

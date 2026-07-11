@@ -36,12 +36,25 @@ import com.alkisstam.taskbar.ui.theme.TaskBarTheme
 import com.alkisstam.taskbar.ui.whatsnew.WhatsNewDialog
 import com.alkisstam.taskbar.ui.whatsnew.whatsNewReleases
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
+import com.google.android.play.core.appupdate.AppUpdateManager
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.appupdate.AppUpdateOptions
+import com.google.android.play.core.install.InstallStateUpdatedListener
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.InstallStatus
+import com.google.android.play.core.install.model.UpdateAvailability
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val taskbarViewModel: TaskbarViewModel by viewModels()
+
+    private lateinit var appUpdateManager: AppUpdateManager
+    private val installStateListener = InstallStateUpdatedListener { state ->
+        if (state.installStatus() == InstallStatus.DOWNLOADED) showUpdateDownloadedSnackbar()
+    }
 
     private var hasOverlayPermission by mutableStateOf(false)
     private var hasWriteSettingsPermission by mutableStateOf(false)
@@ -60,9 +73,15 @@ class MainActivity : ComponentActivity() {
         ActivityResultContracts.RequestPermission()
     ) { granted -> hasNotificationsPermission = granted }
 
+    private val updateFlowLauncher = registerForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { /* RESULT_CANCELED just means the user dismissed the flexible update prompt */ }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        appUpdateManager = AppUpdateManagerFactory.create(this)
+        checkForUpdate()
         hasOverlayPermission = Settings.canDrawOverlays(this)
         hasWriteSettingsPermission = Settings.System.canWrite(this)
         hasNotificationPolicyPermission = getNotificationPolicyAccess()
@@ -170,6 +189,38 @@ class MainActivity : ComponentActivity() {
         hasNotificationsPermission = getNotificationsPermission()
         hasNotificationListenerPermission = getNotificationListenerPermission()
         hasBatteryOptimizationExcluded = getBatteryOptimizationExcluded()
+
+        appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
+            if (info.installStatus() == InstallStatus.DOWNLOADED) showUpdateDownloadedSnackbar()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        appUpdateManager.unregisterListener(installStateListener)
+    }
+
+    private fun checkForUpdate() {
+        appUpdateManager.registerListener(installStateListener)
+        appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
+            if (info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
+                info.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
+            ) {
+                appUpdateManager.startUpdateFlowForResult(
+                    info, updateFlowLauncher, AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build()
+                )
+            }
+        }
+    }
+
+    private fun showUpdateDownloadedSnackbar() {
+        Snackbar.make(
+            findViewById(android.R.id.content),
+            getString(R.string.update_downloaded_message),
+            Snackbar.LENGTH_INDEFINITE
+        ).setAction(getString(R.string.update_downloaded_action)) {
+            appUpdateManager.completeUpdate()
+        }.show()
     }
 
     private fun getNotificationPolicyAccess(): Boolean {

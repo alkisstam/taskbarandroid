@@ -29,4 +29,6 @@
     <string name="accessibility_service_description">Allows Floating Dock to display above the system navigation bar</string>
     <string name="accessibility_service_label">Floating Dock Overlay</string>
     <string name="accessibility_service_summary">Draws the dock above the navigation bar. No screen content is read or transmitted.</string>
+    <string name="update_downloaded_message">An update has been downloaded</string>
+    <string name="update_downloaded_action">Restart</string>
 </resources>
