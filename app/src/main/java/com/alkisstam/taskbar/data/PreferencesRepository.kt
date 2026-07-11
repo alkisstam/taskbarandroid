@@ -11,10 +11,14 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.datastore.preferences.core.emptyPreferences
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import java.io.IOException
 import org.json.JSONArray
 import org.json.JSONException
@@ -99,6 +103,8 @@ class PreferencesRepository @Inject constructor(
     private val safeData: Flow<Preferences> = context.dataStore.data.catch { e ->
         if (e is IOException) emit(emptyPreferences()) else throw e
     }
+
+    private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     companion object {
         private val PINNED_APPS_KEY = stringPreferencesKey("pinned_apps")
@@ -375,9 +381,14 @@ class PreferencesRepository @Inject constructor(
         if (saved == null) {
             ALL_CONTROL_IDS
         } else {
-            // Merge any new control IDs that were added in app updates
+            // Merge any new control IDs that were added in app updates, and persist the
+            // merge immediately so it's not silently recomputed (and diverges) on every read.
             val newIds = ALL_CONTROL_IDS.filter { it !in saved }
-            if (newIds.isNotEmpty()) saved + newIds else saved
+            if (newIds.isNotEmpty()) {
+                val merged = saved + newIds
+                repositoryScope.launch { saveControlsOrder(merged) }
+                merged
+            } else saved
         }
     }
 
