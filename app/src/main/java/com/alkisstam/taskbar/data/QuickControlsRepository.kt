@@ -279,17 +279,22 @@ class QuickControlsRepository @Inject constructor(
     }
 
     fun openMobileDataPanel() {
-        val action = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-            Settings.Panel.ACTION_INTERNET_CONNECTIVITY
-        else
-            Settings.ACTION_WIRELESS_SETTINGS
-        val intent = Intent(action).apply {
+        val intent = Intent(Settings.ACTION_DATA_ROAMING_SETTINGS).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         try {
             context.startActivity(intent)
         } catch (e: Exception) {
-            Log.w(TAG, "Failed to open mobile data panel", e)
+            Log.w(TAG, "Failed to open mobile network settings, falling back to wireless settings", e)
+            val fallback = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                Settings.Panel.ACTION_INTERNET_CONNECTIVITY
+            else
+                Settings.ACTION_WIRELESS_SETTINGS
+            try {
+                context.startActivity(Intent(fallback).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) })
+            } catch (e2: Exception) {
+                Log.w(TAG, "Failed to open fallback wireless settings", e2)
+            }
         }
     }
 
