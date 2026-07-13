@@ -82,6 +82,7 @@ import androidx.compose.ui.res.painterResource
 import com.alkisstam.taskbar.R
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Tab
@@ -667,6 +668,15 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
     val appGridColumns by viewModel.appGridColumns.collectAsState()
     val appGridRows by viewModel.appGridRows.collectAsState()
     val showRecentAppsRow by viewModel.showRecentAppsRow.collectAsState()
+    var showHideAppPicker by remember { mutableStateOf(false) }
+
+    if (showHideAppPicker) {
+        HideAppPickerDialog(
+            apps = allApps,
+            onHide = { viewModel.hideApp(it) },
+            onDismiss = { showHideAppPicker = false }
+        )
+    }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -769,52 +779,78 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
                 }
             }
         }
-        if (hiddenApps.isNotEmpty()) {
-            item {
-                SettingsCard(title = "Hidden Apps (${hiddenApps.size})") {
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        contentPadding = PaddingValues(vertical = 4.dp)
-                    ) {
-                        items(hiddenApps, key = { it.packageName }) { app ->
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(4.dp)
+        item {
+            SettingsCard(title = "Hidden Apps (${hiddenApps.size})") {
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(vertical = 4.dp)
+                ) {
+                    item {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.secondaryContainer)
+                                    .clickable { showHideAppPicker = true },
+                                contentAlignment = Alignment.Center
                             ) {
-                                Box {
-                                    AppIconImage(
-                                        icon = app.icon,
-                                        contentDescription = app.label,
-                                        modifier = Modifier.size(48.dp).clip(CircleShape)
-                                    )
-                                    Box(
-                                        modifier = Modifier
-                                            .align(Alignment.TopEnd)
-                                            .size(16.dp)
-                                            .background(
-                                                color = MaterialTheme.colorScheme.secondary,
-                                                shape = CircleShape
-                                            )
-                                            .clickable { viewModel.unhideApp(app.packageName) },
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Filled.Close,
-                                            contentDescription = "Unhide",
-                                            tint = MaterialTheme.colorScheme.onSecondary,
-                                            modifier = Modifier.size(10.dp)
-                                        )
-                                    }
-                                }
-                                Text(
-                                    text = app.label,
-                                    style = MaterialTheme.typography.labelSmall,
-                                    maxLines = 1,
-                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                                    modifier = Modifier.width(48.dp),
-                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                Icon(
+                                    imageVector = Icons.Filled.Add,
+                                    contentDescription = "Add App",
+                                    tint = MaterialTheme.colorScheme.onSecondaryContainer
                                 )
                             }
+                            Text(
+                                text = "Add",
+                                style = MaterialTheme.typography.labelSmall,
+                                maxLines = 1,
+                                modifier = Modifier.width(48.dp),
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                        }
+                    }
+                    items(hiddenApps, key = { it.packageName }) { app ->
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Box {
+                                AppIconImage(
+                                    icon = app.icon,
+                                    contentDescription = app.label,
+                                    modifier = Modifier.size(48.dp).clip(CircleShape)
+                                )
+                                Box(
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .size(16.dp)
+                                        .background(
+                                            color = MaterialTheme.colorScheme.secondary,
+                                            shape = CircleShape
+                                        )
+                                        .clickable { viewModel.unhideApp(app.packageName) },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Close,
+                                        contentDescription = "Unhide",
+                                        tint = MaterialTheme.colorScheme.onSecondary,
+                                        modifier = Modifier.size(10.dp)
+                                    )
+                                }
+                            }
+                            Text(
+                                text = app.label,
+                                style = MaterialTheme.typography.labelSmall,
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                                modifier = Modifier.width(48.dp),
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
                         }
                     }
                 }
@@ -970,6 +1006,67 @@ private fun AllAppGridItem(
             modifier = Modifier.fillMaxWidth()
         )
     }
+}
+
+@Composable
+private fun HideAppPickerDialog(
+    apps: List<AppInfo>,
+    onHide: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var query by remember { mutableStateOf("") }
+    val filtered = remember(apps, query) {
+        if (query.isBlank()) apps
+        else apps.filter { it.label.contains(query, ignoreCase = true) }
+    }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Hide Apps") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(
+                    value = query,
+                    onValueChange = { query = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text("Search apps") },
+                    singleLine = true
+                )
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(4),
+                    modifier = Modifier.height(340.dp),
+                    contentPadding = PaddingValues(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    items(filtered, key = { it.packageName }) { app ->
+                        Column(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .clickable { onHide(app.packageName) }
+                                .padding(vertical = 4.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            AppIconImage(
+                                icon = app.icon,
+                                contentDescription = app.label,
+                                modifier = Modifier.size(52.dp).clip(CircleShape)
+                            )
+                            Text(
+                                text = app.label,
+                                style = MaterialTheme.typography.labelSmall,
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = { TextButton(onClick = onDismiss) { Text("Done") } }
+    )
 }
 
 @Composable
