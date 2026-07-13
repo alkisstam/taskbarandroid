@@ -1,5 +1,6 @@
 package com.alkisstam.taskbar.ui.notifications
 
+import android.app.Notification
 import android.graphics.Bitmap
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -7,6 +8,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +24,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -151,7 +154,9 @@ fun NotificationHistoryPanel(
                                         NotificationEntryContent(
                                             entry = entry,
                                             icon = iconForPackage(packageName),
-                                            showAppRow = true
+                                            showAppRow = true,
+                                            actions = remember(entry.id) { viewModel.actionsFor(entry.id) },
+                                            onAction = { viewModel.sendAction(it) }
                                         )
                                     }
                                 }
@@ -175,7 +180,9 @@ fun NotificationHistoryPanel(
                                             NotificationEntryContent(
                                                 entry = entry,
                                                 icon = null,
-                                                showAppRow = false
+                                                showAppRow = false,
+                                                actions = remember(entry.id) { viewModel.actionsFor(entry.id) },
+                                                onAction = { viewModel.sendAction(it) }
                                             )
                                         }
                                     }
@@ -286,7 +293,9 @@ private fun NotificationGroupHeader(
 private fun NotificationEntryContent(
     entry: NotificationEntry,
     icon: Bitmap?,
-    showAppRow: Boolean
+    showAppRow: Boolean,
+    actions: List<Notification.Action> = emptyList(),
+    onAction: (Notification.Action) -> Unit = {}
 ) {
     Row(
         modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 10.dp, bottom = 10.dp),
@@ -338,6 +347,24 @@ private fun NotificationEntryContent(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
+            }
+            if (actions.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    actions.forEach { action ->
+                        TextButton(onClick = { onAction(action) }) {
+                            Text(
+                                text = action.title.toString(),
+                                style = MaterialTheme.typography.labelMedium,
+                                maxLines = 1
+                            )
+                        }
+                    }
+                }
             }
         }
     }

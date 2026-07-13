@@ -47,6 +47,12 @@ class NotificationHistoryRepository @Inject constructor(
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val labelCache = mutableMapOf<String, String>()
+    // PendingIntents can't be serialized, so quick actions only exist for notifications
+    // captured during this process's lifetime.
+    private val actionsByKey = mutableMapOf<String, List<Notification.Action>>()
+
+    fun actionsFor(id: String): List<Notification.Action> =
+        synchronized(actionsByKey) { actionsByKey[id] ?: emptyList() }
 
     private val safeData: Flow<Preferences> = context.notificationHistoryDataStore.data.catch { e ->
         if (e is IOException) emit(emptyPreferences()) else throw e
@@ -77,12 +83,19 @@ class NotificationHistoryRepository @Inject constructor(
             text = text,
             timestamp = sbn.postTime
         )
+        val actions = notification.actions
+            ?.filter { it.actionIntent != null && it.remoteInputs.isNullOrEmpty() && !it.title.isNullOrBlank() }
+            .orEmpty()
         scope.launch {
             try {
                 context.notificationHistoryDataStore.edit { prefs ->
                     val current = prefs[NOTIFICATIONS_KEY]?.let { deserializeEntries(it) } ?: emptyList()
                     val updated = (listOf(entry) + current.filter { it.id != entry.id }).take(MAX_NOTIFICATIONS)
                     prefs[NOTIFICATIONS_KEY] = serializeEntries(updated)
+                    synchronized(actionsByKey) {
+                        if (actions.isEmpty()) actionsByKey.remove(entry.id) else actionsByKey[entry.id] = actions
+                        actionsByKey.keys.retainAll(updated.map { it.id }.toSet())
+                    }
                 }
             } catch (e: Exception) {
                 Log.w(TAG, "Failed to record notification", e)
@@ -95,12 +108,14 @@ class NotificationHistoryRepository @Inject constructor(
             val current = prefs[NOTIFICATIONS_KEY]?.let { deserializeEntries(it) } ?: emptyList()
             prefs[NOTIFICATIONS_KEY] = serializeEntries(current.filter { it.id != id })
         }
+        synchronized(actionsByKey) { actionsByKey.remove(id) }
     }
 
     suspend fun clearAll() {
         context.notificationHistoryDataStore.edit { prefs ->
             prefs[NOTIFICATIONS_KEY] = serializeEntries(emptyList())
         }
+        synchronized(actionsByKey) { actionsByKey.clear() }
     }
 
     private fun String.stripImageSpanChar(): String = replace("￼", "").trim()
