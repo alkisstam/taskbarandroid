@@ -112,6 +112,9 @@ internal fun Context.searchLayoutParams(focusable: Boolean = false, blurBehind: 
         PixelFormat.TRANSLUCENT
     ).apply {
         gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+        // Without this the system picks ADJUST_PAN and shifts the whole window above the
+        // keyboard, doubling the inset-driven composer lift done in Compose.
+        softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
         applyBlurBehind(this, blurBehind)
     }
 }

@@ -65,6 +65,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -75,7 +76,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.findRootCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -127,7 +130,6 @@ fun ClipboardPanel(
     val coroutineScope = rememberCoroutineScope()
     var selectedCategory by remember { mutableStateOf(ClipCategory.ALL) }
     val density = LocalDensity.current
-    var tabBarHeight by remember { mutableStateOf(0.dp) }
 
     val panelShape = RoundedCornerShape(24.dp)
     val panelColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
@@ -216,8 +218,7 @@ fun ClipboardPanel(
                                 onToggleFavorite = viewModel::toggleNoteFavorite,
                                 onDelete = viewModel::removeNote,
                                 onEdit = viewModel::updateNote,
-                                onOpenExternal = onOpenExternal,
-                                tabBarHeight = tabBarHeight
+                                onOpenExternal = onOpenExternal
                             )
                             3 -> ToDoTab(
                                 todoItems = todoItems,
@@ -225,8 +226,7 @@ fun ClipboardPanel(
                                 onToggleDone = viewModel::toggleTodoDone,
                                 onTogglePin = viewModel::toggleTodoPin,
                                 onDelete = viewModel::removeTodo,
-                                onEdit = viewModel::updateTodo,
-                                tabBarHeight = tabBarHeight
+                                onEdit = viewModel::updateTodo
                             )
                         }
                     }
@@ -234,9 +234,6 @@ fun ClipboardPanel(
 
                 Surface(
                     modifier = Modifier
-                        .onGloballyPositioned { coordinates ->
-                            tabBarHeight = with(density) { coordinates.size.height.toDp() }
-                        }
                         .fillMaxWidth()
                         .padding(bottom = 16.dp, start = 16.dp, end = 16.dp),
                     shape = RoundedCornerShape(40.dp),
@@ -521,17 +518,25 @@ private fun NotesTab(
     onToggleFavorite: (NoteItem) -> Unit,
     onDelete: (String) -> Unit,
     onEdit: (NoteItem) -> Unit,
-    onOpenExternal: () -> Unit,
-    tabBarHeight: Dp = 0.dp
+    onOpenExternal: () -> Unit
 ) {
     var composerVisible by remember { mutableStateOf(false) }
     var editingNote by remember { mutableStateOf<NoteItem?>(null) }
     val context = LocalContext.current
     val density = LocalDensity.current
-    val imeHeight = with(density) { WindowInsets.ime.getBottom(density).toDp() }
-    val composerLift = (imeHeight - tabBarHeight).coerceAtLeast(0.dp)
+    // Distance from this tab's bottom edge to the window (screen) bottom — tab bar, panel
+    // padding, and the dock gap all included, so the lift lands the composer on the keyboard.
+    var bottomGapPx by remember { mutableIntStateOf(0) }
+    val imeBottomPx = WindowInsets.ime.getBottom(density)
+    val composerLift = with(density) { (imeBottomPx - bottomGapPx).coerceAtLeast(0).toDp() }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .onGloballyPositioned { coords ->
+            val root = coords.findRootCoordinates()
+            bottomGapPx = (root.size.height - (coords.positionInRoot().y + coords.size.height)).toInt().coerceAtLeast(0)
+        }
+    ) {
         if (noteItems.isEmpty() && !composerVisible && editingNote == null) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(
@@ -641,20 +646,26 @@ private fun ToDoTab(
     onToggleDone: (TodoItem) -> Unit,
     onTogglePin: (TodoItem) -> Unit,
     onDelete: (String) -> Unit,
-    onEdit: (TodoItem) -> Unit,
-    tabBarHeight: Dp = 0.dp
+    onEdit: (TodoItem) -> Unit
 ) {
     var composerVisible by remember { mutableStateOf(false) }
     var editingTodo by remember { mutableStateOf<TodoItem?>(null) }
     val density = LocalDensity.current
-    val imeHeight = with(density) { WindowInsets.ime.getBottom(density).toDp() }
-    val composerLift = (imeHeight - tabBarHeight).coerceAtLeast(0.dp)
+    var bottomGapPx by remember { mutableIntStateOf(0) }
+    val imeBottomPx = WindowInsets.ime.getBottom(density)
+    val composerLift = with(density) { (imeBottomPx - bottomGapPx).coerceAtLeast(0).toDp() }
 
     val open = todoItems.filter { !it.isDone }
         .sortedWith(compareByDescending<TodoItem> { it.isPinned }.thenByDescending { it.timestamp })
     val completed = todoItems.filter { it.isDone }.sortedByDescending { it.timestamp }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .onGloballyPositioned { coords ->
+            val root = coords.findRootCoordinates()
+            bottomGapPx = (root.size.height - (coords.positionInRoot().y + coords.size.height)).toInt().coerceAtLeast(0)
+        }
+    ) {
         if (todoItems.isEmpty() && !composerVisible && editingTodo == null) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(
@@ -805,7 +816,8 @@ private fun NoteComposer(
 
     Surface(
         shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        modifier = Modifier.border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.25f), RoundedCornerShape(12.dp))
     ) {
         Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedTextField(
