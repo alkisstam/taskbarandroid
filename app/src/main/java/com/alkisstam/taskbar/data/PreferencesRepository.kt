@@ -156,6 +156,8 @@ class PreferencesRepository @Inject constructor(
         private val SHOW_RECENT_APPS_ROW_KEY = booleanPreferencesKey("show_recent_apps_row")
         private val RECENT_OPENED_APPS_KEY = stringPreferencesKey("recent_opened_apps")
         private val CAFFEINE_ORIGINAL_TIMEOUT_KEY = intPreferencesKey("caffeine_original_timeout")
+        private val APP_OPEN_COUNT_KEY = intPreferencesKey("app_open_count")
+        private val REVIEW_PROMPTED_KEY = booleanPreferencesKey("review_prompted")
 
         val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen", "caffeine", "clipboard", "calculator", "wifi", "bluetooth", "mobile_data", "share", "notif_history")
 
@@ -428,6 +430,19 @@ class PreferencesRepository @Inject constructor(
         context.dataStore.edit { prefs ->
             prefs[LAST_SEEN_VERSION_CODE_KEY] = code
         }
+    }
+
+    suspend fun registerAppOpenAndShouldPromptReview(): Boolean {
+        var shouldPrompt = false
+        context.dataStore.edit { prefs ->
+            val count = (prefs[APP_OPEN_COUNT_KEY] ?: 0) + 1
+            prefs[APP_OPEN_COUNT_KEY] = count
+            if (count >= 3 && prefs[REVIEW_PROMPTED_KEY] != true) {
+                prefs[REVIEW_PROMPTED_KEY] = true
+                shouldPrompt = true
+            }
+        }
+        return shouldPrompt
     }
 
     val musicPanelEnabled: Flow<Boolean> = safeData.map { prefs ->

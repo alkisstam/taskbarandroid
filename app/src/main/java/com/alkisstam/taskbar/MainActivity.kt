@@ -44,12 +44,19 @@ import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.play.core.review.ReviewManagerFactory
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.lifecycle.lifecycleScope
+import com.alkisstam.taskbar.data.PreferencesRepository
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val taskbarViewModel: TaskbarViewModel by viewModels()
+
+    @Inject lateinit var preferencesRepository: PreferencesRepository
 
     private lateinit var appUpdateManager: AppUpdateManager
     private val installStateListener = InstallStateUpdatedListener { state ->
@@ -82,6 +89,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         appUpdateManager = AppUpdateManagerFactory.create(this)
         checkForUpdate()
+        maybeRequestReview()
         hasOverlayPermission = Settings.canDrawOverlays(this)
         hasWriteSettingsPermission = Settings.System.canWrite(this)
         hasNotificationPolicyPermission = getNotificationPolicyAccess()
@@ -209,6 +217,16 @@ class MainActivity : ComponentActivity() {
                 appUpdateManager.startUpdateFlowForResult(
                     info, updateFlowLauncher, AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build()
                 )
+            }
+        }
+    }
+
+    private fun maybeRequestReview() {
+        lifecycleScope.launch {
+            if (!preferencesRepository.registerAppOpenAndShouldPromptReview()) return@launch
+            val reviewManager = ReviewManagerFactory.create(this@MainActivity)
+            reviewManager.requestReviewFlow().addOnSuccessListener { reviewInfo ->
+                if (!isFinishing) reviewManager.launchReviewFlow(this@MainActivity, reviewInfo)
             }
         }
     }
