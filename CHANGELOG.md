@@ -4,6 +4,21 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.4.4] - 2026-07-13
+
+Quick actions for notifications, easier app hiding, and in-app updates and reviews.
+
+### Added
+- **Notification quick actions** — notifications in the Notification History panel now show their action buttons (Mark as read, Archive, Like…) where the app provides them; tap to trigger the action without opening the app. Actions that need typed input (inline reply) aren't shown. Available for notifications received since the dock last started.
+- **Add App button in Hidden Apps** — Settings → Apps → Hidden Apps now always shows, with a + button that opens a searchable list of installed apps; tap an app to hide it from the App Menu and search.
+- **In-app updates** — when a new version is available on Google Play, the app downloads it in the background and shows a restart prompt, no Play Store visit needed.
+- **In-app review prompt** — after a few opens, the app may ask for a Play Store rating without leaving the app.
+
+### Fixed
+- **New note/to-do card now opens right above the keyboard** — it previously jumped to the top of the screen when the keyboard opened. The composer card also gained a subtle outline.
+
+---
+
 ## [1.4.3] - 2026-07-09
 
 Design update — the Theme section in Design has been redesigned — plus two new quick controls.

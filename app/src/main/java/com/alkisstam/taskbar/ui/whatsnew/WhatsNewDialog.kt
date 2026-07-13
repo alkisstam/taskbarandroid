@@ -135,6 +135,16 @@ val whatsNewReleases = listOf(
             "Long clip and note text now scrolls inside its card instead of getting cut off",
             "To-dos now have a three-dot menu (Edit, Pin, Delete) and pinned to-dos sort to the top"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.4.4",
+        versionCode = 49,
+        highlights = listOf(
+            "Notification History entries now show the notification's action buttons (Mark as read, Archive…) — tap to act without opening the app",
+            "New + button in Settings → Apps → Hidden Apps — pick apps to hide from a searchable list",
+            "In-app updates — new versions download in the background with a restart prompt, no Play Store visit needed",
+            "New notes and to-dos now open right above the keyboard instead of jumping to the top of the screen"
+        )
     )
 )
 
