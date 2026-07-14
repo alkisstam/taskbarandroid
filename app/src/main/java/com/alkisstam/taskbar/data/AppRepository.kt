@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Build
+import android.util.DisplayMetrics
 import android.util.Log
 import androidx.core.graphics.drawable.toBitmap
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -68,13 +69,26 @@ class AppRepository @Inject constructor(
                         // OutOfMemoryError (an Error, hence Throwable) on some devices. Keep the
                         // app with a null icon (UI renders a placeholder) instead of hiding it.
                         val icon = try {
+                            // Load the icon resource directly instead of loadIcon(): on MIUI,
+                            // loadIcon() routes through IconCustomizer.composeIcon which draws
+                            // full-size themed bitmaps in-process and can abort() the whole
+                            // process on native allocation failure (uncatchable). Direct
+                            // Resources access bypasses that hook; DENSITY_XHIGH caps the
+                            // source bitmap near our 160px target.
+                            val drawable = try {
+                                val res = pm.getResourcesForApplication(activityInfo.applicationInfo)
+                                val resId = resolveInfo.iconResource
+                                if (resId != 0) res.getDrawableForDensity(resId, DisplayMetrics.DENSITY_XHIGH, null) else null
+                            } catch (e: Exception) {
+                                null
+                            } ?: resolveInfo.loadIcon(pm)
                             // Rendered at a fixed size: intrinsic-size bitmaps for every installed
                             // app add up to tens of MB (and themed OEM icons can be 1024px+).
                             // 160px covers the largest dock icon setting on 1080p densities.
                             // toBitmap() can return the system's cached Bitmap instance without
                             // copying (androidx shortcut when config already matches); that shared
                             // bitmap can later be recycled by the OS, so copy it to own our instance.
-                            resolveInfo.loadIcon(pm).toBitmap(ICON_SIZE_PX, ICON_SIZE_PX)
+                            drawable.toBitmap(ICON_SIZE_PX, ICON_SIZE_PX)
                                 .copy(Bitmap.Config.ARGB_8888, false)
                         } catch (e: Throwable) {
                             Log.w("AppRepository", "Icon load failed, keeping app without icon: ${activityInfo.packageName}", e)
