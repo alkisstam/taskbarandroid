@@ -56,21 +56,21 @@ internal fun OverlayContent(
 ) {
     val themeMode by taskbarViewModel.themeMode.collectAsState()
     val menuVisible by appMenuViewModel.menuVisible.collectAsState()
-    val isSettingsOpen by taskbarViewModel.isSettingsOpen.collectAsState()
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
     val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
     val quickControlsEnabled by taskbarViewModel.quickControlsEnabled.collectAsState()
     val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
 
     val expandedRows = if (isDockExpanded && quickControlsEnabled) 1 else 0
-    val panelBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.heightDp, expandedRows, taskbarSettings.dockPadding.bottomGapDp)
+    val navBarInsetDp by taskbarViewModel.navBarInsetDp.collectAsState()
+    val panelBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.heightDp, expandedRows, maxOf(taskbarSettings.dockPadding.bottomGapDp, navBarInsetDp))
 
     TaskBarTheme(themeMode = themeMode) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.BottomCenter
         ) {
-            if (menuVisible && !isSettingsOpen) {
+            if (menuVisible) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -101,7 +101,8 @@ internal fun TaskbarContent(
     val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
     val dockRevealProgress by taskbarViewModel.dockRevealProgress.collectAsState()
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
-    val dockBottomGap = taskbarSettings.dockPadding.bottomGapDp.dp
+    val navBarInsetDp by taskbarViewModel.navBarInsetDp.collectAsState()
+    val dockBottomGap = maxOf(taskbarSettings.dockPadding.bottomGapDp, navBarInsetDp).dp
 
     val revealAnim = remember { Animatable(0f) }
     var taskbarHeightPx by remember { mutableFloatStateOf(0f) }

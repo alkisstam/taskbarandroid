@@ -309,6 +309,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         if (taskbarView?.isAttachedToWindow == true && clipboardBlurView?.isAttachedToWindow != true) {
             removeOverlayView()
         }
+        publishNavBarInset()
         addClipboardBlurView()
         addTaskbarView()
         addOverlayView()
@@ -335,6 +336,11 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             observeNotificationPanel()
         }
         return START_STICKY
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        publishNavBarInset()
     }
 
     // region Quick strip state
@@ -481,9 +487,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             kotlinx.coroutines.flow.combine(
                 taskbarViewModel.taskbarSettings,
                 appMenuViewModel.menuVisible,
-                taskbarViewModel.dockExpandProgress
-            ) { settings, menuOpen, expandProgress ->
-                val baseY = settings.dockPadding.bottomGapDp + settings.heightDp + 16f + 24f + expandProgress * (settings.heightDp + 1f)
+                taskbarViewModel.dockExpandProgress,
+                taskbarViewModel.navBarInsetDp
+            ) { settings, menuOpen, expandProgress, navInset ->
+                val baseY = maxOf(settings.dockPadding.bottomGapDp, navInset) + settings.heightDp + 16f + 24f + expandProgress * (settings.heightDp + 1f)
                 volumePanelYOffsetDp = baseY
                 if (menuOpen) baseY + 400f else baseY
             }.collect { yOffset ->
@@ -518,7 +525,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 }
                 calculatorPanelView?.let { view ->
                     val settings = taskbarViewModel.taskbarSettings.value
-                    val yOffset = settings.dockPadding.bottomGapDp + settings.heightDp + 16f + 24f
+                    val yOffset = maxOf(settings.dockPadding.bottomGapDp, navBarInsetDp()) + settings.heightDp + 16f + 24f
                     try { windowManager.updateViewLayoutKeepingType(view, musicPanelLayoutParams(yOffset, translucentModeEnabled, active = appMenuViewModel.calculatorPanelVisible.value)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update calculator panel blur", e) }
                 }
@@ -543,7 +550,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             }.collect { (volumeVisible, brightnessVisible, calculatorVisible) ->
                 val settings = taskbarViewModel.taskbarSettings.value
                 val dockExpanded = taskbarViewModel.isDockExpanded.value
-                val yOffset = settings.dockPadding.bottomGapDp + settings.heightDp + 16f + (if (dockExpanded) settings.heightDp + 25f else 24f)
+                val yOffset = maxOf(settings.dockPadding.bottomGapDp, navBarInsetDp()) + settings.heightDp + 16f + (if (dockExpanded) settings.heightDp + 25f else 24f)
 
                 val scrimActive = volumeVisible || brightnessVisible || calculatorVisible
                 setVolumeScrimActive(scrimActive)
@@ -616,11 +623,30 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         }
     }
 
+    private fun navBarInsetDp(): Float {
+        // Insets dispatched to TYPE_ACCESSIBILITY_OVERLAY windows are unreliable (often zero),
+        // so query WindowManager metrics directly instead of the view's dispatched insets.
+        val bottomPx = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            windowManager.currentWindowMetrics.windowInsets
+                .getInsets(android.view.WindowInsets.Type.navigationBars()).bottom
+        } else {
+            val view = taskbarView ?: overlayView ?: return 0f
+            ViewCompat.getRootWindowInsets(view)
+                ?.getInsets(WindowInsetsCompat.Type.navigationBars())?.bottom ?: 0
+        }
+        return bottomPx / resources.displayMetrics.density
+    }
+
+    private fun publishNavBarInset() {
+        taskbarViewModel.setNavBarInset(navBarInsetDp())
+    }
+
     private fun attachInsetsListener(view: View) {
         // ViewCompat.setOnApplyWindowInsetsListener is dispatched from ViewRootImpl even when the
         // view is GONE, so the overlay can self-heal after the keyboard closes rather than staying
         // stuck in GONE state (the OnGlobalLayoutListener deadlock).
         ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
+            publishNavBarInset()
             if (taskbarViewModel.autoHideInFullscreen.value) {
                 val isFullscreen = !insets.isVisible(WindowInsetsCompat.Type.statusBars())
                 if (isFullscreen) taskbarViewModel.hideTaskbar() else taskbarViewModel.showTaskbar()
@@ -819,7 +845,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         brightnessPanelView = null
         try {
             val initialSettings = taskbarViewModel.taskbarSettings.value
-            val yOffset = 20f + initialSettings.heightDp + 16f + 24f
+            val yOffset = maxOf(20f, navBarInsetDp()) + initialSettings.heightDp + 16f + 24f
             val composeView = ComposeView(this).apply {
                 setBackgroundColor(android.graphics.Color.TRANSPARENT)
                 setViewTreeLifecycleOwner(this@OverlayService)
@@ -876,7 +902,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         calculatorPanelView = null
         try {
             val initialSettings = taskbarViewModel.taskbarSettings.value
-            val yOffset = initialSettings.dockPadding.bottomGapDp + initialSettings.heightDp + 16f + 24f
+            val yOffset = maxOf(initialSettings.dockPadding.bottomGapDp, navBarInsetDp()) + initialSettings.heightDp + 16f + 24f
             val composeView = ComposeView(this).apply {
                 setBackgroundColor(android.graphics.Color.TRANSPARENT)
                 setViewTreeLifecycleOwner(this@OverlayService)
