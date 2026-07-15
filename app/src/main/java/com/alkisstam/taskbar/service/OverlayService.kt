@@ -134,13 +134,27 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     @Volatile private var overlayHiddenForLockscreen = false
     @Volatile private var hiddenForLandscape = false
+    @Volatile private var pillDisabledForLockscreen = false
+
+    // ACTION_USER_PRESENT is unreliable on some OEMs (ColorOS drops it) and
+    // KeyguardLockedStateListener needs a privileged permission, so unlock detection polls.
+    private val keyguardPollRunnable = object : Runnable {
+        override fun run() {
+            if (!overlayHiddenForLockscreen) return
+            if (!keyguardManager.isKeyguardLocked) restoreAfterLockscreen()
+            else handler.postDelayed(this, 500)
+        }
+    }
 
     private val lockscreenReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
                 Intent.ACTION_SCREEN_OFF -> {
                     overlayHiddenForLockscreen = true
+                    handler.removeCallbacks(keyguardPollRunnable)
                     if (this@OverlayService::appMenuViewModel.isInitialized) appMenuViewModel.deactivateCaffeine()
+                    val disablePill = this@OverlayService::taskbarViewModel.isInitialized &&
+                            taskbarViewModel.disableOnLockscreen.value
                     handler.post {
                         overlayView?.visibility = View.GONE
                         taskbarView?.visibility = View.GONE
@@ -154,21 +168,23 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                         clipboardPanelView?.visibility = View.GONE
                         calculatorPanelView?.visibility = View.GONE
                         notificationPanelView?.visibility = View.GONE
-                    }
-                }
-                Intent.ACTION_USER_PRESENT, Intent.ACTION_SCREEN_ON -> {
-                    overlayHiddenForLockscreen = false
-                    handler.post {
-                        if (overlayView?.isAttachedToWindow != true) addOverlayView()
-                        if (taskbarView?.isAttachedToWindow != true) addTaskbarView()
-                        if (pillView?.isAttachedToWindow != true) addPillView()
-                        musicPanelView?.visibility = View.VISIBLE
-                        if (!hiddenForLandscape) {
-                            taskbarView?.visibility = View.VISIBLE
-                            pillView?.visibility = View.VISIBLE
-                            pillView2?.visibility = View.VISIBLE
+                        if (disablePill && !pillDisabledForLockscreen) {
+                            pillDisabledForLockscreen = true
+                            updatePillLayoutForConfig()
                         }
                     }
+                }
+                Intent.ACTION_SCREEN_ON -> {
+                    if (pillDisabledForLockscreen && keyguardManager.isKeyguardLocked) {
+                        // Stay hidden and untouchable until the keyguard is dismissed.
+                        handler.removeCallbacks(keyguardPollRunnable)
+                        handler.postDelayed(keyguardPollRunnable, 500)
+                    } else {
+                        restoreAfterLockscreen()
+                    }
+                }
+                Intent.ACTION_USER_PRESENT -> {
+                    restoreAfterLockscreen()
                 }
                 Intent.ACTION_CONFIGURATION_CHANGED -> {
                     val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -223,6 +239,26 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private fun dismissAll() {
         appMenuViewModel.dismissMenu()
         taskbarViewModel.hideTaskbar()
+    }
+
+    private fun restoreAfterLockscreen() {
+        overlayHiddenForLockscreen = false
+        handler.removeCallbacks(keyguardPollRunnable)
+        handler.post {
+            if (pillDisabledForLockscreen) {
+                pillDisabledForLockscreen = false
+                updatePillLayoutForConfig()
+            }
+            if (overlayView?.isAttachedToWindow != true) addOverlayView()
+            if (taskbarView?.isAttachedToWindow != true) addTaskbarView()
+            if (pillView?.isAttachedToWindow != true) addPillView()
+            musicPanelView?.visibility = View.VISIBLE
+            if (!hiddenForLandscape) {
+                taskbarView?.visibility = View.VISIBLE
+                pillView?.visibility = View.VISIBLE
+                pillView2?.visibility = View.VISIBLE
+            }
+        }
     }
 
     private lateinit var taskbarViewModel: TaskbarViewModel
@@ -420,13 +456,13 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         serviceScope.launch {
             taskbarViewModel.pillSettings.collect { settings ->
                 val view = pillView ?: return@collect
-                try { windowManager.updateViewLayoutKeepingType(view, pillLayoutParams(settings, isRight = false)) }
+                try { windowManager.updateViewLayoutKeepingType(view, pillLayoutParams(settings, isRight = false, touchable = !pillDisabledForLockscreen)) }
                 catch (e: Exception) { Log.w(TAG, "Failed to update pill position", e) }
 
                 if (settings.edgePosition == com.alkisstam.taskbar.data.PillEdgePosition.BOTH) {
                     ensurePillView2()
                     val v2 = pillView2 ?: return@collect
-                    try { windowManager.updateViewLayoutKeepingType(v2, pillLayoutParams(settings, isRight = true)) }
+                    try { windowManager.updateViewLayoutKeepingType(v2, pillLayoutParams(settings, isRight = true, touchable = !pillDisabledForLockscreen)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update pill2 position", e) }
                 } else {
                     removePillView2()
@@ -438,11 +474,11 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private fun updatePillLayoutForConfig() {
         val settings = taskbarViewModel.pillSettings.value
         pillView?.let {
-            try { windowManager.updateViewLayoutKeepingType(it, pillLayoutParams(settings, isRight = false)) }
+            try { windowManager.updateViewLayoutKeepingType(it, pillLayoutParams(settings, isRight = false, touchable = !pillDisabledForLockscreen)) }
             catch (e: Exception) { Log.w(TAG, "Failed to update pill layout on config change", e) }
         }
         pillView2?.let {
-            try { windowManager.updateViewLayoutKeepingType(it, pillLayoutParams(settings, isRight = true)) }
+            try { windowManager.updateViewLayoutKeepingType(it, pillLayoutParams(settings, isRight = true, touchable = !pillDisabledForLockscreen)) }
             catch (e: Exception) { Log.w(TAG, "Failed to update pill2 layout on config change", e) }
         }
     }
@@ -461,7 +497,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             pillView2 = composeView
             if (hiddenForLandscape) composeView.visibility = View.GONE
             val settings = taskbarViewModel.pillSettings.value
-            windowManager.addView(composeView, pillLayoutParams(settings, isRight = true))
+            windowManager.addView(composeView, pillLayoutParams(settings, isRight = true, touchable = !pillDisabledForLockscreen))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add pill2 view", e)
             pillView2 = null
@@ -739,7 +775,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             pillView = composeView
             if (hiddenForLandscape) composeView.visibility = View.GONE
             val initial = taskbarViewModel.pillSettings.value
-            windowManager.addView(composeView, pillLayoutParams(initial, isRight = false))
+            windowManager.addView(composeView, pillLayoutParams(initial, isRight = false, touchable = !pillDisabledForLockscreen))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add pill view", e)
             pillView = null

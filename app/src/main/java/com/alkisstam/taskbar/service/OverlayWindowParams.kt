@@ -42,11 +42,13 @@ internal fun Context.overlayLayoutParams(interactive: Boolean = true, focusable:
 
 internal fun Context.pillLayoutParams(
     settings: PillSettings,
-    isRight: Boolean = false
+    isRight: Boolean = false,
+    touchable: Boolean = true
 ): WindowManager.LayoutParams {
     val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
             WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
+            (if (!touchable) WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE else 0)
     val density = resources.displayMetrics.density
     val triggerPx = (settings.triggerAreaDp * density).toInt()
     val sideStripPx = triggerPx

@@ -260,6 +260,7 @@ private fun GeneralTab(
     val overlayEnabled by viewModel.overlayEnabled.collectAsState()
     val autoHideInFullscreen by viewModel.autoHideInFullscreen.collectAsState()
     val autoHideInLandscape by viewModel.autoHideInLandscape.collectAsState()
+    val disableOnLockscreen by viewModel.disableOnLockscreen.collectAsState()
     val hapticFeedbackEnabled by viewModel.hapticFeedbackEnabled.collectAsState()
     val context = LocalContext.current
 
@@ -370,6 +371,24 @@ private fun GeneralTab(
                 Switch(
                     checked = autoHideInLandscape,
                     onCheckedChange = { viewModel.setAutoHideInLandscape(it) }
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("Disable on Lock Screen", style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        "Prevent the trigger pill from opening the dock on the lock screen",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Switch(
+                    checked = disableOnLockscreen,
+                    onCheckedChange = { viewModel.setDisableOnLockscreen(it) }
                 )
             }
             Row(

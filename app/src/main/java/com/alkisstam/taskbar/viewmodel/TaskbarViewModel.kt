@@ -81,6 +81,9 @@ class TaskbarViewModel @Inject constructor(
     val autoHideInLandscape: StateFlow<Boolean> = prefsRepository.autoHideInLandscape
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
+    val disableOnLockscreen: StateFlow<Boolean> = prefsRepository.disableOnLockscreen
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     val quickControlsEnabled: StateFlow<Boolean> = prefsRepository.quickControlsEnabled
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
@@ -336,6 +339,12 @@ class TaskbarViewModel @Inject constructor(
     fun setAutoHideInLandscape(enabled: Boolean) {
         viewModelScope.launch {
             prefsRepository.setAutoHideInLandscape(enabled)
+        }
+    }
+
+    fun setDisableOnLockscreen(enabled: Boolean) {
+        viewModelScope.launch {
+            prefsRepository.setDisableOnLockscreen(enabled)
         }
     }
 

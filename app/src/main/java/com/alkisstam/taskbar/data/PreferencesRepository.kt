@@ -134,6 +134,7 @@ class PreferencesRepository @Inject constructor(
         private val SURFACE_TINT_COLOR_KEY = stringPreferencesKey("surface_tint_color")
         private val AUTO_HIDE_FULLSCREEN_KEY = booleanPreferencesKey("auto_hide_fullscreen")
         private val AUTO_HIDE_LANDSCAPE_KEY = booleanPreferencesKey("auto_hide_landscape")
+        private val DISABLE_ON_LOCKSCREEN_KEY = booleanPreferencesKey("disable_on_lockscreen")
         private val QUICK_CONTROLS_ENABLED_KEY = booleanPreferencesKey("quick_controls_enabled")
         private val CONTROLS_ORDER_KEY = stringPreferencesKey("controls_order")
         private val CONTROLS_DISABLED_KEY = stringPreferencesKey("controls_disabled_ids")
@@ -288,6 +289,16 @@ class PreferencesRepository @Inject constructor(
     suspend fun setAutoHideInLandscape(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[AUTO_HIDE_LANDSCAPE_KEY] = enabled
+        }
+    }
+
+    val disableOnLockscreen: Flow<Boolean> = safeData.map { prefs ->
+        prefs[DISABLE_ON_LOCKSCREEN_KEY] ?: false
+    }
+
+    suspend fun setDisableOnLockscreen(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[DISABLE_ON_LOCKSCREEN_KEY] = enabled
         }
     }
 
@@ -609,6 +620,7 @@ class PreferencesRepository @Inject constructor(
             prefs[SURFACE_TINT_COLOR_KEY]?.let { put("surface_tint_color", it) }
             prefs[AUTO_HIDE_FULLSCREEN_KEY]?.let { put("auto_hide_fullscreen", it) }
             prefs[AUTO_HIDE_LANDSCAPE_KEY]?.let { put("auto_hide_landscape", it) }
+            prefs[DISABLE_ON_LOCKSCREEN_KEY]?.let { put("disable_on_lockscreen", it) }
             prefs[QUICK_CONTROLS_ENABLED_KEY]?.let { put("quick_controls_enabled", it) }
             prefs[CONTROLS_ORDER_KEY]?.let { put("controls_order", it) }
             prefs[CONTROLS_DISABLED_KEY]?.let { put("controls_disabled_ids", it) }
@@ -657,6 +669,7 @@ class PreferencesRepository @Inject constructor(
             if (obj.has("surface_tint_color")) prefs[SURFACE_TINT_COLOR_KEY] = obj.getString("surface_tint_color")
             if (obj.has("auto_hide_fullscreen")) prefs[AUTO_HIDE_FULLSCREEN_KEY] = obj.getBoolean("auto_hide_fullscreen")
             if (obj.has("auto_hide_landscape")) prefs[AUTO_HIDE_LANDSCAPE_KEY] = obj.getBoolean("auto_hide_landscape")
+            if (obj.has("disable_on_lockscreen")) prefs[DISABLE_ON_LOCKSCREEN_KEY] = obj.getBoolean("disable_on_lockscreen")
             if (obj.has("quick_controls_enabled")) prefs[QUICK_CONTROLS_ENABLED_KEY] = obj.getBoolean("quick_controls_enabled")
             if (obj.has("controls_order")) prefs[CONTROLS_ORDER_KEY] = obj.getString("controls_order")
             if (obj.has("controls_disabled_ids")) prefs[CONTROLS_DISABLED_KEY] = obj.getString("controls_disabled_ids")
