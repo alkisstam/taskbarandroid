@@ -2,7 +2,7 @@
 
 A system-overlay dock for Android that renders above all other apps — including the system navigation bar when the Accessibility Service is enabled.
 
-**Current version:** 1.4.3 (versionCode 47)
+**Current version:** 1.4.4 (versionCode 49)
 
 ## Features
 
@@ -53,6 +53,7 @@ A system-overlay dock for Android that renders above all other apps — includin
 - **Auto-hide in Fullscreen** – hides when the foreground app goes fullscreen
 - **Auto-hide in Landscape** – hides when the device rotates to landscape
 - **Hide on screen-off / lockscreen** – overlay hidden on screen-off, restored on unlock
+- **Disable on Lock Screen** – optional toggle in *General*; the trigger pill can't open the dock while the lock screen is showing
 - **Boot autostart** – re-enables the overlay after reboot
 - **Vibrate Feedback** – haptic tick on long-press, drag-reorder, and slider drags; toggle in *General*
 

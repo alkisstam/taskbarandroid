@@ -4,18 +4,22 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
-## [1.4.4] - 2026-07-13
+## [1.4.4] - 2026-07-15
 
-Quick actions for notifications, easier app hiding, and in-app updates and reviews.
+Quick actions for notifications, easier app hiding, in-app updates and reviews, and a lock screen option.
 
 ### Added
 - **Notification quick actions** — notifications in the Notification History panel now show their action buttons (Mark as read, Archive, Like…) where the app provides them; tap to trigger the action without opening the app. Actions that need typed input (inline reply) aren't shown. Available for notifications received since the dock last started.
 - **Add App button in Hidden Apps** — Settings → Apps → Hidden Apps now always shows, with a + button that opens a searchable list of installed apps; tap an app to hide it from the App Menu and search.
 - **In-app updates** — when a new version is available on Google Play, the app downloads it in the background and shows a restart prompt, no Play Store visit needed.
 - **In-app review prompt** — after a few opens, the app may ask for a Play Store rating without leaving the app.
+- **Disable on Lock Screen** — new toggle in Settings → General. When on, the dock and its trigger stay completely off while the lock screen is showing (previously the hidden trigger could still open the dock there), and come back as soon as you unlock.
 
 ### Fixed
 - **New note/to-do card now opens right above the keyboard** — it previously jumped to the top of the screen when the keyboard opened. The composer card also gained a subtle outline.
+- **Dock now sits above the navigation bar** — with 3-button navigation the dock and its floating panels no longer overlap the nav bar.
+- **App menu no longer gets stuck open over Settings** — tapping outside the menu now always closes it, even while the Settings screen is open.
+- **Crash loading app icons on Xiaomi (MIUI) devices** — icons now load directly from each app's resources, bypassing the MIUI icon theming hook that could kill the app under memory pressure. Trade-off: MIUI theme icon masks no longer apply to dock icons.
 
 ---
 

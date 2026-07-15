@@ -143,7 +143,10 @@ val whatsNewReleases = listOf(
             "Notification History entries now show the notification's action buttons (Mark as read, Archive…) — tap to act without opening the app",
             "New + button in Settings → Apps → Hidden Apps — pick apps to hide from a searchable list",
             "In-app updates — new versions download in the background with a restart prompt, no Play Store visit needed",
-            "New notes and to-dos now open right above the keyboard instead of jumping to the top of the screen"
+            "New notes and to-dos now open right above the keyboard instead of jumping to the top of the screen",
+            "New Disable on Lock Screen toggle in Settings → General — the dock and its trigger stay off until you unlock",
+            "Dock and panels now sit above the navigation bar with 3-button navigation",
+            "Fixed a crash loading app icons on Xiaomi (MIUI) devices"
         )
     )
 )

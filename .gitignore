@@ -17,3 +17,4 @@ keystore.properties
 .claude/skills/
 .windsurf/
 skills-lock.json
+.kotlin/
