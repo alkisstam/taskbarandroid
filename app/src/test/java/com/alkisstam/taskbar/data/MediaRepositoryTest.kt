@@ -101,6 +101,16 @@ class MediaRepositoryTest {
     }
 
     @Test
+    fun `notification posted before connect recovers connection`() {
+        every { sessionManager.getActiveSessions(any()) } returns listOf(
+            controller(playing = true, pkg = "p")
+        )
+        repo.onNotificationPosted(component)
+        assertTrue(repo.mediaState.value.hasSession)
+        verify { sessionManager.addOnActiveSessionsChangedListener(any(), component) }
+    }
+
+    @Test
     fun `disconnect clears state and unregisters listener`() {
         every { sessionManager.getActiveSessions(any()) } returns listOf(
             controller(playing = true, pkg = "p")

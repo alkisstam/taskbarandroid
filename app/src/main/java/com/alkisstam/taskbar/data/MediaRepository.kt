@@ -2,6 +2,7 @@ package com.alkisstam.taskbar.data
 
 import android.content.ComponentName
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.media.MediaMetadata
 import android.media.session.MediaController
@@ -111,13 +112,9 @@ class MediaRepository @Inject constructor(
 
     private fun scheduleRefreshRetry(componentName: ComponentName) {
         if (refreshRetryCount >= MAX_REFRESH_RETRIES) {
-            Log.w(TAG, "Max session-fetch retries reached, requesting listener rebind")
+            Log.w(TAG, "Max session-fetch retries reached, forcing listener rebind")
             refreshRetryCount = 0
-            try {
-                NotificationListenerService.requestRebind(componentName)
-            } catch (e: Exception) {
-                Log.w(TAG, "Failed to request listener rebind", e)
-            }
+            forceListenerRebind(componentName)
             return
         }
         refreshRetryCount++
@@ -128,11 +125,45 @@ class MediaRepository @Inject constructor(
         }
     }
 
+    /** requestRebind alone is a silent no-op on ColorOS/Realme UI when the binding has
+     * gone stale; toggling the component's enabled state forces the system to re-evaluate
+     * enabled listeners and rebind. */
+    private fun forceListenerRebind(componentName: ComponentName) {
+        try {
+            val pm = context.packageManager
+            pm.setComponentEnabledSetting(
+                componentName,
+                PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                PackageManager.DONT_KILL_APP
+            )
+            pm.setComponentEnabledSetting(
+                componentName,
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                PackageManager.DONT_KILL_APP
+            )
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to toggle listener component", e)
+        }
+        try {
+            NotificationListenerService.requestRebind(componentName)
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to request listener rebind", e)
+        }
+    }
+
     /** Fallback trigger for OEMs (e.g. Samsung One UI) where the sessions-changed
-     * listener can miss the initial media session; any posted notification re-checks. */
-    fun onNotificationPosted() {
+     * listener can miss the initial media session; any posted notification re-checks.
+     * ColorOS/Realme UI can also rebind the listener without redelivering
+     * onListenerConnected — a posted notification proves we are connected, so a null
+     * componentName here means that callback was skipped and we recover it. */
+    fun onNotificationPosted(componentName: ComponentName) {
+        if (listenerComponentName == null) {
+            Log.w(TAG, "Notification posted before onListenerConnected; recovering connection")
+            onListenerConnected(componentName)
+            return
+        }
         if (activeController == null) {
-            listenerComponentName?.let { refreshSessions(it) }
+            refreshSessions(componentName)
         }
     }
 

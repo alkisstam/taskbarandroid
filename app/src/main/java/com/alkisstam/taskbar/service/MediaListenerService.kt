@@ -27,7 +27,9 @@ class MediaListenerService : NotificationListenerService() {
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         super.onNotificationPosted(sbn)
-        mediaRepository.onNotificationPosted()
+        mediaRepository.onNotificationPosted(
+            ComponentName(this, MediaListenerService::class.java)
+        )
         sbn?.let { notificationHistoryRepository.record(it) }
     }
 
