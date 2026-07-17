@@ -15,6 +15,10 @@ Icon packs and a dedicated Notes panel.
 ### Changed
 - **Favorites tab shows clips only** — notes no longer appear in the Clipboard panel's Favorites tab, and the favorite star was removed from note cards (pinning notes remains).
 
+### Fixed
+- **Dock now follows the system theme while running** — with the System theme selected, switching the device between light and dark mode updates the dock and panels immediately; previously they kept the old colors until restarted. Color presets adapt too: each preset swaps to its counterpart shade (e.g. Sky ↔ Slate) when the device theme flips. Custom colors and fixed Light/Dark themes are unaffected.
+- **Crash loading app icons when the device is low on memory** — icon loading now pauses while the system reports low memory (apps briefly show a placeholder icon) and fills the icons in once memory recovers, instead of the dock being killed mid-load.
+
 ---
 
 ## [1.4.4] - 2026-07-15
