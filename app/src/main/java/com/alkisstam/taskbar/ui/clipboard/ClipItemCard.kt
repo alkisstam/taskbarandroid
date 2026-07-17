@@ -442,16 +442,3 @@ private fun documentMimeType(path: String): String = when (File(path).extension.
     "ppt" -> "application/vnd.ms-powerpoint"
     else -> "application/octet-stream"
 }
-
-private fun formatTimestamp(timestamp: Long): String {
-    val diff = System.currentTimeMillis() - timestamp
-    val minutes = diff / 60_000
-    val hours = diff / 3_600_000
-    val days = diff / 86_400_000
-    return when {
-        minutes < 1 -> "just now"
-        minutes < 60 -> "$minutes min ago"
-        hours < 24 -> "$hours hr ago"
-        else -> "$days d ago"
-    }
-}

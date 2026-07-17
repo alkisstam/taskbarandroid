@@ -18,6 +18,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -26,7 +28,9 @@ private const val ICON_SIZE_PX = 160
 
 @Singleton
 class AppRepository @Inject constructor(
-    @param:ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context,
+    private val preferencesRepository: PreferencesRepository,
+    private val iconPackRepository: IconPackRepository
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -35,12 +39,16 @@ class AppRepository @Inject constructor(
 
     private val packageReceiver = object : BroadcastReceiver() {
         override fun onReceive(ctx: Context, intent: Intent) {
+            iconPackRepository.invalidateCache()
             loadApps()
         }
     }
 
     init {
-        loadApps()
+        // First emission covers the initial load; later emissions re-theme icons live.
+        scope.launch {
+            preferencesRepository.iconPackPackage.distinctUntilChanged().collect { loadApps() }
+        }
         val filter = IntentFilter().apply {
             addAction(Intent.ACTION_PACKAGE_ADDED)
             addAction(Intent.ACTION_PACKAGE_REMOVED)
@@ -61,6 +69,7 @@ class AppRepository @Inject constructor(
                 val intent = Intent(Intent.ACTION_MAIN, null).apply {
                     addCategory(Intent.CATEGORY_LAUNCHER)
                 }
+                val iconPack = preferencesRepository.iconPackPackage.first()
                 _apps.value = pm.queryIntentActivities(intent, PackageManager.GET_META_DATA)
                     .mapNotNull { resolveInfo ->
                         val activityInfo = resolveInfo.activityInfo ?: return@mapNotNull null
@@ -75,7 +84,10 @@ class AppRepository @Inject constructor(
                             // process on native allocation failure (uncatchable). Direct
                             // Resources access bypasses that hook; DENSITY_XHIGH caps the
                             // source bitmap near our 160px target.
-                            val drawable = try {
+                            val packIcon = if (iconPack.isNotEmpty()) {
+                                iconPackRepository.getIcon(iconPack, activityInfo.packageName, activityInfo.name)
+                            } else null
+                            val drawable = packIcon ?: try {
                                 val res = pm.getResourcesForApplication(activityInfo.applicationInfo)
                                 val resId = resolveInfo.iconResource
                                 if (resId != 0) res.getDrawableForDensity(resId, DisplayMetrics.DENSITY_XHIGH, null) else null

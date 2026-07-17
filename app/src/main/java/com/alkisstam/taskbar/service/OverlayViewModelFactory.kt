@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.alkisstam.taskbar.data.AppRepository
 import com.alkisstam.taskbar.data.ClipboardRepository
+import com.alkisstam.taskbar.data.IconPackRepository
 import com.alkisstam.taskbar.data.MediaRepository
 import com.alkisstam.taskbar.data.NotificationHistoryRepository
 import com.alkisstam.taskbar.data.PreferencesRepository
@@ -21,14 +22,15 @@ class OverlayViewModelFactory(
     private val quickControlsRepository: QuickControlsRepository,
     private val mediaRepository: MediaRepository,
     private val clipboardRepository: ClipboardRepository,
-    private val notificationHistoryRepository: NotificationHistoryRepository
+    private val notificationHistoryRepository: NotificationHistoryRepository,
+    private val iconPackRepository: IconPackRepository
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(TaskbarViewModel::class.java) ->
-                TaskbarViewModel(context.applicationContext, appRepository, prefsRepository) as T
+                TaskbarViewModel(context.applicationContext, appRepository, prefsRepository, iconPackRepository) as T
             modelClass.isAssignableFrom(AppMenuViewModel::class.java) ->
                 AppMenuViewModel(context.applicationContext, appRepository, prefsRepository, quickControlsRepository, mediaRepository) as T
             modelClass.isAssignableFrom(ClipboardViewModel::class.java) ->

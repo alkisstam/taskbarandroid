@@ -133,6 +133,78 @@ class AppMenuViewModelTest {
 
     // endregion
 
+    // region Notes / clipboard panel mutual exclusion
+
+    @Test
+    fun `toggleNotesPanel shows notes panel`() = runTest(mainDispatcherRule.dispatcher) {
+        val vm = createViewModel()
+        vm.toggleNotesPanel()
+        assertTrue(vm.notesPanelVisible.value)
+    }
+
+    @Test
+    fun `toggleNotesPanel twice hides the panel`() = runTest(mainDispatcherRule.dispatcher) {
+        val vm = createViewModel()
+        vm.toggleNotesPanel()
+        vm.toggleNotesPanel()
+        assertFalse(vm.notesPanelVisible.value)
+    }
+
+    @Test
+    fun `toggleNotesPanel dismisses clipboard panel`() = runTest(mainDispatcherRule.dispatcher) {
+        val vm = createViewModel()
+        vm.toggleClipboardPanel()
+        assertTrue(vm.clipboardPanelVisible.value)
+        vm.toggleNotesPanel()
+        assertFalse(vm.clipboardPanelVisible.value)
+        assertTrue(vm.notesPanelVisible.value)
+    }
+
+    @Test
+    fun `toggleClipboardPanel dismisses notes panel`() = runTest(mainDispatcherRule.dispatcher) {
+        val vm = createViewModel()
+        vm.toggleNotesPanel()
+        assertTrue(vm.notesPanelVisible.value)
+        vm.toggleClipboardPanel()
+        assertFalse(vm.notesPanelVisible.value)
+        assertTrue(vm.clipboardPanelVisible.value)
+    }
+
+    @Test
+    fun `toggleNotificationPanel dismisses notes panel`() = runTest(mainDispatcherRule.dispatcher) {
+        val vm = createViewModel()
+        vm.toggleNotesPanel()
+        vm.toggleNotificationPanel()
+        assertFalse(vm.notesPanelVisible.value)
+        assertTrue(vm.notificationPanelVisible.value)
+    }
+
+    @Test
+    fun `toggleCalculatorPanel dismisses notes panel`() = runTest(mainDispatcherRule.dispatcher) {
+        val vm = createViewModel()
+        vm.toggleNotesPanel()
+        vm.toggleCalculatorPanel()
+        assertFalse(vm.notesPanelVisible.value)
+        assertTrue(vm.calculatorPanelVisible.value)
+    }
+
+    @Test
+    fun `dismissNotesPanel hides the panel`() = runTest(mainDispatcherRule.dispatcher) {
+        val vm = createViewModel()
+        vm.toggleNotesPanel()
+        vm.dismissNotesPanel()
+        assertFalse(vm.notesPanelVisible.value)
+    }
+
+    @Test
+    fun `handleQuickControlAction notes toggles notes panel`() = runTest(mainDispatcherRule.dispatcher) {
+        val vm = createViewModel()
+        vm.handleQuickControlAction("notes")
+        assertTrue(vm.notesPanelVisible.value)
+    }
+
+    // endregion
+
     // region Menu and search
 
     @Test

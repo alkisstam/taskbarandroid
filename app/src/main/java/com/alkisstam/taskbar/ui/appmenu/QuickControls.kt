@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.ScreenRotation
 import androidx.compose.material.icons.filled.ScreenRotationAlt
 import androidx.compose.material.icons.filled.Vibration
 import androidx.compose.material.icons.automirrored.filled.VolumeOff
+import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.PhotoCamera
@@ -143,6 +144,8 @@ fun QuickControlsState.toItems(
             icon = Icons.Filled.FreeBreakfast),
         "clipboard" to QuickControlItemData(id = "clipboard", label = "Clipboard",
             active = false, icon = Icons.Filled.ContentPaste),
+        "notes" to QuickControlItemData(id = "notes", label = "Notes",
+            active = false, icon = Icons.Filled.EditNote),
         "calculator" to QuickControlItemData(id = "calculator", label = "Calculator",
             active = false, icon = Icons.Filled.Calculate),
         "wifi" to QuickControlItemData(id = "wifi", label = "Wifi", active = wifiEnabled,

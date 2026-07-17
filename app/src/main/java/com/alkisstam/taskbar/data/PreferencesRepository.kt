@@ -159,8 +159,9 @@ class PreferencesRepository @Inject constructor(
         private val CAFFEINE_ORIGINAL_TIMEOUT_KEY = intPreferencesKey("caffeine_original_timeout")
         private val APP_OPEN_COUNT_KEY = intPreferencesKey("app_open_count")
         private val REVIEW_PROMPTED_KEY = booleanPreferencesKey("review_prompted")
+        private val ICON_PACK_KEY = stringPreferencesKey("icon_pack_package")
 
-        val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen", "caffeine", "clipboard", "calculator", "wifi", "bluetooth", "mobile_data", "share", "notif_history")
+        val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen", "caffeine", "clipboard", "calculator", "wifi", "bluetooth", "mobile_data", "share", "notif_history", "notes")
 
         internal fun serializeStringList(list: List<String>): String = JSONArray(list).toString()
         internal fun deserializeStringList(stored: String): List<String> =
@@ -195,6 +196,16 @@ class PreferencesRepository @Inject constructor(
 
     val overlayEnabled: Flow<Boolean> = safeData.map { prefs ->
         prefs[OVERLAY_ENABLED_KEY] ?: false
+    }
+
+    val iconPackPackage: Flow<String> = safeData.map { prefs ->
+        prefs[ICON_PACK_KEY] ?: ""
+    }
+
+    suspend fun setIconPackPackage(packageName: String) {
+        context.dataStore.edit { prefs ->
+            prefs[ICON_PACK_KEY] = packageName
+        }
     }
 
     suspend fun savePinnedApps(packages: List<String>) {
@@ -637,6 +648,7 @@ class PreferencesRepository @Inject constructor(
             prefs[TRANSLUCENT_MODE_KEY]?.let { put("translucent_mode", it) }
             prefs[TRANSLUCENT_ALPHA_KEY]?.let { put("translucent_alpha", it) }
             prefs[GRAIN_ALPHA_KEY]?.let { put("grain_alpha", it) }
+            prefs[ICON_PACK_KEY]?.let { put("icon_pack_package", it) }
         }.toString()
     }
 
@@ -686,6 +698,7 @@ class PreferencesRepository @Inject constructor(
             if (obj.has("translucent_mode")) prefs[TRANSLUCENT_MODE_KEY] = obj.getBoolean("translucent_mode")
             if (obj.has("translucent_alpha")) prefs[TRANSLUCENT_ALPHA_KEY] = obj.getDouble("translucent_alpha").toFloat()
             if (obj.has("grain_alpha")) prefs[GRAIN_ALPHA_KEY] = obj.getDouble("grain_alpha").toFloat()
+            if (obj.has("icon_pack_package")) prefs[ICON_PACK_KEY] = obj.getString("icon_pack_package")
         }
     }
 

@@ -157,6 +157,9 @@ class AppMenuViewModel @Inject constructor(
     private val _notificationPanelVisible = MutableStateFlow(false)
     val notificationPanelVisible: StateFlow<Boolean> = _notificationPanelVisible.asStateFlow()
 
+    private val _notesPanelVisible = MutableStateFlow(false)
+    val notesPanelVisible: StateFlow<Boolean> = _notesPanelVisible.asStateFlow()
+
     val mediaState: StateFlow<MediaState> = mediaRepository.mediaState
 
     private val _brightnessLevel = MutableStateFlow(128)
@@ -249,12 +252,31 @@ class AppMenuViewModel @Inject constructor(
         if (newValue) {
             _calculatorPanelVisible.value = false
             _notificationPanelVisible.value = false
+            _notesPanelVisible.value = false
         }
         _clipboardPanelVisible.value = newValue
     }
 
     fun dismissClipboardPanel() {
         _clipboardPanelVisible.value = false
+    }
+
+    fun toggleNotesPanel() {
+        val newValue = !_notesPanelVisible.value
+        if (newValue) {
+            _calculatorPanelVisible.value = false
+            _notificationPanelVisible.value = false
+            _clipboardPanelVisible.value = false
+        }
+        _notesPanelVisible.value = newValue
+    }
+
+    fun dismissNotesPanel() {
+        _notesPanelVisible.value = false
+    }
+
+    fun dismissNotesPanelForExternalOpen() {
+        _notesPanelVisible.value = false
     }
 
     fun toggleCalculatorPanel() {
@@ -265,6 +287,7 @@ class AppMenuViewModel @Inject constructor(
             _brightnessPanelVisible.value = false
             _clipboardPanelVisible.value = false
             _notificationPanelVisible.value = false
+            _notesPanelVisible.value = false
             _menuVisible.value = false
             _isSearching.value = false
         }
@@ -282,6 +305,7 @@ class AppMenuViewModel @Inject constructor(
         if (newValue) {
             _calculatorPanelVisible.value = false
             _clipboardPanelVisible.value = false
+            _notesPanelVisible.value = false
         }
         _notificationPanelVisible.value = newValue
     }
@@ -570,6 +594,7 @@ class AppMenuViewModel @Inject constructor(
             "lockscreen" -> lockScreen()
             "caffeine" -> cycleCaffeineTimeout()
             "clipboard" -> toggleClipboardPanel()
+            "notes" -> toggleNotesPanel()
             "calculator" -> toggleCalculatorPanel()
             "wifi" -> openWifiPanel()
             "bluetooth" -> openBluetoothPanel()

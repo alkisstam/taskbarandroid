@@ -12,6 +12,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.AppRepository
+import com.alkisstam.taskbar.data.IconPackInfo
+import com.alkisstam.taskbar.data.IconPackRepository
 import com.alkisstam.taskbar.data.PillSettings
 import com.alkisstam.taskbar.data.PreferencesRepository
 import com.alkisstam.taskbar.data.TaskbarSettings
@@ -37,7 +39,8 @@ import javax.inject.Inject
 class TaskbarViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val appRepository: AppRepository,
-    private val prefsRepository: PreferencesRepository
+    private val prefsRepository: PreferencesRepository,
+    private val iconPackRepository: IconPackRepository
 ) : ViewModel() {
 
     val allApps: StateFlow<List<AppInfo>> = combine(
@@ -95,6 +98,27 @@ class TaskbarViewModel @Inject constructor(
 
     val surfaceTintColor: StateFlow<Long> = prefsRepository.surfaceTintColor
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0L)
+
+    val iconPackPackage: StateFlow<String> = prefsRepository.iconPackPackage
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "")
+
+    private val _availableIconPacks = MutableStateFlow<List<IconPackInfo>>(emptyList())
+    val availableIconPacks: StateFlow<List<IconPackInfo>> = _availableIconPacks.asStateFlow()
+
+    fun loadIconPacks() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _availableIconPacks.value = try {
+                iconPackRepository.listInstalledPacks()
+            } catch (e: Exception) {
+                Log.w("TaskbarViewModel", "Failed to list icon packs", e)
+                emptyList()
+            }
+        }
+    }
+
+    fun setIconPack(packageName: String) {
+        viewModelScope.launch { prefsRepository.setIconPackPackage(packageName) }
+    }
 
     val onboardingComplete: StateFlow<Boolean?> = prefsRepository.onboardingComplete
         .map { it as Boolean? }

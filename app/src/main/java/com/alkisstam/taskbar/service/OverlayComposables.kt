@@ -37,6 +37,7 @@ import com.alkisstam.taskbar.ui.appmenu.FloatingSearchBar
 import com.alkisstam.taskbar.ui.appmenu.MusicPanel
 import com.alkisstam.taskbar.ui.appmenu.VolumePanel
 import com.alkisstam.taskbar.ui.clipboard.ClipboardPanel
+import com.alkisstam.taskbar.ui.clipboard.NotesPanel
 import com.alkisstam.taskbar.ui.notifications.NotificationHistoryPanel
 import com.alkisstam.taskbar.ui.taskbar.TaskbarView
 import com.alkisstam.taskbar.ui.taskbar.TriggerPillView
@@ -286,6 +287,45 @@ internal fun ClipboardPanelContent(
             onDismiss = appMenuViewModel::dismissClipboardPanel,
             onOpenExternal = {
                 appMenuViewModel.dismissClipboardPanelForExternalOpen()
+                taskbarViewModel.hideTaskbar()
+                appMenuViewModel.dismissMusicPanel()
+            },
+            panelOutlineEnabled = panelOutlineEnabled,
+            translucentMode = translucentMode,
+            translucentAlpha = translucentAlpha,
+            grainAlpha = grainAlpha,
+            surfaceTintColor = surfaceTintColor,
+            dockBottomPadding = dockBottomPadding
+        )
+    }
+}
+
+@Composable
+internal fun NotesPanelContent(
+    taskbarViewModel: TaskbarViewModel,
+    appMenuViewModel: AppMenuViewModel,
+    clipboardViewModel: ClipboardViewModel
+) {
+    val themeMode by taskbarViewModel.themeMode.collectAsState()
+    val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
+    val translucentMode by taskbarViewModel.translucentMode.collectAsState()
+    val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
+    val grainAlpha by taskbarViewModel.grainAlpha.collectAsState()
+    val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
+    val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
+    val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
+    val quickControlsEnabled by taskbarViewModel.quickControlsEnabled.collectAsState()
+    val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
+
+    val expandedRows = if (isDockExpanded && quickControlsEnabled) 1 else 0
+    val dockBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.heightDp, expandedRows, taskbarSettings.dockPadding.bottomGapDp)
+
+    TaskBarTheme(themeMode = themeMode) {
+        NotesPanel(
+            viewModel = clipboardViewModel,
+            onDismiss = appMenuViewModel::dismissNotesPanel,
+            onOpenExternal = {
+                appMenuViewModel.dismissNotesPanelForExternalOpen()
                 taskbarViewModel.hideTaskbar()
                 appMenuViewModel.dismissMusicPanel()
             },

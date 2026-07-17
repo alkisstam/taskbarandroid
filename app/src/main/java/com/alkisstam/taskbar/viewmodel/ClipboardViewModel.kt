@@ -9,21 +9,11 @@ import com.alkisstam.taskbar.data.TodoItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
-
-sealed class FavoriteEntry {
-    data class Clip(val item: ClipItem) : FavoriteEntry()
-    data class Note(val item: NoteItem) : FavoriteEntry()
-
-    val timestamp: Long get() = when (this) {
-        is Clip -> item.timestamp
-        is Note -> item.timestamp
-    }
-}
 
 @HiltViewModel
 class ClipboardViewModel @Inject constructor(
@@ -33,14 +23,9 @@ class ClipboardViewModel @Inject constructor(
     val clips: StateFlow<List<ClipItem>> = clipboardRepository.clips
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val favorites: StateFlow<List<FavoriteEntry>> = combine(
-        clipboardRepository.clips,
-        clipboardRepository.noteItems
-    ) { clips, notes ->
-        (clips.filter { it.isFavorite }.map { FavoriteEntry.Clip(it) } +
-            notes.filter { it.isFavorite }.map { FavoriteEntry.Note(it) })
-            .sortedByDescending { it.timestamp }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val favorites: StateFlow<List<ClipItem>> = clipboardRepository.clips
+        .map { clips -> clips.filter { it.isFavorite }.sortedByDescending { it.timestamp } }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val noteItems: StateFlow<List<NoteItem>> = clipboardRepository.noteItems
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -57,10 +42,6 @@ class ClipboardViewModel @Inject constructor(
 
     fun toggleFavorite(item: ClipItem) {
         viewModelScope.launch { clipboardRepository.updateClip(item.copy(isFavorite = !item.isFavorite)) }
-    }
-
-    fun toggleNoteFavorite(item: NoteItem) {
-        viewModelScope.launch { clipboardRepository.updateNote(item.copy(isFavorite = !item.isFavorite)) }
     }
 
     fun togglePin(item: ClipItem) {

@@ -4,6 +4,19 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.5.0] - 2026-07-17
+
+Icon packs and a dedicated Notes panel.
+
+### Added
+- **Icon pack support** — Settings → Design → Dock Size & Appearance → Icon Pack lists installed icon packs (ADW/Nova/GO format) and applies the selected pack to app icons across the dock, app menu, search, and pickers. Apps missing from the pack keep their default icon; icons re-theme live without a restart, and the selection is included in backup/restore.
+- **Notes panel** — Notes and To-Dos moved out of the Clipboard panel into their own full-screen panel with the same design, opened by a new "Notes" quick control in Controls. The Clipboard panel now has just the Clips and Favorites tabs.
+
+### Changed
+- **Favorites tab shows clips only** — notes no longer appear in the Clipboard panel's Favorites tab, and the favorite star was removed from note cards (pinning notes remains).
+
+---
+
 ## [1.4.4] - 2026-07-15
 
 Quick actions for notifications, easier app hiding, in-app updates and reviews, and a lock screen option.

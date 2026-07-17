@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.AppRepository
+import com.alkisstam.taskbar.data.IconPackRepository
 import com.alkisstam.taskbar.data.PillSettings
 import com.alkisstam.taskbar.data.PreferencesRepository
 import com.alkisstam.taskbar.data.TaskbarSettings
@@ -33,6 +34,7 @@ class TaskbarViewModelTest {
     private lateinit var context: Context
     private lateinit var appRepo: AppRepository
     private lateinit var prefsRepo: PreferencesRepository
+    private lateinit var iconPackRepo: IconPackRepository
 
     @Before
     fun setUp() {
@@ -56,10 +58,12 @@ class TaskbarViewModelTest {
             every { musicPanelEnabled } returns flowOf(false)
             every { taskbarVisible } returns flowOf(true)
             every { hiddenApps } returns flowOf(emptySet())
+            every { iconPackPackage } returns flowOf("")
         }
+        iconPackRepo = mockk<IconPackRepository>(relaxed = true)
     }
 
-    private fun createViewModel() = TaskbarViewModel(context, appRepo, prefsRepo)
+    private fun createViewModel() = TaskbarViewModel(context, appRepo, prefsRepo, iconPackRepo)
 
     @Test
     fun `showTaskbar sets isTaskbarVisible to true`() = runTest(mainDispatcherRule.dispatcher) {

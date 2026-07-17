@@ -60,6 +60,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -459,6 +460,28 @@ fun PillSettingsScreen(
                 ),
                 isSelected = { it == taskbarSettings.appMenuButtonSide },
                 onSelect = { viewModel.saveTaskbarSettings(taskbarSettings.copy(appMenuButtonSide = it)) }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text("Icon Pack", style = MaterialTheme.typography.bodyMedium)
+            Text(
+                "Theme app icons with an installed icon pack. Apps missing from the pack keep their default icon.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            val iconPackPackage by viewModel.iconPackPackage.collectAsState()
+            val availableIconPacks by viewModel.availableIconPacks.collectAsState()
+            LaunchedEffect(dockExpanded) {
+                if (dockExpanded) viewModel.loadIconPacks()
+            }
+            GradientDropdownField(
+                icon = Icons.Filled.Palette,
+                selectedLabel = availableIconPacks.firstOrNull { it.packageName == iconPackPackage }?.label
+                    ?: "System default",
+                options = listOf("System default" to "") +
+                    availableIconPacks.map { it.label to it.packageName },
+                isSelected = { it == iconPackPackage },
+                onSelect = { viewModel.setIconPack(it) }
             )
         }
     }

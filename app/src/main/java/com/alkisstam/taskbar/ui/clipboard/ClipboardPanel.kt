@@ -1,9 +1,5 @@
 package com.alkisstam.taskbar.ui.clipboard
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
-import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,57 +11,32 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ContentPaste
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.StarBorder
-import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -73,25 +44,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.findRootCoordinates
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInRoot
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.ClipItem
 import com.alkisstam.taskbar.data.ClipType
-import com.alkisstam.taskbar.data.NoteItem
-import com.alkisstam.taskbar.data.TodoItem
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 import com.alkisstam.taskbar.ui.theme.grain
 import com.alkisstam.taskbar.viewmodel.ClipboardViewModel
-import com.alkisstam.taskbar.viewmodel.FavoriteEntry
 import kotlinx.coroutines.launch
 
 private enum class ClipCategory(val label: String) {
@@ -120,16 +80,13 @@ fun ClipboardPanel(
 ) {
     val clips by viewModel.clips.collectAsState()
     val favorites by viewModel.favorites.collectAsState()
-    val noteItems by viewModel.noteItems.collectAsState()
-    val todoItems by viewModel.todoItems.collectAsState()
     val shareHintDismissed by viewModel.shareHintDismissed.collectAsState()
 
-    val tabs = listOf("Clips", "Favorites", "Notes", "To-Dos")
-    val tabIcons = listOf(Icons.Default.ContentPaste, Icons.Default.Star, Icons.Default.Edit, Icons.Default.CheckCircle)
+    val tabs = listOf("Clips", "Favorites")
+    val tabIcons = listOf(Icons.Default.ContentPaste, Icons.Default.Star)
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val coroutineScope = rememberCoroutineScope()
     var selectedCategory by remember { mutableStateOf(ClipCategory.ALL) }
-    val density = LocalDensity.current
 
     val panelShape = RoundedCornerShape(24.dp)
     val panelColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
@@ -205,28 +162,9 @@ fun ClipboardPanel(
                                 onDismissShareHint = viewModel::dismissShareHint
                             )
                             1 -> FavoritesTab(
-                                entries = favorites,
+                                items = favorites,
                                 viewModel = viewModel,
                                 onOpenExternal = onOpenExternal
-                            )
-                            2 -> NotesTab(
-                                noteItems = noteItems.sortedWith(
-                                    compareByDescending<NoteItem> { it.isPinned }.thenByDescending { it.timestamp }
-                                ),
-                                onAdd = viewModel::addNote,
-                                onTogglePin = viewModel::toggleNotePin,
-                                onToggleFavorite = viewModel::toggleNoteFavorite,
-                                onDelete = viewModel::removeNote,
-                                onEdit = viewModel::updateNote,
-                                onOpenExternal = onOpenExternal
-                            )
-                            3 -> ToDoTab(
-                                todoItems = todoItems,
-                                onAdd = viewModel::addTodo,
-                                onToggleDone = viewModel::toggleTodoDone,
-                                onTogglePin = viewModel::toggleTodoPin,
-                                onDelete = viewModel::removeTodo,
-                                onEdit = viewModel::updateTodo
                             )
                         }
                     }
@@ -427,8 +365,8 @@ private fun ShareHintCard(onDismiss: () -> Unit) {
 }
 
 @Composable
-private fun FavoritesTab(entries: List<FavoriteEntry>, viewModel: ClipboardViewModel, onOpenExternal: () -> Unit) {
-    if (entries.isEmpty()) {
+private fun FavoritesTab(items: List<ClipItem>, viewModel: ClipboardViewModel, onOpenExternal: () -> Unit) {
+    if (items.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -449,618 +387,34 @@ private fun FavoritesTab(entries: List<FavoriteEntry>, viewModel: ClipboardViewM
         }
         return
     }
-    val context = LocalContext.current
     var editingClip by remember { mutableStateOf<ClipItem?>(null) }
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.fillMaxSize()
     ) {
-        items(
-            entries,
-            key = { entry ->
-                when (entry) {
-                    is FavoriteEntry.Clip -> "clip_${entry.item.id}"
-                    is FavoriteEntry.Note -> "note_${entry.item.id}"
-                }
-            }
-        ) { entry ->
-            when (entry) {
-                is FavoriteEntry.Clip -> if (entry.item.id == editingClip?.id) {
-                    NoteComposer(
-                        initialText = entry.item.content,
-                        onSave = { text ->
-                            viewModel.updateClip(entry.item.copy(content = text))
-                            editingClip = null
-                        },
-                        onCancel = { editingClip = null }
-                    )
-                } else ClipItemCard(
-                    item = entry.item,
-                    onToggleFavorite = { viewModel.toggleFavorite(entry.item) },
-                    onTogglePin = { viewModel.togglePin(entry.item) },
-                    onDelete = { viewModel.removeClip(entry.item.id) },
+        items(items, key = { it.id }) { item ->
+            if (item.id == editingClip?.id) {
+                NoteComposer(
+                    initialText = item.content,
+                    onSave = { text ->
+                        viewModel.updateClip(item.copy(content = text))
+                        editingClip = null
+                    },
+                    onCancel = { editingClip = null }
+                )
+            } else {
+                ClipItemCard(
+                    item = item,
+                    onToggleFavorite = { viewModel.toggleFavorite(item) },
+                    onTogglePin = { viewModel.togglePin(item) },
+                    onDelete = { viewModel.removeClip(item.id) },
                     onOpenExternal = onOpenExternal,
-                    onEdit = if (entry.item.type == ClipType.TEXT || entry.item.type == ClipType.URL) {
-                        { editingClip = entry.item }
+                    onEdit = if (item.type == ClipType.TEXT || item.type == ClipType.URL) {
+                        { editingClip = item }
                     } else null
                 )
-                is FavoriteEntry.Note -> NoteItemCard(
-                    note = entry.item,
-                    onCopy = {
-                        val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                        cm.setPrimaryClip(ClipData.newPlainText("note", entry.item.content))
-                    },
-                    onShare = {
-                        onOpenExternal()
-                        val intent = Intent(Intent.ACTION_SEND).apply {
-                            type = "text/plain"
-                            putExtra(Intent.EXTRA_TEXT, entry.item.content)
-                        }
-                        context.startActivity(Intent.createChooser(intent, null).apply {
-                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        })
-                    },
-                    onTogglePin = { viewModel.toggleNotePin(entry.item) },
-                    onToggleFavorite = { viewModel.toggleNoteFavorite(entry.item) },
-                    onDelete = { viewModel.removeNote(entry.item.id) }
-                )
             }
         }
-    }
-}
-
-@Composable
-private fun NotesTab(
-    noteItems: List<NoteItem>,
-    onAdd: (String) -> Unit,
-    onTogglePin: (NoteItem) -> Unit,
-    onToggleFavorite: (NoteItem) -> Unit,
-    onDelete: (String) -> Unit,
-    onEdit: (NoteItem) -> Unit,
-    onOpenExternal: () -> Unit
-) {
-    var composerVisible by remember { mutableStateOf(false) }
-    var editingNote by remember { mutableStateOf<NoteItem?>(null) }
-    val context = LocalContext.current
-    val density = LocalDensity.current
-    // Distance from this tab's bottom edge to the window (screen) bottom — tab bar, panel
-    // padding, and the dock gap all included, so the lift lands the composer on the keyboard.
-    var bottomGapPx by remember { mutableIntStateOf(0) }
-    val imeBottomPx = WindowInsets.ime.getBottom(density)
-    val composerLift = with(density) { (imeBottomPx - bottomGapPx).coerceAtLeast(0).toDp() }
-
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .onGloballyPositioned { coords ->
-            val root = coords.findRootCoordinates()
-            bottomGapPx = (root.size.height - (coords.positionInRoot().y + coords.size.height)).toInt().coerceAtLeast(0)
-        }
-    ) {
-        if (noteItems.isEmpty() && !composerVisible && editingNote == null) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        Icons.Default.Edit,
-                        contentDescription = null,
-                        modifier = Modifier.size(48.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        "No notes yet",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-        } else {
-            LazyColumn(
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 80.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(noteItems, key = { it.id }) { note ->
-                    if (note.id == editingNote?.id) {
-                        NoteComposer(
-                            initialText = note.content,
-                            onSave = { text ->
-                                onEdit(note.copy(content = text))
-                                editingNote = null
-                            },
-                            onCancel = { editingNote = null }
-                        )
-                    } else {
-                        NoteItemCard(
-                            note = note,
-                            onCopy = {
-                                val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                                cm.setPrimaryClip(ClipData.newPlainText("note", note.content))
-                            },
-                            onShare = {
-                                onOpenExternal()
-                                val intent = Intent(Intent.ACTION_SEND).apply {
-                                    type = "text/plain"
-                                    putExtra(Intent.EXTRA_TEXT, note.content)
-                                }
-                                context.startActivity(Intent.createChooser(intent, null).apply {
-                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                })
-                            },
-                            onTogglePin = { onTogglePin(note) },
-                            onToggleFavorite = { onToggleFavorite(note) },
-                            onEdit = {
-                                composerVisible = false
-                                editingNote = note
-                            },
-                            onDelete = { onDelete(note.id) }
-                        )
-                    }
-                }
-            }
-        }
-
-        if (editingNote == null && composerVisible) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .offset(y = -composerLift)
-            ) {
-                NoteComposer(
-                    autoFocus = true,
-                    onSave = { text -> onAdd(text); composerVisible = false },
-                    onCancel = { composerVisible = false }
-                )
-            }
-        }
-
-        if (!composerVisible) {
-            FloatingActionButton(
-                onClick = {
-                    editingNote = null
-                    composerVisible = true
-                },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(16.dp),
-                containerColor = MaterialTheme.colorScheme.primaryContainer
-            ) {
-                Icon(
-                    if (editingNote != null) Icons.Default.Edit else Icons.Default.Add,
-                    contentDescription = if (editingNote != null) "Cancel" else "New note",
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun ToDoTab(
-    todoItems: List<TodoItem>,
-    onAdd: (String) -> Unit,
-    onToggleDone: (TodoItem) -> Unit,
-    onTogglePin: (TodoItem) -> Unit,
-    onDelete: (String) -> Unit,
-    onEdit: (TodoItem) -> Unit
-) {
-    var composerVisible by remember { mutableStateOf(false) }
-    var editingTodo by remember { mutableStateOf<TodoItem?>(null) }
-    val density = LocalDensity.current
-    var bottomGapPx by remember { mutableIntStateOf(0) }
-    val imeBottomPx = WindowInsets.ime.getBottom(density)
-    val composerLift = with(density) { (imeBottomPx - bottomGapPx).coerceAtLeast(0).toDp() }
-
-    val open = todoItems.filter { !it.isDone }
-        .sortedWith(compareByDescending<TodoItem> { it.isPinned }.thenByDescending { it.timestamp })
-    val completed = todoItems.filter { it.isDone }.sortedByDescending { it.timestamp }
-
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .onGloballyPositioned { coords ->
-            val root = coords.findRootCoordinates()
-            bottomGapPx = (root.size.height - (coords.positionInRoot().y + coords.size.height)).toInt().coerceAtLeast(0)
-        }
-    ) {
-        if (todoItems.isEmpty() && !composerVisible && editingTodo == null) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        Icons.Default.CheckCircle,
-                        contentDescription = null,
-                        modifier = Modifier.size(48.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        "No to-dos yet",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-        } else {
-            LazyColumn(
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 80.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(open, key = { it.id }) { todo ->
-                    TodoListItem(
-                        todo = todo,
-                        isEditing = todo.id == editingTodo?.id,
-                        onStartEdit = { composerVisible = false; editingTodo = todo },
-                        onSaveEdit = { text -> onEdit(todo.copy(content = text)); editingTodo = null },
-                        onCancelEdit = { editingTodo = null },
-                        onToggleDone = { onToggleDone(todo) },
-                        onTogglePin = { onTogglePin(todo) },
-                        onDelete = { onDelete(todo.id) }
-                    )
-                }
-                if (completed.isNotEmpty()) {
-                    item("completed_header") {
-                        Text(
-                            "Completed (${completed.size})",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(top = 4.dp)
-                        )
-                    }
-                }
-                items(completed, key = { it.id }) { todo ->
-                    TodoListItem(
-                        todo = todo,
-                        isEditing = todo.id == editingTodo?.id,
-                        onStartEdit = { composerVisible = false; editingTodo = todo },
-                        onSaveEdit = { text -> onEdit(todo.copy(content = text)); editingTodo = null },
-                        onCancelEdit = { editingTodo = null },
-                        onToggleDone = { onToggleDone(todo) },
-                        onTogglePin = { onTogglePin(todo) },
-                        onDelete = { onDelete(todo.id) }
-                    )
-                }
-            }
-        }
-
-        if (editingTodo == null && composerVisible) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .offset(y = -composerLift)
-            ) {
-                NoteComposer(
-                    placeholder = "Add a to-do…",
-                    autoFocus = true,
-                    onSave = { text -> onAdd(text); composerVisible = false },
-                    onCancel = { composerVisible = false }
-                )
-            }
-        }
-
-        if (!composerVisible) {
-            FloatingActionButton(
-                onClick = {
-                    editingTodo = null
-                    composerVisible = true
-                },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(16.dp),
-                containerColor = MaterialTheme.colorScheme.primaryContainer
-            ) {
-                Icon(
-                    if (editingTodo != null) Icons.Default.Edit else Icons.Default.Add,
-                    contentDescription = if (editingTodo != null) "Cancel" else "New to-do",
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun TodoListItem(
-    todo: TodoItem,
-    isEditing: Boolean,
-    onStartEdit: () -> Unit,
-    onSaveEdit: (String) -> Unit,
-    onCancelEdit: () -> Unit,
-    onToggleDone: () -> Unit,
-    onTogglePin: () -> Unit,
-    onDelete: () -> Unit
-) {
-    if (isEditing) {
-        NoteComposer(
-            initialText = todo.content,
-            placeholder = "Add a to-do…",
-            onSave = onSaveEdit,
-            onCancel = onCancelEdit
-        )
-    } else {
-        TodoItemCard(
-            todo = todo,
-            onToggleDone = onToggleDone,
-            onEdit = onStartEdit,
-            onTogglePin = onTogglePin,
-            onDelete = onDelete
-        )
-    }
-}
-
-@Composable
-private fun NoteComposer(
-    initialText: String = "",
-    placeholder: String = "Write a note…",
-    autoFocus: Boolean = false,
-    onSave: (String) -> Unit,
-    onCancel: () -> Unit
-) {
-    var text by remember(initialText) { mutableStateOf(initialText) }
-    val focusRequester = remember { FocusRequester() }
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    if (autoFocus) {
-        LaunchedEffect(Unit) {
-            focusRequester.requestFocus()
-            keyboardController?.show()
-        }
-    }
-
-    Surface(
-        shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant,
-        modifier = Modifier.border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.25f), RoundedCornerShape(12.dp))
-    ) {
-        Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            OutlinedTextField(
-                value = text,
-                onValueChange = { text = it },
-                modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
-                placeholder = { Text(placeholder) },
-                shape = RoundedCornerShape(8.dp),
-                minLines = 3
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextButton(onClick = onCancel) { Text("Cancel") }
-                Spacer(Modifier.width(8.dp))
-                Button(onClick = { if (text.isNotBlank()) onSave(text) }) { Text("Save") }
-            }
-        }
-    }
-}
-
-@Composable
-private fun NoteItemCard(
-    note: NoteItem,
-    onCopy: () -> Unit,
-    onShare: () -> Unit,
-    onTogglePin: () -> Unit,
-    onToggleFavorite: () -> Unit,
-    onDelete: () -> Unit,
-    onEdit: (() -> Unit)? = null
-) {
-    Surface(
-        shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(
-            modifier = Modifier.padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.secondaryContainer),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        Icons.Default.Edit,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                        tint = MaterialTheme.colorScheme.onSecondaryContainer
-                    )
-                }
-                Spacer(Modifier.width(8.dp))
-                Surface(
-                    shape = RoundedCornerShape(4.dp),
-                    color = MaterialTheme.colorScheme.surface
-                ) {
-                    Text(
-                        "Note",
-                        style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
-                    )
-                }
-                Spacer(Modifier.weight(1f))
-                Text(
-                    text = formatTimestamp(note.timestamp),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                if (note.isPinned) {
-                    Spacer(Modifier.width(4.dp))
-                    Icon(
-                        Icons.Default.PushPin,
-                        contentDescription = null,
-                        modifier = Modifier.size(14.dp),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
-
-            val lineHeightDp = with(LocalDensity.current) { MaterialTheme.typography.bodyMedium.lineHeight.toDp() }
-            Text(
-                text = note.content,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier
-                    .heightIn(max = lineHeightDp * 8)
-                    .verticalScroll(rememberScrollState())
-            )
-
-            FlowRow(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                if (onEdit != null) {
-                    IconButton(onClick = onEdit) {
-                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(20.dp))
-                    }
-                }
-                IconButton(onClick = onCopy) {
-                    Icon(Icons.Default.ContentCopy, contentDescription = "Copy", modifier = Modifier.size(20.dp))
-                }
-                IconButton(onClick = onShare) {
-                    Icon(Icons.Default.Share, contentDescription = "Share", modifier = Modifier.size(20.dp))
-                }
-                IconButton(onClick = onToggleFavorite) {
-                    Icon(
-                        imageVector = if (note.isFavorite) Icons.Default.Star else Icons.Default.StarBorder,
-                        contentDescription = "Favorite",
-                        modifier = Modifier.size(20.dp),
-                        tint = if (note.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                IconButton(onClick = onTogglePin) {
-                    Icon(
-                        Icons.Default.PushPin,
-                        contentDescription = "Pin",
-                        modifier = Modifier.size(20.dp),
-                        tint = if (note.isPinned) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                IconButton(onClick = onDelete) {
-                    Icon(
-                        Icons.Default.Delete,
-                        contentDescription = "Delete",
-                        modifier = Modifier.size(20.dp),
-                        tint = MaterialTheme.colorScheme.error
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun TodoItemCard(
-    todo: TodoItem,
-    onToggleDone: () -> Unit,
-    onEdit: () -> Unit,
-    onTogglePin: () -> Unit,
-    onDelete: () -> Unit
-) {
-    Surface(
-        shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(24.dp)
-                    .clip(CircleShape)
-                    .then(
-                        if (todo.isDone) Modifier.background(MaterialTheme.colorScheme.primary)
-                        else Modifier.border(1.5.dp, MaterialTheme.colorScheme.onSurfaceVariant, CircleShape)
-                    )
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) { onToggleDone() },
-                contentAlignment = Alignment.Center
-            ) {
-                if (todo.isDone) {
-                    Icon(
-                        Icons.Default.Check,
-                        contentDescription = "Completed",
-                        modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
-            }
-            Spacer(Modifier.width(12.dp))
-            Text(
-                text = todo.content,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (todo.isDone) 0.6f else 1f),
-                modifier = Modifier.weight(1f)
-            )
-            if (todo.isPinned) {
-                Icon(
-                    Icons.Default.PushPin,
-                    contentDescription = null,
-                    modifier = Modifier.size(14.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Spacer(Modifier.width(4.dp))
-            }
-            var menuExpanded by remember { mutableStateOf(false) }
-            Box {
-                IconButton(onClick = { menuExpanded = true }) {
-                    Icon(Icons.Default.MoreVert, contentDescription = "More options", modifier = Modifier.size(20.dp))
-                }
-                DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
-                    DropdownMenuItem(
-                        text = { Text("Edit") },
-                        leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null) },
-                        onClick = { onEdit(); menuExpanded = false }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(if (todo.isPinned) "Unpin" else "Pin") },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Default.PushPin,
-                                contentDescription = null,
-                                tint = if (todo.isPinned) MaterialTheme.colorScheme.primary else LocalContentColor.current
-                            )
-                        },
-                        onClick = { onTogglePin(); menuExpanded = false }
-                    )
-                    DropdownMenuItem(
-                        text = { Text("Delete", color = MaterialTheme.colorScheme.error) },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Default.Delete,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.error
-                            )
-                        },
-                        onClick = { onDelete(); menuExpanded = false }
-                    )
-                }
-            }
-        }
-    }
-}
-
-private fun formatTimestamp(timestamp: Long): String {
-    val diff = System.currentTimeMillis() - timestamp
-    val minutes = diff / 60_000
-    val hours = diff / 3_600_000
-    val days = diff / 86_400_000
-    return when {
-        minutes < 1 -> "just now"
-        minutes < 60 -> "$minutes min ago"
-        hours < 24 -> "$hours hr ago"
-        else -> "$days d ago"
     }
 }
