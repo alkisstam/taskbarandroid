@@ -155,7 +155,9 @@ val whatsNewReleases = listOf(
         highlights = listOf(
             "Icon pack support — pick any installed icon pack (ADW/Nova/GO format) in Settings → Design → Dock Size & Appearance to theme app icons everywhere",
             "New Notes panel — Notes and To-Dos moved out of the Clipboard panel into their own panel with its own Notes quick control",
-            "Clipboard panel is now focused on clips: just the Clips and Favorites tabs"
+            "Clipboard panel is now focused on clips: just the Clips and Favorites tabs",
+            "Dock now follows the system theme while running — light/dark switches apply immediately, and color presets swap to their counterpart shade",
+            "Fixed a crash loading app icons when the device is low on memory"
         )
     )
 )
