@@ -1,5 +1,6 @@
 package com.alkisstam.taskbar.data
 
+import android.app.ActivityManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -70,14 +71,30 @@ class AppRepository @Inject constructor(
                     addCategory(Intent.CATEGORY_LAUNCHER)
                 }
                 val iconPack = preferencesRepository.iconPackPackage.first()
+                val am = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+                val memInfo = ActivityManager.MemoryInfo()
+                var memoryLow = false
+                var iconsSkipped = false
                 _apps.value = pm.queryIntentActivities(intent, PackageManager.GET_META_DATA)
-                    .mapNotNull { resolveInfo ->
-                        val activityInfo = resolveInfo.activityInfo ?: return@mapNotNull null
+                    .mapIndexedNotNull { index, resolveInfo ->
+                        val activityInfo = resolveInfo.activityInfo ?: return@mapIndexedNotNull null
+                        // Icon decode under system-wide memory pressure can kill the
+                        // process natively (scudo aborts on mmap failure inside
+                        // ImageDecoder) — uncatchable from Java. Poll lowMemory and
+                        // skip decoding while it holds; a delayed reload below fills
+                        // the missing icons in once memory recovers.
+                        if (index % 8 == 0) {
+                            am.getMemoryInfo(memInfo)
+                            memoryLow = memInfo.lowMemory
+                        }
                         // Load the icon separately so a broken icon doesn't drop the whole app
                         // from the list: MIUI's IconCustomizer inflates huge bitmaps and throws
                         // OutOfMemoryError (an Error, hence Throwable) on some devices. Keep the
                         // app with a null icon (UI renders a placeholder) instead of hiding it.
-                        val icon = try {
+                        val icon = if (memoryLow) {
+                            iconsSkipped = true
+                            null
+                        } else try {
                             // Load the icon resource directly instead of loadIcon(): on MIUI,
                             // loadIcon() routes through IconCustomizer.composeIcon which draws
                             // full-size themed bitmaps in-process and can abort() the whole
@@ -114,6 +131,10 @@ class AppRepository @Inject constructor(
                     }
                     .distinctBy { it.packageName }
                     .sortedBy { it.label.lowercase() }
+                if (iconsSkipped && retriesLeft > 0) {
+                    delay(5000)
+                    loadApps(retriesLeft - 1)
+                }
             } catch (e: Exception) {
                 Log.w("AppRepository", "Failed to load installed apps", e)
                 // queryIntentActivities can fail with a transient binder error
