@@ -79,7 +79,9 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.AppMenuButtonSide
+import com.alkisstam.taskbar.data.DARK_TINT_PRESETS
 import com.alkisstam.taskbar.data.DockPadding
+import com.alkisstam.taskbar.data.LIGHT_TINT_PRESETS
 import com.alkisstam.taskbar.data.GestureAction
 import com.alkisstam.taskbar.data.PillEdgePosition
 import com.alkisstam.taskbar.data.ThemeMode
@@ -725,28 +727,6 @@ private fun SettingsSlider(
         )
     }
 }
-
-private val LIGHT_TINT_PRESETS: List<Pair<String, Long>> = listOf(
-    "Auto" to 0L,
-    "Cream" to 0xFFFFF8E7,
-    "Sand" to 0xFFFFF3E0,
-    "Blush" to 0xFFFFE4E1,
-    "Sky" to 0xFFE3F2FD,
-    "Mint" to 0xFFE8F5E9,
-    "Lavender" to 0xFFF3E5F5,
-    "Pearl" to 0xFFECEFF1
-)
-
-private val DARK_TINT_PRESETS: List<Pair<String, Long>> = listOf(
-    "Auto" to 0L,
-    "Midnight" to 0xFF1A1A2E,
-    "Navy" to 0xFF16213E,
-    "Deep Purple" to 0xFF2D1B69,
-    "Slate" to 0xFF2D3748,
-    "Charcoal" to 0xFF36454F,
-    "Forest" to 0xFF1B3A2F,
-    "Espresso" to 0xFF2C221B
-)
 
 @Composable
 private fun SurfaceTintColorPicker(

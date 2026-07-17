@@ -30,6 +30,30 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 
 enum class ThemeMode { LIGHT, DARK, SYSTEM }
 
+// Light/dark preset pairs matched by index: in SYSTEM theme mode the dock swaps
+// a selected preset for its counterpart when the device theme flips.
+val LIGHT_TINT_PRESETS: List<Pair<String, Long>> = listOf(
+    "Auto" to 0L,
+    "Cream" to 0xFFFFF8E7,
+    "Sand" to 0xFFFFF3E0,
+    "Blush" to 0xFFFFE4E1,
+    "Sky" to 0xFFE3F2FD,
+    "Mint" to 0xFFE8F5E9,
+    "Lavender" to 0xFFF3E5F5,
+    "Pearl" to 0xFFECEFF1
+)
+
+val DARK_TINT_PRESETS: List<Pair<String, Long>> = listOf(
+    "Auto" to 0L,
+    "Midnight" to 0xFF1A1A2E,
+    "Navy" to 0xFF16213E,
+    "Deep Purple" to 0xFF2D1B69,
+    "Slate" to 0xFF2D3748,
+    "Charcoal" to 0xFF36454F,
+    "Forest" to 0xFF1B3A2F,
+    "Espresso" to 0xFF2C221B
+)
+
 enum class GestureAction { SHOW_DOCK, SHOW_NOTIFICATIONS, SHOW_QUICK_SETTINGS, DISABLED }
 
 private fun String?.toGestureAction() = when (this) {

@@ -302,6 +302,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         )
         val provider = ViewModelProvider(this, factory)
         taskbarViewModel = provider[TaskbarViewModel::class.java]
+        taskbarViewModel.setSystemDarkTheme(isNightMode(resources.configuration))
         appMenuViewModel = provider[AppMenuViewModel::class.java]
         clipboardViewModel = provider[ClipboardViewModel::class.java]
         notificationHistoryViewModel = provider[NotificationHistoryViewModel::class.java]
@@ -381,9 +382,22 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         return START_STICKY
     }
 
+    private fun isNightMode(config: Configuration): Boolean =
+        (config.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         publishNavBarInset()
+        taskbarViewModel.setSystemDarkTheme(isNightMode(newConfig))
+        // WindowManager-added views on a Service don't reliably receive uiMode
+        // config changes on all OEMs, leaving Compose's LocalConfiguration (and
+        // isSystemInDarkTheme) stale. Forward the config so the dock re-themes.
+        listOf(
+            overlayView, taskbarView, pillView, pillView2, searchView,
+            volumePanelView, brightnessPanelView, volumeScrimView, musicPanelView,
+            clipboardPanelView, notesPanelView, clipboardBlurView,
+            calculatorPanelView, notificationPanelView
+        ).forEach { it?.dispatchConfigurationChanged(newConfig) }
     }
 
     // region Quick strip state

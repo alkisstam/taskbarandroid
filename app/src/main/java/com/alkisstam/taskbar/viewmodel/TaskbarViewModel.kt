@@ -12,6 +12,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.AppRepository
+import com.alkisstam.taskbar.data.DARK_TINT_PRESETS
+import com.alkisstam.taskbar.data.LIGHT_TINT_PRESETS
 import com.alkisstam.taskbar.data.IconPackInfo
 import com.alkisstam.taskbar.data.IconPackRepository
 import com.alkisstam.taskbar.data.PillSettings
@@ -96,8 +98,27 @@ class TaskbarViewModel @Inject constructor(
     val controlsDisabledIds: StateFlow<Set<String>> = prefsRepository.controlsDisabledIds
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet())
 
-    val surfaceTintColor: StateFlow<Long> = prefsRepository.surfaceTintColor
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0L)
+    private val _systemDarkTheme = MutableStateFlow(false)
+
+    fun setSystemDarkTheme(dark: Boolean) {
+        _systemDarkTheme.value = dark
+    }
+
+    // In SYSTEM theme mode a fixed tint preset must follow the device theme:
+    // swap it for its index counterpart in the other preset list on flip.
+    // Custom colors and fixed LIGHT/DARK modes pass through unchanged.
+    val surfaceTintColor: StateFlow<Long> = combine(
+        prefsRepository.surfaceTintColor, prefsRepository.themeMode, _systemDarkTheme
+    ) { tint, mode, dark ->
+        if (tint == 0L || mode != ThemeMode.SYSTEM) return@combine tint
+        val lightIdx = LIGHT_TINT_PRESETS.indexOfFirst { it.second == tint }
+        val darkIdx = DARK_TINT_PRESETS.indexOfFirst { it.second == tint }
+        when {
+            dark && lightIdx >= 0 -> DARK_TINT_PRESETS[lightIdx].second
+            !dark && darkIdx >= 0 -> LIGHT_TINT_PRESETS[darkIdx].second
+            else -> tint
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0L)
 
     val iconPackPackage: StateFlow<String> = prefsRepository.iconPackPackage
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "")
