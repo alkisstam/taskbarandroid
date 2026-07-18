@@ -95,10 +95,10 @@ data class TaskbarSettings(
     val positionYDp: Float = 20f,
     val heightDp: Float = 60f,
     val showControlLabels: Boolean = false,
-    val pinnedIconSizeDp: Float = 40f,
-    val pinnedIconPaddingDp: Float = 4f,
-    val quickControlSizeDp: Float = 42f,
-    val cornerRadiusDp: Float = 16f,
+    val pinnedIconSizeDp: Float = 42f,
+    val pinnedIconPaddingDp: Float = 8f,
+    val quickControlSizeDp: Float = 44f,
+    val cornerRadiusDp: Float = 22f,
     val dockPadding: DockPadding = DockPadding.DEFAULT,
     val appMenuButtonSide: AppMenuButtonSide = AppMenuButtonSide.LEFT
 )
@@ -108,14 +108,14 @@ data class PillSettings(
     val swipeDownAction: GestureAction = GestureAction.SHOW_DOCK,
     val doubleTapAction: GestureAction = GestureAction.SHOW_DOCK,
     val widthDp: Float = 4f,
-    val heightDp: Float = 50f,
-    val alpha: Float = 0.40f,
-    val positionYDp: Float = 12f,
+    val heightDp: Float = 90f,
+    val alpha: Float = 0.30f,
+    val positionYDp: Float = 2f,
     val positionXPct: Float = 50f,
     val edgePosition: PillEdgePosition = PillEdgePosition.BOTTOM,
     val sidePositionPct: Float = 50f,
-    val triggerAreaDp: Float = 18f,
-    val restrictTriggerToPill: Boolean = false
+    val triggerAreaDp: Float = 16f,
+    val restrictTriggerToPill: Boolean = true
 )
 
 @Singleton
@@ -296,14 +296,14 @@ class PreferencesRepository @Inject constructor(
             swipeDownAction  = prefs[PILL_SWIPE_DOWN_ACTION_KEY].toGestureAction(),
             doubleTapAction  = prefs[PILL_DOUBLE_TAP_ACTION_KEY].toGestureAction(),
             widthDp      = prefs[PILL_WIDTH_KEY]           ?: 4f,
-            heightDp     = prefs[PILL_HEIGHT_KEY]          ?: 50f,
-            alpha        = prefs[PILL_ALPHA_KEY]            ?: 0.40f,
-            positionYDp      = prefs[PILL_POSITION_Y_KEY]         ?: 12f,
-            positionXPct     = prefs[PILL_POSITION_X_PCT_KEY]     ?: 4f,
+            heightDp     = prefs[PILL_HEIGHT_KEY]          ?: 90f,
+            alpha        = prefs[PILL_ALPHA_KEY]            ?: 0.30f,
+            positionYDp      = prefs[PILL_POSITION_Y_KEY]         ?: 2f,
+            positionXPct     = prefs[PILL_POSITION_X_PCT_KEY]     ?: 50f,
             edgePosition     = prefs[PILL_EDGE_POSITION_KEY].toPillEdgePosition(),
             sidePositionPct  = prefs[PILL_SIDE_POSITION_PCT_KEY]  ?: 50f,
-            triggerAreaDp    = prefs[PILL_TRIGGER_AREA_KEY]       ?: 18f,
-            restrictTriggerToPill = prefs[PILL_RESTRICT_TRIGGER_KEY] ?: false
+            triggerAreaDp    = prefs[PILL_TRIGGER_AREA_KEY]       ?: 16f,
+            restrictTriggerToPill = prefs[PILL_RESTRICT_TRIGGER_KEY] ?: true
         )
     }
 
@@ -338,7 +338,7 @@ class PreferencesRepository @Inject constructor(
     }
 
     val hapticFeedbackEnabled: Flow<Boolean> = safeData.map { prefs ->
-        prefs[HAPTIC_FEEDBACK_KEY] ?: true
+        prefs[HAPTIC_FEEDBACK_KEY] ?: false
     }
 
     suspend fun setHapticFeedbackEnabled(enabled: Boolean) {
@@ -372,10 +372,10 @@ class PreferencesRepository @Inject constructor(
             positionYDp        = prefs[TASKBAR_POSITION_Y_KEY]     ?: 20f,
             heightDp           = prefs[TASKBAR_HEIGHT_KEY]          ?: 60f,
             showControlLabels  = prefs[TASKBAR_CONTROL_LABELS_KEY]  ?: false,
-            pinnedIconSizeDp   = prefs[PINNED_ICON_SIZE_KEY]        ?: 40f,
-            pinnedIconPaddingDp = prefs[PINNED_ICON_PADDING_KEY]    ?: 4f,
-            quickControlSizeDp = prefs[QUICK_CONTROL_SIZE_KEY]      ?: 42f,
-            cornerRadiusDp     = prefs[TASKBAR_CORNER_RADIUS_KEY]   ?: 16f,
+            pinnedIconSizeDp   = prefs[PINNED_ICON_SIZE_KEY]        ?: 42f,
+            pinnedIconPaddingDp = prefs[PINNED_ICON_PADDING_KEY]    ?: 8f,
+            quickControlSizeDp = prefs[QUICK_CONTROL_SIZE_KEY]      ?: 44f,
+            cornerRadiusDp     = prefs[TASKBAR_CORNER_RADIUS_KEY]   ?: 22f,
             dockPadding        = prefs[TASKBAR_DOCK_PADDING_KEY]?.let { runCatching { DockPadding.valueOf(it) }.getOrNull() } ?: DockPadding.DEFAULT,
             appMenuButtonSide  = prefs[TASKBAR_APP_MENU_SIDE_KEY]?.let { runCatching { AppMenuButtonSide.valueOf(it) }.getOrNull() } ?: AppMenuButtonSide.LEFT
         )
@@ -512,7 +512,7 @@ class PreferencesRepository @Inject constructor(
     }
 
     val fuzzySearchEnabled: Flow<Boolean> = safeData.map { prefs ->
-        prefs[FUZZY_SEARCH_ENABLED_KEY] ?: true
+        prefs[FUZZY_SEARCH_ENABLED_KEY] ?: false
     }
 
     suspend fun setFuzzySearchEnabled(enabled: Boolean) {
@@ -587,7 +587,7 @@ class PreferencesRepository @Inject constructor(
     }
 
     val translucentAlpha: Flow<Float> = safeData.map { prefs ->
-        prefs[TRANSLUCENT_ALPHA_KEY] ?: 0.80f
+        prefs[TRANSLUCENT_ALPHA_KEY] ?: 0.90f
     }
 
     suspend fun setTranslucentAlpha(value: Float) {
@@ -597,7 +597,7 @@ class PreferencesRepository @Inject constructor(
     }
 
     val grainAlpha: Flow<Float> = safeData.map { prefs ->
-        prefs[GRAIN_ALPHA_KEY] ?: 0.10f
+        prefs[GRAIN_ALPHA_KEY] ?: 0.08f
     }
 
     suspend fun setGrainAlpha(value: Float) {
@@ -617,7 +617,7 @@ class PreferencesRepository @Inject constructor(
     }
 
     val appGridRows: Flow<Int> = safeData.map { prefs ->
-        prefs[APP_GRID_ROWS_KEY] ?: 4
+        prefs[APP_GRID_ROWS_KEY] ?: 5
     }
 
     suspend fun setAppGridRows(value: Int) {

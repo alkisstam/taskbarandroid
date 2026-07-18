@@ -158,19 +158,17 @@ fun NotesPanel(
                             ) {
                                 if (selected) {
                                     Surface(
-                                        modifier = Modifier
-                                            .size(width = 72.dp, height = 56.dp)
-                                            .clickable(
-                                                indication = null,
-                                                interactionSource = remember { MutableInteractionSource() }
-                                            ) { coroutineScope.launch { pagerState.animateScrollToPage(index) } },
-                                        shape = RoundedCornerShape(20.dp),
+                                        modifier = Modifier.clickable(
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) { coroutineScope.launch { pagerState.animateScrollToPage(index) } },
+                                        shape = RoundedCornerShape(28.dp),
                                         color = MaterialTheme.colorScheme.primaryContainer
                                     ) {
-                                        Column(
-                                            modifier = Modifier.fillMaxSize(),
-                                            horizontalAlignment = Alignment.CenterHorizontally,
-                                            verticalArrangement = Arrangement.Center
+                                        Row(
+                                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                                         ) {
                                             Icon(
                                                 tabIcons[index],
@@ -180,7 +178,7 @@ fun NotesPanel(
                                             )
                                             Text(
                                                 title,
-                                                style = MaterialTheme.typography.labelSmall,
+                                                style = MaterialTheme.typography.labelMedium,
                                                 color = MaterialTheme.colorScheme.onPrimaryContainer,
                                                 maxLines = 1
                                             )

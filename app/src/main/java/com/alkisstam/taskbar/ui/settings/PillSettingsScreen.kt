@@ -273,13 +273,14 @@ fun PillSettingsScreen(
                 ),
                 isSelected = { it == pillSettings.edgePosition },
                 onSelect = { pos ->
-                    val (w, h) = if (pos == PillEdgePosition.BOTTOM) 220f to 20f else 4f to 60f
+                    val (w, h) = if (pos == PillEdgePosition.BOTTOM) 140f to 12f else 4f to 90f
                     val (swipeUp, swipeDown, doubleTap) = if (pos == PillEdgePosition.BOTTOM)
                         Triple(GestureAction.DISABLED, GestureAction.DISABLED, GestureAction.SHOW_DOCK)
                     else
                         Triple(GestureAction.SHOW_DOCK, GestureAction.DISABLED, GestureAction.DISABLED)
                     viewModel.savePillSettings(pillSettings.copy(
                         edgePosition = pos, widthDp = w, heightDp = h,
+                        positionYDp = if (pos == PillEdgePosition.BOTTOM) 2f else pillSettings.positionYDp,
                         swipeUpAction = swipeUp, swipeDownAction = swipeDown, doubleTapAction = doubleTap
                     ))
                 }

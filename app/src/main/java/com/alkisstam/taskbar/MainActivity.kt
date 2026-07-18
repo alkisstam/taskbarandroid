@@ -118,7 +118,7 @@ class MainActivity : ComponentActivity() {
                         hasBatteryOptimizationExcluded = hasBatteryOptimizationExcluded,
                         selectedPosition = pillSettings.edgePosition,
                         onPositionSelected = { pos ->
-                            val (w, h) = if (pos == PillEdgePosition.BOTTOM) 220f to 20f else 8f to 40f
+                            val (w, h) = if (pos == PillEdgePosition.BOTTOM) 140f to 12f else 4f to 90f
                             val (swipeUp, swipeDown, doubleTap) = if (pos == PillEdgePosition.BOTTOM)
                                 Triple(GestureAction.DISABLED, GestureAction.DISABLED, GestureAction.SHOW_DOCK)
                             else
@@ -155,9 +155,18 @@ class MainActivity : ComponentActivity() {
                             viewModel = taskbarViewModel,
                             hasOverlayPermission = hasOverlayPermission,
                             hasAccessibilityPermission = hasAccessibilityPermission,
+                            hasWriteSettingsPermission = hasWriteSettingsPermission,
+                            hasNotificationPolicyPermission = hasNotificationPolicyPermission,
+                            hasNotificationsPermission = hasNotificationsPermission,
                             hasNotificationListenerPermission = hasNotificationListenerPermission,
+                            hasBatteryOptimizationExcluded = hasBatteryOptimizationExcluded,
                             onRequestOverlayPermission = ::requestOverlayPermission,
-                            onRequestAccessibilityPermission = ::requestAccessibilityPermission
+                            onRequestAccessibilityPermission = ::requestAccessibilityPermission,
+                            onRequestWriteSettingsPermission = ::requestWriteSettingsPermission,
+                            onRequestNotificationPolicyPermission = ::requestNotificationPolicyPermission,
+                            onRequestNotificationsPermission = ::requestNotificationsPermission,
+                            onRequestNotificationListenerPermission = ::requestNotificationListenerPermission,
+                            onRequestBatteryOptimizationExclusion = ::requestBatteryOptimizationExclusion
                         )
                         if (showWhatsNew) {
                             val releases = whatsNewReleases.filter {

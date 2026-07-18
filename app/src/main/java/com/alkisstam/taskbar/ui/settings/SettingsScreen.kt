@@ -128,9 +128,18 @@ fun SettingsScreen(
     viewModel: TaskbarViewModel,
     hasOverlayPermission: Boolean,
     hasAccessibilityPermission: Boolean,
+    hasWriteSettingsPermission: Boolean,
+    hasNotificationPolicyPermission: Boolean,
+    hasNotificationsPermission: Boolean,
     hasNotificationListenerPermission: Boolean,
+    hasBatteryOptimizationExcluded: Boolean,
     onRequestOverlayPermission: () -> Unit,
     onRequestAccessibilityPermission: () -> Unit,
+    onRequestWriteSettingsPermission: () -> Unit,
+    onRequestNotificationPolicyPermission: () -> Unit,
+    onRequestNotificationsPermission: () -> Unit,
+    onRequestNotificationListenerPermission: () -> Unit,
+    onRequestBatteryOptimizationExclusion: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val tabs = listOf("General", "Apps", "Controls", "Design")
@@ -171,9 +180,18 @@ fun SettingsScreen(
                         viewModel = viewModel,
                         hasOverlayPermission = hasOverlayPermission,
                         hasAccessibilityPermission = hasAccessibilityPermission,
+                        hasWriteSettingsPermission = hasWriteSettingsPermission,
+                        hasNotificationPolicyPermission = hasNotificationPolicyPermission,
+                        hasNotificationsPermission = hasNotificationsPermission,
                         hasNotificationListenerPermission = hasNotificationListenerPermission,
+                        hasBatteryOptimizationExcluded = hasBatteryOptimizationExcluded,
                         onRequestOverlayPermission = onRequestOverlayPermission,
                         onRequestAccessibilityPermission = onRequestAccessibilityPermission,
+                        onRequestWriteSettingsPermission = onRequestWriteSettingsPermission,
+                        onRequestNotificationPolicyPermission = onRequestNotificationPolicyPermission,
+                        onRequestNotificationsPermission = onRequestNotificationsPermission,
+                        onRequestNotificationListenerPermission = onRequestNotificationListenerPermission,
+                        onRequestBatteryOptimizationExclusion = onRequestBatteryOptimizationExclusion,
                         bottomPadding = navBottomPadding
                     )
                     1 -> PinnedAppsTab(viewModel = viewModel, bottomPadding = navBottomPadding)
@@ -253,9 +271,18 @@ private fun GeneralTab(
     viewModel: TaskbarViewModel,
     hasOverlayPermission: Boolean,
     hasAccessibilityPermission: Boolean,
+    hasWriteSettingsPermission: Boolean,
+    hasNotificationPolicyPermission: Boolean,
+    hasNotificationsPermission: Boolean,
     hasNotificationListenerPermission: Boolean,
+    hasBatteryOptimizationExcluded: Boolean,
     onRequestOverlayPermission: () -> Unit,
     onRequestAccessibilityPermission: () -> Unit,
+    onRequestWriteSettingsPermission: () -> Unit,
+    onRequestNotificationPolicyPermission: () -> Unit,
+    onRequestNotificationsPermission: () -> Unit,
+    onRequestNotificationListenerPermission: () -> Unit,
+    onRequestBatteryOptimizationExclusion: () -> Unit,
     bottomPadding: Dp = 0.dp
 ) {
     val overlayEnabled by viewModel.overlayEnabled.collectAsState()
@@ -444,21 +471,48 @@ private fun GeneralTab(
         }
 
         SettingsCard(title = "Permissions") {
-            OutlinedButton(
-                onClick = {
-                    try {
-                        val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
-                            data = Uri.parse("package:${context.packageName}")
-                        }
-                        context.startActivity(intent)
-                    } catch (e: Exception) {
-                        Toast.makeText(context, "Couldn't open settings", Toast.LENGTH_SHORT).show()
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Manage Write Settings (Auto-rotate / Brightness)")
-            }
+            PermissionStatusRow(
+                name = "Draw over other apps",
+                description = "Required — shows the dock above other apps",
+                granted = hasOverlayPermission,
+                onClick = onRequestOverlayPermission
+            )
+            PermissionStatusRow(
+                name = "Accessibility Service",
+                description = "Optional — draw over the navigation bar and system actions",
+                granted = hasAccessibilityPermission,
+                onClick = onRequestAccessibilityPermission
+            )
+            PermissionStatusRow(
+                name = "Modify system settings",
+                description = "Optional — auto-rotate and brightness controls",
+                granted = hasWriteSettingsPermission,
+                onClick = onRequestWriteSettingsPermission
+            )
+            PermissionStatusRow(
+                name = "Do Not Disturb access",
+                description = "Optional — toggle DND from quick controls",
+                granted = hasNotificationPolicyPermission,
+                onClick = onRequestNotificationPolicyPermission
+            )
+            PermissionStatusRow(
+                name = "Notifications",
+                description = "Optional — dock service status notification",
+                granted = hasNotificationsPermission,
+                onClick = onRequestNotificationsPermission
+            )
+            PermissionStatusRow(
+                name = "Notification access",
+                description = "Optional — music panel and notification history",
+                granted = hasNotificationListenerPermission,
+                onClick = onRequestNotificationListenerPermission
+            )
+            PermissionStatusRow(
+                name = "Ignore battery optimization",
+                description = "Optional — keeps the dock running in the background",
+                granted = hasBatteryOptimizationExcluded,
+                onClick = onRequestBatteryOptimizationExclusion
+            )
         }
 
         SettingsCard(title = "Backup & Restore") {
@@ -1363,6 +1417,38 @@ private fun ControlGridItem(
             overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
             textAlign = androidx.compose.ui.text.style.TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+private fun PermissionStatusRow(
+    name: String,
+    description: String,
+    granted: Boolean,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .clickable(onClick = onClick)
+            .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(name, style = MaterialTheme.typography.bodyLarge)
+            Text(
+                description,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        Icon(
+            imageVector = if (granted) Icons.Filled.Check else Icons.Filled.Close,
+            contentDescription = if (granted) "Granted" else "Not granted",
+            tint = if (granted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
         )
     }
 }
