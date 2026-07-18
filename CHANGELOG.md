@@ -4,16 +4,19 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
-## [1.5.0] - 2026-07-17
+## [1.5.0] - 2026-07-18
 
 Icon packs and a dedicated Notes panel.
 
 ### Added
 - **Icon pack support** — Settings → Design → Dock Size & Appearance → Icon Pack lists installed icon packs (ADW/Nova/GO format) and applies the selected pack to app icons across the dock, app menu, search, and pickers. Apps missing from the pack keep their default icon; icons re-theme live without a restart, and the selection is included in backup/restore.
 - **Notes panel** — Notes and To-Dos moved out of the Clipboard panel into their own full-screen panel with the same design, opened by a new "Notes" quick control in Controls. The Clipboard panel now has just the Clips and Favorites tabs.
+- **Permissions overview** — Settings → General → Permissions now lists every permission the app uses (required and optional) with its granted status; tap a row to open the matching grant screen.
 
 ### Changed
 - **Favorites tab shows clips only** — notes no longer appear in the Clipboard panel's Favorites tab, and the favorite star was removed from note cards (pinning notes remains).
+- **Notes and Clipboard tab bars redesigned** — the selected tab now shows its icon and label side by side in a pill, matching the Settings tab bar.
+- **Refreshed default settings** — new installs start with tuned defaults: theme transparency 90% and grain 8%; taller slimmer side pill (4×90dp, 30% opacity, 16dp trigger area, restricted to the pill); bottom pill preset 140×12dp at 2dp from the bottom edge; dock with 42dp icons, 8dp icon spacing, 44dp quick controls, and 22dp corners; 4×5 app grid; vibrate feedback and fuzzy search off. Existing installs keep their saved settings.
 
 ### Fixed
 - **Dock now follows the system theme while running** — with the System theme selected, switching the device between light and dark mode updates the dock and panels immediately; previously they kept the old colors until restarted. Color presets adapt too: each preset swaps to its counterpart shade (e.g. Sky ↔ Slate) when the device theme flips. Custom colors and fixed Light/Dark themes are unaffected.
