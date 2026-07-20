@@ -76,17 +76,15 @@ class AppRepository @Inject constructor(
                 var memoryLow = false
                 var iconsSkipped = false
                 _apps.value = pm.queryIntentActivities(intent, PackageManager.GET_META_DATA)
-                    .mapIndexedNotNull { index, resolveInfo ->
-                        val activityInfo = resolveInfo.activityInfo ?: return@mapIndexedNotNull null
+                    .mapNotNull { resolveInfo ->
+                        val activityInfo = resolveInfo.activityInfo ?: return@mapNotNull null
                         // Icon decode under system-wide memory pressure can kill the
                         // process natively (scudo aborts on mmap failure inside
                         // ImageDecoder) — uncatchable from Java. Poll lowMemory and
                         // skip decoding while it holds; a delayed reload below fills
                         // the missing icons in once memory recovers.
-                        if (index % 8 == 0) {
-                            am.getMemoryInfo(memInfo)
-                            memoryLow = memInfo.lowMemory
-                        }
+                        am.getMemoryInfo(memInfo)
+                        memoryLow = memInfo.lowMemory
                         // Load the icon separately so a broken icon doesn't drop the whole app
                         // from the list: MIUI's IconCustomizer inflates huge bitmaps and throws
                         // OutOfMemoryError (an Error, hence Throwable) on some devices. Keep the
