@@ -4,6 +4,18 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.5.1] - 2026-07-20
+
+Icon shape setting.
+
+### Added
+- **Icon Shape** — Settings → Design → Dock Size & Appearance → Icon Shape lets you choose Default, Square, Squircle, or Circle for app icons across the dock, app menu, search, recent apps, notifications, and the pinned/hidden app pickers.
+
+### Fixed
+- **Rare native crash loading app icons under memory pressure** — the low-memory check now runs before every icon decode instead of every 8th, closing a gap where the process could still be killed by the OS before the check caught up.
+
+---
+
 ## [1.5.0] - 2026-07-18
 
 Icon packs and a dedicated Notes panel.

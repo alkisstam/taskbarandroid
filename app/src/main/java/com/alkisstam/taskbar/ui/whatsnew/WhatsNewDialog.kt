@@ -161,6 +161,14 @@ val whatsNewReleases = listOf(
             "Dock now follows the system theme while running — light/dark switches apply immediately, and color presets swap to their counterpart shade",
             "Fixed a crash loading app icons when the device is low on memory"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.5.1",
+        versionCode = 53,
+        highlights = listOf(
+            "New Icon Shape setting in Design → Dock Size & Appearance — choose Default, Square, Squircle, or Circle for app icons everywhere",
+            "Fixed a rare native crash loading app icons under memory pressure"
+        )
     )
 )
 
