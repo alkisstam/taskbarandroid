@@ -32,6 +32,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CropSquare
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material.icons.filled.ExpandLess
@@ -81,6 +82,7 @@ import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.AppMenuButtonSide
 import com.alkisstam.taskbar.data.DARK_TINT_PRESETS
 import com.alkisstam.taskbar.data.DockPadding
+import com.alkisstam.taskbar.data.IconShape
 import com.alkisstam.taskbar.data.LIGHT_TINT_PRESETS
 import com.alkisstam.taskbar.data.GestureAction
 import com.alkisstam.taskbar.data.PillEdgePosition
@@ -485,6 +487,26 @@ fun PillSettingsScreen(
                     availableIconPacks.map { it.label to it.packageName },
                 isSelected = { it == iconPackPackage },
                 onSelect = { viewModel.setIconPack(it) }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text("Icon Shape", style = MaterialTheme.typography.bodyMedium)
+            Spacer(modifier = Modifier.height(4.dp))
+            GradientDropdownField(
+                icon = Icons.Filled.CropSquare,
+                selectedLabel = when (taskbarSettings.iconShape) {
+                    IconShape.DEFAULT -> "Default"
+                    IconShape.SQUARE -> "Square"
+                    IconShape.SQUIRCLE -> "Squircle"
+                    IconShape.CIRCLE -> "Circle"
+                },
+                options = listOf(
+                    "Default" to IconShape.DEFAULT,
+                    "Square" to IconShape.SQUARE,
+                    "Squircle" to IconShape.SQUIRCLE,
+                    "Circle" to IconShape.CIRCLE
+                ),
+                isSelected = { it == taskbarSettings.iconShape },
+                onSelect = { viewModel.saveTaskbarSettings(taskbarSettings.copy(iconShape = it)) }
             )
         }
     }

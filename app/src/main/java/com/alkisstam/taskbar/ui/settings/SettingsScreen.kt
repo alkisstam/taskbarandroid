@@ -109,6 +109,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -118,6 +120,7 @@ import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.ui.common.AppIconImage
 import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
+import com.alkisstam.taskbar.ui.common.toComposeShape
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -739,6 +742,8 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
     val allApps by viewModel.allApps.collectAsState()
     val hiddenApps by viewModel.hiddenAppsInfo.collectAsState()
     val pinnedPackages = remember(pinnedApps) { pinnedApps.map { it.packageName }.toSet() }
+    val taskbarSettings by viewModel.taskbarSettings.collectAsState()
+    val iconShape = taskbarSettings.iconShape.toComposeShape()
     val appGridColumns by viewModel.appGridColumns.collectAsState()
     val appGridRows by viewModel.appGridRows.collectAsState()
     val showRecentAppsRow by viewModel.showRecentAppsRow.collectAsState()
@@ -747,6 +752,7 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
     if (showHideAppPicker) {
         HideAppPickerDialog(
             apps = allApps,
+            iconShape = iconShape,
             onHide = { viewModel.hideApp(it) },
             onDismiss = { showHideAppPicker = false }
         )
@@ -809,13 +815,13 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
                                         AppIconImage(
                                             icon = app.icon,
                                             contentDescription = app.label,
+                                            shape = iconShape,
                                             modifier = Modifier
                                                 .size(48.dp)
-                                                .clip(CircleShape)
                                                 .then(
                                                     if (isDragging) Modifier.background(
                                                         MaterialTheme.colorScheme.primaryContainer,
-                                                        CircleShape
+                                                        iconShape
                                                     ) else Modifier
                                                 )
                                         )
@@ -896,7 +902,8 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
                                 AppIconImage(
                                     icon = app.icon,
                                     contentDescription = app.label,
-                                    modifier = Modifier.size(48.dp).clip(CircleShape)
+                                    shape = iconShape,
+                                    modifier = Modifier.size(48.dp)
                                 )
                                 Box(
                                     modifier = Modifier
@@ -943,6 +950,7 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
                         AllAppGridItem(
                             app = app,
                             isPinned = app.packageName in pinnedPackages,
+                            iconShape = iconShape,
                             onTogglePin = {
                                 if (app.packageName in pinnedPackages)
                                     viewModel.unpinApp(app.packageName)
@@ -1035,6 +1043,7 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
 private fun AllAppGridItem(
     app: AppInfo,
     isPinned: Boolean,
+    iconShape: Shape = RectangleShape,
     onTogglePin: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -1047,7 +1056,8 @@ private fun AllAppGridItem(
             AppIconImage(
                 icon = app.icon,
                 contentDescription = app.label,
-                modifier = Modifier.size(52.dp).clip(CircleShape)
+                shape = iconShape,
+                modifier = Modifier.size(52.dp)
             )
             Box(
                 modifier = Modifier
@@ -1085,6 +1095,7 @@ private fun AllAppGridItem(
 @Composable
 private fun HideAppPickerDialog(
     apps: List<AppInfo>,
+    iconShape: Shape = RectangleShape,
     onHide: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -1124,7 +1135,8 @@ private fun HideAppPickerDialog(
                             AppIconImage(
                                 icon = app.icon,
                                 contentDescription = app.label,
-                                modifier = Modifier.size(52.dp).clip(CircleShape)
+                                shape = iconShape,
+                                modifier = Modifier.size(52.dp)
                             )
                             Text(
                                 text = app.label,

@@ -194,6 +194,7 @@ internal fun SearchOverlayContent(
     val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
     val grainAlpha by taskbarViewModel.grainAlpha.collectAsState()
     val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
+    val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
     TaskBarTheme(themeMode = themeMode) {
         FloatingSearchBar(
             viewModel = appMenuViewModel,
@@ -201,7 +202,8 @@ internal fun SearchOverlayContent(
             translucentMode = translucentMode,
             translucentAlpha = translucentAlpha,
             grainAlpha = grainAlpha,
-            surfaceTintColor = surfaceTintColor
+            surfaceTintColor = surfaceTintColor,
+            iconShape = taskbarSettings.iconShape
         )
     }
 }
@@ -377,7 +379,8 @@ internal fun NotificationHistoryPanelContent(
             translucentAlpha = translucentAlpha,
             grainAlpha = grainAlpha,
             surfaceTintColor = surfaceTintColor,
-            dockBottomPadding = dockBottomPadding
+            dockBottomPadding = dockBottomPadding,
+            iconShape = taskbarSettings.iconShape
         )
     }
 }

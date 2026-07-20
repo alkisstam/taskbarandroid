@@ -69,6 +69,8 @@ enum class DockPadding { DEFAULT, SMALL, LARGE }
 
 enum class AppMenuButtonSide { LEFT, RIGHT }
 
+enum class IconShape { DEFAULT, SQUARE, SQUIRCLE, CIRCLE }
+
 val DockPadding.bottomGapDp: Float
     get() = when (this) {
         DockPadding.DEFAULT -> 20f
@@ -91,6 +93,13 @@ private fun String?.toPillEdgePosition() = when (this) {
     else     -> PillEdgePosition.RIGHT
 }
 
+private fun String?.toIconShape() = when (this) {
+    "SQUARE"   -> IconShape.SQUARE
+    "SQUIRCLE" -> IconShape.SQUIRCLE
+    "CIRCLE"   -> IconShape.CIRCLE
+    else       -> IconShape.DEFAULT
+}
+
 data class TaskbarSettings(
     val positionYDp: Float = 20f,
     val heightDp: Float = 60f,
@@ -100,7 +109,8 @@ data class TaskbarSettings(
     val quickControlSizeDp: Float = 44f,
     val cornerRadiusDp: Float = 22f,
     val dockPadding: DockPadding = DockPadding.DEFAULT,
-    val appMenuButtonSide: AppMenuButtonSide = AppMenuButtonSide.LEFT
+    val appMenuButtonSide: AppMenuButtonSide = AppMenuButtonSide.LEFT,
+    val iconShape: IconShape = IconShape.DEFAULT
 )
 
 data class PillSettings(
@@ -154,6 +164,7 @@ class PreferencesRepository @Inject constructor(
         private val TASKBAR_CORNER_RADIUS_KEY = floatPreferencesKey("taskbar_corner_radius_dp")
         private val TASKBAR_DOCK_PADDING_KEY = stringPreferencesKey("taskbar_dock_padding")
         private val TASKBAR_APP_MENU_SIDE_KEY = stringPreferencesKey("taskbar_app_menu_side")
+        private val TASKBAR_ICON_SHAPE_KEY = stringPreferencesKey("taskbar_icon_shape")
         private val HIDDEN_APPS_KEY = stringPreferencesKey("hidden_apps")
         private val SURFACE_TINT_COLOR_KEY = stringPreferencesKey("surface_tint_color")
         private val AUTO_HIDE_FULLSCREEN_KEY = booleanPreferencesKey("auto_hide_fullscreen")
@@ -377,7 +388,8 @@ class PreferencesRepository @Inject constructor(
             quickControlSizeDp = prefs[QUICK_CONTROL_SIZE_KEY]      ?: 44f,
             cornerRadiusDp     = prefs[TASKBAR_CORNER_RADIUS_KEY]   ?: 22f,
             dockPadding        = prefs[TASKBAR_DOCK_PADDING_KEY]?.let { runCatching { DockPadding.valueOf(it) }.getOrNull() } ?: DockPadding.DEFAULT,
-            appMenuButtonSide  = prefs[TASKBAR_APP_MENU_SIDE_KEY]?.let { runCatching { AppMenuButtonSide.valueOf(it) }.getOrNull() } ?: AppMenuButtonSide.LEFT
+            appMenuButtonSide  = prefs[TASKBAR_APP_MENU_SIDE_KEY]?.let { runCatching { AppMenuButtonSide.valueOf(it) }.getOrNull() } ?: AppMenuButtonSide.LEFT,
+            iconShape          = prefs[TASKBAR_ICON_SHAPE_KEY].toIconShape()
         )
     }
 
@@ -392,6 +404,7 @@ class PreferencesRepository @Inject constructor(
             prefs[TASKBAR_CORNER_RADIUS_KEY]  = settings.cornerRadiusDp
             prefs[TASKBAR_DOCK_PADDING_KEY]   = settings.dockPadding.name
             prefs[TASKBAR_APP_MENU_SIDE_KEY]  = settings.appMenuButtonSide.name
+            prefs[TASKBAR_ICON_SHAPE_KEY]     = settings.iconShape.name
         }
     }
 
@@ -651,6 +664,7 @@ class PreferencesRepository @Inject constructor(
             prefs[TASKBAR_CORNER_RADIUS_KEY]?.let { put("taskbar_corner_radius_dp", it) }
             prefs[TASKBAR_DOCK_PADDING_KEY]?.let { put("taskbar_dock_padding", it) }
             prefs[TASKBAR_APP_MENU_SIDE_KEY]?.let { put("taskbar_app_menu_side", it) }
+            prefs[TASKBAR_ICON_SHAPE_KEY]?.let { put("taskbar_icon_shape", it) }
             prefs[HIDDEN_APPS_KEY]?.let { put("hidden_apps", it) }
             prefs[SURFACE_TINT_COLOR_KEY]?.let { put("surface_tint_color", it) }
             prefs[AUTO_HIDE_FULLSCREEN_KEY]?.let { put("auto_hide_fullscreen", it) }
@@ -701,6 +715,7 @@ class PreferencesRepository @Inject constructor(
             if (obj.has("taskbar_corner_radius_dp")) prefs[TASKBAR_CORNER_RADIUS_KEY] = obj.getDouble("taskbar_corner_radius_dp").toFloat()
             if (obj.has("taskbar_dock_padding")) prefs[TASKBAR_DOCK_PADDING_KEY] = obj.getString("taskbar_dock_padding")
             if (obj.has("taskbar_app_menu_side")) prefs[TASKBAR_APP_MENU_SIDE_KEY] = obj.getString("taskbar_app_menu_side")
+            if (obj.has("taskbar_icon_shape")) prefs[TASKBAR_ICON_SHAPE_KEY] = obj.getString("taskbar_icon_shape")
             if (obj.has("hidden_apps")) prefs[HIDDEN_APPS_KEY] = obj.getString("hidden_apps")
             if (obj.has("surface_tint_color")) prefs[SURFACE_TINT_COLOR_KEY] = obj.getString("surface_tint_color")
             if (obj.has("auto_hide_fullscreen")) prefs[AUTO_HIDE_FULLSCREEN_KEY] = obj.getBoolean("auto_hide_fullscreen")

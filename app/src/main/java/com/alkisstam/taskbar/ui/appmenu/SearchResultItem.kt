@@ -27,8 +27,10 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.AppInfo
+import com.alkisstam.taskbar.data.IconShape
 import com.alkisstam.taskbar.ui.common.AppIconImage
 import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
+import com.alkisstam.taskbar.ui.common.toComposeShape
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -36,6 +38,7 @@ fun SearchResultItem(
     app: AppInfo,
     isPinned: Boolean,
     isHighlighted: Boolean = false,
+    iconShape: IconShape = IconShape.DEFAULT,
     onLaunch: () -> Unit,
     onPin: () -> Unit,
     modifier: Modifier = Modifier
@@ -67,6 +70,7 @@ fun SearchResultItem(
         AppIconImage(
             icon = app.icon,
             contentDescription = app.label,
+            shape = iconShape.toComposeShape(),
             modifier = Modifier.size(40.dp)
         )
         Spacer(modifier = Modifier.width(12.dp))

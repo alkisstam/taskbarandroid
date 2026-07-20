@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -36,7 +35,9 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.AppInfo
+import com.alkisstam.taskbar.data.IconShape
 import com.alkisstam.taskbar.ui.common.AppIconImage
+import com.alkisstam.taskbar.ui.common.toComposeShape
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 import com.alkisstam.taskbar.ui.theme.grain
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
@@ -59,6 +60,7 @@ fun AppMenuPanel(
     val grainAlpha by taskbarViewModel.grainAlpha.collectAsState()
     val appGridColumns by taskbarViewModel.appGridColumns.collectAsState()
     val appGridRows by taskbarViewModel.appGridRows.collectAsState()
+    val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
     val showRecentAppsRow by viewModel.showRecentAppsRow.collectAsState()
     val recentApps by viewModel.recentApps.collectAsState()
     val panelColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
@@ -143,7 +145,11 @@ fun AppMenuPanel(
                                 contentAlignment = Alignment.Center
                             ) {
                                 recentApps.getOrNull(index)?.let { app ->
-                                    RecentAppIcon(app = app, onLaunch = { viewModel.launchApp(app.packageName); onHideTaskbar() })
+                                    RecentAppIcon(
+                                        app = app,
+                                        iconShape = taskbarSettings.iconShape,
+                                        onLaunch = { viewModel.launchApp(app.packageName); onHideTaskbar() }
+                                    )
                                 }
                             }
                         }
@@ -163,6 +169,7 @@ fun AppMenuPanel(
                     onUnpinApp = viewModel::unpinApp,
                     onHideApp = viewModel::hideApp,
                     columns = appGridColumns,
+                    iconShape = taskbarSettings.iconShape,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(gridHeight)
@@ -174,13 +181,13 @@ fun AppMenuPanel(
 }
 
 @Composable
-private fun RecentAppIcon(app: AppInfo, onLaunch: () -> Unit) {
+private fun RecentAppIcon(app: AppInfo, iconShape: IconShape, onLaunch: () -> Unit) {
     AppIconImage(
         icon = app.icon,
         contentDescription = app.label,
+        shape = iconShape.toComposeShape(),
         modifier = Modifier
             .size(44.dp)
-            .clip(CircleShape)
             .clickable(onClick = onLaunch)
     )
 }

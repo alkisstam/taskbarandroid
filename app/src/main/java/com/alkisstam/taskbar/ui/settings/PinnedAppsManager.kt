@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.Remove
@@ -29,6 +27,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.ui.common.AppIconImage
 import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
+import com.alkisstam.taskbar.ui.common.toComposeShape
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -39,6 +38,7 @@ fun PinnedAppsManager(
     modifier: Modifier = Modifier
 ) {
     val pinnedApps by viewModel.pinnedApps.collectAsState()
+    val taskbarSettings by viewModel.taskbarSettings.collectAsState()
     val lazyListState = rememberLazyListState()
     val haptic = LocalHapticFeedback.current
     val hapticEnabled = LocalHapticEnabled.current
@@ -91,7 +91,8 @@ fun PinnedAppsManager(
                         AppIconImage(
                             icon = app.icon,
                             contentDescription = app.label,
-                            modifier = Modifier.size(40.dp).clip(CircleShape)
+                            shape = taskbarSettings.iconShape.toComposeShape(),
+                            modifier = Modifier.size(40.dp)
                         )
 
                         Text(

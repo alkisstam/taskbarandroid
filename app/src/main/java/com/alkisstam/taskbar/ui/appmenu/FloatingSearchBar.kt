@@ -40,6 +40,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.data.IconShape
 import com.alkisstam.taskbar.ui.theme.grain
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
 
@@ -51,7 +52,8 @@ fun FloatingSearchBar(
     translucentMode: Boolean = false,
     translucentAlpha: Float = 0.80f,
     grainAlpha: Float = 0.10f,
-    surfaceTintColor: Long = 0L
+    surfaceTintColor: Long = 0L,
+    iconShape: IconShape = IconShape.DEFAULT
 ) {
     val searchQuery by viewModel.searchQuery.collectAsState()
     val filteredApps by viewModel.filteredApps.collectAsState()
@@ -156,6 +158,7 @@ fun FloatingSearchBar(
                                 app = app,
                                 isPinned = pinnedPackages.contains(app.packageName),
                                 isHighlighted = index == 0,
+                                iconShape = iconShape,
                                 onLaunch = { viewModel.launchApp(app.packageName); onHideTaskbar() },
                                 onPin = {
                                     if (pinnedPackages.contains(app.packageName))
@@ -186,6 +189,7 @@ fun FloatingSearchBar(
                             SearchResultItem(
                                 app = app,
                                 isPinned = pinnedPackages.contains(app.packageName),
+                                iconShape = iconShape,
                                 onLaunch = { viewModel.launchApp(app.packageName); onHideTaskbar() },
                                 onPin = {
                                     if (pinnedPackages.contains(app.packageName))

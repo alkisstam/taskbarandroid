@@ -53,8 +53,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.data.IconShape
 import com.alkisstam.taskbar.data.NotificationEntry
 import com.alkisstam.taskbar.ui.common.AppIconImage
+import com.alkisstam.taskbar.ui.common.toComposeShape
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 import com.alkisstam.taskbar.ui.theme.grain
 import com.alkisstam.taskbar.viewmodel.NotificationHistoryViewModel
@@ -71,7 +73,8 @@ fun NotificationHistoryPanel(
     translucentAlpha: Float = 0.80f,
     grainAlpha: Float = 0.10f,
     surfaceTintColor: Long = 0L,
-    dockBottomPadding: Dp = 0.dp
+    dockBottomPadding: Dp = 0.dp,
+    iconShape: IconShape = IconShape.DEFAULT
 ) {
     val notifications by viewModel.notifications.collectAsState()
     val grouped = remember(notifications) { notifications.groupBy { it.packageName } }
@@ -155,6 +158,7 @@ fun NotificationHistoryPanel(
                                             entry = entry,
                                             icon = iconForPackage(packageName),
                                             showAppRow = true,
+                                            iconShape = iconShape,
                                             actions = remember(entry.id) { viewModel.actionsFor(entry.id) },
                                             onAction = { viewModel.sendAction(it) }
                                         )
@@ -168,6 +172,7 @@ fun NotificationHistoryPanel(
                                         icon = iconForPackage(packageName),
                                         count = entries.size,
                                         expanded = expanded,
+                                        iconShape = iconShape,
                                         onToggle = { expandedMap[packageName] = !expanded }
                                     )
                                 }
@@ -181,6 +186,7 @@ fun NotificationHistoryPanel(
                                                 entry = entry,
                                                 icon = null,
                                                 showAppRow = false,
+                                                iconShape = iconShape,
                                                 actions = remember(entry.id) { viewModel.actionsFor(entry.id) },
                                                 onAction = { viewModel.sendAction(it) }
                                             )
@@ -245,6 +251,7 @@ private fun NotificationGroupHeader(
     icon: Bitmap?,
     count: Int,
     expanded: Boolean,
+    iconShape: IconShape = IconShape.DEFAULT,
     onToggle: () -> Unit
 ) {
     Surface(
@@ -263,6 +270,7 @@ private fun NotificationGroupHeader(
             AppIconImage(
                 icon = icon,
                 contentDescription = appLabel,
+                shape = iconShape.toComposeShape(),
                 modifier = Modifier.size(32.dp)
             )
             Spacer(modifier = Modifier.width(12.dp))
@@ -294,6 +302,7 @@ private fun NotificationEntryContent(
     entry: NotificationEntry,
     icon: Bitmap?,
     showAppRow: Boolean,
+    iconShape: IconShape = IconShape.DEFAULT,
     actions: List<Notification.Action> = emptyList(),
     onAction: (Notification.Action) -> Unit = {}
 ) {
@@ -305,6 +314,7 @@ private fun NotificationEntryContent(
             AppIconImage(
                 icon = icon,
                 contentDescription = entry.appLabel,
+                shape = iconShape.toComposeShape(),
                 modifier = Modifier.size(32.dp)
             )
             Spacer(modifier = Modifier.width(12.dp))

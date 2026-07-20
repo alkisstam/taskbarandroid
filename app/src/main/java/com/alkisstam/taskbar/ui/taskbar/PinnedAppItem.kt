@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.unit.Dp
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -30,8 +29,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import com.alkisstam.taskbar.data.AppInfo
+import com.alkisstam.taskbar.data.IconShape
 import com.alkisstam.taskbar.ui.common.AppIconImage
 import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
+import com.alkisstam.taskbar.ui.common.toComposeShape
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -39,6 +40,7 @@ fun PinnedAppItem(
     app: AppInfo,
     iconSize: Dp = 48.dp,
     showLabel: Boolean = false,
+    iconShape: IconShape = IconShape.DEFAULT,
     onLaunch: () -> Unit,
     onUnpin: () -> Unit,
     modifier: Modifier = Modifier
@@ -54,9 +56,9 @@ fun PinnedAppItem(
         AppIconImage(
             icon = app.icon,
             contentDescription = app.label,
+            shape = iconShape.toComposeShape(),
             modifier = Modifier
                 .size(iconSize)
-                .clip(CircleShape)
                 .combinedClickable(
                     onClick = onLaunch,
                     onLongClick = {

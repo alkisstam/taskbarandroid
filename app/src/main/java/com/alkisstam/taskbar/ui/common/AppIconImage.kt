@@ -8,6 +8,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
 
@@ -15,7 +17,8 @@ import androidx.compose.ui.unit.dp
 fun AppIconImage(
     icon: Bitmap?,
     contentDescription: String?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    shape: Shape = RectangleShape
 ) {
     if (icon == null) {
         AppIconPlaceholder(modifier)
@@ -24,7 +27,7 @@ fun AppIconImage(
     Image(
         bitmap = icon.asImageBitmap(),
         contentDescription = contentDescription,
-        modifier = modifier
+        modifier = modifier.clip(shape)
     )
 }
 

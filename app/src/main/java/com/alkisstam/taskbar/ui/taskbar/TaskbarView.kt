@@ -292,6 +292,7 @@ fun TaskbarView(
                                     app = app,
                                     iconSize = iconSize,
                                     showLabel = false,
+                                    iconShape = taskbarSettings.iconShape,
                                     onLaunch = {
                                         taskbarViewModel.launchApp(app.packageName)
                                         taskbarViewModel.hideTaskbar()
