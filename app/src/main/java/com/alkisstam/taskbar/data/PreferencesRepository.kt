@@ -104,6 +104,7 @@ data class TaskbarSettings(
     val positionYDp: Float = 20f,
     val heightDp: Float = 60f,
     val showControlLabels: Boolean = false,
+    val keepDockExpanded: Boolean = false,
     val pinnedIconSizeDp: Float = 42f,
     val pinnedIconPaddingDp: Float = 8f,
     val quickControlSizeDp: Float = 44f,
@@ -158,6 +159,7 @@ class PreferencesRepository @Inject constructor(
         private val TASKBAR_POSITION_Y_KEY = floatPreferencesKey("taskbar_position_y")
         private val TASKBAR_HEIGHT_KEY = floatPreferencesKey("taskbar_height_dp")
         private val TASKBAR_CONTROL_LABELS_KEY = booleanPreferencesKey("taskbar_control_labels")
+        private val TASKBAR_KEEP_EXPANDED_KEY = booleanPreferencesKey("taskbar_keep_expanded")
         private val PINNED_ICON_SIZE_KEY = floatPreferencesKey("pinned_icon_size_dp")
         private val PINNED_ICON_PADDING_KEY = floatPreferencesKey("pinned_icon_padding_dp")
         private val QUICK_CONTROL_SIZE_KEY = floatPreferencesKey("quick_control_size_dp")
@@ -383,6 +385,7 @@ class PreferencesRepository @Inject constructor(
             positionYDp        = prefs[TASKBAR_POSITION_Y_KEY]     ?: 20f,
             heightDp           = prefs[TASKBAR_HEIGHT_KEY]          ?: 60f,
             showControlLabels  = prefs[TASKBAR_CONTROL_LABELS_KEY]  ?: false,
+            keepDockExpanded   = prefs[TASKBAR_KEEP_EXPANDED_KEY]   ?: false,
             pinnedIconSizeDp   = prefs[PINNED_ICON_SIZE_KEY]        ?: 42f,
             pinnedIconPaddingDp = prefs[PINNED_ICON_PADDING_KEY]    ?: 8f,
             quickControlSizeDp = prefs[QUICK_CONTROL_SIZE_KEY]      ?: 44f,
@@ -398,6 +401,7 @@ class PreferencesRepository @Inject constructor(
             prefs[TASKBAR_POSITION_Y_KEY]     = settings.positionYDp
             prefs[TASKBAR_HEIGHT_KEY]         = settings.heightDp
             prefs[TASKBAR_CONTROL_LABELS_KEY] = settings.showControlLabels
+            prefs[TASKBAR_KEEP_EXPANDED_KEY]  = settings.keepDockExpanded
             prefs[PINNED_ICON_SIZE_KEY]       = settings.pinnedIconSizeDp
             prefs[PINNED_ICON_PADDING_KEY]    = settings.pinnedIconPaddingDp
             prefs[QUICK_CONTROL_SIZE_KEY]     = settings.quickControlSizeDp
@@ -658,6 +662,7 @@ class PreferencesRepository @Inject constructor(
             prefs[TASKBAR_POSITION_Y_KEY]?.let { put("taskbar_position_y", it) }
             prefs[TASKBAR_HEIGHT_KEY]?.let { put("taskbar_height_dp", it) }
             prefs[TASKBAR_CONTROL_LABELS_KEY]?.let { put("taskbar_control_labels", it) }
+            prefs[TASKBAR_KEEP_EXPANDED_KEY]?.let { put("taskbar_keep_expanded", it) }
             prefs[PINNED_ICON_SIZE_KEY]?.let { put("pinned_icon_size_dp", it) }
             prefs[PINNED_ICON_PADDING_KEY]?.let { put("pinned_icon_padding_dp", it) }
             prefs[QUICK_CONTROL_SIZE_KEY]?.let { put("quick_control_size_dp", it) }
@@ -709,6 +714,7 @@ class PreferencesRepository @Inject constructor(
             if (obj.has("taskbar_position_y")) prefs[TASKBAR_POSITION_Y_KEY] = obj.getDouble("taskbar_position_y").toFloat()
             if (obj.has("taskbar_height_dp")) prefs[TASKBAR_HEIGHT_KEY] = obj.getDouble("taskbar_height_dp").toFloat()
             if (obj.has("taskbar_control_labels")) prefs[TASKBAR_CONTROL_LABELS_KEY] = obj.getBoolean("taskbar_control_labels")
+            if (obj.has("taskbar_keep_expanded")) prefs[TASKBAR_KEEP_EXPANDED_KEY] = obj.getBoolean("taskbar_keep_expanded")
             if (obj.has("pinned_icon_size_dp")) prefs[PINNED_ICON_SIZE_KEY] = obj.getDouble("pinned_icon_size_dp").toFloat()
             if (obj.has("pinned_icon_padding_dp")) prefs[PINNED_ICON_PADDING_KEY] = obj.getDouble("pinned_icon_padding_dp").toFloat()
             if (obj.has("quick_control_size_dp")) prefs[QUICK_CONTROL_SIZE_KEY] = obj.getDouble("quick_control_size_dp").toFloat()

@@ -1231,6 +1231,21 @@ private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
                         enabled = quickControlsEnabled
                     )
                 }
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .alpha(if (quickControlsEnabled) 1f else 0.38f),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Keep controls expanded", style = MaterialTheme.typography.bodyLarge)
+                    Switch(
+                        checked = taskbarSettings.keepDockExpanded,
+                        onCheckedChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(keepDockExpanded = it)) },
+                        enabled = quickControlsEnabled
+                    )
+                }
             }
         }
 
