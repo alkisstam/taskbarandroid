@@ -169,6 +169,13 @@ val whatsNewReleases = listOf(
             "New Icon Shape setting in Design → Dock Size & Appearance — choose Default, Square, Squircle, or Circle for app icons everywhere",
             "Fixed a rare native crash loading app icons under memory pressure"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.5.2",
+        versionCode = 54,
+        highlights = listOf(
+            "New \"Keep controls expanded\" toggle in Settings → Controls — the dock can now open with quick controls already showing"
+        )
     )
 )
 

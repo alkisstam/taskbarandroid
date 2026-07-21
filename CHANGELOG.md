@@ -4,6 +4,15 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.5.2] - 2026-07-21
+
+Keep controls expanded setting.
+
+### Added
+- **Keep controls expanded** — Settings → Controls → Quick Controls → Keep controls expanded. When on, the dock opens with quick controls already showing instead of collapsed; swipe up/down still expands/collapses it manually.
+
+---
+
 ## [1.5.1] - 2026-07-20
 
 Icon shape setting.
