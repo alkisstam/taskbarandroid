@@ -96,6 +96,9 @@ class AppMenuViewModel @Inject constructor(
     val fuzzySearchEnabled: StateFlow<Boolean> = prefsRepository.fuzzySearchEnabled
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
+    val alwaysShowMusicPanel: StateFlow<Boolean> = prefsRepository.alwaysShowMusicPanel
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     val showRecentApps: StateFlow<Boolean> = prefsRepository.showRecentApps
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
@@ -225,7 +228,7 @@ class AppMenuViewModel @Inject constructor(
     }
 
     fun toggleMusicPanel() {
-        if (!_musicPanelVisible.value && !mediaState.value.hasSession) {
+        if (!_musicPanelVisible.value && !mediaState.value.hasSession && !alwaysShowMusicPanel.value) {
             _noMediaMessage.value = "No Media Playing"
             return
         }

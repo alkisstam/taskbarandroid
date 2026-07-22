@@ -394,12 +394,13 @@ internal fun MusicPanelContent(
     val mediaState by appMenuViewModel.mediaState.collectAsState()
     val musicPanelEnabled by taskbarViewModel.musicPanelEnabled.collectAsState()
     val musicPanelVisible by appMenuViewModel.musicPanelVisible.collectAsState()
+    val alwaysShowMusicPanel by appMenuViewModel.alwaysShowMusicPanel.collectAsState()
     val isSearching by appMenuViewModel.isSearching.collectAsState()
     val menuVisible by appMenuViewModel.menuVisible.collectAsState()
 
     val dockRevealProgress by taskbarViewModel.dockRevealProgress.collectAsState()
 
-    val panelShouldShow = musicPanelEnabled && mediaState.hasSession && musicPanelVisible && !isSearching && !menuVisible
+    val panelShouldShow = musicPanelEnabled && (mediaState.hasSession || alwaysShowMusicPanel) && musicPanelVisible && !isSearching && !menuVisible
 
     val revealAnim = remember { Animatable(0f) }
     var panelHeightPx by remember { mutableFloatStateOf(0f) }

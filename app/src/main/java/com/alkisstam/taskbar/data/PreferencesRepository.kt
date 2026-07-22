@@ -180,6 +180,7 @@ class PreferencesRepository @Inject constructor(
         private val LAST_SEEN_VERSION_CODE_KEY = intPreferencesKey("last_seen_version_code")
         private val MUSIC_PANEL_ENABLED_KEY = booleanPreferencesKey("music_panel_enabled")
         private val MUSIC_PANEL_OPEN_KEY = booleanPreferencesKey("music_panel_open")
+        private val ALWAYS_SHOW_MUSIC_PANEL_KEY = booleanPreferencesKey("always_show_music_panel")
         private val HAPTIC_FEEDBACK_KEY = booleanPreferencesKey("haptic_feedback")
         private val PANEL_OUTLINE_KEY = booleanPreferencesKey("panel_outline_enabled")
         private val APP_GRID_COLUMNS_KEY = intPreferencesKey("app_grid_columns")
@@ -518,6 +519,16 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
+    val alwaysShowMusicPanel: Flow<Boolean> = safeData.map { prefs ->
+        prefs[ALWAYS_SHOW_MUSIC_PANEL_KEY] ?: false
+    }
+
+    suspend fun setAlwaysShowMusicPanel(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[ALWAYS_SHOW_MUSIC_PANEL_KEY] = enabled
+        }
+    }
+
     val musicPanelOpen: Flow<Boolean> = safeData.map { prefs ->
         prefs[MUSIC_PANEL_OPEN_KEY] ?: false
     }
@@ -679,6 +690,7 @@ class PreferencesRepository @Inject constructor(
             prefs[CONTROLS_ORDER_KEY]?.let { put("controls_order", it) }
             prefs[CONTROLS_DISABLED_KEY]?.let { put("controls_disabled_ids", it) }
             prefs[MUSIC_PANEL_ENABLED_KEY]?.let { put("music_panel_enabled", it) }
+            prefs[ALWAYS_SHOW_MUSIC_PANEL_KEY]?.let { put("always_show_music_panel", it) }
             prefs[HAPTIC_FEEDBACK_KEY]?.let { put("haptic_feedback", it) }
             prefs[PANEL_OUTLINE_KEY]?.let { put("panel_outline_enabled", it) }
             prefs[APP_GRID_COLUMNS_KEY]?.let { put("app_grid_columns", it) }
@@ -731,6 +743,7 @@ class PreferencesRepository @Inject constructor(
             if (obj.has("controls_order")) prefs[CONTROLS_ORDER_KEY] = obj.getString("controls_order")
             if (obj.has("controls_disabled_ids")) prefs[CONTROLS_DISABLED_KEY] = obj.getString("controls_disabled_ids")
             if (obj.has("music_panel_enabled")) prefs[MUSIC_PANEL_ENABLED_KEY] = obj.getBoolean("music_panel_enabled")
+            if (obj.has("always_show_music_panel")) prefs[ALWAYS_SHOW_MUSIC_PANEL_KEY] = obj.getBoolean("always_show_music_panel")
             if (obj.has("haptic_feedback")) prefs[HAPTIC_FEEDBACK_KEY] = obj.getBoolean("haptic_feedback")
             if (obj.has("panel_outline_enabled")) prefs[PANEL_OUTLINE_KEY] = obj.getBoolean("panel_outline_enabled")
             if (obj.has("app_grid_columns")) prefs[APP_GRID_COLUMNS_KEY] = obj.getInt("app_grid_columns")

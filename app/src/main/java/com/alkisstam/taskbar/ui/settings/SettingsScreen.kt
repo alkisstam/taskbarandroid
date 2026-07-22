@@ -644,6 +644,7 @@ private fun MusicPanelSettingsCard(
     notificationAccessGranted: Boolean
 ) {
     val musicPanelEnabled by viewModel.musicPanelEnabled.collectAsState()
+    val alwaysShowMusicPanel by viewModel.alwaysShowMusicPanel.collectAsState()
 
     SettingsCard(title = "Music Panel") {
         Row(
@@ -662,6 +663,24 @@ private fun MusicPanelSettingsCard(
             Switch(
                 checked = musicPanelEnabled,
                 onCheckedChange = { viewModel.setMusicPanelEnabled(it) }
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text("Always Show Panel", style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    "Open the panel on tap even when nothing is playing",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(
+                checked = alwaysShowMusicPanel,
+                onCheckedChange = { viewModel.setAlwaysShowMusicPanel(it) }
             )
         }
         if (!notificationAccessGranted) {

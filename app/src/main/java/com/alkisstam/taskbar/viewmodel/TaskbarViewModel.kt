@@ -152,6 +152,9 @@ class TaskbarViewModel @Inject constructor(
     val musicPanelEnabled: StateFlow<Boolean> = prefsRepository.musicPanelEnabled
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
+    val alwaysShowMusicPanel: StateFlow<Boolean> = prefsRepository.alwaysShowMusicPanel
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     val fuzzySearchEnabled: StateFlow<Boolean> = prefsRepository.fuzzySearchEnabled
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
@@ -418,6 +421,12 @@ class TaskbarViewModel @Inject constructor(
     fun setMusicPanelEnabled(enabled: Boolean) {
         viewModelScope.launch {
             prefsRepository.setMusicPanelEnabled(enabled)
+        }
+    }
+
+    fun setAlwaysShowMusicPanel(enabled: Boolean) {
+        viewModelScope.launch {
+            prefsRepository.setAlwaysShowMusicPanel(enabled)
         }
     }
 
