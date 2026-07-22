@@ -10,6 +10,10 @@ Keep controls expanded setting.
 
 ### Added
 - **Keep controls expanded** — Settings → Controls → Quick Controls → Keep controls expanded. When on, the dock opens with quick controls already showing instead of collapsed; swipe up/down still expands/collapses it manually.
+- **Always Show Panel** — Settings → General → Music Panel → Always Show Panel. When on, tapping the Music quick control opens the panel even with no active media session, instead of showing "No Media Playing".
+
+### Changed
+- **Target API level raised to Android 16 (API 36)** — compileSdk/targetSdk bumped from 35 to 36 per Play Console requirement.
 
 ---
 

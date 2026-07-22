@@ -174,7 +174,8 @@ val whatsNewReleases = listOf(
         versionName = "1.5.2",
         versionCode = 54,
         highlights = listOf(
-            "New \"Keep controls expanded\" toggle in Settings → Controls — the dock can now open with quick controls already showing"
+            "New \"Keep controls expanded\" toggle in Settings → Controls — the dock can now open with quick controls already showing",
+            "New \"Always Show Panel\" toggle in Settings → General — Music Panel opens on tap even with nothing playing"
         )
     )
 )
