@@ -172,10 +172,12 @@ val whatsNewReleases = listOf(
     ),
     WhatsNewRelease(
         versionName = "1.5.2",
-        versionCode = 54,
+        versionCode = 55,
         highlights = listOf(
             "New \"Keep controls expanded\" toggle in Settings → Controls — the dock can now open with quick controls already showing",
-            "New \"Always Show Panel\" toggle in Settings → General — Music Panel opens on tap even with nothing playing"
+            "New \"Always Show Panel\" toggle in Settings → General — Music Panel opens on tap even with nothing playing",
+            "Fixed the Music Panel getting stuck half-open after swiping up the dock",
+            "Fixed background blur lingering after closing the Clipboard, Notes, or Notification panels"
         )
     )
 )

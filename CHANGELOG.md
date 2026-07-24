@@ -4,7 +4,7 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
-## [1.5.2] - 2026-07-21
+## [1.5.2] - 2026-07-24
 
 Keep controls expanded setting.
 
@@ -14,6 +14,10 @@ Keep controls expanded setting.
 
 ### Changed
 - **Target API level raised to Android 16 (API 36)** — compileSdk/targetSdk bumped from 35 to 36 per Play Console requirement.
+
+### Fixed
+- **Music panel getting stuck half-open and faded after swiping up the dock** — the panel now follows the swipe smoothly and springs fully open when the finger lifts, instead of freezing at the last drag position.
+- **Background blur lingering for a moment after closing the Clipboard, Notes, or Notification panels** — the blur now disappears together with the panel.
 
 ---
 
