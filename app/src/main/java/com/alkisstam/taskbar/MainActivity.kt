@@ -220,6 +220,7 @@ class MainActivity : ComponentActivity() {
     private fun checkForUpdate() {
         appUpdateManager.registerListener(installStateListener)
         appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
+            if (isFinishing || isDestroyed) return@addOnSuccessListener
             if (info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
                 info.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)
             ) {
