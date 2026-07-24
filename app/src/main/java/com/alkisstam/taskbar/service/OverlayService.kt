@@ -990,9 +990,11 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         clipboardBlurView?.let { removeViewFromAnyWM(it) }
         clipboardBlurView = null
         try {
+            val active = fullScreenPanelBlurActive()
             val view = View(this)
+            view.visibility = if (active) View.VISIBLE else View.GONE
             clipboardBlurView = view
-            windowManager.addView(view, clipboardBlurLayoutParams(blurBehind = fullScreenPanelBlurActive()))
+            windowManager.addView(view, clipboardBlurLayoutParams(blurBehind = active))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add clipboard blur view", e)
             clipboardBlurView = null
@@ -1175,7 +1177,11 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private fun updateClipboardBlur() {
         clipboardBlurView?.let { blur ->
-            try { windowManager.updateViewLayoutKeepingType(blur, clipboardBlurLayoutParams(blurBehind = fullScreenPanelBlurActive())) }
+            val active = fullScreenPanelBlurActive()
+            // 0x0 resize alone can leave the surface alive for ~1s on some skins, so the
+            // blur lingers after the panel hides; GONE destroys the surface immediately.
+            blur.visibility = if (active) View.VISIBLE else View.GONE
+            try { windowManager.updateViewLayoutKeepingType(blur, clipboardBlurLayoutParams(blurBehind = active)) }
             catch (e: Exception) { Log.w(TAG, "Failed to update clipboard blur", e) }
         }
     }
