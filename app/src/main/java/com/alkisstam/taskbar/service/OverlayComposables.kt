@@ -399,15 +399,16 @@ internal fun MusicPanelContent(
     val menuVisible by appMenuViewModel.menuVisible.collectAsState()
 
     val dockRevealProgress by taskbarViewModel.dockRevealProgress.collectAsState()
+    val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
 
     val panelShouldShow = musicPanelEnabled && (mediaState.hasSession || alwaysShowMusicPanel) && musicPanelVisible && !isSearching && !menuVisible
 
     val revealAnim = remember { Animatable(0f) }
     var panelHeightPx by remember { mutableFloatStateOf(0f) }
 
-    LaunchedEffect(panelShouldShow, dockRevealProgress) {
+    LaunchedEffect(panelShouldShow, isTaskbarVisible, dockRevealProgress) {
         when {
-            panelShouldShow && dockRevealProgress == 1f ->
+            panelShouldShow && isTaskbarVisible ->
                 revealAnim.animateTo(1f, spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium))
             !panelShouldShow || dockRevealProgress == 0f ->
                 revealAnim.animateTo(0f, tween(220))
