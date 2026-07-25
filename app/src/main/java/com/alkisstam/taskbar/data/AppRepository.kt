@@ -12,8 +12,10 @@ import android.util.DisplayMetrics
 import android.util.Log
 import androidx.core.graphics.drawable.toBitmap
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,6 +39,8 @@ class AppRepository @Inject constructor(
 
     private val _apps = MutableStateFlow<List<AppInfo>>(emptyList())
     val apps: StateFlow<List<AppInfo>> = _apps.asStateFlow()
+
+    private var loadJob: Job? = null
 
     private val packageReceiver = object : BroadcastReceiver() {
         override fun onReceive(ctx: Context, intent: Intent) {
@@ -63,86 +67,101 @@ class AppRepository @Inject constructor(
         }
     }
 
-    private fun loadApps(retriesLeft: Int = 3) {
-        scope.launch {
-            try {
-                val pm = context.packageManager
-                val intent = Intent(Intent.ACTION_MAIN, null).apply {
-                    addCategory(Intent.CATEGORY_LAUNCHER)
-                }
-                val iconPack = preferencesRepository.iconPackPackage.first()
-                val am = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-                val memInfo = ActivityManager.MemoryInfo()
-                var memoryLow = false
-                var iconsSkipped = false
-                _apps.value = pm.queryIntentActivities(intent, PackageManager.GET_META_DATA)
-                    .mapNotNull { resolveInfo ->
-                        val activityInfo = resolveInfo.activityInfo ?: return@mapNotNull null
-                        // Icon decode under system-wide memory pressure can kill the
-                        // process natively (scudo aborts on mmap failure inside
-                        // ImageDecoder) — uncatchable from Java. Poll lowMemory and
-                        // skip decoding while it holds; a delayed reload below fills
-                        // the missing icons in once memory recovers.
-                        am.getMemoryInfo(memInfo)
-                        memoryLow = memInfo.lowMemory
-                        // Load the icon separately so a broken icon doesn't drop the whole app
-                        // from the list: MIUI's IconCustomizer inflates huge bitmaps and throws
-                        // OutOfMemoryError (an Error, hence Throwable) on some devices. Keep the
-                        // app with a null icon (UI renders a placeholder) instead of hiding it.
-                        val icon = if (memoryLow) {
-                            iconsSkipped = true
-                            null
-                        } else try {
-                            // Load the icon resource directly instead of loadIcon(): on MIUI,
-                            // loadIcon() routes through IconCustomizer.composeIcon which draws
-                            // full-size themed bitmaps in-process and can abort() the whole
-                            // process on native allocation failure (uncatchable). Direct
-                            // Resources access bypasses that hook; DENSITY_XHIGH caps the
-                            // source bitmap near our 160px target.
-                            val packIcon = if (iconPack.isNotEmpty()) {
-                                iconPackRepository.getIcon(iconPack, activityInfo.packageName, activityInfo.name)
-                            } else null
-                            val drawable = packIcon ?: try {
-                                val res = pm.getResourcesForApplication(activityInfo.applicationInfo)
-                                val resId = resolveInfo.iconResource
-                                if (resId != 0) res.getDrawableForDensity(resId, DisplayMetrics.DENSITY_XHIGH, null) else null
-                            } catch (e: Exception) {
-                                null
-                            } ?: resolveInfo.loadIcon(pm)
-                            // Rendered at a fixed size: intrinsic-size bitmaps for every installed
-                            // app add up to tens of MB (and themed OEM icons can be 1024px+).
-                            // 160px covers the largest dock icon setting on 1080p densities.
-                            // toBitmap() can return the system's cached Bitmap instance without
-                            // copying (androidx shortcut when config already matches); that shared
-                            // bitmap can later be recycled by the OS, so copy it to own our instance.
-                            drawable.toBitmap(ICON_SIZE_PX, ICON_SIZE_PX)
-                                .copy(Bitmap.Config.ARGB_8888, false)
-                        } catch (e: Throwable) {
-                            Log.w("AppRepository", "Icon load failed, keeping app without icon: ${activityInfo.packageName}", e)
-                            null
-                        }
-                        AppInfo(
-                            packageName = activityInfo.packageName,
-                            label = resolveInfo.loadLabel(pm).toString(),
-                            icon = icon
-                        )
+    // Single-flight: concurrent loads (startup collect + package broadcast + retry)
+    // would draw VectorDrawables sharing one native tree from two threads at once,
+    // which segfaults in hwui (Tree::drawStaging → getSkBitmap).
+    private fun loadApps() {
+        loadJob?.cancel()
+        loadJob = scope.launch {
+            var retriesLeft = 3
+            while (true) {
+                try {
+                    val pm = context.packageManager
+                    val intent = Intent(Intent.ACTION_MAIN, null).apply {
+                        addCategory(Intent.CATEGORY_LAUNCHER)
                     }
-                    .distinctBy { it.packageName }
-                    .sortedBy { it.label.lowercase() }
-                if (iconsSkipped && retriesLeft > 0) {
-                    delay(5000)
-                    loadApps(retriesLeft - 1)
+                    val iconPack = preferencesRepository.iconPackPackage.first()
+                    val am = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+                    val memInfo = ActivityManager.MemoryInfo()
+                    var memoryLow = false
+                    var iconsSkipped = false
+                    _apps.value = pm.queryIntentActivities(intent, PackageManager.GET_META_DATA)
+                        .mapNotNull { resolveInfo ->
+                            val activityInfo = resolveInfo.activityInfo ?: return@mapNotNull null
+                            // Icon decode under system-wide memory pressure can kill the
+                            // process natively (scudo aborts on mmap failure inside
+                            // ImageDecoder) — uncatchable from Java. Poll lowMemory and
+                            // skip decoding while it holds; a delayed reload below fills
+                            // the missing icons in once memory recovers.
+                            am.getMemoryInfo(memInfo)
+                            memoryLow = memInfo.lowMemory
+                            // Load the icon separately so a broken icon doesn't drop the whole app
+                            // from the list: MIUI's IconCustomizer inflates huge bitmaps and throws
+                            // OutOfMemoryError (an Error, hence Throwable) on some devices. Keep the
+                            // app with a null icon (UI renders a placeholder) instead of hiding it.
+                            val icon = if (memoryLow) {
+                                iconsSkipped = true
+                                null
+                            } else try {
+                                // Load the icon resource directly instead of loadIcon(): on MIUI,
+                                // loadIcon() routes through IconCustomizer.composeIcon which draws
+                                // full-size themed bitmaps in-process and can abort() the whole
+                                // process on native allocation failure (uncatchable). Direct
+                                // Resources access bypasses that hook; DENSITY_XHIGH caps the
+                                // source bitmap near our 160px target.
+                                val packIcon = if (iconPack.isNotEmpty()) {
+                                    iconPackRepository.getIcon(iconPack, activityInfo.packageName, activityInfo.name)
+                                } else null
+                                val drawable = packIcon ?: try {
+                                    val res = pm.getResourcesForApplication(activityInfo.applicationInfo)
+                                    val resId = resolveInfo.iconResource
+                                    if (resId != 0) res.getDrawableForDensity(resId, DisplayMetrics.DENSITY_XHIGH, null) else null
+                                } catch (e: Exception) {
+                                    null
+                                } ?: resolveInfo.loadIcon(pm)
+                                // Rendered at a fixed size: intrinsic-size bitmaps for every installed
+                                // app add up to tens of MB (and themed OEM icons can be 1024px+).
+                                // 160px covers the largest dock icon setting on 1080p densities.
+                                // toBitmap() can return the system's cached Bitmap instance without
+                                // copying (androidx shortcut when config already matches); that shared
+                                // bitmap can later be recycled by the OS, so copy it to own our instance.
+                                // mutate() first: Resources caches drawable ConstantState, and a
+                                // VectorDrawable's native tree lives in that state — drawing a
+                                // shared tree from two threads crashes in hwui.
+                                drawable.mutate().toBitmap(ICON_SIZE_PX, ICON_SIZE_PX)
+                                    .copy(Bitmap.Config.ARGB_8888, false)
+                            } catch (e: Throwable) {
+                                Log.w("AppRepository", "Icon load failed, keeping app without icon: ${activityInfo.packageName}", e)
+                                null
+                            }
+                            AppInfo(
+                                packageName = activityInfo.packageName,
+                                label = resolveInfo.loadLabel(pm).toString(),
+                                icon = icon
+                            )
+                        }
+                        .distinctBy { it.packageName }
+                        .sortedBy { it.label.lowercase() }
+                    if (iconsSkipped && retriesLeft > 0) {
+                        retriesLeft--
+                        delay(5000)
+                        continue
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    Log.w("AppRepository", "Failed to load installed apps", e)
+                    // queryIntentActivities can fail with a transient binder error
+                    // (DeadObjectException / binder buffer overflow). If we have no apps
+                    // yet, back off and retry so the dock isn't left empty until the next
+                    // package broadcast.
+                    if (_apps.value.isEmpty() && retriesLeft > 0) {
+                        delay(1000L * (4 - retriesLeft))
+                        retriesLeft--
+                        continue
+                    }
                 }
-            } catch (e: Exception) {
-                Log.w("AppRepository", "Failed to load installed apps", e)
-                // queryIntentActivities can fail with a transient binder error
-                // (DeadObjectException / binder buffer overflow). If we have no apps
-                // yet, back off and retry so the dock isn't left empty until the next
-                // package broadcast.
-                if (_apps.value.isEmpty() && retriesLeft > 0) {
-                    delay(1000L * (4 - retriesLeft))
-                    loadApps(retriesLeft - 1)
-                }
+                return@launch
             }
         }
     }
