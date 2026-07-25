@@ -11,6 +11,7 @@ Stability release.
 ### Fixed
 - **Native crash while loading app icons** — concurrent app-list reloads could render the same vector icon from two threads at once, crashing the process in the system renderer. Reloads are now serialized and each icon gets its own drawable copy.
 - **Freeze/kill from icon cleanup pressure** — the same overlapping reloads doubled native drawable churn, which could stall finalization long enough for the system to kill the app. Fixed by the same reload serialization.
+- **Crash while loading icons on devices under heavy memory pressure** — icon loading now backs off earlier when the device is running low on memory (filling the missing icons in once it recovers) and allocates half as much memory per icon, avoiding an unrecoverable out-of-memory kill.
 
 ---
 

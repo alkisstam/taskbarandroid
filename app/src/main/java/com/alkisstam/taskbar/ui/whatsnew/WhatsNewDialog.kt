@@ -184,7 +184,8 @@ val whatsNewReleases = listOf(
         versionName = "1.5.3",
         versionCode = 56,
         highlights = listOf(
-            "Fixed two crashes while loading app icons — reloads no longer race each other in the system renderer"
+            "Fixed two crashes while loading app icons — reloads no longer race each other in the system renderer",
+            "Fixed a crash loading icons on devices low on memory — icon loading now backs off earlier and uses half the memory per icon"
         )
     )
 )
