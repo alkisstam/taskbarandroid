@@ -179,6 +179,13 @@ val whatsNewReleases = listOf(
             "Fixed the Music Panel getting stuck half-open after swiping up the dock",
             "Fixed background blur lingering after closing the Clipboard, Notes, or Notification panels"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.5.3",
+        versionCode = 56,
+        highlights = listOf(
+            "Fixed two crashes while loading app icons — reloads no longer race each other in the system renderer"
+        )
     )
 )
 

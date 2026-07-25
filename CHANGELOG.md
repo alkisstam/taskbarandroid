@@ -4,6 +4,16 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.5.3] - 2026-07-25
+
+Stability release.
+
+### Fixed
+- **Native crash while loading app icons** — concurrent app-list reloads could render the same vector icon from two threads at once, crashing the process in the system renderer. Reloads are now serialized and each icon gets its own drawable copy.
+- **Freeze/kill from icon cleanup pressure** — the same overlapping reloads doubled native drawable churn, which could stall finalization long enough for the system to kill the app. Fixed by the same reload serialization.
+
+---
+
 ## [1.5.2] - 2026-07-24
 
 Keep controls expanded setting.
