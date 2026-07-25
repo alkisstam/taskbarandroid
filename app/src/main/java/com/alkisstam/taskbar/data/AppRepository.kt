@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.util.DisplayMetrics
 import android.util.Log
@@ -92,9 +93,12 @@ class AppRepository @Inject constructor(
                             // process natively (scudo aborts on mmap failure inside
                             // ImageDecoder) — uncatchable from Java. Poll lowMemory and
                             // skip decoding while it holds; a delayed reload below fills
-                            // the missing icons in once memory recovers.
+                            // the missing icons in once memory recovers. lowMemory alone
+                            // lags (flips only below the OEM threshold, and other processes
+                            // can eat the remainder between our check and the allocation),
+                            // so also skip while availMem is within 1.5× of the threshold.
                             am.getMemoryInfo(memInfo)
-                            memoryLow = memInfo.lowMemory
+                            memoryLow = memInfo.lowMemory || memInfo.availMem < memInfo.threshold * 3 / 2
                             // Load the icon separately so a broken icon doesn't drop the whole app
                             // from the list: MIUI's IconCustomizer inflates huge bitmaps and throws
                             // OutOfMemoryError (an Error, hence Throwable) on some devices. Keep the
@@ -122,14 +126,20 @@ class AppRepository @Inject constructor(
                                 // Rendered at a fixed size: intrinsic-size bitmaps for every installed
                                 // app add up to tens of MB (and themed OEM icons can be 1024px+).
                                 // 160px covers the largest dock icon setting on 1080p densities.
-                                // toBitmap() can return the system's cached Bitmap instance without
-                                // copying (androidx shortcut when config already matches); that shared
-                                // bitmap can later be recycled by the OS, so copy it to own our instance.
                                 // mutate() first: Resources caches drawable ConstantState, and a
                                 // VectorDrawable's native tree lives in that state — drawing a
                                 // shared tree from two threads crashes in hwui.
-                                drawable.mutate().toBitmap(ICON_SIZE_PX, ICON_SIZE_PX)
-                                    .copy(Bitmap.Config.ARGB_8888, false)
+                                val mutated = drawable.mutate()
+                                val bmp = mutated.toBitmap(ICON_SIZE_PX, ICON_SIZE_PX)
+                                // toBitmap() returns the drawable's own cached Bitmap without
+                                // copying when it's a BitmapDrawable already at the target size;
+                                // that shared bitmap can later be recycled by the OS. Copy only
+                                // in that case — unconditional copy doubled native allocations
+                                // per icon, which matters when this crashes the process under
+                                // memory pressure (scudo abort in allocateHeapBitmap).
+                                if (bmp === (mutated as? BitmapDrawable)?.bitmap) {
+                                    bmp.copy(Bitmap.Config.ARGB_8888, false)
+                                } else bmp
                             } catch (e: Throwable) {
                                 Log.w("AppRepository", "Icon load failed, keeping app without icon: ${activityInfo.packageName}", e)
                                 null
