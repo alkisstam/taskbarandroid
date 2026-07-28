@@ -24,12 +24,17 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CropSquare
@@ -40,6 +45,7 @@ import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.PhoneAndroid
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Straighten
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.ui.text.style.TextAlign
@@ -51,6 +57,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -71,8 +78,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalConfiguration
@@ -89,6 +102,7 @@ import com.alkisstam.taskbar.data.PillEdgePosition
 import com.alkisstam.taskbar.data.ThemeMode
 import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
+import kotlin.math.roundToInt
 
 @Composable
 fun PillSettingsScreen(
@@ -186,15 +200,22 @@ fun PillSettingsScreen(
                     value = translucentAlpha,
                     valueRange = 0.3f..1f,
                     unit = "%",
+                    step = 0.01f,
                     displayTransform = { "${(it * 100).toInt()}%" },
+                    editValueTransform = { (it * 100).roundToInt().toString() },
+                    parseEditValue = { it.toFloatOrNull()?.div(100f) },
                     onValueChange = { viewModel.setTranslucentAlpha(it) }
                 )
+                Spacer(modifier = Modifier.height(10.dp))
                 SettingsSlider(
                     label = "Grain",
                     value = grainAlpha,
                     valueRange = 0f..0.3f,
                     unit = "%",
+                    step = 0.01f,
                     displayTransform = { "${(it * 100).toInt()}%" },
+                    editValueTransform = { (it * 100).roundToInt().toString() },
+                    parseEditValue = { it.toFloatOrNull()?.div(100f) },
                     onValueChange = { viewModel.setGrainAlpha(it) }
                 )
             }
@@ -210,31 +231,37 @@ fun PillSettingsScreen(
                 value = pillSettings.widthDp.coerceAtMost(widthMax),
                 valueRange = 2f..widthMax,
                 unit = "dp",
+                step = 1f,
                 onValueChange = { viewModel.savePillSettings(pillSettings.copy(widthDp = it)) }
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             SettingsSlider(
                 label = "Height",
                 value = pillSettings.heightDp.coerceAtMost(heightMax),
                 valueRange = 2f..heightMax,
                 unit = "dp",
+                step = 1f,
                 onValueChange = { viewModel.savePillSettings(pillSettings.copy(heightDp = it)) }
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             SettingsSlider(
                 label = "Transparency",
                 value = pillSettings.alpha,
                 valueRange = 0f..1f,
                 unit = "%",
+                step = 0.01f,
                 displayTransform = { "${(it * 100).toInt()}%" },
+                editValueTransform = { (it * 100).roundToInt().toString() },
+                parseEditValue = { it.toFloatOrNull()?.div(100f) },
                 onValueChange = { viewModel.savePillSettings(pillSettings.copy(alpha = it)) }
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             SettingsSlider(
                 label = "Trigger Area",
                 value = pillSettings.triggerAreaDp,
                 valueRange = 8f..40f,
                 unit = "dp",
+                step = 1f,
                 onValueChange = { viewModel.savePillSettings(pillSettings.copy(triggerAreaDp = it)) }
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -327,14 +354,16 @@ fun PillSettingsScreen(
                     value = pillSettings.positionYDp,
                     valueRange = 0f..heightMax,
                     unit = "dp",
+                    step = 1f,
                     onValueChange = { viewModel.savePillSettings(pillSettings.copy(positionYDp = it)) }
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(10.dp))
                 SettingsSlider(
                     label = "Position along edge",
                     value = pillSettings.positionXPct,
                     valueRange = 0f..100f,
                     unit = "%",
+                    step = 1f,
                     displayTransform = { "${it.toInt()}%" },
                     onValueChange = { viewModel.savePillSettings(pillSettings.copy(positionXPct = it)) }
                 )
@@ -369,6 +398,7 @@ fun PillSettingsScreen(
                     value = pillSettings.sidePositionPct,
                     valueRange = 0f..100f,
                     unit = "%",
+                    step = 1f,
                     displayTransform = { "${it.toInt()}%" },
                     onValueChange = { viewModel.savePillSettings(pillSettings.copy(sidePositionPct = it)) }
                 )
@@ -397,34 +427,43 @@ fun PillSettingsScreen(
                 value = taskbarSettings.heightDp,
                 valueRange = 40f..120f,
                 unit = "dp",
+                step = 1f,
                 onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(heightDp = it)) }
             )
+            Spacer(modifier = Modifier.height(10.dp))
             SettingsSlider(
                 label = "Pinned App Icon Size",
                 value = taskbarSettings.pinnedIconSizeDp,
                 valueRange = 32f..60f,
                 unit = "dp",
+                step = 1f,
                 onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(pinnedIconSizeDp = it)) }
             )
+            Spacer(modifier = Modifier.height(10.dp))
             SettingsSlider(
                 label = "Pinned Icon Padding",
                 value = taskbarSettings.pinnedIconPaddingDp,
                 valueRange = 2f..12f,
                 unit = "dp",
+                step = 1f,
                 onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(pinnedIconPaddingDp = it)) }
             )
+            Spacer(modifier = Modifier.height(10.dp))
             SettingsSlider(
                 label = "Quick Controls Size",
                 value = taskbarSettings.quickControlSizeDp,
                 valueRange = 32f..60f,
                 unit = "dp",
+                step = 1f,
                 onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(quickControlSizeDp = it)) }
             )
+            Spacer(modifier = Modifier.height(10.dp))
             SettingsSlider(
                 label = "Corner Radius",
                 value = taskbarSettings.cornerRadiusDp,
                 valueRange = 0f..32f,
                 unit = "dp",
+                step = 1f,
                 onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(cornerRadiusDp = it)) }
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -708,29 +747,114 @@ fun FilledPillSliderTrack(sliderState: SliderState) {
 }
 
 @Composable
-private fun SettingsSlider(
+fun SettingsSlider(
     label: String,
     value: Float,
     valueRange: ClosedFloatingPointRange<Float>,
     unit: String,
+    step: Float,
+    sliderSteps: Int = 0,
     displayTransform: (Float) -> String = { "${it.toInt()} $unit" },
+    editValueTransform: (Float) -> String = { it.toInt().toString() },
+    parseEditValue: (String) -> Float? = { it.toFloatOrNull() },
     onValueChange: (Float) -> Unit
 ) {
     var localValue by remember(value) { mutableFloatStateOf(value) }
+    var isEditing by remember { mutableStateOf(false) }
+    var editText by remember { mutableStateOf("") }
+    val focusRequester = remember { FocusRequester() }
     val haptic = LocalHapticFeedback.current
     val hapticEnabled = LocalHapticEnabled.current
+
+    fun commit(newValue: Float) {
+        val coerced = newValue.coerceIn(valueRange)
+        localValue = coerced
+        onValueChange(coerced)
+    }
+
+    fun commitEdit() {
+        parseEditValue(editText)?.let { commit(it) }
+        isEditing = false
+    }
+
+    LaunchedEffect(isEditing) {
+        if (isEditing) focusRequester.requestFocus()
+    }
+
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(label, style = MaterialTheme.typography.bodyMedium)
-            Text(
-                displayTransform(localValue),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
+            Text(label, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(
+                    onClick = {
+                        if (hapticEnabled) haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                        commit(localValue - step)
+                    },
+                    enabled = localValue > valueRange.start,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Remove,
+                        contentDescription = "Decrease $label",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.alpha(if (localValue > valueRange.start) 1f else 0.38f)
+                    )
+                }
+                Box(
+                    modifier = Modifier.widthIn(min = 44.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (isEditing) {
+                        BasicTextField(
+                            value = editText,
+                            onValueChange = { editText = it },
+                            singleLine = true,
+                            textStyle = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.primary,
+                                textAlign = TextAlign.Center
+                            ),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+                            keyboardActions = KeyboardActions(onDone = { commitEdit() }),
+                            modifier = Modifier
+                                .width(48.dp)
+                                .focusRequester(focusRequester)
+                                .onFocusChanged { if (!it.isFocused && isEditing) commitEdit() }
+                        )
+                    } else {
+                        Text(
+                            displayTransform(localValue),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.clickable {
+                                editText = editValueTransform(localValue)
+                                isEditing = true
+                            }
+                        )
+                    }
+                }
+                IconButton(
+                    onClick = {
+                        if (hapticEnabled) haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                        commit(localValue + step)
+                    },
+                    enabled = localValue < valueRange.endInclusive,
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = "Increase $label",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.alpha(if (localValue < valueRange.endInclusive) 1f else 0.38f)
+                    )
+                }
+            }
         }
+        Spacer(modifier = Modifier.height(4.dp))
         Slider(
             value = localValue,
             onValueChange = { newValue ->
@@ -743,8 +867,9 @@ private fun SettingsSlider(
                 }
                 localValue = newValue
             },
-            onValueChangeFinished = { onValueChange(localValue) },
+            onValueChangeFinished = { commit(localValue) },
             valueRange = valueRange,
+            steps = sliderSteps,
             track = { FilledPillSliderTrack(it) },
             thumb = {}
         )

@@ -85,7 +85,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -124,6 +123,7 @@ import com.alkisstam.taskbar.ui.common.toComposeShape
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -1005,52 +1005,27 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
         }
         item {
             SettingsCard(title = "App Grid") {
-                var localColumns by remember(appGridColumns) { androidx.compose.runtime.mutableFloatStateOf(appGridColumns.toFloat()) }
-                var localRows by remember(appGridRows) { androidx.compose.runtime.mutableFloatStateOf(appGridRows.toFloat()) }
-                val haptic = LocalHapticFeedback.current
-                val hapticEnabled = LocalHapticEnabled.current
                 Column {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("Columns", style = MaterialTheme.typography.bodyMedium)
-                        Text("${localColumns.toInt()}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary)
-                    }
-                    Slider(
-                        value = localColumns,
-                        onValueChange = { newValue ->
-                            if (hapticEnabled && newValue != localColumns) {
-                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                            }
-                            localColumns = newValue
-                        },
-                        onValueChangeFinished = { viewModel.setAppGridColumns(localColumns.toInt()) },
+                    SettingsSlider(
+                        label = "Columns",
+                        value = appGridColumns.toFloat(),
                         valueRange = 3f..6f,
-                        steps = 2,
-                        track = { FilledPillSliderTrack(it) },
-                        thumb = {}
+                        unit = "",
+                        step = 1f,
+                        sliderSteps = 2,
+                        displayTransform = { "${it.toInt()}" },
+                        onValueChange = { viewModel.setAppGridColumns(it.roundToInt()) }
                     )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("Rows", style = MaterialTheme.typography.bodyMedium)
-                        Text("${localRows.toInt()}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary)
-                    }
-                    Slider(
-                        value = localRows,
-                        onValueChange = { newValue ->
-                            if (hapticEnabled && newValue != localRows) {
-                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                            }
-                            localRows = newValue
-                        },
-                        onValueChangeFinished = { viewModel.setAppGridRows(localRows.toInt()) },
+                    Spacer(modifier = Modifier.height(10.dp))
+                    SettingsSlider(
+                        label = "Rows",
+                        value = appGridRows.toFloat(),
                         valueRange = 3f..6f,
-                        steps = 2,
-                        track = { FilledPillSliderTrack(it) },
-                        thumb = {}
+                        unit = "",
+                        step = 1f,
+                        sliderSteps = 2,
+                        displayTransform = { "${it.toInt()}" },
+                        onValueChange = { viewModel.setAppGridRows(it.roundToInt()) }
                     )
                 }
             }
