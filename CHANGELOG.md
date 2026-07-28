@@ -8,6 +8,9 @@ All notable changes to Floating Dock are documented here.
 
 Stability release.
 
+### Added
+- **Stepper buttons and tap-to-edit on settings sliders** — every slider in Settings (Design tab and App Grid) now has -/+ buttons for fine adjustment and a tappable value that opens a numeric keyboard for typing an exact number.
+
 ### Fixed
 - **Native crash while loading app icons** — concurrent app-list reloads could render the same vector icon from two threads at once, crashing the process in the system renderer. Reloads are now serialized and each icon gets its own drawable copy.
 - **Freeze/kill from icon cleanup pressure** — the same overlapping reloads doubled native drawable churn, which could stall finalization long enough for the system to kill the app. Fixed by the same reload serialization.
