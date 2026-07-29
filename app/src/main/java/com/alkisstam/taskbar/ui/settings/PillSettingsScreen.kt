@@ -762,6 +762,7 @@ fun SettingsSlider(
     var localValue by remember(value) { mutableFloatStateOf(value) }
     var isEditing by remember { mutableStateOf(false) }
     var editText by remember { mutableStateOf("") }
+    var hasFocus by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val haptic = LocalHapticFeedback.current
     val hapticEnabled = LocalHapticEnabled.current
@@ -775,6 +776,7 @@ fun SettingsSlider(
     fun commitEdit() {
         parseEditValue(editText)?.let { commit(it) }
         isEditing = false
+        hasFocus = false
     }
 
     LaunchedEffect(isEditing) {
@@ -822,7 +824,10 @@ fun SettingsSlider(
                             modifier = Modifier
                                 .width(48.dp)
                                 .focusRequester(focusRequester)
-                                .onFocusChanged { if (!it.isFocused && isEditing) commitEdit() }
+                                .onFocusChanged {
+                                    if (it.isFocused) hasFocus = true
+                                    else if (hasFocus && isEditing) commitEdit()
+                                }
                         )
                     } else {
                         Text(
