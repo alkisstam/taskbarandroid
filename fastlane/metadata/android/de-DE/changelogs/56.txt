@@ -1,0 +1,6 @@
+Neu
+• Tippen oder +/- Tasten verwenden, um Einstellungs-Schieberegler fein einzustellen
+
+Behoben
+• Abstürze beim Laden von App-Symbolen, auch auf Geräten mit wenig Speicher
+• Einfrieren und erzwungenes Schließen durch Symbol-Bereinigung

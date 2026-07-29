@@ -1,0 +1,6 @@
+Nouveautés
+• Appuyez sur la valeur ou utilisez les boutons +/- pour ajuster précisément les curseurs des réglages
+
+Corrections
+• Plantages lors du chargement des icônes d'applications, y compris sur les appareils à faible mémoire
+• Gels et fermetures forcées dus au nettoyage des icônes

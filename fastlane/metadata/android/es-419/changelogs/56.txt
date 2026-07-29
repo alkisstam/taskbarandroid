@@ -1,0 +1,6 @@
+Novedades
+• Toca el valor o usa los botones +/- para ajustar los controles deslizantes de configuración
+
+Correcciones
+• Fallos al cargar los iconos de apps, incluso en dispositivos con poca memoria
+• Congelamientos y cierres forzados por la limpieza de iconos

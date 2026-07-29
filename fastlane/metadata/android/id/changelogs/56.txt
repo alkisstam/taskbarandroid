@@ -1,0 +1,6 @@
+Baru
+• Ketuk nilai atau gunakan tombol +/- untuk menyesuaikan slider pengaturan secara presisi
+
+Perbaikan
+• Crash saat memuat ikon aplikasi, termasuk di perangkat dengan memori rendah
+• Macet dan tertutup paksa akibat pembersihan ikon

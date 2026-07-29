@@ -1,0 +1,6 @@
+Nieuw
+• Tik op de waarde of gebruik de +/- knoppen om instellingenschuifregelaars nauwkeurig aan te passen
+
+Opgelost
+• Crashes bij het laden van app-iconen, ook op toestellen met weinig geheugen
+• Vastlopen en geforceerd afsluiten door het opschonen van iconen

@@ -1,0 +1,6 @@
+Yenilikler
+• Ayar kaydırıcılarını hassas şekilde ayarlamak için değere dokunun veya +/- düğmelerini kullanın
+
+Düzeltmeler
+• Düşük bellekli cihazlar dahil, uygulama simgeleri yüklenirken oluşan çökmeler
+• Simge temizliğinden kaynaklanan donmalar ve zorla kapanmalar

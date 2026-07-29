@@ -1,0 +1,6 @@
+Novità
+• Tocca il valore o usa i pulsanti +/- per regolare con precisione i cursori delle impostazioni
+
+Correzioni
+• Arresti anomali durante il caricamento delle icone delle app, anche su dispositivi con poca memoria
+• Blocchi e chiusure forzate causati dalla pulizia delle icone

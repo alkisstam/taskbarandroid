@@ -1,0 +1,6 @@
+Added
+• Tap or use +/- buttons to fine-tune settings sliders
+
+Fixed
+• Crashes while loading app icons, including on low-memory devices
+• Freezes and forced closes from icon cleanup
