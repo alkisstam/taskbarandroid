@@ -1,0 +1,14 @@
+default_platform(:android)
+
+platform :android do
+  desc "Upload release AAB + translated release notes to Play Store production track"
+  lane :deploy do
+    upload_to_play_store(
+      track: "production",
+      aab: "app/release/app-release.aab",
+      skip_upload_apk: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+end
