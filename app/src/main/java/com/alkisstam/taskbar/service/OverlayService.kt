@@ -22,6 +22,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.content.ContextCompat
 import androidx.compose.runtime.collectAsState
@@ -281,6 +282,16 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         const val ACTION_CLIPBOARD_PANEL_SHOW = "com.alkisstam.taskbar.CLIPBOARD_PANEL_SHOW"
 
         @Volatile var isTaskbarVisibleForBack = false
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        val locales = AppCompatDelegate.getApplicationLocales()
+        val wrapped = if (!locales.isEmpty) {
+            val config = Configuration(newBase.resources.configuration)
+            config.setLocale(locales[0])
+            newBase.createConfigurationContext(config)
+        } else newBase
+        super.attachBaseContext(wrapped)
     }
 
     override fun onCreate() {

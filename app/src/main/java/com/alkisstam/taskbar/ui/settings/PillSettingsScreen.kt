@@ -87,6 +87,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -102,6 +103,7 @@ import com.alkisstam.taskbar.data.PillEdgePosition
 import com.alkisstam.taskbar.data.ThemeMode
 import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
+import com.alkisstam.taskbar.R
 import kotlin.math.roundToInt
 
 @Composable
@@ -134,15 +136,15 @@ fun PillSettingsScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         ExpandableSection(
-            title = "Theme",
+            title = stringResource(R.string.pill_theme_section_title),
             expanded = themeExpanded,
             onToggle = { themeExpanded = !themeExpanded }
         ) {
             SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
                 val themeEntries = listOf(
-                    Triple(ThemeMode.LIGHT, "Light", Icons.Filled.LightMode),
-                    Triple(ThemeMode.DARK, "Dark", Icons.Filled.DarkMode),
-                    Triple(ThemeMode.SYSTEM, "System", Icons.Filled.PhoneAndroid)
+                    Triple(ThemeMode.LIGHT, stringResource(R.string.pill_theme_light), Icons.Filled.LightMode),
+                    Triple(ThemeMode.DARK, stringResource(R.string.pill_theme_dark), Icons.Filled.DarkMode),
+                    Triple(ThemeMode.SYSTEM, stringResource(R.string.pill_theme_system), Icons.Filled.PhoneAndroid)
                 )
                 themeEntries.forEachIndexed { index, (mode, label, icon) ->
                     SegmentedButton(
@@ -171,12 +173,14 @@ fun PillSettingsScreen(
                 onColorSelected = { viewModel.setSurfaceTintColor(it) }
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Text("Theme Style", style = MaterialTheme.typography.bodyMedium)
+            Text(stringResource(R.string.pill_theme_style_label), style = MaterialTheme.typography.bodyMedium)
             Spacer(modifier = Modifier.height(8.dp))
+            val solidLabel = stringResource(R.string.pill_theme_style_solid)
+            val transparentLabel = stringResource(R.string.pill_theme_style_transparent)
             GradientDropdownField(
                 icon = Icons.Filled.Palette,
-                selectedLabel = if (translucentMode) "Transparent" else "Solid",
-                options = listOf("Solid" to false, "Transparent" to true),
+                selectedLabel = if (translucentMode) transparentLabel else solidLabel,
+                options = listOf(solidLabel to false, transparentLabel to true),
                 isSelected = { it == translucentMode },
                 onSelect = { viewModel.setTranslucentMode(it) }
             )
@@ -187,7 +191,7 @@ fun PillSettingsScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Panel Outline", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+                    Text(stringResource(R.string.pill_panel_outline_label), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
                     Switch(
                         checked = panelOutlineEnabled,
                         onCheckedChange = { viewModel.setPanelOutlineEnabled(it) }
@@ -196,7 +200,7 @@ fun PillSettingsScreen(
             } else {
                 Spacer(modifier = Modifier.height(8.dp))
                 SettingsSlider(
-                    label = "Transparency",
+                    label = stringResource(R.string.pill_theme_transparency_label),
                     value = translucentAlpha,
                     valueRange = 0.3f..1f,
                     unit = "%",
@@ -208,7 +212,7 @@ fun PillSettingsScreen(
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 SettingsSlider(
-                    label = "Grain",
+                    label = stringResource(R.string.pill_grain_label),
                     value = grainAlpha,
                     valueRange = 0f..0.3f,
                     unit = "%",
@@ -222,12 +226,12 @@ fun PillSettingsScreen(
         }
 
         ExpandableSection(
-            title = "Pill Size & Appearance",
+            title = stringResource(R.string.pill_size_appearance_section_title),
             expanded = pillExpanded,
             onToggle = { pillExpanded = !pillExpanded }
         ) {
             SettingsSlider(
-                label = "Width",
+                label = stringResource(R.string.pill_width_label),
                 value = pillSettings.widthDp.coerceAtMost(widthMax),
                 valueRange = 2f..widthMax,
                 unit = "dp",
@@ -236,7 +240,7 @@ fun PillSettingsScreen(
             )
             Spacer(modifier = Modifier.height(10.dp))
             SettingsSlider(
-                label = "Height",
+                label = stringResource(R.string.pill_height_label),
                 value = pillSettings.heightDp.coerceAtMost(heightMax),
                 valueRange = 2f..heightMax,
                 unit = "dp",
@@ -245,7 +249,7 @@ fun PillSettingsScreen(
             )
             Spacer(modifier = Modifier.height(10.dp))
             SettingsSlider(
-                label = "Transparency",
+                label = stringResource(R.string.pill_alpha_transparency_label),
                 value = pillSettings.alpha,
                 valueRange = 0f..1f,
                 unit = "%",
@@ -257,7 +261,7 @@ fun PillSettingsScreen(
             )
             Spacer(modifier = Modifier.height(10.dp))
             SettingsSlider(
-                label = "Trigger Area",
+                label = stringResource(R.string.pill_trigger_area_label),
                 value = pillSettings.triggerAreaDp,
                 valueRange = 8f..40f,
                 unit = "dp",
@@ -271,9 +275,9 @@ fun PillSettingsScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("Restrict Trigger to Pill", style = MaterialTheme.typography.bodyMedium)
+                    Text(stringResource(R.string.pill_restrict_trigger_title), style = MaterialTheme.typography.bodyMedium)
                     Text(
-                        "Only the pill area responds to gestures, not the whole edge",
+                        stringResource(R.string.pill_restrict_trigger_desc),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -284,21 +288,25 @@ fun PillSettingsScreen(
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))
-            Text("Position", style = MaterialTheme.typography.bodyMedium)
+            Text(stringResource(R.string.pill_position_label), style = MaterialTheme.typography.bodyMedium)
             Spacer(modifier = Modifier.height(4.dp))
+            val edgeBottomLabel = stringResource(R.string.pill_edge_bottom)
+            val edgeLeftLabel = stringResource(R.string.pill_edge_left)
+            val edgeRightLabel = stringResource(R.string.pill_edge_right)
+            val edgeBothLabel = stringResource(R.string.pill_edge_both)
             GradientDropdownField(
                 icon = Icons.Filled.DragIndicator,
                 selectedLabel = when (pillSettings.edgePosition) {
-                    PillEdgePosition.BOTTOM -> "Bottom"
-                    PillEdgePosition.LEFT   -> "Left"
-                    PillEdgePosition.RIGHT  -> "Right"
-                    PillEdgePosition.BOTH   -> "Both"
+                    PillEdgePosition.BOTTOM -> edgeBottomLabel
+                    PillEdgePosition.LEFT   -> edgeLeftLabel
+                    PillEdgePosition.RIGHT  -> edgeRightLabel
+                    PillEdgePosition.BOTH   -> edgeBothLabel
                 },
                 options = listOf(
-                    "Bottom" to PillEdgePosition.BOTTOM,
-                    "Left" to PillEdgePosition.LEFT,
-                    "Right" to PillEdgePosition.RIGHT,
-                    "Both" to PillEdgePosition.BOTH
+                    edgeBottomLabel to PillEdgePosition.BOTTOM,
+                    edgeLeftLabel to PillEdgePosition.LEFT,
+                    edgeRightLabel to PillEdgePosition.RIGHT,
+                    edgeBothLabel to PillEdgePosition.BOTH
                 ),
                 isSelected = { it == pillSettings.edgePosition },
                 onSelect = { pos ->
@@ -316,7 +324,7 @@ fun PillSettingsScreen(
             )
             if (pillSettings.edgePosition == PillEdgePosition.BOTTOM) {
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("Select Pill Gesture", style = MaterialTheme.typography.bodyMedium)
+                Text(stringResource(R.string.pill_select_gesture_label), style = MaterialTheme.typography.bodyMedium)
                 Spacer(modifier = Modifier.height(4.dp))
                 FlowRow(
                     modifier = Modifier.fillMaxWidth(),
@@ -330,7 +338,7 @@ fun PillSettingsScreen(
                             swipeUpAction = GestureAction.DISABLED,
                             swipeDownAction = GestureAction.DISABLED
                         )) },
-                        label = { Text("Double Tap", style = MaterialTheme.typography.labelMedium) }
+                        label = { Text(stringResource(R.string.pill_gesture_double_tap), style = MaterialTheme.typography.labelMedium) }
                     )
                     FilterChip(
                         selected = pillSettings.swipeUpAction == GestureAction.SHOW_DOCK,
@@ -339,18 +347,18 @@ fun PillSettingsScreen(
                             swipeUpAction = GestureAction.SHOW_DOCK,
                             swipeDownAction = GestureAction.DISABLED
                         )) },
-                        label = { Text("Swipe Up", style = MaterialTheme.typography.labelMedium) }
+                        label = { Text(stringResource(R.string.pill_gesture_swipe_up), style = MaterialTheme.typography.labelMedium) }
                     )
                 }
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Swipe Up works better on 3-button navigation devices",
+                    text = stringResource(R.string.pill_swipe_up_hint),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 SettingsSlider(
-                    label = "Position from bottom",
+                    label = stringResource(R.string.pill_position_from_bottom_label),
                     value = pillSettings.positionYDp,
                     valueRange = 0f..heightMax,
                     unit = "dp",
@@ -359,7 +367,7 @@ fun PillSettingsScreen(
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 SettingsSlider(
-                    label = "Position along edge",
+                    label = stringResource(R.string.pill_position_along_edge_label),
                     value = pillSettings.positionXPct,
                     valueRange = 0f..100f,
                     unit = "%",
@@ -376,9 +384,9 @@ fun PillSettingsScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Notification Panel", style = MaterialTheme.typography.bodyMedium)
+                        Text(stringResource(R.string.pill_notification_panel_title), style = MaterialTheme.typography.bodyMedium)
                         Text(
-                            "Swipe down for Notification Panel",
+                            stringResource(R.string.pill_notification_panel_desc),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -394,7 +402,7 @@ fun PillSettingsScreen(
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 SettingsSlider(
-                    label = "Position along edge",
+                    label = stringResource(R.string.pill_position_along_edge_label),
                     value = pillSettings.sidePositionPct,
                     valueRange = 0f..100f,
                     unit = "%",
@@ -408,7 +416,7 @@ fun PillSettingsScreen(
             Spacer(modifier = Modifier.height(8.dp))
             if (pillSettings.edgePosition != PillEdgePosition.BOTTOM) {
                 Text(
-                    text = "Swipe Up in Trigger Area to Activate the Dock",
+                    text = stringResource(R.string.pill_swipe_up_activate_hint),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.fillMaxWidth(),
@@ -418,12 +426,12 @@ fun PillSettingsScreen(
         }
 
         ExpandableSection(
-            title = "Dock Size & Appearance",
+            title = stringResource(R.string.pill_dock_size_appearance_section_title),
             expanded = dockExpanded,
             onToggle = { dockExpanded = !dockExpanded }
         ) {
             SettingsSlider(
-                label = "Height",
+                label = stringResource(R.string.dock_height_label),
                 value = taskbarSettings.heightDp,
                 valueRange = 40f..120f,
                 unit = "dp",
@@ -432,7 +440,7 @@ fun PillSettingsScreen(
             )
             Spacer(modifier = Modifier.height(10.dp))
             SettingsSlider(
-                label = "Pinned App Icon Size",
+                label = stringResource(R.string.dock_pinned_icon_size_label),
                 value = taskbarSettings.pinnedIconSizeDp,
                 valueRange = 32f..60f,
                 unit = "dp",
@@ -441,7 +449,7 @@ fun PillSettingsScreen(
             )
             Spacer(modifier = Modifier.height(10.dp))
             SettingsSlider(
-                label = "Pinned Icon Padding",
+                label = stringResource(R.string.dock_pinned_icon_padding_label),
                 value = taskbarSettings.pinnedIconPaddingDp,
                 valueRange = 2f..12f,
                 unit = "dp",
@@ -450,7 +458,7 @@ fun PillSettingsScreen(
             )
             Spacer(modifier = Modifier.height(10.dp))
             SettingsSlider(
-                label = "Quick Controls Size",
+                label = stringResource(R.string.dock_quick_controls_size_label),
                 value = taskbarSettings.quickControlSizeDp,
                 valueRange = 32f..60f,
                 unit = "dp",
@@ -459,7 +467,7 @@ fun PillSettingsScreen(
             )
             Spacer(modifier = Modifier.height(10.dp))
             SettingsSlider(
-                label = "Corner Radius",
+                label = stringResource(R.string.dock_corner_radius_label),
                 value = taskbarSettings.cornerRadiusDp,
                 valueRange = 0f..32f,
                 unit = "dp",
@@ -467,48 +475,53 @@ fun PillSettingsScreen(
                 onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(cornerRadiusDp = it)) }
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text("Edge Padding", style = MaterialTheme.typography.bodyMedium)
+            Text(stringResource(R.string.dock_edge_padding_label), style = MaterialTheme.typography.bodyMedium)
             Text(
-                "Insets the dock from the screen edges so its corners clear rounded display corners.",
+                stringResource(R.string.dock_edge_padding_desc),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(4.dp))
+            val dockPaddingDefaultLabel = stringResource(R.string.dock_padding_default)
+            val dockPaddingSmallLabel = stringResource(R.string.dock_padding_small)
+            val dockPaddingLargeLabel = stringResource(R.string.dock_padding_large)
             GradientDropdownField(
                 icon = Icons.Filled.Straighten,
                 selectedLabel = when (taskbarSettings.dockPadding) {
-                    DockPadding.DEFAULT -> "Default"
-                    DockPadding.SMALL -> "Small"
-                    DockPadding.LARGE -> "Large"
+                    DockPadding.DEFAULT -> dockPaddingDefaultLabel
+                    DockPadding.SMALL -> dockPaddingSmallLabel
+                    DockPadding.LARGE -> dockPaddingLargeLabel
                 },
                 options = listOf(
-                    "Default" to DockPadding.DEFAULT,
-                    "Small" to DockPadding.SMALL,
-                    "Large" to DockPadding.LARGE
+                    dockPaddingDefaultLabel to DockPadding.DEFAULT,
+                    dockPaddingSmallLabel to DockPadding.SMALL,
+                    dockPaddingLargeLabel to DockPadding.LARGE
                 ),
                 isSelected = { it == taskbarSettings.dockPadding },
                 onSelect = { viewModel.saveTaskbarSettings(taskbarSettings.copy(dockPadding = it)) }
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text("All Apps Button", style = MaterialTheme.typography.bodyMedium)
+            Text(stringResource(R.string.dock_all_apps_button_label), style = MaterialTheme.typography.bodyMedium)
             Spacer(modifier = Modifier.height(4.dp))
+            val appMenuSideLeftLabel = stringResource(R.string.dock_app_menu_side_left)
+            val appMenuSideRightLabel = stringResource(R.string.dock_app_menu_side_right)
             GradientDropdownField(
                 icon = Icons.Filled.SwapHoriz,
                 selectedLabel = when (taskbarSettings.appMenuButtonSide) {
-                    AppMenuButtonSide.LEFT -> "Left"
-                    AppMenuButtonSide.RIGHT -> "Right"
+                    AppMenuButtonSide.LEFT -> appMenuSideLeftLabel
+                    AppMenuButtonSide.RIGHT -> appMenuSideRightLabel
                 },
                 options = listOf(
-                    "Left" to AppMenuButtonSide.LEFT,
-                    "Right" to AppMenuButtonSide.RIGHT
+                    appMenuSideLeftLabel to AppMenuButtonSide.LEFT,
+                    appMenuSideRightLabel to AppMenuButtonSide.RIGHT
                 ),
                 isSelected = { it == taskbarSettings.appMenuButtonSide },
                 onSelect = { viewModel.saveTaskbarSettings(taskbarSettings.copy(appMenuButtonSide = it)) }
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text("Icon Pack", style = MaterialTheme.typography.bodyMedium)
+            Text(stringResource(R.string.dock_icon_pack_label), style = MaterialTheme.typography.bodyMedium)
             Text(
-                "Theme app icons with an installed icon pack. Apps missing from the pack keep their default icon.",
+                stringResource(R.string.dock_icon_pack_desc),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -518,31 +531,36 @@ fun PillSettingsScreen(
             LaunchedEffect(dockExpanded) {
                 if (dockExpanded) viewModel.loadIconPacks()
             }
+            val iconPackSystemDefaultLabel = stringResource(R.string.dock_icon_pack_system_default)
             GradientDropdownField(
                 icon = Icons.Filled.Palette,
                 selectedLabel = availableIconPacks.firstOrNull { it.packageName == iconPackPackage }?.label
-                    ?: "System default",
-                options = listOf("System default" to "") +
+                    ?: iconPackSystemDefaultLabel,
+                options = listOf(iconPackSystemDefaultLabel to "") +
                     availableIconPacks.map { it.label to it.packageName },
                 isSelected = { it == iconPackPackage },
                 onSelect = { viewModel.setIconPack(it) }
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text("Icon Shape", style = MaterialTheme.typography.bodyMedium)
+            Text(stringResource(R.string.dock_icon_shape_label), style = MaterialTheme.typography.bodyMedium)
             Spacer(modifier = Modifier.height(4.dp))
+            val iconShapeDefaultLabel = stringResource(R.string.pill_icon_shape_default)
+            val iconShapeSquareLabel = stringResource(R.string.pill_icon_shape_square)
+            val iconShapeSquircleLabel = stringResource(R.string.pill_icon_shape_squircle)
+            val iconShapeCircleLabel = stringResource(R.string.pill_icon_shape_circle)
             GradientDropdownField(
                 icon = Icons.Filled.CropSquare,
                 selectedLabel = when (taskbarSettings.iconShape) {
-                    IconShape.DEFAULT -> "Default"
-                    IconShape.SQUARE -> "Square"
-                    IconShape.SQUIRCLE -> "Squircle"
-                    IconShape.CIRCLE -> "Circle"
+                    IconShape.DEFAULT -> iconShapeDefaultLabel
+                    IconShape.SQUARE -> iconShapeSquareLabel
+                    IconShape.SQUIRCLE -> iconShapeSquircleLabel
+                    IconShape.CIRCLE -> iconShapeCircleLabel
                 },
                 options = listOf(
-                    "Default" to IconShape.DEFAULT,
-                    "Square" to IconShape.SQUARE,
-                    "Squircle" to IconShape.SQUIRCLE,
-                    "Circle" to IconShape.CIRCLE
+                    iconShapeDefaultLabel to IconShape.DEFAULT,
+                    iconShapeSquareLabel to IconShape.SQUARE,
+                    iconShapeSquircleLabel to IconShape.SQUIRCLE,
+                    iconShapeCircleLabel to IconShape.CIRCLE
                 ),
                 isSelected = { it == taskbarSettings.iconShape },
                 onSelect = { viewModel.saveTaskbarSettings(taskbarSettings.copy(iconShape = it)) }
@@ -704,7 +722,7 @@ private fun ExpandableSection(
                 )
                 Icon(
                     imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                    contentDescription = if (expanded) "Collapse" else "Expand",
+                    contentDescription = if (expanded) stringResource(R.string.pill_section_collapse_content_description) else stringResource(R.string.pill_section_expand_content_description),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
@@ -801,7 +819,7 @@ fun SettingsSlider(
                 ) {
                     Icon(
                         Icons.Default.Remove,
-                        contentDescription = "Decrease $label",
+                        contentDescription = stringResource(R.string.pill_slider_decrease_content_description, label),
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.alpha(if (localValue > valueRange.start) 1f else 0.38f)
                     )
@@ -852,7 +870,7 @@ fun SettingsSlider(
                 ) {
                     Icon(
                         Icons.Default.Add,
-                        contentDescription = "Increase $label",
+                        contentDescription = stringResource(R.string.pill_slider_increase_content_description, label),
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.alpha(if (localValue < valueRange.endInclusive) 1f else 0.38f)
                     )
@@ -906,16 +924,16 @@ private fun SurfaceTintColorPicker(
         DARK_TINT_PRESETS.none { it.second == currentColor }
 
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text("Surface Tint Color", style = MaterialTheme.typography.bodyMedium)
+        Text(stringResource(R.string.pill_surface_tint_color_label), style = MaterialTheme.typography.bodyMedium)
         Text(
-            "Applies to the dock and app menu",
+            stringResource(R.string.pill_surface_tint_color_desc),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(modifier = Modifier.height(8.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
-            TintTab("Light", selectedTab == 0) { selectedTab = 0 }
-            TintTab("Dark", selectedTab == 1) { selectedTab = 1 }
+            TintTab(stringResource(R.string.pill_tint_tab_light), selectedTab == 0) { selectedTab = 0 }
+            TintTab(stringResource(R.string.pill_tint_tab_dark), selectedTab == 1) { selectedTab = 1 }
         }
         Spacer(modifier = Modifier.height(4.dp))
         val cells: List<Pair<String, Long>?> = presets + null
@@ -925,7 +943,7 @@ private fun SurfaceTintColorPicker(
                     rowCells.forEach { cell ->
                         if (cell == null) {
                             TintCell(
-                                label = "Custom",
+                                label = stringResource(R.string.pill_tint_custom_label),
                                 swatchColor = if (isCustomSelected) Color(currentColor)
                                               else MaterialTheme.colorScheme.surface,
                                 isSelected = isCustomSelected,
@@ -1054,7 +1072,7 @@ private fun RowScope.TintCell(
 }
 
 @Composable
-private fun <T> GradientDropdownField(
+internal fun <T> GradientDropdownField(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     selectedLabel: String,
     options: List<Pair<String, T>>,
@@ -1134,7 +1152,7 @@ private fun CustomColorPickerDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Custom Color") },
+        title = { Text(stringResource(R.string.pill_custom_color_dialog_title)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Box(
@@ -1145,7 +1163,7 @@ private fun CustomColorPickerDialog(
                         .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
                 )
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("R: ${r.toInt()}", style = MaterialTheme.typography.labelMedium)
+                    Text(stringResource(R.string.pill_custom_color_r_label, r.toInt()), style = MaterialTheme.typography.labelMedium)
                     Slider(
                         value = r,
                         onValueChange = { r = it },
@@ -1156,7 +1174,7 @@ private fun CustomColorPickerDialog(
                     )
                 }
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("G: ${g.toInt()}", style = MaterialTheme.typography.labelMedium)
+                    Text(stringResource(R.string.pill_custom_color_g_label, g.toInt()), style = MaterialTheme.typography.labelMedium)
                     Slider(
                         value = g,
                         onValueChange = { g = it },
@@ -1167,7 +1185,7 @@ private fun CustomColorPickerDialog(
                     )
                 }
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("B: ${b.toInt()}", style = MaterialTheme.typography.labelMedium)
+                    Text(stringResource(R.string.pill_custom_color_b_label, b.toInt()), style = MaterialTheme.typography.labelMedium)
                     Slider(
                         value = b,
                         onValueChange = { b = it },
@@ -1186,10 +1204,10 @@ private fun CustomColorPickerDialog(
                     (g.toLong().coerceIn(0, 255) shl 8) or
                     b.toLong().coerceIn(0, 255)
                 onConfirm(color)
-            }) { Text("Apply") }
+            }) { Text(stringResource(R.string.pill_custom_color_apply_button)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.pill_custom_color_cancel_button)) }
         }
     )
 }

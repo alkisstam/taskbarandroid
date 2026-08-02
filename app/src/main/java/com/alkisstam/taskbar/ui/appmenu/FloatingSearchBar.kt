@@ -37,9 +37,11 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.IconShape
 import com.alkisstam.taskbar.ui.theme.grain
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
@@ -105,16 +107,16 @@ fun FloatingSearchBar(
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = viewModel::setSearchQuery,
-                    placeholder = { Text("Search apps…") },
+                    placeholder = { Text(stringResource(R.string.search_apps)) },
                     leadingIcon = {
                         IconButton(onClick = { viewModel.closeSearch() }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Close search")
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.search_close_description))
                         }
                     },
                     trailingIcon = if (searchQuery.isNotEmpty()) {
                         {
                             IconButton(onClick = { viewModel.setSearchQuery("") }) {
-                                Icon(Icons.Filled.Close, contentDescription = "Clear")
+                                Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.search_clear_description))
                             }
                         }
                     } else {

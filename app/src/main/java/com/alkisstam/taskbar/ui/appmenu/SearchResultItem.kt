@@ -25,7 +25,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.IconShape
 import com.alkisstam.taskbar.ui.common.AppIconImage
@@ -84,7 +86,7 @@ fun SearchResultItem(
             onDismissRequest = { showMenu = false }
         ) {
             DropdownMenuItem(
-                text = { Text(if (isPinned) "Unpin from Dock" else "Pin to Dock") },
+                text = { Text(if (isPinned) stringResource(R.string.app_action_unpin_from_dock) else stringResource(R.string.app_action_pin_to_dock)) },
                 onClick = { onPin(); showMenu = false }
             )
         }

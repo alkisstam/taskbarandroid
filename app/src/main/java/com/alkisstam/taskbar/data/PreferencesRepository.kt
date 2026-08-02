@@ -10,6 +10,8 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -198,6 +200,7 @@ class PreferencesRepository @Inject constructor(
         private val APP_OPEN_COUNT_KEY = intPreferencesKey("app_open_count")
         private val REVIEW_PROMPTED_KEY = booleanPreferencesKey("review_prompted")
         private val ICON_PACK_KEY = stringPreferencesKey("icon_pack_package")
+        private val APP_LANGUAGE_TAG_KEY = stringPreferencesKey("app_language_tag")
 
         val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen", "caffeine", "clipboard", "calculator", "wifi", "bluetooth", "mobile_data", "share", "notif_history", "notes")
 
@@ -244,6 +247,23 @@ class PreferencesRepository @Inject constructor(
         context.dataStore.edit { prefs ->
             prefs[ICON_PACK_KEY] = packageName
         }
+    }
+
+    val appLanguageTag: Flow<String> = safeData.map { prefs ->
+        prefs[APP_LANGUAGE_TAG_KEY] ?: ""
+    }
+
+    private fun applyLocale(tag: String) {
+        val locales = if (tag.isEmpty()) LocaleListCompat.getEmptyLocaleList()
+                      else LocaleListCompat.forLanguageTags(tag)
+        AppCompatDelegate.setApplicationLocales(locales)
+    }
+
+    suspend fun setAppLanguage(tag: String) {
+        context.dataStore.edit { prefs ->
+            prefs[APP_LANGUAGE_TAG_KEY] = tag
+        }
+        applyLocale(tag)
     }
 
     suspend fun savePinnedApps(packages: List<String>) {
@@ -704,6 +724,7 @@ class PreferencesRepository @Inject constructor(
             prefs[TRANSLUCENT_ALPHA_KEY]?.let { put("translucent_alpha", it) }
             prefs[GRAIN_ALPHA_KEY]?.let { put("grain_alpha", it) }
             prefs[ICON_PACK_KEY]?.let { put("icon_pack_package", it) }
+            prefs[APP_LANGUAGE_TAG_KEY]?.let { put("app_language_tag", it) }
         }.toString()
     }
 
@@ -757,7 +778,9 @@ class PreferencesRepository @Inject constructor(
             if (obj.has("translucent_alpha")) prefs[TRANSLUCENT_ALPHA_KEY] = obj.getDouble("translucent_alpha").toFloat()
             if (obj.has("grain_alpha")) prefs[GRAIN_ALPHA_KEY] = obj.getDouble("grain_alpha").toFloat()
             if (obj.has("icon_pack_package")) prefs[ICON_PACK_KEY] = obj.getString("icon_pack_package")
+            if (obj.has("app_language_tag")) prefs[APP_LANGUAGE_TAG_KEY] = obj.getString("app_language_tag")
         }
+        if (obj.has("app_language_tag")) applyLocale(obj.getString("app_language_tag"))
     }
 
     suspend fun resetAllSettings() {

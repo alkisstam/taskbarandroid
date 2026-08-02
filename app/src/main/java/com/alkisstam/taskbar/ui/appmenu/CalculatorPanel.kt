@@ -34,11 +34,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 import com.alkisstam.taskbar.ui.theme.grain
 import kotlin.math.abs
@@ -116,7 +118,7 @@ internal data class CalculatorState(
         return copy(expression = expression.dropLast(1).ifEmpty { "0" })
     }
 
-    fun percent(): CalculatorState {
+    fun percent(errorText: String): CalculatorState {
         val tokens = tokens().toMutableList()
         if (tokens.isEmpty()) return this
         val lastIdx = tokens.size - 1
@@ -125,7 +127,7 @@ internal data class CalculatorState(
         val op = tokens.getOrNull(opIdx)?.firstOrNull()
         val prefix = if (opIdx > 0) evaluate(tokens.subList(0, opIdx)) else 0.0
         val result = if (op == '+' || op == '-') prefix * (lastNum / 100.0) else lastNum / 100.0
-        tokens[lastIdx] = formatResult(result)
+        tokens[lastIdx] = formatResult(result, errorText)
         return copy(expression = tokens.joinToString(""), justEvaluated = false)
     }
 
@@ -135,23 +137,23 @@ internal data class CalculatorState(
         return copy(expression = base + op, justEvaluated = false)
     }
 
-    fun equals(): CalculatorState {
+    fun equals(errorText: String): CalculatorState {
         val safe = completeTokens(tokens())
         if (safe.isEmpty()) return this
-        return copy(expression = formatResult(evaluate(safe)), justEvaluated = true)
+        return copy(expression = formatResult(evaluate(safe), errorText), justEvaluated = true)
     }
 
-    fun unary(fn: (Double) -> Double): CalculatorState {
+    fun unary(errorText: String, fn: (Double) -> Double): CalculatorState {
         val tokens = tokens().toMutableList()
         if (tokens.isEmpty()) return this
         val lastIdx = tokens.size - 1
         val lastNum = tokens[lastIdx].toDoubleOrNull() ?: return this
-        tokens[lastIdx] = formatResult(fn(lastNum))
+        tokens[lastIdx] = formatResult(fn(lastNum), errorText)
         return copy(expression = tokens.joinToString(""), justEvaluated = false)
     }
 
-    fun insertPi(): CalculatorState {
-        val piStr = formatResult(Math.PI)
+    fun insertPi(errorText: String): CalculatorState {
+        val piStr = formatResult(Math.PI, errorText)
         if (justEvaluated || expression == "0") return copy(expression = piStr, justEvaluated = false)
         val tokens = tokens()
         val lastToken = tokens.lastOrNull() ?: ""
@@ -163,12 +165,12 @@ internal data class CalculatorState(
     }
 
     /** Live running total shown under the expression, or null while there's nothing to preview yet. */
-    fun preview(): String? {
+    fun preview(errorText: String): String? {
         val tokens = tokens()
         if (tokens.size <= 1) return null
         val safe = completeTokens(tokens)
         if (safe.isEmpty()) return null
-        return formatResult(evaluate(safe))
+        return formatResult(evaluate(safe), errorText)
     }
 }
 
@@ -181,8 +183,8 @@ private fun compute(a: Double, op: Char, b: Double): Double = when (op) {
     else -> b
 }
 
-private fun formatResult(value: Double): String {
-    if (value.isNaN() || value.isInfinite()) return "Error"
+private fun formatResult(value: Double, errorText: String): String {
+    if (value.isNaN() || value.isInfinite()) return errorText
     if (value == value.toLong().toDouble() && abs(value) < 1e15) {
         return value.toLong().toString()
     }
@@ -206,6 +208,8 @@ fun CalculatorPanel(
 ) {
     var state by remember { mutableStateOf(CalculatorState()) }
     var sciExpanded by rememberSaveable { mutableStateOf(false) }
+    val errorText = stringResource(R.string.calculator_error)
+    val clearLabel = stringResource(R.string.calculator_clear_label)
 
     val surfaceColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
     val glassBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
@@ -235,7 +239,7 @@ fun CalculatorPanel(
                     .fillMaxWidth()
                     .padding(top = 8.dp)
             )
-            val preview = state.preview()
+            val preview = state.preview(errorText)
             Text(
                 text = preview.orEmpty(),
                 style = MaterialTheme.typography.titleMedium,
@@ -288,10 +292,10 @@ fun CalculatorPanel(
                         keys = listOf("sin", "cos", "tan", "√"),
                         onClick = { label ->
                             state = when (label) {
-                                "sin" -> state.unary(::sinDeg)
-                                "cos" -> state.unary(::cosDeg)
-                                "tan" -> state.unary(::tanDeg)
-                                else -> state.unary(::sqrt)
+                                "sin" -> state.unary(errorText, ::sinDeg)
+                                "cos" -> state.unary(errorText, ::cosDeg)
+                                "tan" -> state.unary(errorText, ::tanDeg)
+                                else -> state.unary(errorText, ::sqrt)
                             }
                         }
                     )
@@ -299,10 +303,10 @@ fun CalculatorPanel(
                         keys = listOf("ln", "log", "^", "π"),
                         onClick = { label ->
                             state = when (label) {
-                                "ln" -> state.unary(::ln)
-                                "log" -> state.unary(::log10)
+                                "ln" -> state.unary(errorText, ::ln)
+                                "log" -> state.unary(errorText, ::log10)
                                 "^" -> state.operator('^')
-                                else -> state.insertPi()
+                                else -> state.insertPi(errorText)
                             }
                         }
                     )
@@ -320,8 +324,8 @@ fun CalculatorPanel(
 
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 CalcRow {
-                    CalcButton("AC", digitColor, onDigitColor, Modifier.weight(1f)) { state = CalculatorState() }
-                    CalcButton("%", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.percent() }
+                    CalcButton(clearLabel, digitColor, onDigitColor, Modifier.weight(1f)) { state = CalculatorState() }
+                    CalcButton("%", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.percent(errorText) }
                     CalcIconButton(Icons.AutoMirrored.Filled.Backspace, digitColor, onDigitColor, Modifier.weight(1f)) { state = state.backspace() }
                     CalcButton("÷", opColor, onOpColor, Modifier.weight(1f)) { state = state.operator('÷') }
                 }
@@ -347,7 +351,7 @@ fun CalculatorPanel(
                     CalcButton("00", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.digit("00") }
                     CalcButton("0", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.digit("0") }
                     CalcButton(".", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.dot() }
-                    CalcButton("=", equalsColor, onEqualsColor, Modifier.weight(1f)) { state = state.equals() }
+                    CalcButton("=", equalsColor, onEqualsColor, Modifier.weight(1f)) { state = state.equals(errorText) }
                 }
             }
         }
@@ -412,6 +416,6 @@ private fun CalcIconButton(
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
-        Icon(imageVector = icon, contentDescription = "Backspace", tint = contentColor)
+        Icon(imageVector = icon, contentDescription = stringResource(R.string.calculator_backspace_description), tint = contentColor)
     }
 }

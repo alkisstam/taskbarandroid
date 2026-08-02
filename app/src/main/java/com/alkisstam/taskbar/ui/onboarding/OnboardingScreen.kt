@@ -27,6 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Accessibility
 import androidx.compose.material.icons.filled.BatteryFull
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Notifications
@@ -49,9 +50,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.PillEdgePosition
+import com.alkisstam.taskbar.ui.settings.LANGUAGE_OPTIONS
+import com.alkisstam.taskbar.ui.settings.GradientDropdownField
 import kotlinx.coroutines.launch
 
 @Composable
@@ -65,6 +70,8 @@ fun OnboardingScreen(
     hasBatteryOptimizationExcluded: Boolean,
     selectedPosition: PillEdgePosition,
     onPositionSelected: (PillEdgePosition) -> Unit,
+    selectedLanguageTag: String,
+    onLanguageSelected: (String) -> Unit,
     onRequestOverlayPermission: () -> Unit,
     onRequestAccessibilityPermission: () -> Unit,
     onRequestWriteSettingsPermission: () -> Unit,
@@ -74,7 +81,7 @@ fun OnboardingScreen(
     onRequestBatteryOptimizationExclusion: () -> Unit,
     onComplete: () -> Unit
 ) {
-    val pagerState = rememberPagerState(pageCount = { 4 })
+    val pagerState = rememberPagerState(pageCount = { 5 })
     val scope = rememberCoroutineScope()
 
     Scaffold(contentWindowInsets = WindowInsets(0)) { _ ->
@@ -89,12 +96,16 @@ fun OnboardingScreen(
                 modifier = Modifier.weight(1f)
             ) { page ->
                 when (page) {
-                    0 -> WelcomePage()
-                    1 -> HandlePositionPage(
+                    0 -> LanguageSelectionPage(
+                        selectedLanguageTag = selectedLanguageTag,
+                        onLanguageSelected = onLanguageSelected
+                    )
+                    1 -> WelcomePage()
+                    2 -> HandlePositionPage(
                         selectedPosition = selectedPosition,
                         onPositionSelected = onPositionSelected
                     )
-                    2 -> RequiredPermissionPage(
+                    3 -> RequiredPermissionPage(
                         hasOverlayPermission = hasOverlayPermission,
                         onRequestOverlayPermission = onRequestOverlayPermission
                     )
@@ -122,17 +133,17 @@ fun OnboardingScreen(
                     .padding(horizontal = 24.dp, vertical = 20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                PageDots(currentPage = pagerState.currentPage, totalPages = 4)
+                PageDots(currentPage = pagerState.currentPage, totalPages = 5)
                 Spacer(modifier = Modifier.weight(1f))
-                if (pagerState.currentPage < 3) {
+                if (pagerState.currentPage < 4) {
                     Button(onClick = {
                         scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) }
                     }) {
-                        Text("Next")
+                        Text(stringResource(R.string.onboarding_next))
                     }
                 } else {
                     Button(onClick = onComplete) {
-                        Text("Get Started")
+                        Text(stringResource(R.string.onboarding_get_started))
                     }
                 }
             }
@@ -165,6 +176,43 @@ private fun PageDots(currentPage: Int, totalPages: Int) {
 }
 
 @Composable
+private fun LanguageSelectionPage(
+    selectedLanguageTag: String,
+    onLanguageSelected: (String) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            Icons.Filled.Language,
+            contentDescription = null,
+            modifier = Modifier.size(56.dp),
+            tint = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        Text(
+            text = stringResource(R.string.onboarding_language_title),
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(32.dp))
+        GradientDropdownField(
+            icon = Icons.Filled.Language,
+            selectedLabel = LANGUAGE_OPTIONS.firstOrNull { it.second == selectedLanguageTag }?.first
+                ?: stringResource(R.string.system_default),
+            options = LANGUAGE_OPTIONS,
+            isSelected = { it == selectedLanguageTag },
+            onSelect = onLanguageSelected
+        )
+    }
+}
+
+@Composable
 private fun WelcomePage() {
     Column(
         modifier = Modifier
@@ -178,13 +226,13 @@ private fun WelcomePage() {
         Spacer(modifier = Modifier.height(40.dp))
 
         Text(
-            text = "Welcome to Floating Dock",
+            text = stringResource(R.string.onboarding_welcome_title),
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = "A floating dock that lives on top of every app. Launch apps, control music, and access quick settings — without leaving what you're doing.",
+            text = stringResource(R.string.onboarding_welcome_desc),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -203,20 +251,20 @@ private fun HandlePositionPage(
             onDismissRequest = { showBottomPositionDialog = false },
             title = {
                 Text(
-                    "Bottom Position",
+                    stringResource(R.string.onboarding_bottom_position_title),
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.primary
                 )
             },
             text = {
                 Text(
-                    "Placing the handle on the bottom requires the Accessibility Service permission to draw it on top of the system navigation bar. Without that permission, the handle may end up behind the navigation bar.",
+                    stringResource(R.string.onboarding_bottom_position_desc),
                     style = MaterialTheme.typography.bodyMedium
                 )
             },
             dismissButton = {
                 TextButton(onClick = { showBottomPositionDialog = false }) {
-                    Text("BACK")
+                    Text(stringResource(R.string.onboarding_back))
                 }
             },
             confirmButton = {
@@ -224,7 +272,7 @@ private fun HandlePositionPage(
                     showBottomPositionDialog = false
                     onPositionSelected(PillEdgePosition.BOTTOM)
                 }) {
-                    Text("OKAY")
+                    Text(stringResource(R.string.onboarding_okay))
                 }
             }
         )
@@ -238,19 +286,19 @@ private fun HandlePositionPage(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Handle position",
+            text = stringResource(R.string.onboarding_handle_position_title),
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "Navigation gestures can interfere with this app. If you use them, select \"Left\" or \"Right\" to avoid conflicts.",
+            text = stringResource(R.string.onboarding_handle_position_gesture_warning),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "Select an edge to open the dock from:",
+            text = stringResource(R.string.onboarding_select_edge_prompt),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface
         )
@@ -260,10 +308,10 @@ private fun HandlePositionPage(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             listOf(
-                PillEdgePosition.LEFT to "Left",
-                PillEdgePosition.RIGHT to "Right",
-                PillEdgePosition.BOTH to "Both Sides",
-                PillEdgePosition.BOTTOM to "Bottom"
+                PillEdgePosition.LEFT to stringResource(R.string.onboarding_position_left),
+                PillEdgePosition.RIGHT to stringResource(R.string.onboarding_position_right),
+                PillEdgePosition.BOTH to stringResource(R.string.onboarding_position_both_sides),
+                PillEdgePosition.BOTTOM to stringResource(R.string.onboarding_position_bottom)
             ).forEach { (pos, label) ->
                 val isSelected = selectedPosition == pos
                 val onClick = {
@@ -290,9 +338,9 @@ private fun HandlePositionPage(
         Spacer(modifier = Modifier.height(32.dp))
         Text(
             text = if (selectedPosition == PillEdgePosition.BOTTOM)
-                "Double tap the pill to open the dock"
+                stringResource(R.string.onboarding_hint_double_tap)
             else
-                "Swipe upwards to open the dock when the handle is on the left or right",
+                stringResource(R.string.onboarding_hint_swipe_up),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
@@ -384,13 +432,13 @@ private fun RequiredPermissionPage(
         Spacer(modifier = Modifier.height(40.dp))
 
         Text(
-            text = "One permission required",
+            text = stringResource(R.string.onboarding_required_permission_title),
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = "This permission is needed for the dock to work. Without it, nothing will function.",
+            text = stringResource(R.string.onboarding_required_permission_desc),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -405,8 +453,8 @@ private fun RequiredPermissionPage(
                     tint = MaterialTheme.colorScheme.primary
                 )
             },
-            title = "Draw over other apps",
-            description = "Required to display the dock above all other apps.",
+            title = stringResource(R.string.onboarding_permission_overlay_title),
+            description = stringResource(R.string.onboarding_permission_overlay_desc),
             granted = hasOverlayPermission,
             onGrant = onRequestOverlayPermission
         )
@@ -502,20 +550,20 @@ private fun OptionalPermissionsPage(
             onDismissRequest = { showAccessibilityDialog = false },
             title = {
                 Text(
-                    "Accessibility Service",
+                    stringResource(R.string.onboarding_accessibility_dialog_title),
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.primary
                 )
             },
             text = {
                 Text(
-                    "Required to draw the dock above the navigation bar and enable screenshots and lock screen controls.",
+                    stringResource(R.string.onboarding_accessibility_dialog_desc),
                     style = MaterialTheme.typography.bodyMedium
                 )
             },
             dismissButton = {
                 TextButton(onClick = { showAccessibilityDialog = false }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.onboarding_cancel))
                 }
             },
             confirmButton = {
@@ -523,7 +571,7 @@ private fun OptionalPermissionsPage(
                     showAccessibilityDialog = false
                     onRequestAccessibilityPermission()
                 }) {
-                    Text("Accept")
+                    Text(stringResource(R.string.onboarding_accept))
                 }
             }
         )
@@ -534,20 +582,20 @@ private fun OptionalPermissionsPage(
             onDismissRequest = { showBatteryDialog = false },
             title = {
                 Text(
-                    "Disable Battery Optimization",
+                    stringResource(R.string.onboarding_battery_optimization_title),
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.primary
                 )
             },
             text = {
                 Text(
-                    "The next screen lists battery optimization for all apps. Find Floating Dock and choose \"Don't optimize\" so the system doesn't kill the dock in the background. Some devices may additionally require excluding it manually in system settings.",
+                    stringResource(R.string.onboarding_battery_optimization_dialog_desc),
                     style = MaterialTheme.typography.bodyMedium
                 )
             },
             dismissButton = {
                 TextButton(onClick = { showBatteryDialog = false }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.onboarding_cancel))
                 }
             },
             confirmButton = {
@@ -555,7 +603,7 @@ private fun OptionalPermissionsPage(
                     showBatteryDialog = false
                     onRequestBatteryOptimizationExclusion()
                 }) {
-                    Text("Open Settings")
+                    Text(stringResource(R.string.onboarding_open_settings))
                 }
             }
         )
@@ -571,12 +619,12 @@ private fun OptionalPermissionsPage(
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "Optional features",
+            text = stringResource(R.string.onboarding_optional_features_title),
             style = MaterialTheme.typography.headlineMedium,
             color = MaterialTheme.colorScheme.onSurface
         )
         Text(
-            text = "Grant these to unlock the full experience. You can always do this later in Settings.",
+            text = stringResource(R.string.onboarding_optional_features_desc),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -592,8 +640,8 @@ private fun OptionalPermissionsPage(
                     tint = MaterialTheme.colorScheme.primary
                 )
             },
-            title = "Accessibility Service",
-            description = "Required to draw the dock above the navigation bar and enable screenshots and lock screen controls.",
+            title = stringResource(R.string.onboarding_accessibility_dialog_title),
+            description = stringResource(R.string.onboarding_accessibility_dialog_desc),
             granted = hasAccessibilityPermission,
             onGrant = { showAccessibilityDialog = true }
         )
@@ -607,8 +655,8 @@ private fun OptionalPermissionsPage(
                     tint = MaterialTheme.colorScheme.primary
                 )
             },
-            title = "Modify System Settings",
-            description = "Required for brightness and auto-rotate quick controls.",
+            title = stringResource(R.string.onboarding_permission_write_settings_title),
+            description = stringResource(R.string.onboarding_permission_write_settings_desc),
             granted = hasWriteSettingsPermission,
             onGrant = onRequestWriteSettingsPermission
         )
@@ -622,8 +670,8 @@ private fun OptionalPermissionsPage(
                     tint = MaterialTheme.colorScheme.primary
                 )
             },
-            title = "Do Not Disturb Access",
-            description = "Required for the DND quick control.",
+            title = stringResource(R.string.onboarding_permission_dnd_title),
+            description = stringResource(R.string.onboarding_permission_dnd_desc),
             granted = hasNotificationPolicyPermission,
             onGrant = onRequestNotificationPolicyPermission
         )
@@ -637,8 +685,8 @@ private fun OptionalPermissionsPage(
                     tint = MaterialTheme.colorScheme.primary
                 )
             },
-            title = "Notifications",
-            description = "Required for the music panel to access media sessions.",
+            title = stringResource(R.string.onboarding_permission_notifications_title),
+            description = stringResource(R.string.onboarding_permission_notifications_desc),
             granted = hasNotificationsPermission,
             onGrant = onRequestNotificationsPermission
         )
@@ -652,8 +700,8 @@ private fun OptionalPermissionsPage(
                     tint = MaterialTheme.colorScheme.primary
                 )
             },
-            title = "Notification Listener",
-            description = "Required for the music panel to show media controls.",
+            title = stringResource(R.string.onboarding_permission_notification_listener_title),
+            description = stringResource(R.string.onboarding_permission_notification_listener_desc),
             granted = hasNotificationListenerPermission,
             onGrant = onRequestNotificationListenerPermission
         )
@@ -667,8 +715,8 @@ private fun OptionalPermissionsPage(
                     tint = MaterialTheme.colorScheme.primary
                 )
             },
-            title = "Disable Battery Optimization",
-            description = "Prevents the system from killing the dock when running in the background.",
+            title = stringResource(R.string.onboarding_battery_optimization_title),
+            description = stringResource(R.string.onboarding_battery_optimization_card_desc),
             granted = hasBatteryOptimizationExcluded,
             onGrant = { showBatteryDialog = true }
         )
@@ -709,13 +757,13 @@ private fun PermissionCard(
             if (granted) {
                 Icon(
                     Icons.Filled.Check,
-                    contentDescription = "Granted",
+                    contentDescription = stringResource(R.string.onboarding_granted),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )
             } else {
                 OutlinedButton(onClick = onGrant) {
-                    Text("Grant")
+                    Text(stringResource(R.string.onboarding_grant))
                 }
             }
         }

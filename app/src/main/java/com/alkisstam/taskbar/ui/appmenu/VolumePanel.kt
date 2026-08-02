@@ -1,5 +1,6 @@
 package com.alkisstam.taskbar.ui.appmenu
 
+import android.content.Context
 import android.media.AudioManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -46,7 +47,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 import com.alkisstam.taskbar.ui.theme.grain
@@ -253,7 +256,7 @@ fun BrightnessPanel(
             ) {
                 Icon(
                     imageVector = if (autoBrightnessEnabled) Icons.Filled.BrightnessAuto else Icons.Filled.BrightnessHigh,
-                    contentDescription = if (autoBrightnessEnabled) "Disable auto brightness" else "Enable auto brightness",
+                    contentDescription = if (autoBrightnessEnabled) stringResource(R.string.brightness_panel_disable_auto_description) else stringResource(R.string.brightness_panel_enable_auto_description),
                     modifier = Modifier.size(18.dp),
                     tint = if (autoBrightnessEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -285,32 +288,32 @@ fun BrightnessPanel(
     }
 }
 
-fun buildVolumeStreams(audioManager: AudioManager): List<VolumeStreamInfo> {
+fun buildVolumeStreams(context: Context, audioManager: AudioManager): List<VolumeStreamInfo> {
     val streams = mutableListOf<VolumeStreamInfo>()
     streams += VolumeStreamInfo(
         streamType = AudioManager.STREAM_MUSIC,
-        label = "Media",
+        label = context.getString(R.string.volume_stream_media),
         icon = Icons.Filled.MusicNote,
         current = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC),
         max = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
     )
     streams += VolumeStreamInfo(
         streamType = AudioManager.STREAM_RING,
-        label = "Ring",
+        label = context.getString(R.string.volume_stream_ring),
         icon = Icons.AutoMirrored.Filled.VolumeUp,
         current = audioManager.getStreamVolume(AudioManager.STREAM_RING),
         max = audioManager.getStreamMaxVolume(AudioManager.STREAM_RING)
     )
     streams += VolumeStreamInfo(
         streamType = AudioManager.STREAM_NOTIFICATION,
-        label = "Notif",
+        label = context.getString(R.string.volume_stream_notification),
         icon = Icons.Filled.Notifications,
         current = audioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION),
         max = audioManager.getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION)
     )
     streams += VolumeStreamInfo(
         streamType = AudioManager.STREAM_ALARM,
-        label = "Alarm",
+        label = context.getString(R.string.volume_stream_alarm),
         icon = Icons.Filled.Alarm,
         current = audioManager.getStreamVolume(AudioManager.STREAM_ALARM),
         max = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM)

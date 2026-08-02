@@ -176,7 +176,7 @@ class AppMenuViewModel @Inject constructor(
     val volumeStreams: StateFlow<List<VolumeStreamInfo>> = _volumeStreams.asStateFlow()
 
     private fun refreshVolumeStreams() {
-        _volumeStreams.value = buildVolumeStreams(audioManager)
+        _volumeStreams.value = buildVolumeStreams(context, audioManager)
     }
 
     private fun anyOverlayPanelVisible(): Boolean =

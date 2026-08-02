@@ -9,7 +9,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.R
 
 data class WhatsNewRelease(
     val versionName: String,
@@ -192,7 +194,11 @@ val whatsNewReleases = listOf(
 
 @Composable
 fun WhatsNewDialog(releases: List<WhatsNewRelease>, onDismiss: () -> Unit) {
-    val title = if (releases.size == 1) "What's New in ${releases.first().versionName}" else "What's New"
+    val title = if (releases.size == 1) {
+        stringResource(R.string.whats_new_dialog_title_single, releases.first().versionName)
+    } else {
+        stringResource(R.string.whats_new_dialog_title)
+    }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(title) },
@@ -214,7 +220,7 @@ fun WhatsNewDialog(releases: List<WhatsNewRelease>, onDismiss: () -> Unit) {
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) { Text("Got it") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.whats_new_dialog_dismiss)) }
         }
     )
 }

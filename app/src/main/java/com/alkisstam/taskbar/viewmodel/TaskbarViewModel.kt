@@ -74,6 +74,9 @@ class TaskbarViewModel @Inject constructor(
     val overlayEnabled: StateFlow<Boolean> = prefsRepository.overlayEnabled
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
+    val appLanguageTag: StateFlow<String> = prefsRepository.appLanguageTag
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "")
+
     val pillSettings: StateFlow<PillSettings> = prefsRepository.pillSettings
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), PillSettings())
 
@@ -359,6 +362,20 @@ class TaskbarViewModel @Inject constructor(
         }
     }
 
+    fun setAppLanguage(tag: String) {
+        viewModelScope.launch {
+            prefsRepository.setAppLanguage(tag)
+            if (overlayEnabled.value) {
+                context.stopService(Intent(context, OverlayService::class.java))
+                try {
+                    context.startForegroundService(Intent(context, OverlayService::class.java))
+                } catch (e: Exception) {
+                    Log.w("TaskbarViewModel", "Failed to restart overlay service for language change", e)
+                }
+            }
+        }
+    }
+
     fun startOverlay() {
         viewModelScope.launch {
             prefsRepository.setOverlayEnabled(true)
@@ -505,6 +522,7 @@ class TaskbarViewModel @Inject constructor(
     fun resetAllSettings() {
         viewModelScope.launch {
             prefsRepository.resetAllSettings()
+            prefsRepository.setAppLanguage("")
         }
     }
 

@@ -50,9 +50,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.IconShape
 import com.alkisstam.taskbar.data.NotificationEntry
 import com.alkisstam.taskbar.ui.common.AppIconImage
@@ -118,24 +120,24 @@ fun NotificationHistoryPanel(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Notification History",
+                        text = stringResource(R.string.notification_history_title),
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.weight(1f)
                     )
                     if (notifications.isNotEmpty()) {
                         TextButton(onClick = { viewModel.clearAll() }) {
-                            Text("Clear all")
+                            Text(stringResource(R.string.notification_history_clear_all))
                         }
                     }
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.Default.Close, contentDescription = "Close")
+                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.notification_history_close))
                     }
                 }
 
                 if (notifications.isEmpty()) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(
-                            text = "No notifications yet",
+                            text = stringResource(R.string.notification_history_empty_state),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -283,14 +285,14 @@ private fun NotificationGroupHeader(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = "$count notifications",
+                    text = stringResource(R.string.notification_history_group_count, count),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             Icon(
                 imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                contentDescription = if (expanded) "Collapse" else "Expand",
+                contentDescription = if (expanded) stringResource(R.string.notification_history_collapse) else stringResource(R.string.notification_history_expand),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
@@ -380,15 +382,16 @@ private fun NotificationEntryContent(
     }
 }
 
+@Composable
 private fun formatTimestamp(timestamp: Long): String {
     val diff = System.currentTimeMillis() - timestamp
     val minutes = diff / 60_000
     val hours = diff / 3_600_000
     val days = diff / 86_400_000
     return when {
-        minutes < 1 -> "just now"
-        minutes < 60 -> "$minutes min ago"
-        hours < 24 -> "$hours hr ago"
-        else -> "$days d ago"
+        minutes < 1 -> stringResource(R.string.notification_history_time_just_now)
+        minutes < 60 -> stringResource(R.string.notification_history_time_minutes_ago, minutes)
+        hours < 24 -> stringResource(R.string.notification_history_time_hours_ago, hours)
+        else -> stringResource(R.string.notification_history_time_days_ago, days)
     }
 }

@@ -49,7 +49,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.AppMenuButtonSide
 import com.alkisstam.taskbar.data.bottomGapDp
 import com.alkisstam.taskbar.data.widthFraction
@@ -205,6 +207,7 @@ fun TaskbarView(
                     }
 
                     if (expandAnim.value > 0.001f) {
+                        val quickControlItems = quickControls.toItems(controlsOrder, controlsDisabledIds)
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -222,10 +225,11 @@ fun TaskbarView(
                                 ) {
                                     if (musicPanelEnabled) {
                                         item {
+                                            val musicLabel = stringResource(R.string.taskbar_music_control_label)
                                             QuickControlItem(
                                                 item = QuickControlItemData(
                                                     id = "music",
-                                                    label = "Music",
+                                                    label = musicLabel,
                                                     active = musicPanelVisible,
                                                     icon = Icons.Filled.MusicNote
                                                 ),
@@ -235,7 +239,7 @@ fun TaskbarView(
                                             )
                                         }
                                     }
-                                    items(quickControls.toItems(controlsOrder, controlsDisabledIds)) { item ->
+                                    items(quickControlItems) { item ->
                                         QuickControlItem(
                                             item = item,
                                             onToggle = {
@@ -365,7 +369,7 @@ private fun StatusBarRow(batteryLevel: Int, isCharging: Boolean) {
             Icon(batteryIcon, contentDescription = null,
                 modifier = Modifier.width(14.dp).height(14.dp),
                 tint = contentAlpha)
-            Text("$batteryLevel%", style = MaterialTheme.typography.labelSmall, color = contentAlpha)
+            Text(stringResource(R.string.taskbar_battery_percent, batteryLevel), style = MaterialTheme.typography.labelSmall, color = contentAlpha)
         }
     }
 }

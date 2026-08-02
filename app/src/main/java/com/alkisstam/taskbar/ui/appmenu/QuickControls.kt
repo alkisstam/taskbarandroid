@@ -52,11 +52,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.viewmodel.QuickControlItemData
 import com.alkisstam.taskbar.viewmodel.QuickControlsState
 import com.alkisstam.taskbar.data.PreferencesRepository
@@ -85,7 +87,7 @@ fun QuickControls(
         if (showMusicIcon) {
             QuickControlTile(
                 icon = Icons.Filled.MusicNote,
-                label = "Music",
+                label = stringResource(R.string.quick_control_music_label),
                 active = musicPanelActive,
                 onClick = onMusicToggle,
                 showLabel = showLabels,
@@ -106,6 +108,7 @@ fun QuickControls(
     }
 }
 
+@Composable
 fun QuickControlsState.toItems(
     order: List<String> = PreferencesRepository.ALL_CONTROL_IDS,
     disabledIds: Set<String> = emptySet()
@@ -116,46 +119,47 @@ fun QuickControlsState.toItems(
         else -> Icons.AutoMirrored.Filled.VolumeOff
     }
     val ringerLabel = when (ringerMode) {
-        AudioManager.RINGER_MODE_NORMAL -> "Ring"
-        AudioManager.RINGER_MODE_VIBRATE -> "Vibrate"
-        else -> "Silent"
+        AudioManager.RINGER_MODE_NORMAL -> stringResource(R.string.quick_control_ring_label)
+        AudioManager.RINGER_MODE_VIBRATE -> stringResource(R.string.quick_control_vibrate_label)
+        else -> stringResource(R.string.quick_control_silent_label)
     }
+    val caffeineMinutesLabel = stringResource(R.string.quick_control_caffeine_minutes_format, caffeineMinutes)
     val all = mapOf(
-        "torch" to QuickControlItemData(id = "torch", label = "Torch", active = torchOn,
+        "torch" to QuickControlItemData(id = "torch", label = stringResource(R.string.torch), active = torchOn,
             icon = if (torchOn) Icons.Filled.FlashlightOn else Icons.Filled.FlashlightOff),
         "ringer" to QuickControlItemData(id = "ringer", label = ringerLabel,
             active = ringerMode == AudioManager.RINGER_MODE_NORMAL, icon = ringerIcon),
-        "rotate" to QuickControlItemData(id = "rotate", label = "Rotate",
+        "rotate" to QuickControlItemData(id = "rotate", label = stringResource(R.string.quick_control_rotate_label),
             active = canWriteSettings && autoRotate,
             icon = if (autoRotate) Icons.Filled.ScreenRotation else Icons.Filled.ScreenRotationAlt),
-        "brightness_slider" to QuickControlItemData(id = "brightness_slider", label = "Bright",
+        "brightness_slider" to QuickControlItemData(id = "brightness_slider", label = stringResource(R.string.quick_control_brightness_label),
             active = false, icon = Icons.Filled.BrightnessMedium),
-        "dnd" to QuickControlItemData(id = "dnd", label = "DND", active = dndEnabled,
+        "dnd" to QuickControlItemData(id = "dnd", label = stringResource(R.string.quick_control_dnd_label), active = dndEnabled,
             icon = if (dndEnabled) Icons.Filled.DoNotDisturb else Icons.Filled.DoNotDisturbOff),
-        "qr" to QuickControlItemData(id = "qr", label = "QR", active = false, icon = Icons.Filled.QrCodeScanner),
-        "power" to QuickControlItemData(id = "power", label = "Power", active = false, icon = Icons.Filled.PowerSettingsNew),
-        "volume" to QuickControlItemData(id = "volume", label = "Volume", active = false, icon = Icons.Filled.Tune),
-        "screenshot" to QuickControlItemData(id = "screenshot", label = "Screenshot", active = false, icon = Icons.Filled.PhotoCamera),
-        "lockscreen" to QuickControlItemData(id = "lockscreen", label = "Lock", active = false, icon = Icons.Filled.Lock),
+        "qr" to QuickControlItemData(id = "qr", label = stringResource(R.string.quick_control_qr_label), active = false, icon = Icons.Filled.QrCodeScanner),
+        "power" to QuickControlItemData(id = "power", label = stringResource(R.string.quick_control_power_label), active = false, icon = Icons.Filled.PowerSettingsNew),
+        "volume" to QuickControlItemData(id = "volume", label = stringResource(R.string.quick_control_volume_label), active = false, icon = Icons.Filled.Tune),
+        "screenshot" to QuickControlItemData(id = "screenshot", label = stringResource(R.string.quick_control_screenshot_label), active = false, icon = Icons.Filled.PhotoCamera),
+        "lockscreen" to QuickControlItemData(id = "lockscreen", label = stringResource(R.string.quick_control_lock_label), active = false, icon = Icons.Filled.Lock),
         "caffeine" to QuickControlItemData(id = "caffeine",
-            label = if (caffeineMinutes == 0) "Caffeine" else "${caffeineMinutes}m",
+            label = if (caffeineMinutes == 0) stringResource(R.string.quick_control_caffeine_label) else caffeineMinutesLabel,
             active = caffeineMinutes != 0,
-            badge = if (caffeineMinutes != 0) "${caffeineMinutes}m" else null,
+            badge = if (caffeineMinutes != 0) caffeineMinutesLabel else null,
             icon = Icons.Filled.FreeBreakfast),
-        "clipboard" to QuickControlItemData(id = "clipboard", label = "Clipboard",
+        "clipboard" to QuickControlItemData(id = "clipboard", label = stringResource(R.string.quick_control_clipboard_label),
             active = false, icon = Icons.Filled.ContentPaste),
-        "notes" to QuickControlItemData(id = "notes", label = "Notes",
+        "notes" to QuickControlItemData(id = "notes", label = stringResource(R.string.quick_control_notes_label),
             active = false, icon = Icons.Filled.EditNote),
-        "calculator" to QuickControlItemData(id = "calculator", label = "Calculator",
+        "calculator" to QuickControlItemData(id = "calculator", label = stringResource(R.string.quick_control_calculator_label),
             active = false, icon = Icons.Filled.Calculate),
-        "wifi" to QuickControlItemData(id = "wifi", label = "Wifi", active = wifiEnabled,
+        "wifi" to QuickControlItemData(id = "wifi", label = stringResource(R.string.quick_control_wifi_label), active = wifiEnabled,
             icon = if (wifiEnabled) Icons.Filled.Wifi else Icons.Filled.WifiOff),
-        "bluetooth" to QuickControlItemData(id = "bluetooth", label = "Bluetooth", active = bluetoothEnabled,
+        "bluetooth" to QuickControlItemData(id = "bluetooth", label = stringResource(R.string.quick_control_bluetooth_label), active = bluetoothEnabled,
             icon = if (bluetoothEnabled) Icons.Filled.Bluetooth else Icons.Filled.BluetoothDisabled),
-        "mobile_data" to QuickControlItemData(id = "mobile_data", label = "Data", active = mobileDataEnabled,
+        "mobile_data" to QuickControlItemData(id = "mobile_data", label = stringResource(R.string.quick_control_mobile_data_label), active = mobileDataEnabled,
             icon = if (mobileDataEnabled) Icons.Filled.SignalCellular4Bar else Icons.Filled.SignalCellularOff),
-        "share" to QuickControlItemData(id = "share", label = "Share", active = false, icon = Icons.Filled.Share),
-        "notif_history" to QuickControlItemData(id = "notif_history", label = "Notifs",
+        "share" to QuickControlItemData(id = "share", label = stringResource(R.string.quick_control_share_label), active = false, icon = Icons.Filled.Share),
+        "notif_history" to QuickControlItemData(id = "notif_history", label = stringResource(R.string.quick_control_notif_history_label),
             active = false, icon = Icons.Filled.Notifications)
     )
     val effectiveOrder = order.ifEmpty { PreferencesRepository.ALL_CONTROL_IDS }

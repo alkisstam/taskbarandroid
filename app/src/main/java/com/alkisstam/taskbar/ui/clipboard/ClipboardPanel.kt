@@ -45,8 +45,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.ClipItem
 import com.alkisstam.taskbar.data.ClipType
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
@@ -54,8 +56,17 @@ import com.alkisstam.taskbar.ui.theme.grain
 import com.alkisstam.taskbar.viewmodel.ClipboardViewModel
 import kotlinx.coroutines.launch
 
-private enum class ClipCategory(val label: String) {
-    ALL("All"), TEXT("Text"), IMAGES("Images"), FILES("Files"), LINKS("Links")
+private enum class ClipCategory {
+    ALL, TEXT, IMAGES, FILES, LINKS
+}
+
+@Composable
+private fun ClipCategory.displayLabel(): String = when (this) {
+    ClipCategory.ALL -> stringResource(R.string.clip_category_all)
+    ClipCategory.TEXT -> stringResource(R.string.clip_category_text)
+    ClipCategory.IMAGES -> stringResource(R.string.clip_category_images)
+    ClipCategory.FILES -> stringResource(R.string.clip_category_files)
+    ClipCategory.LINKS -> stringResource(R.string.clip_category_links)
 }
 
 private fun ClipCategory.matches(type: ClipType): Boolean = when (this) {
@@ -82,7 +93,7 @@ fun ClipboardPanel(
     val favorites by viewModel.favorites.collectAsState()
     val shareHintDismissed by viewModel.shareHintDismissed.collectAsState()
 
-    val tabs = listOf("Clips", "Favorites")
+    val tabs = listOf(stringResource(R.string.clipboard_tab_clips), stringResource(R.string.clipboard_tab_favorites))
     val tabIcons = listOf(Icons.Default.ContentPaste, Icons.Default.Star)
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val coroutineScope = rememberCoroutineScope()
@@ -137,7 +148,7 @@ fun ClipboardPanel(
                                 ) { selectedCategory = category }
                             ) {
                                 Text(
-                                    category.label,
+                                    category.displayLabel(),
                                     style = MaterialTheme.typography.labelMedium,
                                     color = if (selected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
@@ -276,7 +287,7 @@ private fun ClipListTab(
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
-                            "Nothing here yet",
+                            stringResource(R.string.clipboard_empty_state),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -339,7 +350,7 @@ private fun ShareHintCard(onDismiss: () -> Unit) {
                 }
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    "Save from any app",
+                    stringResource(R.string.clipboard_share_hint_title),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                     modifier = Modifier.weight(1f)
@@ -347,14 +358,14 @@ private fun ShareHintCard(onDismiss: () -> Unit) {
                 IconButton(onClick = onDismiss, modifier = Modifier.size(24.dp)) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Dismiss",
+                        contentDescription = stringResource(R.string.clipboard_share_hint_dismiss_action),
                         modifier = Modifier.size(16.dp),
                         tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
             }
             Text(
-                "Share text, links, images or files from any app to Floating Dock to save them here.",
+                stringResource(R.string.clipboard_share_hint_body),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
@@ -377,7 +388,7 @@ private fun FavoritesTab(items: List<ClipItem>, viewModel: ClipboardViewModel, o
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    "Nothing here yet",
+                    stringResource(R.string.clipboard_empty_state),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

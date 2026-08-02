@@ -51,8 +51,10 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.NoteItem
 import com.alkisstam.taskbar.data.TodoItem
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
@@ -75,7 +77,7 @@ fun NotesPanel(
     val noteItems by viewModel.noteItems.collectAsState()
     val todoItems by viewModel.todoItems.collectAsState()
 
-    val tabs = listOf("Notes", "To-Dos")
+    val tabs = listOf(stringResource(R.string.notes_panel_tab_notes), stringResource(R.string.notes_panel_tab_todos))
     val tabIcons = listOf(Icons.Default.Edit, Icons.Default.CheckCircle)
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val coroutineScope = rememberCoroutineScope()
@@ -248,7 +250,7 @@ private fun NotesTab(
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
-                        "No notes yet",
+                        stringResource(R.string.notes_panel_empty_notes),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -328,7 +330,7 @@ private fun NotesTab(
             ) {
                 Icon(
                     if (editingNote != null) Icons.Default.Edit else Icons.Default.Add,
-                    contentDescription = if (editingNote != null) "Cancel" else "New note",
+                    contentDescription = if (editingNote != null) stringResource(R.string.notes_panel_fab_cancel_action) else stringResource(R.string.notes_panel_new_note_action),
                     tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
@@ -376,7 +378,7 @@ private fun ToDoTab(
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
-                        "No to-dos yet",
+                        stringResource(R.string.notes_panel_empty_todos),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -403,7 +405,7 @@ private fun ToDoTab(
                 if (completed.isNotEmpty()) {
                     item("completed_header") {
                         Text(
-                            "Completed (${completed.size})",
+                            stringResource(R.string.notes_panel_completed_count, completed.size),
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 4.dp)
@@ -434,7 +436,7 @@ private fun ToDoTab(
                     .offset(y = -composerLift)
             ) {
                 NoteComposer(
-                    placeholder = "Add a to-do…",
+                    placeholder = stringResource(R.string.notes_panel_todo_placeholder),
                     autoFocus = true,
                     onSave = { text -> onAdd(text); composerVisible = false },
                     onCancel = { composerVisible = false }
@@ -455,7 +457,7 @@ private fun ToDoTab(
             ) {
                 Icon(
                     if (editingTodo != null) Icons.Default.Edit else Icons.Default.Add,
-                    contentDescription = if (editingTodo != null) "Cancel" else "New to-do",
+                    contentDescription = if (editingTodo != null) stringResource(R.string.notes_panel_fab_cancel_action) else stringResource(R.string.notes_panel_new_todo_action),
                     tint = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }

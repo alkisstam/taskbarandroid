@@ -54,6 +54,7 @@ import androidx.compose.material.icons.filled.DoNotDisturbOff
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.FlashlightOn
 import androidx.compose.material.icons.filled.FreeBreakfast
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.PhotoCamera
@@ -80,6 +81,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import com.alkisstam.taskbar.R
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -145,7 +147,12 @@ fun SettingsScreen(
     onRequestBatteryOptimizationExclusion: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val tabs = listOf("General", "Apps", "Controls", "Design")
+    val tabs = listOf(
+        stringResource(R.string.settings_tab_general),
+        stringResource(R.string.settings_tab_apps),
+        stringResource(R.string.settings_tab_controls),
+        stringResource(R.string.settings_tab_design)
+    )
     val tabIcons = listOf(
         Icons.Filled.Tune,
         Icons.Filled.PushPin,
@@ -161,7 +168,7 @@ fun SettingsScreen(
         contentWindowInsets = WindowInsets(0),
         topBar = {
             TopAppBar(
-                title = { Text("Dock Settings") },
+                title = { Text(stringResource(R.string.settings_top_bar_title)) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 )
@@ -317,16 +324,16 @@ private fun GeneralTab(
             .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp + bottomPadding),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        SettingsCard(title = "Overlay Status") {
+        SettingsCard(title = stringResource(R.string.settings_overlay_status_title)) {
             if (!hasOverlayPermission) {
                 Text(
-                    text = "Floating Dock requires the \"Draw over other apps\" permission to show the dock above other apps.",
+                    text = stringResource(R.string.settings_overlay_permission_description),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(onClick = onRequestOverlayPermission) {
-                    Text("Grant Permission")
+                    Text(stringResource(R.string.settings_grant_permission_button))
                 }
             } else {
                 Row(
@@ -336,11 +343,11 @@ private fun GeneralTab(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = if (overlayEnabled) "Dock is running" else "Dock is stopped",
+                            text = if (overlayEnabled) stringResource(R.string.settings_overlay_status_running) else stringResource(R.string.settings_overlay_status_stopped),
                             style = MaterialTheme.typography.bodyLarge
                         )
                         Text(
-                            text = if (overlayEnabled) "Visible above all apps" else "Tap start to enable",
+                            text = if (overlayEnabled) stringResource(R.string.settings_overlay_status_running_desc) else stringResource(R.string.settings_overlay_status_stopped_desc),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -354,29 +361,41 @@ private fun GeneralTab(
                         ) {
                             Icon(Icons.Filled.PowerSettingsNew, contentDescription = null)
                             Spacer(modifier = Modifier.padding(horizontal = 4.dp))
-                            Text("Stop")
+                            Text(stringResource(R.string.settings_stop_button))
                         }
                     } else {
                         Button(onClick = viewModel::startOverlay) {
                             Icon(Icons.Filled.PowerSettingsNew, contentDescription = null)
                             Spacer(modifier = Modifier.padding(horizontal = 4.dp))
-                            Text("Start")
+                            Text(stringResource(R.string.settings_start_button))
                         }
                     }
                 }
             }
         }
 
-        SettingsCard(title = "Behaviour") {
+        SettingsCard(title = stringResource(R.string.settings_language_card_title)) {
+            val appLanguageTag by viewModel.appLanguageTag.collectAsState()
+            GradientDropdownField(
+                icon = Icons.Filled.Language,
+                selectedLabel = LANGUAGE_OPTIONS.firstOrNull { it.second == appLanguageTag }?.first
+                    ?: stringResource(R.string.settings_language_system_default),
+                options = LANGUAGE_OPTIONS,
+                isSelected = { it == appLanguageTag },
+                onSelect = { viewModel.setAppLanguage(it) }
+            )
+        }
+
+        SettingsCard(title = stringResource(R.string.settings_behaviour_card_title)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("Auto-hide in Fullscreen", style = MaterialTheme.typography.bodyLarge)
+                    Text(stringResource(R.string.settings_autohide_fullscreen_title), style = MaterialTheme.typography.bodyLarge)
                     Text(
-                        "Hide the dock when an app goes fullscreen",
+                        stringResource(R.string.settings_autohide_fullscreen_desc),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -392,9 +411,9 @@ private fun GeneralTab(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("Auto-hide in Landscape", style = MaterialTheme.typography.bodyLarge)
+                    Text(stringResource(R.string.settings_autohide_landscape_title), style = MaterialTheme.typography.bodyLarge)
                     Text(
-                        "Hide the dock when the device is in landscape",
+                        stringResource(R.string.settings_autohide_landscape_desc),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -410,9 +429,9 @@ private fun GeneralTab(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("Disable on Lock Screen", style = MaterialTheme.typography.bodyLarge)
+                    Text(stringResource(R.string.settings_disable_lockscreen_title), style = MaterialTheme.typography.bodyLarge)
                     Text(
-                        "Prevent the trigger pill from opening the dock on the lock screen",
+                        stringResource(R.string.settings_disable_lockscreen_desc),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -428,9 +447,9 @@ private fun GeneralTab(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("Vibrate Feedback", style = MaterialTheme.typography.bodyLarge)
+                    Text(stringResource(R.string.settings_vibrate_feedback_title), style = MaterialTheme.typography.bodyLarge)
                     Text(
-                        "Haptic feedback on long press and drag",
+                        stringResource(R.string.settings_vibrate_feedback_desc),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -450,10 +469,10 @@ private fun GeneralTab(
 
         SearchSettingsCard(viewModel = viewModel)
 
-        SettingsCard(title = "Navigation Bar Overlay") {
+        SettingsCard(title = stringResource(R.string.settings_navbar_overlay_title)) {
             if (!hasAccessibilityPermission) {
                 Text(
-                    text = "Enable the Floating Dock Accessibility Service to allow the overlay to draw above the system navigation bar.",
+                    text = stringResource(R.string.settings_navbar_overlay_enable_desc),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -462,70 +481,70 @@ private fun GeneralTab(
                     onClick = onRequestAccessibilityPermission,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Enable Accessibility Service")
+                    Text(stringResource(R.string.settings_enable_accessibility_button))
                 }
             } else {
                 Text(
-                    text = "Accessibility Service is active. The overlay will appear above the navigation bar.",
+                    text = stringResource(R.string.settings_navbar_overlay_active_desc),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
             }
         }
 
-        SettingsCard(title = "Permissions") {
+        SettingsCard(title = stringResource(R.string.settings_permissions_card_title)) {
             PermissionStatusRow(
-                name = "Draw over other apps",
-                description = "Required — shows the dock above other apps",
+                name = stringResource(R.string.settings_permission_overlay_name),
+                description = stringResource(R.string.settings_permission_overlay_desc),
                 granted = hasOverlayPermission,
                 onClick = onRequestOverlayPermission
             )
             PermissionStatusRow(
-                name = "Accessibility Service",
-                description = "Optional — draw over the navigation bar and system actions",
+                name = stringResource(R.string.settings_permission_accessibility_name),
+                description = stringResource(R.string.settings_permission_accessibility_desc),
                 granted = hasAccessibilityPermission,
                 onClick = onRequestAccessibilityPermission
             )
             PermissionStatusRow(
-                name = "Modify system settings",
-                description = "Optional — auto-rotate and brightness controls",
+                name = stringResource(R.string.settings_permission_write_settings_name),
+                description = stringResource(R.string.settings_permission_write_settings_desc),
                 granted = hasWriteSettingsPermission,
                 onClick = onRequestWriteSettingsPermission
             )
             PermissionStatusRow(
-                name = "Do Not Disturb access",
-                description = "Optional — toggle DND from quick controls",
+                name = stringResource(R.string.settings_permission_dnd_name),
+                description = stringResource(R.string.settings_permission_dnd_desc),
                 granted = hasNotificationPolicyPermission,
                 onClick = onRequestNotificationPolicyPermission
             )
             PermissionStatusRow(
-                name = "Notifications",
-                description = "Optional — dock service status notification",
+                name = stringResource(R.string.settings_permission_notifications_name),
+                description = stringResource(R.string.settings_permission_notifications_desc),
                 granted = hasNotificationsPermission,
                 onClick = onRequestNotificationsPermission
             )
             PermissionStatusRow(
-                name = "Notification access",
-                description = "Optional — music panel and notification history",
+                name = stringResource(R.string.settings_permission_notification_listener_name),
+                description = stringResource(R.string.settings_permission_notification_listener_desc),
                 granted = hasNotificationListenerPermission,
                 onClick = onRequestNotificationListenerPermission
             )
             PermissionStatusRow(
-                name = "Ignore battery optimization",
-                description = "Optional — keeps the dock running in the background",
+                name = stringResource(R.string.settings_permission_battery_name),
+                description = stringResource(R.string.settings_permission_battery_desc),
                 granted = hasBatteryOptimizationExcluded,
                 onClick = onRequestBatteryOptimizationExclusion
             )
         }
 
-        SettingsCard(title = "Backup & Restore") {
+        SettingsCard(title = stringResource(R.string.settings_backup_restore_title)) {
             OutlinedButton(
                 onClick = { backupLauncher.launch("taskbar_backup.json") },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(Icons.Filled.FileUpload, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Backup Settings")
+                Text(stringResource(R.string.settings_backup_button))
             }
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedButton(
@@ -534,12 +553,12 @@ private fun GeneralTab(
             ) {
                 Icon(Icons.Filled.FileDownload, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Restore Settings")
+                Text(stringResource(R.string.settings_restore_button))
             }
         }
 
         var showResetDialog by remember { mutableStateOf(false) }
-        SettingsCard(title = "Reset") {
+        SettingsCard(title = stringResource(R.string.settings_reset_card_title)) {
             OutlinedButton(
                 onClick = { showResetDialog = true },
                 modifier = Modifier.fillMaxWidth(),
@@ -549,31 +568,31 @@ private fun GeneralTab(
             ) {
                 Icon(Icons.Filled.Refresh, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Reset Settings to Default")
+                Text(stringResource(R.string.settings_reset_button))
             }
         }
         if (showResetDialog) {
             AlertDialog(
                 onDismissRequest = { showResetDialog = false },
-                title = { Text("Reset Settings") },
-                text = { Text("Reset all settings to default? This cannot be undone.") },
+                title = { Text(stringResource(R.string.settings_reset_dialog_title)) },
+                text = { Text(stringResource(R.string.settings_reset_dialog_message)) },
                 confirmButton = {
                     TextButton(onClick = {
                         viewModel.resetAllSettings()
                         showResetDialog = false
                     }) {
-                        Text("Reset", color = MaterialTheme.colorScheme.error)
+                        Text(stringResource(R.string.settings_reset_confirm_button), color = MaterialTheme.colorScheme.error)
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { showResetDialog = false }) {
-                        Text("Cancel")
+                        Text(stringResource(R.string.settings_reset_dialog_cancel_button))
                     }
                 }
             )
         }
 
-        SettingsCard(title = "Contact & Feedback") {
+        SettingsCard(title = stringResource(R.string.settings_contact_feedback_card_title)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     modifier = Modifier
@@ -589,7 +608,7 @@ private fun GeneralTab(
                                 val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:alkisstam@icloud.com"))
                                 context.startActivity(intent)
                             } catch (e: Exception) {
-                                Toast.makeText(context, "No email app found", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, context.getString(R.string.settings_no_email_app_toast), Toast.LENGTH_SHORT).show()
                             }
                         }
                         .padding(vertical = 14.dp),
@@ -603,7 +622,7 @@ private fun GeneralTab(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            "Contact & Feedback",
+                            stringResource(R.string.settings_contact_feedback_label),
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onPrimary
                         )
@@ -620,14 +639,14 @@ private fun GeneralTab(
                                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/floatingdock"))
                                 context.startActivity(intent)
                             } catch (e: Exception) {
-                                Toast.makeText(context, "No app found to open link", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, context.getString(R.string.settings_no_link_app_toast), Toast.LENGTH_SHORT).show()
                             }
                         },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         painterResource(R.drawable.ic_telegram),
-                        contentDescription = "Telegram",
+                        contentDescription = stringResource(R.string.settings_telegram_content_description),
                         tint = Color.White,
                         modifier = Modifier.size(28.dp)
                     )
@@ -646,16 +665,16 @@ private fun MusicPanelSettingsCard(
     val musicPanelEnabled by viewModel.musicPanelEnabled.collectAsState()
     val alwaysShowMusicPanel by viewModel.alwaysShowMusicPanel.collectAsState()
 
-    SettingsCard(title = "Music Panel") {
+    SettingsCard(title = stringResource(R.string.settings_music_panel_title)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("Show Music Panel", style = MaterialTheme.typography.bodyLarge)
+                Text(stringResource(R.string.settings_show_music_panel_title), style = MaterialTheme.typography.bodyLarge)
                 Text(
-                    "Floats above the dock when media is playing",
+                    stringResource(R.string.settings_show_music_panel_desc),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -671,9 +690,9 @@ private fun MusicPanelSettingsCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("Always Show Panel", style = MaterialTheme.typography.bodyLarge)
+                Text(stringResource(R.string.settings_always_show_panel_title), style = MaterialTheme.typography.bodyLarge)
                 Text(
-                    "Open the panel on tap even when nothing is playing",
+                    stringResource(R.string.settings_always_show_panel_desc),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -686,7 +705,7 @@ private fun MusicPanelSettingsCard(
         if (!notificationAccessGranted) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Requires Notification Access to read track info and control playback.",
+                text = stringResource(R.string.settings_music_panel_notification_required_desc),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -699,12 +718,12 @@ private fun MusicPanelSettingsCard(
                                 .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
                         )
                     } catch (e: Exception) {
-                        Toast.makeText(context, "Couldn't open settings", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.settings_couldnt_open_settings_toast), Toast.LENGTH_SHORT).show()
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Grant Notification Access")
+                Text(stringResource(R.string.settings_grant_notification_access_button))
             }
         }
     }
@@ -714,16 +733,16 @@ private fun MusicPanelSettingsCard(
 private fun SearchSettingsCard(viewModel: TaskbarViewModel) {
     val fuzzySearchEnabled by viewModel.fuzzySearchEnabled.collectAsState()
     val showRecentApps by viewModel.showRecentApps.collectAsState()
-    SettingsCard(title = "Search") {
+    SettingsCard(title = stringResource(R.string.settings_search_card_title)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("Fuzzy Search", style = MaterialTheme.typography.bodyLarge)
+                Text(stringResource(R.string.settings_fuzzy_search_title), style = MaterialTheme.typography.bodyLarge)
                 Text(
-                    "Match apps even with typos or partial names",
+                    stringResource(R.string.settings_fuzzy_search_desc),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -739,9 +758,9 @@ private fun SearchSettingsCard(viewModel: TaskbarViewModel) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("Show Recent Apps", style = MaterialTheme.typography.bodyLarge)
+                Text(stringResource(R.string.settings_show_recent_apps_title), style = MaterialTheme.typography.bodyLarge)
                 Text(
-                    "Show your 5 most recently opened apps when you tap the search bar",
+                    stringResource(R.string.settings_show_recent_apps_desc),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -784,17 +803,17 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
     ) {
         item {
             Text(
-                text = "Tap on an app icon to add it to Pinned Apps. Touch and drag an icon in Pinned Apps to re-order it.",
+                text = stringResource(R.string.settings_pinned_apps_hint),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.fillMaxWidth()
             )
         }
         item {
-            SettingsCard(title = "Pinned Apps (${pinnedApps.size})") {
+            SettingsCard(title = stringResource(R.string.settings_pinned_apps_title, pinnedApps.size)) {
                 if (pinnedApps.isEmpty()) {
                     Text(
-                        text = "No apps pinned yet. Tap + on any app below to pin it.",
+                        text = stringResource(R.string.settings_pinned_apps_empty_desc),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -857,7 +876,7 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
                                         ) {
                                             Icon(
                                                 imageVector = Icons.Filled.Close,
-                                                contentDescription = "Unpin",
+                                                contentDescription = stringResource(R.string.settings_pinned_app_unpin_content_description),
                                                 tint = MaterialTheme.colorScheme.onError,
                                                 modifier = Modifier.size(10.dp)
                                             )
@@ -879,7 +898,7 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
             }
         }
         item {
-            SettingsCard(title = "Hidden Apps (${hiddenApps.size})") {
+            SettingsCard(title = stringResource(R.string.settings_hidden_apps_title, hiddenApps.size)) {
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     contentPadding = PaddingValues(vertical = 4.dp)
@@ -899,12 +918,12 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
                             ) {
                                 Icon(
                                     imageVector = Icons.Filled.Add,
-                                    contentDescription = "Add App",
+                                    contentDescription = stringResource(R.string.settings_add_app_content_description),
                                     tint = MaterialTheme.colorScheme.onSecondaryContainer
                                 )
                             }
                             Text(
-                                text = "Add",
+                                text = stringResource(R.string.settings_add_label),
                                 style = MaterialTheme.typography.labelSmall,
                                 maxLines = 1,
                                 modifier = Modifier.width(48.dp),
@@ -937,7 +956,7 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
                                 ) {
                                     Icon(
                                         imageVector = Icons.Filled.Close,
-                                        contentDescription = "Unhide",
+                                        contentDescription = stringResource(R.string.settings_unhide_content_description),
                                         tint = MaterialTheme.colorScheme.onSecondary,
                                         modifier = Modifier.size(10.dp)
                                     )
@@ -957,7 +976,7 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
             }
         }
         item {
-            SettingsCard(title = "All Apps (${allApps.size})") {
+            SettingsCard(title = stringResource(R.string.settings_all_apps_title, allApps.size)) {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(4),
                     modifier = Modifier.height(340.dp), // ~4 rows: (80dp row * 4) + (4dp gap * 3) + (4dp padding * 2)
@@ -982,16 +1001,16 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
             }
         }
         item {
-            SettingsCard(title = "Recent Apps") {
+            SettingsCard(title = stringResource(R.string.settings_recent_apps_title)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Show Recent Apps in All Apps Panel", style = MaterialTheme.typography.bodyLarge)
+                        Text(stringResource(R.string.settings_show_recent_apps_panel_title), style = MaterialTheme.typography.bodyLarge)
                         Text(
-                            "Adds a row of recently opened apps under the search bar",
+                            stringResource(R.string.settings_show_recent_apps_panel_desc),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -1004,10 +1023,10 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
             }
         }
         item {
-            SettingsCard(title = "App Grid") {
+            SettingsCard(title = stringResource(R.string.settings_app_grid_title)) {
                 Column {
                     SettingsSlider(
-                        label = "Columns",
+                        label = stringResource(R.string.settings_app_grid_columns_label),
                         value = appGridColumns.toFloat(),
                         valueRange = 3f..6f,
                         unit = "",
@@ -1018,7 +1037,7 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
                     )
                     Spacer(modifier = Modifier.height(10.dp))
                     SettingsSlider(
-                        label = "Rows",
+                        label = stringResource(R.string.settings_app_grid_rows_label),
                         value = appGridRows.toFloat(),
                         valueRange = 3f..6f,
                         unit = "",
@@ -1067,7 +1086,7 @@ private fun AllAppGridItem(
             ) {
                 Icon(
                     imageVector = if (isPinned) Icons.Filled.Check else Icons.Filled.Add,
-                    contentDescription = if (isPinned) "Unpin" else "Pin",
+                    contentDescription = if (isPinned) stringResource(R.string.settings_all_apps_unpin_content_description) else stringResource(R.string.settings_all_apps_pin_content_description),
                     tint = if (isPinned) MaterialTheme.colorScheme.onPrimary
                            else MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(14.dp)
@@ -1100,14 +1119,14 @@ private fun HideAppPickerDialog(
     }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Hide Apps") },
+        title = { Text(stringResource(R.string.settings_hide_apps_dialog_title)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     value = query,
                     onValueChange = { query = it },
                     modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text("Search apps") },
+                    placeholder = { Text(stringResource(R.string.settings_hide_apps_search_placeholder)) },
                     singleLine = true
                 )
                 LazyVerticalGrid(
@@ -1145,7 +1164,7 @@ private fun HideAppPickerDialog(
                 }
             }
         },
-        confirmButton = { TextButton(onClick = onDismiss) { Text("Done") } }
+        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.settings_hide_apps_done_button)) } }
     )
 }
 
@@ -1156,27 +1175,50 @@ private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
     val controlsOrder by viewModel.controlsOrder.collectAsState()
     val controlsDisabledIds by viewModel.controlsDisabledIds.collectAsState()
 
-    val controlMeta = remember {
+    val torchLabel = stringResource(R.string.settings_control_torch)
+    val ringerLabel = stringResource(R.string.settings_control_ringer)
+    val rotateLabel = stringResource(R.string.settings_control_rotate)
+    val brightnessLabel = stringResource(R.string.settings_control_brightness)
+    val dndLabel = stringResource(R.string.settings_control_dnd)
+    val qrLabel = stringResource(R.string.settings_control_qr)
+    val powerLabel = stringResource(R.string.settings_control_power)
+    val volumeLabel = stringResource(R.string.settings_control_volume)
+    val screenshotLabel = stringResource(R.string.settings_control_screenshot)
+    val lockLabel = stringResource(R.string.settings_control_lock)
+    val caffeineLabel = stringResource(R.string.settings_control_caffeine)
+    val clipboardLabel = stringResource(R.string.settings_control_clipboard)
+    val notesLabel = stringResource(R.string.settings_control_notes)
+    val calculatorLabel = stringResource(R.string.settings_control_calculator)
+    val wifiLabel = stringResource(R.string.settings_control_wifi)
+    val bluetoothLabel = stringResource(R.string.settings_control_bluetooth)
+    val mobileDataLabel = stringResource(R.string.settings_control_mobile_data)
+    val shareLabel = stringResource(R.string.settings_control_share)
+    val notifHistoryLabel = stringResource(R.string.settings_control_notifications)
+    val controlMeta = remember(
+        torchLabel, ringerLabel, rotateLabel, brightnessLabel, dndLabel, qrLabel, powerLabel,
+        volumeLabel, screenshotLabel, lockLabel, caffeineLabel, clipboardLabel, notesLabel,
+        calculatorLabel, wifiLabel, bluetoothLabel, mobileDataLabel, shareLabel, notifHistoryLabel
+    ) {
         listOf(
-            Triple("torch",             "Torch",      Icons.Filled.FlashlightOn),
-            Triple("ringer",            "Ringer",     Icons.AutoMirrored.Filled.VolumeUp),
-            Triple("rotate",            "Rotate",     Icons.Filled.ScreenRotationAlt),
-            Triple("brightness_slider", "Brightness", Icons.Filled.BrightnessMedium),
-            Triple("dnd",               "DND",        Icons.Filled.DoNotDisturbOff),
-            Triple("qr",                "QR",         Icons.Filled.QrCodeScanner),
-            Triple("power",             "Power",      Icons.Filled.PowerSettingsNew),
-            Triple("volume",            "Volume",     Icons.Filled.Tune),
-            Triple("screenshot",        "Screenshot", Icons.Filled.PhotoCamera),
-            Triple("lockscreen",        "Lock",       Icons.Filled.Lock),
-            Triple("caffeine",          "Caffeine",   Icons.Filled.FreeBreakfast),
-            Triple("clipboard",         "Clipboard",  Icons.Filled.ContentPaste),
-            Triple("notes",             "Notes",      Icons.Filled.EditNote),
-            Triple("calculator",        "Calculator", Icons.Filled.Calculate),
-            Triple("wifi",              "Wifi",       Icons.Filled.Wifi),
-            Triple("bluetooth",         "Bluetooth",  Icons.Filled.Bluetooth),
-            Triple("mobile_data",       "Mobile Data", Icons.Filled.SignalCellular4Bar),
-            Triple("share",             "Share",      Icons.Filled.Share),
-            Triple("notif_history",     "Notifications", Icons.Filled.Notifications)
+            Triple("torch",             torchLabel,      Icons.Filled.FlashlightOn),
+            Triple("ringer",            ringerLabel,     Icons.AutoMirrored.Filled.VolumeUp),
+            Triple("rotate",            rotateLabel,     Icons.Filled.ScreenRotationAlt),
+            Triple("brightness_slider", brightnessLabel, Icons.Filled.BrightnessMedium),
+            Triple("dnd",               dndLabel,        Icons.Filled.DoNotDisturbOff),
+            Triple("qr",                qrLabel,         Icons.Filled.QrCodeScanner),
+            Triple("power",             powerLabel,      Icons.Filled.PowerSettingsNew),
+            Triple("volume",            volumeLabel,     Icons.Filled.Tune),
+            Triple("screenshot",        screenshotLabel, Icons.Filled.PhotoCamera),
+            Triple("lockscreen",        lockLabel,       Icons.Filled.Lock),
+            Triple("caffeine",          caffeineLabel,   Icons.Filled.FreeBreakfast),
+            Triple("clipboard",         clipboardLabel,  Icons.Filled.ContentPaste),
+            Triple("notes",             notesLabel,      Icons.Filled.EditNote),
+            Triple("calculator",        calculatorLabel, Icons.Filled.Calculate),
+            Triple("wifi",              wifiLabel,       Icons.Filled.Wifi),
+            Triple("bluetooth",         bluetoothLabel,  Icons.Filled.Bluetooth),
+            Triple("mobile_data",       mobileDataLabel, Icons.Filled.SignalCellular4Bar),
+            Triple("share",             shareLabel,      Icons.Filled.Share),
+            Triple("notif_history",     notifHistoryLabel, Icons.Filled.Notifications)
         )
     }
     val metaMap = remember(controlMeta) { controlMeta.associateBy { it.first } }
@@ -1191,16 +1233,16 @@ private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
-            SettingsCard(title = "Quick Controls") {
+            SettingsCard(title = stringResource(R.string.settings_quick_controls_title)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
-                        Text("Enable Quick Controls", style = MaterialTheme.typography.bodyLarge)
+                        Text(stringResource(R.string.settings_enable_quick_controls_title), style = MaterialTheme.typography.bodyLarge)
                         Text(
-                            "Show quick controls in the Dock. Swipe up to show the quick controls. Swipe down to hide them.",
+                            stringResource(R.string.settings_enable_quick_controls_desc),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -1218,7 +1260,7 @@ private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Show control labels", style = MaterialTheme.typography.bodyLarge)
+                    Text(stringResource(R.string.settings_show_control_labels_title), style = MaterialTheme.typography.bodyLarge)
                     Switch(
                         checked = taskbarSettings.showControlLabels,
                         onCheckedChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(showControlLabels = it)) },
@@ -1233,7 +1275,7 @@ private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Keep controls expanded", style = MaterialTheme.typography.bodyLarge)
+                    Text(stringResource(R.string.settings_keep_controls_expanded_title), style = MaterialTheme.typography.bodyLarge)
                     Switch(
                         checked = taskbarSettings.keepDockExpanded,
                         onCheckedChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(keepDockExpanded = it)) },
@@ -1245,12 +1287,12 @@ private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
 
         item {
             SettingsCard(
-                title = "Active Controls",
+                title = stringResource(R.string.settings_active_controls_title),
                 modifier = Modifier.alpha(if (quickControlsEnabled) 1f else 0.38f)
             ) {
                 if (activeIds.isEmpty()) {
                     Text(
-                        "No controls enabled. Enable some below.",
+                        stringResource(R.string.settings_no_controls_enabled_desc),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -1298,7 +1340,7 @@ private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
 
         item {
             SettingsCard(
-                title = "All Controls",
+                title = stringResource(R.string.settings_all_controls_title),
                 modifier = Modifier.alpha(if (quickControlsEnabled) 1f else 0.38f)
             ) {
                 LazyVerticalGrid(
@@ -1468,7 +1510,7 @@ private fun PermissionStatusRow(
         }
         Icon(
             imageVector = if (granted) Icons.Filled.Check else Icons.Filled.Close,
-            contentDescription = if (granted) "Granted" else "Not granted",
+            contentDescription = if (granted) stringResource(R.string.settings_permission_granted_content_description) else stringResource(R.string.settings_permission_not_granted_content_description),
             tint = if (granted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
         )
     }

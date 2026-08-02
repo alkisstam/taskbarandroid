@@ -24,7 +24,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.ui.common.AppIconImage
 import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import com.alkisstam.taskbar.ui.common.toComposeShape
@@ -76,7 +78,7 @@ fun PinnedAppsManager(
                     ) {
                         Icon(
                             imageVector = Icons.Filled.DragHandle,
-                            contentDescription = "Drag to reorder",
+                            contentDescription = stringResource(R.string.pinned_apps_drag_reorder_content_description),
                             modifier = Modifier
                                 .size(24.dp)
                                 .draggableHandle(
@@ -107,7 +109,7 @@ fun PinnedAppsManager(
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Remove,
-                                contentDescription = "Unpin",
+                                contentDescription = stringResource(R.string.pinned_apps_unpin_content_description),
                                 tint = MaterialTheme.colorScheme.error
                             )
                         }

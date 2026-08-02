@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.pm.PackageInfoCompat
 import com.alkisstam.taskbar.data.GestureAction
 import com.alkisstam.taskbar.data.PillEdgePosition
@@ -52,7 +52,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     private val taskbarViewModel: TaskbarViewModel by viewModels()
 
@@ -102,6 +102,7 @@ class MainActivity : ComponentActivity() {
             val hasAccessibilityPermission by taskbarViewModel.isAccessibilityEnabled.collectAsState()
             val onboardingComplete by taskbarViewModel.onboardingComplete.collectAsState()
             val pillSettings by taskbarViewModel.pillSettings.collectAsState()
+            val appLanguageTag by taskbarViewModel.appLanguageTag.collectAsState()
             val hapticEnabled by taskbarViewModel.hapticFeedbackEnabled.collectAsState()
             val lastSeenVersionCode by taskbarViewModel.lastSeenVersionCode.collectAsState()
             TaskBarTheme(themeMode = themeMode) {
@@ -128,6 +129,8 @@ class MainActivity : ComponentActivity() {
                                 swipeUpAction = swipeUp, swipeDownAction = swipeDown, doubleTapAction = doubleTap
                             ))
                         },
+                        selectedLanguageTag = appLanguageTag,
+                        onLanguageSelected = taskbarViewModel::setAppLanguage,
                         onRequestOverlayPermission = ::requestOverlayPermission,
                         onRequestAccessibilityPermission = ::requestAccessibilityPermission,
                         onRequestWriteSettingsPermission = ::requestWriteSettingsPermission,

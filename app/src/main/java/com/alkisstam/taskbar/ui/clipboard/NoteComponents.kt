@@ -51,14 +51,16 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.NoteItem
 import com.alkisstam.taskbar.data.TodoItem
 
 @Composable
 internal fun NoteComposer(
     initialText: String = "",
-    placeholder: String = "Write a note…",
+    placeholder: String = stringResource(R.string.notes_composer_default_placeholder),
     autoFocus: Boolean = false,
     onSave: (String) -> Unit,
     onCancel: () -> Unit
@@ -93,9 +95,9 @@ internal fun NoteComposer(
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TextButton(onClick = onCancel) { Text("Cancel") }
+                TextButton(onClick = onCancel) { Text(stringResource(R.string.notes_composer_cancel_action)) }
                 Spacer(Modifier.width(8.dp))
-                Button(onClick = { if (text.isNotBlank()) onSave(text) }) { Text("Save") }
+                Button(onClick = { if (text.isNotBlank()) onSave(text) }) { Text(stringResource(R.string.notes_composer_save_action)) }
             }
         }
     }
@@ -140,7 +142,7 @@ internal fun NoteItemCard(
                     color = MaterialTheme.colorScheme.surface
                 ) {
                     Text(
-                        "Note",
+                        stringResource(R.string.note_item_badge_label),
                         style = MaterialTheme.typography.labelSmall,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                     )
@@ -178,19 +180,19 @@ internal fun NoteItemCard(
             ) {
                 if (onEdit != null) {
                     IconButton(onClick = onEdit) {
-                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(20.dp))
+                        Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.note_item_edit_action), modifier = Modifier.size(20.dp))
                     }
                 }
                 IconButton(onClick = onCopy) {
-                    Icon(Icons.Default.ContentCopy, contentDescription = "Copy", modifier = Modifier.size(20.dp))
+                    Icon(Icons.Default.ContentCopy, contentDescription = stringResource(R.string.note_item_copy_action), modifier = Modifier.size(20.dp))
                 }
                 IconButton(onClick = onShare) {
-                    Icon(Icons.Default.Share, contentDescription = "Share", modifier = Modifier.size(20.dp))
+                    Icon(Icons.Default.Share, contentDescription = stringResource(R.string.note_item_share_action), modifier = Modifier.size(20.dp))
                 }
                 IconButton(onClick = onTogglePin) {
                     Icon(
                         Icons.Default.PushPin,
-                        contentDescription = "Pin",
+                        contentDescription = stringResource(R.string.note_item_pin_action),
                         modifier = Modifier.size(20.dp),
                         tint = if (note.isPinned) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -198,7 +200,7 @@ internal fun NoteItemCard(
                 IconButton(onClick = onDelete) {
                     Icon(
                         Icons.Default.Delete,
-                        contentDescription = "Delete",
+                        contentDescription = stringResource(R.string.note_item_delete_action),
                         modifier = Modifier.size(20.dp),
                         tint = MaterialTheme.colorScheme.error
                     )
@@ -242,7 +244,7 @@ internal fun TodoItemCard(
                 if (todo.isDone) {
                     Icon(
                         Icons.Default.Check,
-                        contentDescription = "Completed",
+                        contentDescription = stringResource(R.string.todo_item_completed_action),
                         modifier = Modifier.size(16.dp),
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
@@ -267,16 +269,16 @@ internal fun TodoItemCard(
             var menuExpanded by remember { mutableStateOf(false) }
             Box {
                 IconButton(onClick = { menuExpanded = true }) {
-                    Icon(Icons.Default.MoreVert, contentDescription = "More options", modifier = Modifier.size(20.dp))
+                    Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.todo_item_more_options_action), modifier = Modifier.size(20.dp))
                 }
                 DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
                     DropdownMenuItem(
-                        text = { Text("Edit") },
+                        text = { Text(stringResource(R.string.todo_item_edit_menu)) },
                         leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null) },
                         onClick = { onEdit(); menuExpanded = false }
                     )
                     DropdownMenuItem(
-                        text = { Text(if (todo.isPinned) "Unpin" else "Pin") },
+                        text = { Text(if (todo.isPinned) stringResource(R.string.todo_item_unpin_menu) else stringResource(R.string.todo_item_pin_menu)) },
                         leadingIcon = {
                             Icon(
                                 Icons.Default.PushPin,
@@ -287,7 +289,7 @@ internal fun TodoItemCard(
                         onClick = { onTogglePin(); menuExpanded = false }
                     )
                     DropdownMenuItem(
-                        text = { Text("Delete", color = MaterialTheme.colorScheme.error) },
+                        text = { Text(stringResource(R.string.todo_item_delete_menu), color = MaterialTheme.colorScheme.error) },
                         leadingIcon = {
                             Icon(
                                 Icons.Default.Delete,
@@ -303,15 +305,16 @@ internal fun TodoItemCard(
     }
 }
 
+@Composable
 internal fun formatTimestamp(timestamp: Long): String {
     val diff = System.currentTimeMillis() - timestamp
     val minutes = diff / 60_000
     val hours = diff / 3_600_000
     val days = diff / 86_400_000
     return when {
-        minutes < 1 -> "just now"
-        minutes < 60 -> "$minutes min ago"
-        hours < 24 -> "$hours hr ago"
-        else -> "$days d ago"
+        minutes < 1 -> stringResource(R.string.time_just_now)
+        minutes < 60 -> stringResource(R.string.time_minutes_ago, minutes)
+        hours < 24 -> stringResource(R.string.time_hours_ago, hours)
+        else -> stringResource(R.string.time_days_ago, days)
     }
 }

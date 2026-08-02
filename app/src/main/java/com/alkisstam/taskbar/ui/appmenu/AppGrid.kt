@@ -30,11 +30,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
+import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.IconShape
 import com.alkisstam.taskbar.ui.common.AppIconImage
@@ -152,9 +154,9 @@ private fun AppGridItem(
                 ) {
                     Column {
                         AppGridMenuAction(
-                            if (isPinned) "Unpin from Dock" else "Pin to Dock"
+                            if (isPinned) stringResource(R.string.app_action_unpin_from_dock) else stringResource(R.string.app_action_pin_to_dock)
                         ) { onPin(); showMenu = false }
-                        AppGridMenuAction("Hide App") { onHide(); showMenu = false }
+                        AppGridMenuAction(stringResource(R.string.app_action_hide_app)) { onHide(); showMenu = false }
                     }
                 }
             }

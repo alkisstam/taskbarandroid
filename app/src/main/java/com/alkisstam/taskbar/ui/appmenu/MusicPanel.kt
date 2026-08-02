@@ -33,8 +33,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.MediaState
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 import com.alkisstam.taskbar.ui.theme.grain
@@ -78,7 +80,7 @@ fun MusicPanel(
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = mediaState.title.ifEmpty { "Unknown" },
+                    text = mediaState.title.ifEmpty { stringResource(R.string.music_panel_unknown_title) },
                     style = MaterialTheme.typography.titleSmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -101,7 +103,7 @@ fun MusicPanel(
                 IconButton(onClick = onPrev, modifier = Modifier.size(36.dp)) {
                     Icon(
                         Icons.Filled.SkipPrevious,
-                        contentDescription = "Previous",
+                        contentDescription = stringResource(R.string.music_panel_previous_description),
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -115,7 +117,7 @@ fun MusicPanel(
                 ) {
                     Icon(
                         imageVector = if (mediaState.isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
-                        contentDescription = if (mediaState.isPlaying) "Pause" else "Play",
+                        contentDescription = if (mediaState.isPlaying) stringResource(R.string.music_panel_pause_description) else stringResource(R.string.music_panel_play_description),
                         tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(22.dp)
                     )
@@ -123,7 +125,7 @@ fun MusicPanel(
                 IconButton(onClick = onNext, modifier = Modifier.size(36.dp)) {
                     Icon(
                         Icons.Filled.SkipNext,
-                        contentDescription = "Next",
+                        contentDescription = stringResource(R.string.music_panel_next_description),
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -145,7 +147,7 @@ private fun AlbumArt(bitmap: Bitmap?, onClick: (() -> Unit)? = null) {
         if (bitmap != null) {
             Image(
                 bitmap = bitmap.asImageBitmap(),
-                contentDescription = "Album Art",
+                contentDescription = stringResource(R.string.music_panel_album_art_description),
                 modifier = Modifier
                     .size(44.dp)
                     .clip(CircleShape),

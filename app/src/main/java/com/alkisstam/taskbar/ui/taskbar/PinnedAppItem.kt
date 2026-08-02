@@ -22,12 +22,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
+import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.IconShape
 import com.alkisstam.taskbar.ui.common.AppIconImage
@@ -96,8 +98,8 @@ fun PinnedAppItem(
                     modifier = Modifier.width(180.dp)
                 ) {
                     Column {
-                        AppMenuAction("Open") { onLaunch(); showMenu = false }
-                        AppMenuAction("Unpin from Dock") { onUnpin(); showMenu = false }
+                        AppMenuAction(stringResource(R.string.pinned_app_menu_open)) { onLaunch(); showMenu = false }
+                        AppMenuAction(stringResource(R.string.pinned_app_menu_unpin)) { onUnpin(); showMenu = false }
                     }
                 }
             }

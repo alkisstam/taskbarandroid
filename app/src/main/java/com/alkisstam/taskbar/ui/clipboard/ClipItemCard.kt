@@ -60,9 +60,11 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
+import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.ClipItem
 import com.alkisstam.taskbar.data.ClipType
 import kotlinx.coroutines.Dispatchers
@@ -156,7 +158,7 @@ fun ClipItemCard(
                         item.content.trim().split(Regex("\\s+")).count { it.isNotEmpty() }
                     }
                     Text(
-                        text = "${item.content.length} chars • $words words",
+                        text = stringResource(R.string.clip_item_char_word_count, item.content.length, words),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -170,7 +172,7 @@ fun ClipItemCard(
                             }
                             context.startActivity(intent)
                         } catch (e: Exception) {
-                            Toast.makeText(context, "No app can open this link", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, context.getString(R.string.clip_item_no_app_for_link), Toast.LENGTH_SHORT).show()
                         }
                     }) {
                         Text(
@@ -267,7 +269,7 @@ fun ClipItemCard(
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                item.fileName ?: "PDF Document",
+                                item.fileName ?: stringResource(R.string.clip_item_pdf_fallback_name),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 maxLines = 1,
@@ -295,7 +297,7 @@ fun ClipItemCard(
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                item.fileName ?: "Document",
+                                item.fileName ?: stringResource(R.string.clip_item_document_fallback_name),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 maxLines = 1,
@@ -313,7 +315,7 @@ fun ClipItemCard(
             ) {
                 if (onEdit != null) {
                     IconButton(onClick = onEdit) {
-                        Icon(Icons.Default.Edit, contentDescription = "Edit", modifier = Modifier.size(20.dp))
+                        Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.clip_item_edit_action), modifier = Modifier.size(20.dp))
                     }
                 }
                 IconButton(onClick = {
@@ -330,21 +332,21 @@ fun ClipItemCard(
                 }) {
                     Icon(
                         Icons.Default.ContentCopy,
-                        contentDescription = "Copy",
+                        contentDescription = stringResource(R.string.clip_item_copy_action),
                         modifier = Modifier.size(20.dp)
                     )
                 }
                 IconButton(onClick = { onOpenExternal(); shareClip(context, item) }) {
                     Icon(
                         Icons.Default.Share,
-                        contentDescription = "Share",
+                        contentDescription = stringResource(R.string.clip_item_share_action),
                         modifier = Modifier.size(20.dp)
                     )
                 }
                 IconButton(onClick = onToggleFavorite) {
                     Icon(
                         imageVector = if (item.isFavorite) Icons.Default.Star else Icons.Default.StarBorder,
-                        contentDescription = "Favorite",
+                        contentDescription = stringResource(R.string.clip_item_favorite_action),
                         modifier = Modifier.size(20.dp),
                         tint = if (item.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -352,7 +354,7 @@ fun ClipItemCard(
                 IconButton(onClick = onTogglePin) {
                     Icon(
                         Icons.Default.PushPin,
-                        contentDescription = "Pin",
+                        contentDescription = stringResource(R.string.clip_item_pin_action),
                         modifier = Modifier.size(20.dp),
                         tint = if (item.isPinned) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -360,7 +362,7 @@ fun ClipItemCard(
                 IconButton(onClick = onDelete) {
                     Icon(
                         Icons.Default.Delete,
-                        contentDescription = "Delete",
+                        contentDescription = stringResource(R.string.clip_item_delete_action),
                         modifier = Modifier.size(20.dp),
                         tint = MaterialTheme.colorScheme.error
                     )
@@ -379,7 +381,7 @@ private fun openFile(context: Context, path: String, mimeType: String) {
         }
         context.startActivity(intent)
     } catch (e: Exception) {
-        Toast.makeText(context, "No app can open this file", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, context.getString(R.string.clip_item_no_app_for_file), Toast.LENGTH_SHORT).show()
     }
 }
 
@@ -407,7 +409,7 @@ private fun shareClip(context: Context, item: ClipItem) {
         }
         context.startActivity(Intent.createChooser(intent, null).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) })
     } catch (e: Exception) {
-        Toast.makeText(context, "Unable to share this item", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, context.getString(R.string.clip_item_unable_to_share), Toast.LENGTH_SHORT).show()
     }
 }
 
