@@ -189,6 +189,15 @@ val whatsNewReleases = listOf(
             "Fixed two crashes while loading app icons — reloads no longer race each other in the system renderer",
             "Fixed a crash loading icons on devices low on memory — icon loading now backs off earlier and uses half the memory per icon"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.5.4",
+        versionCode = 57,
+        highlights = listOf(
+            "New language picker in Settings → General — choose the app's language independent of your device's system language",
+            "The app is now fully translated into 16 languages, not just the Play Store listing",
+            "New installs are asked to pick a language on the first onboarding screen"
+        )
     )
 )
 

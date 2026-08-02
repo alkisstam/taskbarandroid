@@ -4,6 +4,19 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.5.4] - 2026-08-02
+
+In-app language support.
+
+### Added
+- **In-app language override** — Settings → General → Language lets you pick the app's language directly, independent of your device's system language. New installs are also asked to pick a language on the very first onboarding screen.
+- **Full UI translation in 16 languages** — Arabic, German, Spanish (Spain and Latin America), French, Hindi, Indonesian, Italian, Hebrew, Japanese, Dutch, Portuguese (Brazil), Russian, Thai, Turkish, and Chinese (Simplified). Previously only the Play Store listing was translated; the app's own screens (Settings, onboarding, dock, panels) were always English regardless of device language.
+
+### Fixed
+- **App showing English even on non-English devices** — root cause was that the app had no translated string resources at all, so there was nothing for the system or Play Store to switch to. Fixed by extracting every UI string to translatable resources.
+
+---
+
 ## [1.5.3] - 2026-07-25
 
 Stability release.
