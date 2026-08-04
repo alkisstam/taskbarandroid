@@ -1,0 +1,7 @@
+Nieuw
+• Kies de apptaal onafhankelijk van je toestel (Instellingen → Algemeen)
+• Volledige vertaling van de interface in 16 talen
+• Zet je favoriete apps al tijdens het onboarden vast
+
+Opgelost
+• App toonde Engels, zelfs op niet-Engelse toestellen

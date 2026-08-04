@@ -1,0 +1,7 @@
+Nouveautés
+• Choisissez la langue de l'app indépendamment de celle de l'appareil (Réglages → Général)
+• Traduction complète de l'interface en 16 langues
+• Épinglez vos applications préférées dès la configuration initiale
+
+Corrections
+• L'app s'affichait en anglais même sur des appareils non anglophones

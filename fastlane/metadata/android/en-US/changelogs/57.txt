@@ -1,0 +1,7 @@
+Added
+• Choose the app's language independent of your device (Settings → General)
+• Full UI translation in 16 languages
+• Pin your favorite apps during onboarding
+
+Fixed
+• App showing English even on non-English devices

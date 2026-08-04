@@ -1,0 +1,7 @@
+Neu
+• App-Sprache unabhängig vom Gerät wählen (Einstellungen → Allgemein)
+• Vollständige Übersetzung der Oberfläche in 16 Sprachen
+• Lieblings-Apps schon während der Einrichtung anheften
+
+Behoben
+• App zeigte Englisch selbst auf nicht-englischen Geräten

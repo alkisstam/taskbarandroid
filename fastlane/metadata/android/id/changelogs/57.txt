@@ -1,0 +1,7 @@
+Baru
+• Pilih bahasa aplikasi terlepas dari bahasa perangkat (Pengaturan → Umum)
+• Terjemahan UI lengkap dalam 16 bahasa
+• Sematkan aplikasi favorit langsung saat onboarding
+
+Perbaikan
+• Aplikasi tetap menampilkan bahasa Inggris meski di perangkat non-Inggris

@@ -1,0 +1,7 @@
+Novidades
+• Escolha o idioma do app independente do dispositivo (Configurações → Geral)
+• Tradução completa da interface em 16 idiomas
+• Fixe seus apps favoritos já durante a integração inicial
+
+Correções
+• O app aparecia em inglês mesmo em dispositivos não ingleses

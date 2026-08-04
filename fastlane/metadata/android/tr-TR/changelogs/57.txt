@@ -1,0 +1,7 @@
+Yenilikler
+• Uygulama dilini cihazdan bağımsız olarak seçin (Ayarlar → Genel)
+• Arayüz 16 dile tam çevrildi
+• Kurulum sırasında favori uygulamalarınızı sabitleyin
+
+Düzeltmeler
+• İngilizce olmayan cihazlarda bile uygulamanın İngilizce görünmesi

@@ -1,0 +1,7 @@
+Novità
+• Scegli la lingua dell'app indipendentemente dal dispositivo (Impostazioni → Generali)
+• Traduzione completa dell'interfaccia in 16 lingue
+• Aggiungi le tue app preferite già durante l'onboarding
+
+Correzioni
+• L'app mostrava l'inglese anche su dispositivi non inglesi
