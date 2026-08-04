@@ -226,6 +226,8 @@
     <string name="onboarding_language_title">בחר את השפה שלך</string>
     <string name="onboarding_next">הבא</string>
     <string name="onboarding_get_started">בואו נתחיל</string>
+    <string name="onboarding_skip">דלג</string>
+    <string name="onboarding_apps_title">הצמד את האפליקציות המועדפות עליך</string>
     <string name="onboarding_welcome_title">ברוכים הבאים ל-Floating Dock</string>
     <string name="onboarding_welcome_desc">דוק צף שנשאר מעל כל אפליקציה. פתח אפליקציות, שלוט במוזיקה וגש להגדרות מהירות — מבלי לצאת ממה שאתה עושה.</string>
     <string name="onboarding_bottom_position_title">מיקום תחתון</string>

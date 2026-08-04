@@ -226,6 +226,8 @@
     <string name="onboarding_language_title">Kies je taal</string>
     <string name="onboarding_next">Volgende</string>
     <string name="onboarding_get_started">Aan de slag</string>
+    <string name="onboarding_skip">Overslaan</string>
+    <string name="onboarding_apps_title">Zet je favoriete apps vast</string>
     <string name="onboarding_welcome_title">Welkom bij Floating Dock</string>
     <string name="onboarding_welcome_desc">Een zwevende dock die boven elke app blijft. Start apps, bedien muziek en open snelle instellingen — zonder te stoppen met wat je aan het doen bent.</string>
     <string name="onboarding_bottom_position_title">Positie onderaan</string>

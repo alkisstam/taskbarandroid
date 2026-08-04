@@ -226,6 +226,8 @@
     <string name="onboarding_language_title">Wähle deine Sprache</string>
     <string name="onboarding_next">Weiter</string>
     <string name="onboarding_get_started">Loslegen</string>
+    <string name="onboarding_skip">Überspringen</string>
+    <string name="onboarding_apps_title">Bevorzugte Apps anheften</string>
     <string name="onboarding_welcome_title">Willkommen bei Floating Dock</string>
     <string name="onboarding_welcome_desc">Ein schwebendes Dock, das über jeder App liegt. Starte Apps, steuere die Musik und greife auf Schnelleinstellungen zu — ohne das zu verlassen, was du gerade tust.</string>
     <string name="onboarding_bottom_position_title">Position unten</string>

@@ -226,6 +226,8 @@
     <string name="onboarding_language_title">选择您的语言</string>
     <string name="onboarding_next">下一步</string>
     <string name="onboarding_get_started">开始使用</string>
+    <string name="onboarding_skip">跳过</string>
+    <string name="onboarding_apps_title">固定你喜欢的应用</string>
     <string name="onboarding_welcome_title">欢迎使用 Floating Dock</string>
     <string name="onboarding_welcome_desc">一款悬浮于所有应用之上的程序坞。无需离开当前操作，即可启动应用、控制音乐并访问快捷设置。</string>
     <string name="onboarding_bottom_position_title">底部位置</string>

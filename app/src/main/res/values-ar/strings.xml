@@ -226,6 +226,8 @@
     <string name="onboarding_language_title">اختر لغتك</string>
     <string name="onboarding_next">التالي</string>
     <string name="onboarding_get_started">ابدأ الآن</string>
+    <string name="onboarding_skip">تخطي</string>
+    <string name="onboarding_apps_title">ثبّت تطبيقاتك المفضلة</string>
     <string name="onboarding_welcome_title">مرحبًا بك في Floating Dock</string>
     <string name="onboarding_welcome_desc">رصيف عائم يظل فوق كل تطبيق. أطلق التطبيقات، وتحكم في الموسيقى، وصل إلى الإعدادات السريعة — دون مغادرة ما تفعله.</string>
     <string name="onboarding_bottom_position_title">الموضع السفلي</string>

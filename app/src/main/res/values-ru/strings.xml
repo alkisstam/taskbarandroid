@@ -226,6 +226,8 @@
     <string name="onboarding_language_title">Выберите язык</string>
     <string name="onboarding_next">Далее</string>
     <string name="onboarding_get_started">Начать</string>
+    <string name="onboarding_skip">Пропустить</string>
+    <string name="onboarding_apps_title">Закрепите любимые приложения</string>
     <string name="onboarding_welcome_title">Добро пожаловать в Floating Dock</string>
     <string name="onboarding_welcome_desc">Плавающая панель, которая всегда под рукой поверх любого приложения. Запускайте приложения, управляйте музыкой и быстрыми настройками, не отвлекаясь от текущих дел.</string>
     <string name="onboarding_bottom_position_title">Положение снизу</string>

@@ -226,6 +226,8 @@
     <string name="onboarding_language_title">Dilinizi seçin</string>
     <string name="onboarding_next">İleri</string>
     <string name="onboarding_get_started">Başlayın</string>
+    <string name="onboarding_skip">Atla</string>
+    <string name="onboarding_apps_title">Favori uygulamalarını sabitle</string>
     <string name="onboarding_welcome_title">Floating Dock\'a Hoş Geldiniz</string>
     <string name="onboarding_welcome_desc">Her uygulamanın üzerinde duran yüzen bir dock. Uygulamalar açın, müziği kontrol edin ve hızlı ayarlara erişin — yaptığınız işi bırakmadan.</string>
     <string name="onboarding_bottom_position_title">Alt Konum</string>

@@ -226,6 +226,8 @@
     <string name="onboarding_language_title">言語を選択してください</string>
     <string name="onboarding_next">次へ</string>
     <string name="onboarding_get_started">はじめる</string>
+    <string name="onboarding_skip">スキップ</string>
+    <string name="onboarding_apps_title">お気に入りのアプリをピン留め</string>
     <string name="onboarding_welcome_title">Floating Dockへようこそ</string>
     <string name="onboarding_welcome_desc">あらゆるアプリの上に常駐するフローティングドックです。今していることを中断せずに、アプリの起動、音楽の操作、クイック設定へのアクセスができます。</string>
     <string name="onboarding_bottom_position_title">下部に配置</string>

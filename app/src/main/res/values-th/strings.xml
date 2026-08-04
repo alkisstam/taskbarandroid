@@ -226,6 +226,8 @@
     <string name="onboarding_language_title">เลือกภาษาของคุณ</string>
     <string name="onboarding_next">ถัดไป</string>
     <string name="onboarding_get_started">เริ่มต้นใช้งาน</string>
+    <string name="onboarding_skip">ข้าม</string>
+    <string name="onboarding_apps_title">ปักหมุดแอปโปรดของคุณ</string>
     <string name="onboarding_welcome_title">ยินดีต้อนรับสู่ Floating Dock</string>
     <string name="onboarding_welcome_desc">ด็อกลอยที่อยู่เหนือทุกแอปตลอดเวลา เปิดแอป ควบคุมเพลง และเข้าถึงการตั้งค่าด่วนได้โดยไม่ต้องออกจากสิ่งที่กำลังทำอยู่</string>
     <string name="onboarding_bottom_position_title">ตำแหน่งด้านล่าง</string>

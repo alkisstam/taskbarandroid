@@ -226,6 +226,8 @@
     <string name="onboarding_language_title">अपनी भाषा चुनें</string>
     <string name="onboarding_next">अगला</string>
     <string name="onboarding_get_started">शुरू करें</string>
+    <string name="onboarding_skip">छोड़ें</string>
+    <string name="onboarding_apps_title">अपने पसंदीदा ऐप्स पिन करें</string>
     <string name="onboarding_welcome_title">Floating Dock में आपका स्वागत है</string>
     <string name="onboarding_welcome_desc">एक फ्लोटिंग डॉक जो हर ऐप के ऊपर बना रहता है। ऐप्स लॉन्च करें, म्यूजिक कंट्रोल करें, और जो कर रहे हैं उसे छोड़े बिना क्विक सेटिंग्स एक्सेस करें।</string>
     <string name="onboarding_bottom_position_title">निचली स्थिति</string>
