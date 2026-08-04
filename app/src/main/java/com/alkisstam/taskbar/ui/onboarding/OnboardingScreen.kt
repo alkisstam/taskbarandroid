@@ -12,11 +12,15 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -43,6 +47,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,8 +60,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.PillEdgePosition
+import com.alkisstam.taskbar.ui.common.toComposeShape
+import com.alkisstam.taskbar.ui.settings.AllAppGridItem
 import com.alkisstam.taskbar.ui.settings.LANGUAGE_OPTIONS
 import com.alkisstam.taskbar.ui.settings.GradientDropdownField
+import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -79,9 +87,10 @@ fun OnboardingScreen(
     onRequestNotificationsPermission: () -> Unit,
     onRequestNotificationListenerPermission: () -> Unit,
     onRequestBatteryOptimizationExclusion: () -> Unit,
+    viewModel: TaskbarViewModel,
     onComplete: () -> Unit
 ) {
-    val pagerState = rememberPagerState(pageCount = { 5 })
+    val pagerState = rememberPagerState(pageCount = { 6 })
     val scope = rememberCoroutineScope()
 
     Scaffold(contentWindowInsets = WindowInsets(0)) { _ ->
@@ -109,7 +118,7 @@ fun OnboardingScreen(
                         hasOverlayPermission = hasOverlayPermission,
                         onRequestOverlayPermission = onRequestOverlayPermission
                     )
-                    else -> OptionalPermissionsPage(
+                    4 -> OptionalPermissionsPage(
                         hasAccessibilityPermission = hasAccessibilityPermission,
                         hasWriteSettingsPermission = hasWriteSettingsPermission,
                         hasNotificationPolicyPermission = hasNotificationPolicyPermission,
@@ -123,6 +132,7 @@ fun OnboardingScreen(
                         onRequestNotificationListenerPermission = onRequestNotificationListenerPermission,
                         onRequestBatteryOptimizationExclusion = onRequestBatteryOptimizationExclusion
                     )
+                    else -> AppsPickerPage(viewModel)
                 }
             }
 
@@ -133,15 +143,19 @@ fun OnboardingScreen(
                     .padding(horizontal = 24.dp, vertical = 20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                PageDots(currentPage = pagerState.currentPage, totalPages = 5)
+                PageDots(currentPage = pagerState.currentPage, totalPages = 6)
                 Spacer(modifier = Modifier.weight(1f))
-                if (pagerState.currentPage < 4) {
+                if (pagerState.currentPage < 5) {
                     Button(onClick = {
                         scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) }
                     }) {
                         Text(stringResource(R.string.onboarding_next))
                     }
                 } else {
+                    TextButton(onClick = onComplete) {
+                        Text(stringResource(R.string.onboarding_skip))
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
                     Button(onClick = onComplete) {
                         Text(stringResource(R.string.onboarding_get_started))
                     }
@@ -209,6 +223,54 @@ private fun LanguageSelectionPage(
             isSelected = { it == selectedLanguageTag },
             onSelect = onLanguageSelected
         )
+    }
+}
+
+@Composable
+private fun AppsPickerPage(viewModel: TaskbarViewModel) {
+    val allApps by viewModel.allApps.collectAsState()
+    val pinnedApps by viewModel.pinnedApps.collectAsState()
+    val pinnedPackages = remember(pinnedApps) { pinnedApps.map { it.packageName }.toSet() }
+    val taskbarSettings by viewModel.taskbarSettings.collectAsState()
+    val iconShape = taskbarSettings.iconShape.toComposeShape()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Spacer(modifier = Modifier.height(24.dp))
+        Text(
+            text = stringResource(R.string.onboarding_apps_title),
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(4),
+            modifier = Modifier.weight(1f),
+            contentPadding = PaddingValues(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            items(allApps, key = { it.packageName }) { app ->
+                AllAppGridItem(
+                    app = app,
+                    isPinned = app.packageName in pinnedPackages,
+                    iconShape = iconShape,
+                    onTogglePin = {
+                        if (app.packageName in pinnedPackages)
+                            viewModel.unpinApp(app.packageName)
+                        else
+                            viewModel.pinApp(app.packageName)
+                    }
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(24.dp))
     }
 }
 

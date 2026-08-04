@@ -1053,7 +1053,7 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
 }
 
 @Composable
-private fun AllAppGridItem(
+internal fun AllAppGridItem(
     app: AppInfo,
     isPinned: Boolean,
     iconShape: Shape = RectangleShape,

@@ -138,6 +138,7 @@ class MainActivity : AppCompatActivity() {
                         onRequestNotificationsPermission = ::requestNotificationsPermission,
                         onRequestNotificationListenerPermission = ::requestNotificationListenerPermission,
                         onRequestBatteryOptimizationExclusion = ::requestBatteryOptimizationExclusion,
+                        viewModel = taskbarViewModel,
                         onComplete = taskbarViewModel::completeOnboarding
                     )
                     true -> {
