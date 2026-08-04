@@ -196,7 +196,8 @@ val whatsNewReleases = listOf(
         highlights = listOf(
             "New language picker in Settings → General — choose the app's language independent of your device's system language",
             "The app is now fully translated into 16 languages, not just the Play Store listing",
-            "New installs are asked to pick a language on the first onboarding screen"
+            "New installs are asked to pick a language on the first onboarding screen",
+            "New installs can now pin their favorite apps right from onboarding, before ever reaching the dock"
         )
     )
 )
