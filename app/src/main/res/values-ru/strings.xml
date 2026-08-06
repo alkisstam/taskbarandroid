@@ -114,6 +114,7 @@
     <string name="settings_app_grid_columns_label">Столбцы</string>
     <string name="settings_app_grid_rows_label">Строки</string>
     <string name="settings_app_grid_title">Сетка приложений</string>
+    <string name="settings_app_order_title">Порядок приложений</string>
     <string name="settings_autohide_fullscreen_desc">Скрывать панель, когда приложение переходит в полноэкранный режим</string>
     <string name="settings_autohide_fullscreen_title">Автоскрытие в полноэкранном режиме</string>
     <string name="settings_autohide_landscape_desc">Скрывать панель, когда устройство в альбомной ориентации</string>
@@ -277,6 +278,10 @@
     <string name="app_action_pin_to_dock">Закрепить на панели</string>
     <string name="app_action_unpin_from_dock">Открепить от панели</string>
     <string name="app_action_hide_app">Скрыть приложение</string>
+    <string name="app_sort_order_name">По имени</string>
+    <string name="app_sort_order_install_time">По времени установки</string>
+    <string name="app_sort_order_usage">По использованию</string>
+    <string name="app_menu_sort_button_content_description">Сортировка приложений</string>
     <string name="search_close_description">Закрыть поиск</string>
     <string name="search_clear_description">Очистить</string>
 

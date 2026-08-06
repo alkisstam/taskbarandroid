@@ -114,6 +114,7 @@
     <string name="settings_app_grid_columns_label">Kolommen</string>
     <string name="settings_app_grid_rows_label">Rijen</string>
     <string name="settings_app_grid_title">App-raster</string>
+    <string name="settings_app_order_title">App-volgorde</string>
     <string name="settings_autohide_fullscreen_desc">Verberg de dock wanneer een app volledig scherm gebruikt</string>
     <string name="settings_autohide_fullscreen_title">Automatisch verbergen in volledig scherm</string>
     <string name="settings_autohide_landscape_desc">Verberg de dock wanneer het apparaat liggend staat</string>
@@ -277,6 +278,10 @@
     <string name="app_action_pin_to_dock">Vastzetten op dock</string>
     <string name="app_action_unpin_from_dock">Losmaken van dock</string>
     <string name="app_action_hide_app">App verbergen</string>
+    <string name="app_sort_order_name">Op naam</string>
+    <string name="app_sort_order_install_time">Op installatiedatum</string>
+    <string name="app_sort_order_usage">Op gebruik</string>
+    <string name="app_menu_sort_button_content_description">Apps sorteren</string>
     <string name="search_close_description">Zoeken sluiten</string>
     <string name="search_clear_description">Wissen</string>
 

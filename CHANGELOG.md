@@ -4,6 +4,15 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.5.5] - Unreleased
+
+App sort order.
+
+### Added
+- **App order setting** — Settings → Apps → App order lets you sort the app menu's app grid by Name, Install time (newest first), or Usage (most-launched first). Also available via a new sort button (⋮) next to the search bar inside the app menu panel itself.
+
+---
+
 ## [1.5.4] - 2026-08-02
 
 In-app language support.

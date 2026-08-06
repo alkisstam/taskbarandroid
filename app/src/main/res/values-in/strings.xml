@@ -114,6 +114,7 @@
     <string name="settings_app_grid_columns_label">Kolom</string>
     <string name="settings_app_grid_rows_label">Baris</string>
     <string name="settings_app_grid_title">Grid Aplikasi</string>
+    <string name="settings_app_order_title">Urutan Aplikasi</string>
     <string name="settings_autohide_fullscreen_desc">Sembunyikan dock saat aplikasi masuk mode layar penuh</string>
     <string name="settings_autohide_fullscreen_title">Sembunyikan Otomatis saat Layar Penuh</string>
     <string name="settings_autohide_landscape_desc">Sembunyikan dock saat perangkat dalam posisi lanskap</string>
@@ -277,6 +278,10 @@
     <string name="app_action_pin_to_dock">Sematkan ke Dock</string>
     <string name="app_action_unpin_from_dock">Lepas dari Dock</string>
     <string name="app_action_hide_app">Sembunyikan Aplikasi</string>
+    <string name="app_sort_order_name">Berdasarkan nama</string>
+    <string name="app_sort_order_install_time">Berdasarkan waktu instalasi</string>
+    <string name="app_sort_order_usage">Berdasarkan penggunaan</string>
+    <string name="app_menu_sort_button_content_description">Urutkan aplikasi</string>
     <string name="search_close_description">Tutup pencarian</string>
     <string name="search_clear_description">Hapus</string>
 

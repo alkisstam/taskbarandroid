@@ -114,6 +114,7 @@
     <string name="settings_app_grid_columns_label">עמודות</string>
     <string name="settings_app_grid_rows_label">שורות</string>
     <string name="settings_app_grid_title">רשת אפליקציות</string>
+    <string name="settings_app_order_title">סדר אפליקציות</string>
     <string name="settings_autohide_fullscreen_desc">הסתרת הדוק כשאפליקציה עוברת למסך מלא</string>
     <string name="settings_autohide_fullscreen_title">הסתרה אוטומטית במסך מלא</string>
     <string name="settings_autohide_landscape_desc">הסתרת הדוק כשהמכשיר במצב אופקי</string>
@@ -277,6 +278,10 @@
     <string name="app_action_pin_to_dock">נעיצה לדוק</string>
     <string name="app_action_unpin_from_dock">ביטול נעיצה מהדוק</string>
     <string name="app_action_hide_app">הסתרת אפליקציה</string>
+    <string name="app_sort_order_name">לפי שם</string>
+    <string name="app_sort_order_install_time">לפי זמן התקנה</string>
+    <string name="app_sort_order_usage">לפי שימוש</string>
+    <string name="app_menu_sort_button_content_description">מיון אפליקציות</string>
     <string name="search_close_description">סגירת החיפוש</string>
     <string name="search_clear_description">ניקוי</string>
 

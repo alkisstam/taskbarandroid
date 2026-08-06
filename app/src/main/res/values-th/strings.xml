@@ -114,6 +114,7 @@
     <string name="settings_app_grid_columns_label">คอลัมน์</string>
     <string name="settings_app_grid_rows_label">แถว</string>
     <string name="settings_app_grid_title">ตารางแอป</string>
+    <string name="settings_app_order_title">ลำดับแอป</string>
     <string name="settings_autohide_fullscreen_desc">ซ่อนด็อกเมื่อแอปเข้าสู่โหมดเต็มจอ</string>
     <string name="settings_autohide_fullscreen_title">ซ่อนอัตโนมัติเมื่อเต็มจอ</string>
     <string name="settings_autohide_landscape_desc">ซ่อนด็อกเมื่ออุปกรณ์อยู่ในแนวนอน</string>
@@ -277,6 +278,10 @@
     <string name="app_action_pin_to_dock">ปักหมุดลงด็อก</string>
     <string name="app_action_unpin_from_dock">เลิกปักหมุดจากด็อก</string>
     <string name="app_action_hide_app">ซ่อนแอป</string>
+    <string name="app_sort_order_name">ตามชื่อ</string>
+    <string name="app_sort_order_install_time">ตามเวลาที่ติดตั้ง</string>
+    <string name="app_sort_order_usage">ตามการใช้งาน</string>
+    <string name="app_menu_sort_button_content_description">จัดเรียงแอป</string>
     <string name="search_close_description">ปิดการค้นหา</string>
     <string name="search_clear_description">ล้าง</string>
 

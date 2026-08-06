@@ -114,6 +114,7 @@
     <string name="settings_app_grid_columns_label">列数</string>
     <string name="settings_app_grid_rows_label">行数</string>
     <string name="settings_app_grid_title">应用网格</string>
+    <string name="settings_app_order_title">应用排序</string>
     <string name="settings_autohide_fullscreen_desc">应用全屏时隐藏程序坞</string>
     <string name="settings_autohide_fullscreen_title">全屏时自动隐藏</string>
     <string name="settings_autohide_landscape_desc">设备横屏时隐藏程序坞</string>
@@ -277,6 +278,10 @@
     <string name="app_action_pin_to_dock">固定到程序坞</string>
     <string name="app_action_unpin_from_dock">取消固定</string>
     <string name="app_action_hide_app">隐藏应用</string>
+    <string name="app_sort_order_name">按名称</string>
+    <string name="app_sort_order_install_time">按安装时间</string>
+    <string name="app_sort_order_usage">按使用频率</string>
+    <string name="app_menu_sort_button_content_description">排序应用</string>
     <string name="search_close_description">关闭搜索</string>
     <string name="search_clear_description">清除</string>
 

@@ -114,6 +114,7 @@
     <string name="settings_app_grid_columns_label">Sütun</string>
     <string name="settings_app_grid_rows_label">Satır</string>
     <string name="settings_app_grid_title">Uygulama Izgarası</string>
+    <string name="settings_app_order_title">Uygulama Sırası</string>
     <string name="settings_autohide_fullscreen_desc">Bir uygulama tam ekrana geçtiğinde dock\'u gizle</string>
     <string name="settings_autohide_fullscreen_title">Tam Ekranda Otomatik Gizle</string>
     <string name="settings_autohide_landscape_desc">Cihaz yatay konumdayken dock\'u gizle</string>
@@ -277,6 +278,10 @@
     <string name="app_action_pin_to_dock">Dock\'a Sabitle</string>
     <string name="app_action_unpin_from_dock">Dock\'tan Kaldır</string>
     <string name="app_action_hide_app">Uygulamayı Gizle</string>
+    <string name="app_sort_order_name">Ada göre</string>
+    <string name="app_sort_order_install_time">Yükleme zamanına göre</string>
+    <string name="app_sort_order_usage">Kullanıma göre</string>
+    <string name="app_menu_sort_button_content_description">Uygulamaları sırala</string>
     <string name="search_close_description">Aramayı kapat</string>
     <string name="search_clear_description">Temizle</string>
 

@@ -199,6 +199,14 @@ val whatsNewReleases = listOf(
             "New installs are asked to pick a language on the first onboarding screen",
             "New installs can now pin their favorite apps right from onboarding, before ever reaching the dock"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.5.5",
+        versionCode = 58,
+        highlights = listOf(
+            "New App order setting in Settings → Apps — sort the app menu's app grid by Name, Install time, or Usage",
+            "New sort button (⋮) next to the search bar in the app menu panel for the same setting"
+        )
     )
 )
 

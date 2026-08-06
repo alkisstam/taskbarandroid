@@ -114,6 +114,7 @@
     <string name="settings_app_grid_columns_label">الأعمدة</string>
     <string name="settings_app_grid_rows_label">الصفوف</string>
     <string name="settings_app_grid_title">شبكة التطبيقات</string>
+    <string name="settings_app_order_title">ترتيب التطبيقات</string>
     <string name="settings_autohide_fullscreen_desc">إخفاء الرصيف عندما ينتقل تطبيق إلى وضع ملء الشاشة</string>
     <string name="settings_autohide_fullscreen_title">الإخفاء التلقائي في وضع ملء الشاشة</string>
     <string name="settings_autohide_landscape_desc">إخفاء الرصيف عندما يكون الجهاز في الوضع الأفقي</string>
@@ -277,6 +278,10 @@
     <string name="app_action_pin_to_dock">تثبيت في الرصيف</string>
     <string name="app_action_unpin_from_dock">إلغاء التثبيت من الرصيف</string>
     <string name="app_action_hide_app">إخفاء التطبيق</string>
+    <string name="app_sort_order_name">حسب الاسم</string>
+    <string name="app_sort_order_install_time">حسب وقت التثبيت</string>
+    <string name="app_sort_order_usage">حسب الاستخدام</string>
+    <string name="app_menu_sort_button_content_description">فرز التطبيقات</string>
     <string name="search_close_description">إغلاق البحث</string>
     <string name="search_clear_description">مسح</string>
 

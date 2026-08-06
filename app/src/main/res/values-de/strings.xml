@@ -114,6 +114,7 @@
     <string name="settings_app_grid_columns_label">Spalten</string>
     <string name="settings_app_grid_rows_label">Zeilen</string>
     <string name="settings_app_grid_title">App-Raster</string>
+    <string name="settings_app_order_title">App-Reihenfolge</string>
     <string name="settings_autohide_fullscreen_desc">Das Dock ausblenden, wenn eine App in den Vollbildmodus wechselt</string>
     <string name="settings_autohide_fullscreen_title">Automatisch ausblenden im Vollbildmodus</string>
     <string name="settings_autohide_landscape_desc">Das Dock ausblenden, wenn sich das Gerät im Querformat befindet</string>
@@ -277,6 +278,10 @@
     <string name="app_action_pin_to_dock">Am Dock anheften</string>
     <string name="app_action_unpin_from_dock">Vom Dock lösen</string>
     <string name="app_action_hide_app">App ausblenden</string>
+    <string name="app_sort_order_name">Nach Name</string>
+    <string name="app_sort_order_install_time">Nach Installationszeit</string>
+    <string name="app_sort_order_usage">Nach Nutzung</string>
+    <string name="app_menu_sort_button_content_description">Apps sortieren</string>
     <string name="search_close_description">Suche schließen</string>
     <string name="search_clear_description">Löschen</string>
 

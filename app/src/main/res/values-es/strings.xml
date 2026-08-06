@@ -114,6 +114,7 @@
     <string name="settings_app_grid_columns_label">Columnas</string>
     <string name="settings_app_grid_rows_label">Filas</string>
     <string name="settings_app_grid_title">Cuadrícula de aplicaciones</string>
+    <string name="settings_app_order_title">Orden de apps</string>
     <string name="settings_autohide_fullscreen_desc">Oculta el dock cuando una app pasa a pantalla completa</string>
     <string name="settings_autohide_fullscreen_title">Ocultar automáticamente en pantalla completa</string>
     <string name="settings_autohide_landscape_desc">Oculta el dock cuando el dispositivo está en horizontal</string>
@@ -277,6 +278,10 @@
     <string name="app_action_pin_to_dock">Anclar al dock</string>
     <string name="app_action_unpin_from_dock">Desanclar del dock</string>
     <string name="app_action_hide_app">Ocultar app</string>
+    <string name="app_sort_order_name">Por nombre</string>
+    <string name="app_sort_order_install_time">Por fecha de instalación</string>
+    <string name="app_sort_order_usage">Por uso</string>
+    <string name="app_menu_sort_button_content_description">Ordenar apps</string>
     <string name="search_close_description">Cerrar búsqueda</string>
     <string name="search_clear_description">Borrar</string>
 

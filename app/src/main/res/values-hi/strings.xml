@@ -114,6 +114,7 @@
     <string name="settings_app_grid_columns_label">कॉलम</string>
     <string name="settings_app_grid_rows_label">पंक्तियां</string>
     <string name="settings_app_grid_title">ऐप ग्रिड</string>
+    <string name="settings_app_order_title">ऐप क्रम</string>
     <string name="settings_autohide_fullscreen_desc">जब कोई ऐप फुलस्क्रीन हो जाए तो डॉक को छिपाएं</string>
     <string name="settings_autohide_fullscreen_title">फुलस्क्रीन में ऑटो-हाइड</string>
     <string name="settings_autohide_landscape_desc">डिवाइस लैंडस्केप मोड में होने पर डॉक को छिपाएं</string>
@@ -277,6 +278,10 @@
     <string name="app_action_pin_to_dock">डॉक पर पिन करें</string>
     <string name="app_action_unpin_from_dock">डॉक से अनपिन करें</string>
     <string name="app_action_hide_app">ऐप छिपाएं</string>
+    <string name="app_sort_order_name">नाम से</string>
+    <string name="app_sort_order_install_time">इंस्टॉल समय से</string>
+    <string name="app_sort_order_usage">उपयोग से</string>
+    <string name="app_menu_sort_button_content_description">ऐप्स क्रमबद्ध करें</string>
     <string name="search_close_description">खोज बंद करें</string>
     <string name="search_clear_description">साफ़ करें</string>
 
