@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.AppRepository
+import com.alkisstam.taskbar.data.AppSortOrder
 import com.alkisstam.taskbar.data.IconPackRepository
 import com.alkisstam.taskbar.data.PillSettings
 import com.alkisstam.taskbar.data.PreferencesRepository
@@ -59,6 +60,7 @@ class TaskbarViewModelTest {
             every { taskbarVisible } returns flowOf(true)
             every { hiddenApps } returns flowOf(emptySet())
             every { iconPackPackage } returns flowOf("")
+            every { appSortOrder } returns flowOf(AppSortOrder.NAME)
         }
         iconPackRepo = mockk<IconPackRepository>(relaxed = true)
     }

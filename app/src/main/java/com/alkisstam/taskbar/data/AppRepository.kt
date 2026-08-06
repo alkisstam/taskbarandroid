@@ -144,10 +144,16 @@ class AppRepository @Inject constructor(
                                 Log.w("AppRepository", "Icon load failed, keeping app without icon: ${activityInfo.packageName}", e)
                                 null
                             }
+                            val installTime = try {
+                                pm.getPackageInfo(activityInfo.packageName, 0).firstInstallTime
+                            } catch (e: Exception) {
+                                0L
+                            }
                             AppInfo(
                                 packageName = activityInfo.packageName,
                                 label = resolveInfo.loadLabel(pm).toString(),
-                                icon = icon
+                                icon = icon,
+                                firstInstallTime = installTime
                             )
                         }
                         .distinctBy { it.packageName }

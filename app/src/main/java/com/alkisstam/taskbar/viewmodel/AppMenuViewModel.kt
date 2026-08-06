@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.AppRepository
+import com.alkisstam.taskbar.data.AppSortOrder
 import com.alkisstam.taskbar.data.MediaRepository
 import com.alkisstam.taskbar.data.MediaState
 import com.alkisstam.taskbar.data.PreferencesRepository
@@ -60,6 +61,17 @@ data class QuickControlsState(
 
 private const val TAG = "AppMenuViewModel"
 
+private fun sortApps(apps: List<AppInfo>, order: AppSortOrder, counts: Map<String, Int>): List<AppInfo> =
+    when (order) {
+        AppSortOrder.NAME -> apps.sortedBy { it.label.lowercase() }
+        AppSortOrder.INSTALL_TIME -> apps.sortedWith(
+            compareByDescending<AppInfo> { it.firstInstallTime }.thenBy { it.label.lowercase() }
+        )
+        AppSortOrder.USAGE -> apps.sortedWith(
+            compareByDescending<AppInfo> { counts[it.packageName] ?: 0 }.thenBy { it.label.lowercase() }
+        )
+    }
+
 private fun fuzzyScore(label: String, query: String): Int? {
     val l = label.lowercase()
     val q = query.trim().lowercase()
@@ -88,7 +100,21 @@ class AppMenuViewModel @Inject constructor(
     private val mediaRepository: MediaRepository
 ) : ViewModel() {
 
-    val allApps: StateFlow<List<AppInfo>> = appRepository.apps
+    val appSortOrder: StateFlow<AppSortOrder> = prefsRepository.appSortOrder
+        .stateIn(viewModelScope, SharingStarted.Eagerly, AppSortOrder.NAME)
+
+    val appLaunchCounts: StateFlow<Map<String, Int>> = prefsRepository.appLaunchCounts
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
+
+    fun setAppSortOrder(order: AppSortOrder) {
+        viewModelScope.launch { prefsRepository.setAppSortOrder(order) }
+    }
+
+    val allApps: StateFlow<List<AppInfo>> = combine(
+        appRepository.apps, appSortOrder, appLaunchCounts
+    ) { apps, order, counts ->
+        sortApps(apps, order, counts)
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
@@ -113,8 +139,8 @@ class AppMenuViewModel @Inject constructor(
     val hiddenApps: StateFlow<Set<String>> = prefsRepository.hiddenApps
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptySet())
 
-    val filteredApps: StateFlow<List<AppInfo>> = combine(appRepository.apps, _searchQuery, fuzzySearchEnabled, prefsRepository.hiddenApps) { allApps, query, fuzzyEnabled, hidden ->
-        val apps = allApps.filter { it.packageName !in hidden }
+    val filteredApps: StateFlow<List<AppInfo>> = combine(allApps, _searchQuery, fuzzySearchEnabled, prefsRepository.hiddenApps) { sorted, query, fuzzyEnabled, hidden ->
+        val apps = sorted.filter { it.packageName !in hidden }
         val q = query.trim()
         when {
             q.isEmpty() -> apps
@@ -433,7 +459,10 @@ class AppMenuViewModel @Inject constructor(
 
     fun launchApp(packageName: String) {
         appRepository.launchApp(packageName)
-        viewModelScope.launch { prefsRepository.addRecentOpenedApp(packageName) }
+        viewModelScope.launch {
+            prefsRepository.addRecentOpenedApp(packageName)
+            prefsRepository.incrementLaunchCount(packageName)
+        }
         _menuVisible.value = false
         closeSearch()
     }

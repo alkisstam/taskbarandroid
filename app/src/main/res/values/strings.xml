@@ -114,6 +114,7 @@
     <string name="settings_app_grid_columns_label">Columns</string>
     <string name="settings_app_grid_rows_label">Rows</string>
     <string name="settings_app_grid_title">App Grid</string>
+    <string name="settings_app_order_title">App order</string>
     <string name="settings_autohide_fullscreen_desc">Hide the dock when an app goes fullscreen</string>
     <string name="settings_autohide_fullscreen_title">Auto-hide in Fullscreen</string>
     <string name="settings_autohide_landscape_desc">Hide the dock when the device is in landscape</string>
@@ -277,6 +278,10 @@
     <string name="app_action_pin_to_dock">Pin to Dock</string>
     <string name="app_action_unpin_from_dock">Unpin from Dock</string>
     <string name="app_action_hide_app">Hide App</string>
+    <string name="app_sort_order_name">By name</string>
+    <string name="app_sort_order_install_time">By install time</string>
+    <string name="app_sort_order_usage">By usage</string>
+    <string name="app_menu_sort_button_content_description">Sort apps</string>
     <string name="search_close_description">Close search</string>
     <string name="search_clear_description">Clear</string>
 

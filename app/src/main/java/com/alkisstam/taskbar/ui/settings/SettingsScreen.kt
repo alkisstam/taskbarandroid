@@ -63,6 +63,7 @@ import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.ScreenRotationAlt
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.SignalCellular4Bar
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material.icons.filled.Dashboard
@@ -119,6 +120,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.AppInfo
+import com.alkisstam.taskbar.data.AppSortOrder
 import com.alkisstam.taskbar.ui.common.AppIconImage
 import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import com.alkisstam.taskbar.ui.common.toComposeShape
@@ -1020,6 +1022,23 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
                         onCheckedChange = { viewModel.setShowRecentAppsRow(it) }
                     )
                 }
+            }
+        }
+        item {
+            SettingsCard(title = stringResource(R.string.settings_app_order_title)) {
+                val appSortOrder by viewModel.appSortOrder.collectAsState()
+                val options = listOf(
+                    stringResource(R.string.app_sort_order_name) to AppSortOrder.NAME,
+                    stringResource(R.string.app_sort_order_install_time) to AppSortOrder.INSTALL_TIME,
+                    stringResource(R.string.app_sort_order_usage) to AppSortOrder.USAGE
+                )
+                GradientDropdownField(
+                    icon = Icons.AutoMirrored.Filled.Sort,
+                    selectedLabel = options.first { it.second == appSortOrder }.first,
+                    options = options,
+                    isSelected = { it == appSortOrder },
+                    onSelect = { viewModel.setAppSortOrder(it) }
+                )
             }
         }
         item {

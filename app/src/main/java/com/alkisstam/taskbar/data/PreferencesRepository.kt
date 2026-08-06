@@ -73,6 +73,8 @@ enum class AppMenuButtonSide { LEFT, RIGHT }
 
 enum class IconShape { DEFAULT, SQUARE, SQUIRCLE, CIRCLE }
 
+enum class AppSortOrder { NAME, INSTALL_TIME, USAGE }
+
 val DockPadding.bottomGapDp: Float
     get() = when (this) {
         DockPadding.DEFAULT -> 20f
@@ -201,6 +203,8 @@ class PreferencesRepository @Inject constructor(
         private val REVIEW_PROMPTED_KEY = booleanPreferencesKey("review_prompted")
         private val ICON_PACK_KEY = stringPreferencesKey("icon_pack_package")
         private val APP_LANGUAGE_TAG_KEY = stringPreferencesKey("app_language_tag")
+        private val APP_SORT_ORDER_KEY = stringPreferencesKey("app_sort_order")
+        private val APP_LAUNCH_COUNTS_KEY = stringPreferencesKey("app_launch_counts")
 
         val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen", "caffeine", "clipboard", "calculator", "wifi", "bluetooth", "mobile_data", "share", "notif_history", "notes")
 
@@ -221,6 +225,17 @@ class PreferencesRepository @Inject constructor(
                 stored.split("||").filter { it.isNotBlank() }
             }
         }
+
+        internal fun serializeLaunchCounts(counts: Map<String, Int>): String =
+            JSONObject().apply { counts.forEach { (k, v) -> put(k, v) } }.toString()
+
+        internal fun deserializeLaunchCounts(stored: String): Map<String, Int> =
+            try {
+                val obj = JSONObject(stored)
+                obj.keys().asSequence().associateWith { obj.getInt(it) }
+            } catch (e: JSONException) {
+                emptyMap()
+            }
     }
 
     val pinnedApps: Flow<List<String>> = safeData.map { prefs ->
@@ -601,6 +616,28 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
+    val appSortOrder: Flow<AppSortOrder> = safeData.map { prefs ->
+        prefs[APP_SORT_ORDER_KEY]?.let { runCatching { AppSortOrder.valueOf(it) }.getOrNull() } ?: AppSortOrder.NAME
+    }
+
+    suspend fun setAppSortOrder(order: AppSortOrder) {
+        context.dataStore.edit { prefs ->
+            prefs[APP_SORT_ORDER_KEY] = order.name
+        }
+    }
+
+    val appLaunchCounts: Flow<Map<String, Int>> = safeData.map { prefs ->
+        prefs[APP_LAUNCH_COUNTS_KEY]?.let { deserializeLaunchCounts(it) } ?: emptyMap()
+    }
+
+    suspend fun incrementLaunchCount(packageName: String) {
+        context.dataStore.edit { prefs ->
+            val current = prefs[APP_LAUNCH_COUNTS_KEY]?.let { deserializeLaunchCounts(it) } ?: emptyMap()
+            val updated = current + (packageName to ((current[packageName] ?: 0) + 1))
+            prefs[APP_LAUNCH_COUNTS_KEY] = serializeLaunchCounts(updated)
+        }
+    }
+
     // Non-null only while caffeine is active; survives process death so the user's real
     // screen timeout can be restored on the next start instead of staying forced.
     val caffeineOriginalTimeout: Flow<Int?> = safeData.map { prefs ->
@@ -725,6 +762,7 @@ class PreferencesRepository @Inject constructor(
             prefs[GRAIN_ALPHA_KEY]?.let { put("grain_alpha", it) }
             prefs[ICON_PACK_KEY]?.let { put("icon_pack_package", it) }
             prefs[APP_LANGUAGE_TAG_KEY]?.let { put("app_language_tag", it) }
+            prefs[APP_SORT_ORDER_KEY]?.let { put("app_sort_order", it) }
         }.toString()
     }
 
@@ -779,6 +817,7 @@ class PreferencesRepository @Inject constructor(
             if (obj.has("grain_alpha")) prefs[GRAIN_ALPHA_KEY] = obj.getDouble("grain_alpha").toFloat()
             if (obj.has("icon_pack_package")) prefs[ICON_PACK_KEY] = obj.getString("icon_pack_package")
             if (obj.has("app_language_tag")) prefs[APP_LANGUAGE_TAG_KEY] = obj.getString("app_language_tag")
+            if (obj.has("app_sort_order")) prefs[APP_SORT_ORDER_KEY] = obj.getString("app_sort_order")
         }
         if (obj.has("app_language_tag")) applyLocale(obj.getString("app_language_tag"))
     }

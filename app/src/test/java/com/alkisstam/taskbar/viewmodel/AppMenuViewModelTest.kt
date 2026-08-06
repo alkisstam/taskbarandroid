@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.media.AudioManager
 import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.AppRepository
+import com.alkisstam.taskbar.data.AppSortOrder
 import com.alkisstam.taskbar.data.MediaRepository
 import com.alkisstam.taskbar.data.MediaState
 import com.alkisstam.taskbar.data.PreferencesRepository
@@ -55,6 +56,8 @@ class AppMenuViewModelTest {
             every { musicPanelOpen } returns flowOf(false)
             every { caffeineOriginalTimeout } returns flowOf(null)
             every { hiddenApps } returns flowOf(emptySet())
+            every { appSortOrder } returns flowOf(AppSortOrder.NAME)
+            every { appLaunchCounts } returns flowOf(emptyMap())
         }
         quickControls = mockk<QuickControlsRepository>(relaxed = true) {
             every { getRingerMode() } returns AudioManager.RINGER_MODE_NORMAL

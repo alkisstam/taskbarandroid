@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.AppRepository
+import com.alkisstam.taskbar.data.AppSortOrder
 import com.alkisstam.taskbar.data.DARK_TINT_PRESETS
 import com.alkisstam.taskbar.data.LIGHT_TINT_PRESETS
 import com.alkisstam.taskbar.data.IconPackInfo
@@ -166,6 +167,13 @@ class TaskbarViewModel @Inject constructor(
 
     val showRecentAppsRow: StateFlow<Boolean> = prefsRepository.showRecentAppsRow
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    val appSortOrder: StateFlow<AppSortOrder> = prefsRepository.appSortOrder
+        .stateIn(viewModelScope, SharingStarted.Eagerly, AppSortOrder.NAME)
+
+    fun setAppSortOrder(order: AppSortOrder) {
+        viewModelScope.launch { prefsRepository.setAppSortOrder(order) }
+    }
 
     val hapticFeedbackEnabled: StateFlow<Boolean> = prefsRepository.hapticFeedbackEnabled
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
