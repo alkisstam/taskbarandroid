@@ -68,7 +68,7 @@ class AppMenuViewModelTest {
         }
     }
 
-    private fun createViewModel() = AppMenuViewModel(context, appRepo, prefsRepo, quickControls, mediaRepo)
+    private fun createViewModel() = AppMenuViewModel(context, appRepo, prefsRepo, quickControls, mediaRepo, mainDispatcherRule.dispatcher)
 
     // region Volume / brightness panel mutual exclusion
 

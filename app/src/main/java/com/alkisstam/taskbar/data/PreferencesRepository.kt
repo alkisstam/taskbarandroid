@@ -19,6 +19,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -628,7 +629,7 @@ class PreferencesRepository @Inject constructor(
 
     val appLaunchCounts: Flow<Map<String, Int>> = safeData.map { prefs ->
         prefs[APP_LAUNCH_COUNTS_KEY]?.let { deserializeLaunchCounts(it) } ?: emptyMap()
-    }
+    }.flowOn(Dispatchers.Default)
 
     suspend fun incrementLaunchCount(packageName: String) {
         context.dataStore.edit { prefs ->

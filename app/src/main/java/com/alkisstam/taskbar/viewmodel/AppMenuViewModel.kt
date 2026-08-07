@@ -19,6 +19,7 @@ import com.alkisstam.taskbar.data.QuickControlsChangeListener
 import com.alkisstam.taskbar.data.QuickControlsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -26,6 +27,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -97,7 +99,8 @@ class AppMenuViewModel @Inject constructor(
     private val appRepository: AppRepository,
     private val prefsRepository: PreferencesRepository,
     private val quickControls: QuickControlsRepository,
-    private val mediaRepository: MediaRepository
+    private val mediaRepository: MediaRepository,
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : ViewModel() {
 
     val appSortOrder: StateFlow<AppSortOrder> = prefsRepository.appSortOrder
@@ -114,7 +117,8 @@ class AppMenuViewModel @Inject constructor(
         appRepository.apps, appSortOrder, appLaunchCounts
     ) { apps, order, counts ->
         sortApps(apps, order, counts)
-    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+    }.flowOn(defaultDispatcher)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
@@ -150,7 +154,8 @@ class AppMenuViewModel @Inject constructor(
             else -> apps.filter { it.label.contains(q, ignoreCase = true) }
                 .sortedBy { it.label.lowercase() }
         }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    }.flowOn(defaultDispatcher)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _quickControlsState = MutableStateFlow(QuickControlsState())
     val quickControlsState: StateFlow<QuickControlsState> = _quickControlsState.asStateFlow()
