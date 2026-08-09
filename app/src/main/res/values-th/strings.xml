@@ -153,7 +153,6 @@
     <string name="settings_control_clipboard">คลิปบอร์ด</string>
     <string name="settings_control_dnd">DND</string>
     <string name="settings_control_lock">ล็อก</string>
-    <string name="settings_control_mobile_data">ข้อมูลมือถือ</string>
     <string name="settings_control_notes">โน้ต</string>
     <string name="settings_control_notifications">การแจ้งเตือน</string>
     <string name="settings_control_power">เพาเวอร์</string>
@@ -325,7 +324,6 @@
     <string name="quick_control_calculator_label">เครื่องคิดเลข</string>
     <string name="quick_control_wifi_label">Wi-Fi</string>
     <string name="quick_control_bluetooth_label">บลูทูธ</string>
-    <string name="quick_control_mobile_data_label">เน็ต</string>
     <string name="quick_control_share_label">แชร์</string>
     <string name="quick_control_notif_history_label">แจ้งเตือน</string>
     <string name="quick_control_music_label">เพลง</string>

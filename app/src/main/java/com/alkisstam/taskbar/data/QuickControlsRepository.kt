@@ -13,7 +13,6 @@ import android.media.AudioManager
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.provider.Settings
-import android.telephony.TelephonyManager
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.alkisstam.taskbar.service.TaskBarAccessibilityService
@@ -267,36 +266,6 @@ class QuickControlsRepository @Inject constructor(
         }
     }
 
-    fun isMobileDataEnabled(): Boolean {
-        val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager ?: return false
-        return try {
-            tm.isDataEnabled
-        } catch (e: SecurityException) {
-            false
-        } catch (e: Exception) {
-            false
-        }
-    }
-
-    fun openMobileDataPanel() {
-        val intent = Intent(Settings.ACTION_DATA_ROAMING_SETTINGS).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
-        try {
-            context.startActivity(intent)
-        } catch (e: Exception) {
-            Log.w(TAG, "Failed to open mobile network settings, falling back to wireless settings", e)
-            val fallback = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                Settings.Panel.ACTION_INTERNET_CONNECTIVITY
-            else
-                Settings.ACTION_WIRELESS_SETTINGS
-            try {
-                context.startActivity(Intent(fallback).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) })
-            } catch (e2: Exception) {
-                Log.w(TAG, "Failed to open fallback wireless settings", e2)
-            }
-        }
-    }
 
     fun openQuickShare() {
         val pm = context.packageManager

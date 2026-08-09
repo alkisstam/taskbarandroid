@@ -153,7 +153,6 @@
     <string name="settings_control_clipboard">לוח הגזירים</string>
     <string name="settings_control_dnd">ללא הפרעה</string>
     <string name="settings_control_lock">נעילה</string>
-    <string name="settings_control_mobile_data">נתונים סלולריים</string>
     <string name="settings_control_notes">פתקים</string>
     <string name="settings_control_notifications">התראות</string>
     <string name="settings_control_power">הפעלה</string>
@@ -325,7 +324,6 @@
     <string name="quick_control_calculator_label">מחשבון</string>
     <string name="quick_control_wifi_label">Wi-Fi</string>
     <string name="quick_control_bluetooth_label">בלוטות\'</string>
-    <string name="quick_control_mobile_data_label">נתונים</string>
     <string name="quick_control_share_label">שיתוף</string>
     <string name="quick_control_notif_history_label">התראות</string>
     <string name="quick_control_music_label">מוזיקה</string>

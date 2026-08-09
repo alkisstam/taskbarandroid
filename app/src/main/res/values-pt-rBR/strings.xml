@@ -153,7 +153,6 @@
     <string name="settings_control_clipboard">Área de Transferência</string>
     <string name="settings_control_dnd">DND</string>
     <string name="settings_control_lock">Bloqueio</string>
-    <string name="settings_control_mobile_data">Dados Móveis</string>
     <string name="settings_control_notes">Notas</string>
     <string name="settings_control_notifications">Notificações</string>
     <string name="settings_control_power">Energia</string>
@@ -325,7 +324,6 @@
     <string name="quick_control_calculator_label">Calculadora</string>
     <string name="quick_control_wifi_label">Wi-Fi</string>
     <string name="quick_control_bluetooth_label">Bluetooth</string>
-    <string name="quick_control_mobile_data_label">Dados</string>
     <string name="quick_control_share_label">Compartilhar</string>
     <string name="quick_control_notif_history_label">Notifs</string>
     <string name="quick_control_music_label">Música</string>

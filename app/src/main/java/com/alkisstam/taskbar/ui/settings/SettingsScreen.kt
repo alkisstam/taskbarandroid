@@ -64,7 +64,6 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.ScreenRotationAlt
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.automirrored.filled.Sort
-import androidx.compose.material.icons.filled.SignalCellular4Bar
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.FileUpload
@@ -1234,13 +1233,12 @@ private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
     val calculatorLabel = stringResource(R.string.settings_control_calculator)
     val wifiLabel = stringResource(R.string.settings_control_wifi)
     val bluetoothLabel = stringResource(R.string.settings_control_bluetooth)
-    val mobileDataLabel = stringResource(R.string.settings_control_mobile_data)
     val shareLabel = stringResource(R.string.settings_control_share)
     val notifHistoryLabel = stringResource(R.string.settings_control_notifications)
     val controlMeta = remember(
         torchLabel, ringerLabel, rotateLabel, brightnessLabel, dndLabel, qrLabel, powerLabel,
         volumeLabel, screenshotLabel, lockLabel, caffeineLabel, clipboardLabel, notesLabel,
-        calculatorLabel, wifiLabel, bluetoothLabel, mobileDataLabel, shareLabel, notifHistoryLabel
+        calculatorLabel, wifiLabel, bluetoothLabel, shareLabel, notifHistoryLabel
     ) {
         listOf(
             Triple("torch",             torchLabel,      Icons.Filled.FlashlightOn),
@@ -1259,7 +1257,6 @@ private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
             Triple("calculator",        calculatorLabel, Icons.Filled.Calculate),
             Triple("wifi",              wifiLabel,       Icons.Filled.Wifi),
             Triple("bluetooth",         bluetoothLabel,  Icons.Filled.Bluetooth),
-            Triple("mobile_data",       mobileDataLabel, Icons.Filled.SignalCellular4Bar),
             Triple("share",             shareLabel,      Icons.Filled.Share),
             Triple("notif_history",     notifHistoryLabel, Icons.Filled.Notifications)
         )

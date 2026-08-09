@@ -153,7 +153,6 @@
     <string name="settings_control_clipboard">Буфер обмена</string>
     <string name="settings_control_dnd">DND</string>
     <string name="settings_control_lock">Блокировка</string>
-    <string name="settings_control_mobile_data">Моб. данные</string>
     <string name="settings_control_notes">Заметки</string>
     <string name="settings_control_notifications">Уведомления</string>
     <string name="settings_control_power">Питание</string>
@@ -325,7 +324,6 @@
     <string name="quick_control_calculator_label">Калькулятор</string>
     <string name="quick_control_wifi_label">Wi-Fi</string>
     <string name="quick_control_bluetooth_label">Bluetooth</string>
-    <string name="quick_control_mobile_data_label">Данные</string>
     <string name="quick_control_share_label">Поделиться</string>
     <string name="quick_control_notif_history_label">Увед.</string>
     <string name="quick_control_music_label">Музыка</string>

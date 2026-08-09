@@ -57,8 +57,7 @@ data class QuickControlsState(
     val canLockScreen: Boolean = false,
     val caffeineMinutes: Int = 0,
     val wifiEnabled: Boolean = false,
-    val bluetoothEnabled: Boolean = false,
-    val mobileDataEnabled: Boolean = false
+    val bluetoothEnabled: Boolean = false
 )
 
 private const val TAG = "AppMenuViewModel"
@@ -504,8 +503,7 @@ class AppMenuViewModel @Inject constructor(
             canLockScreen = quickControls.canLockScreen(),
             caffeineMinutes = _quickControlsState.value.caffeineMinutes,
             wifiEnabled = quickControls.isWifiEnabled(),
-            bluetoothEnabled = quickControls.isBluetoothEnabled(),
-            mobileDataEnabled = quickControls.isMobileDataEnabled()
+            bluetoothEnabled = quickControls.isBluetoothEnabled()
         )
     }
 
@@ -578,10 +576,6 @@ class AppMenuViewModel @Inject constructor(
         quickControls.openBluetoothPanel()
     }
 
-    fun openMobileDataPanel() {
-        quickControls.openMobileDataPanel()
-    }
-
     fun openQuickShare() {
         quickControls.openQuickShare()
     }
@@ -635,7 +629,6 @@ class AppMenuViewModel @Inject constructor(
             "calculator" -> toggleCalculatorPanel()
             "wifi" -> openWifiPanel()
             "bluetooth" -> openBluetoothPanel()
-            "mobile_data" -> openMobileDataPanel()
             "share" -> openQuickShare()
             "notif_history" -> toggleNotificationPanel()
         }

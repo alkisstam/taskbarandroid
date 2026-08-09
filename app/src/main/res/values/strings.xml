@@ -153,7 +153,6 @@
     <string name="settings_control_clipboard">Clipboard</string>
     <string name="settings_control_dnd">DND</string>
     <string name="settings_control_lock">Lock</string>
-    <string name="settings_control_mobile_data">Mobile Data</string>
     <string name="settings_control_notes">Notes</string>
     <string name="settings_control_notifications">Notifications</string>
     <string name="settings_control_power">Power</string>
@@ -325,7 +324,6 @@
     <string name="quick_control_calculator_label">Calculator</string>
     <string name="quick_control_wifi_label">Wifi</string>
     <string name="quick_control_bluetooth_label">Bluetooth</string>
-    <string name="quick_control_mobile_data_label">Data</string>
     <string name="quick_control_share_label">Share</string>
     <string name="quick_control_notif_history_label">Notifs</string>
     <string name="quick_control_music_label">Music</string>

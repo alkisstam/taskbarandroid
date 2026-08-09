@@ -153,7 +153,6 @@
     <string name="settings_control_clipboard">剪贴板</string>
     <string name="settings_control_dnd">勿扰模式</string>
     <string name="settings_control_lock">锁屏</string>
-    <string name="settings_control_mobile_data">移动数据</string>
     <string name="settings_control_notes">笔记</string>
     <string name="settings_control_notifications">通知</string>
     <string name="settings_control_power">电源</string>
@@ -325,7 +324,6 @@
     <string name="quick_control_calculator_label">计算器</string>
     <string name="quick_control_wifi_label">Wi-Fi</string>
     <string name="quick_control_bluetooth_label">蓝牙</string>
-    <string name="quick_control_mobile_data_label">数据</string>
     <string name="quick_control_share_label">分享</string>
     <string name="quick_control_notif_history_label">通知</string>
     <string name="quick_control_music_label">音乐</string>

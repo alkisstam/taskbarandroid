@@ -153,7 +153,6 @@
     <string name="settings_control_clipboard">क्लिपबोर्ड</string>
     <string name="settings_control_dnd">DND</string>
     <string name="settings_control_lock">लॉक</string>
-    <string name="settings_control_mobile_data">मोबाइल डेटा</string>
     <string name="settings_control_notes">नोट्स</string>
     <string name="settings_control_notifications">सूचनाएं</string>
     <string name="settings_control_power">पावर</string>
@@ -325,7 +324,6 @@
     <string name="quick_control_calculator_label">कैलकुलेटर</string>
     <string name="quick_control_wifi_label">वाईफाई</string>
     <string name="quick_control_bluetooth_label">ब्लूटूथ</string>
-    <string name="quick_control_mobile_data_label">डेटा</string>
     <string name="quick_control_share_label">शेयर</string>
     <string name="quick_control_notif_history_label">नोटिफ</string>
     <string name="quick_control_music_label">म्यूजिक</string>

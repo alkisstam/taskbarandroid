@@ -153,7 +153,6 @@
     <string name="settings_control_clipboard">Klembord</string>
     <string name="settings_control_dnd">Niet storen</string>
     <string name="settings_control_lock">Vergrendelen</string>
-    <string name="settings_control_mobile_data">Mobiele data</string>
     <string name="settings_control_notes">Notities</string>
     <string name="settings_control_notifications">Meldingen</string>
     <string name="settings_control_power">Aan/uit</string>
@@ -325,7 +324,6 @@
     <string name="quick_control_calculator_label">Rekenmachine</string>
     <string name="quick_control_wifi_label">Wifi</string>
     <string name="quick_control_bluetooth_label">Bluetooth</string>
-    <string name="quick_control_mobile_data_label">Data</string>
     <string name="quick_control_share_label">Delen</string>
     <string name="quick_control_notif_history_label">Meldingen</string>
     <string name="quick_control_music_label">Muziek</string>

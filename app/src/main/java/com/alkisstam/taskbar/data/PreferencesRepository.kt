@@ -207,7 +207,7 @@ class PreferencesRepository @Inject constructor(
         private val APP_SORT_ORDER_KEY = stringPreferencesKey("app_sort_order")
         private val APP_LAUNCH_COUNTS_KEY = stringPreferencesKey("app_launch_counts")
 
-        val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen", "caffeine", "clipboard", "calculator", "wifi", "bluetooth", "mobile_data", "share", "notif_history", "notes")
+        val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen", "caffeine", "clipboard", "calculator", "wifi", "bluetooth", "share", "notif_history", "notes")
 
         internal fun serializeStringList(list: List<String>): String = JSONArray(list).toString()
         internal fun deserializeStringList(stored: String): List<String> =

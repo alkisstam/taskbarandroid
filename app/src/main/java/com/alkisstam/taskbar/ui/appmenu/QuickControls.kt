@@ -37,8 +37,6 @@ import androidx.compose.material.icons.filled.FreeBreakfast
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.SignalCellular4Bar
-import androidx.compose.material.icons.filled.SignalCellularOff
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material.icons.filled.WifiOff
 import androidx.compose.material.icons.filled.Bluetooth
@@ -156,8 +154,6 @@ fun QuickControlsState.toItems(
             icon = if (wifiEnabled) Icons.Filled.Wifi else Icons.Filled.WifiOff),
         "bluetooth" to QuickControlItemData(id = "bluetooth", label = stringResource(R.string.quick_control_bluetooth_label), active = bluetoothEnabled,
             icon = if (bluetoothEnabled) Icons.Filled.Bluetooth else Icons.Filled.BluetoothDisabled),
-        "mobile_data" to QuickControlItemData(id = "mobile_data", label = stringResource(R.string.quick_control_mobile_data_label), active = mobileDataEnabled,
-            icon = if (mobileDataEnabled) Icons.Filled.SignalCellular4Bar else Icons.Filled.SignalCellularOff),
         "share" to QuickControlItemData(id = "share", label = stringResource(R.string.quick_control_share_label), active = false, icon = Icons.Filled.Share),
         "notif_history" to QuickControlItemData(id = "notif_history", label = stringResource(R.string.quick_control_notif_history_label),
             active = false, icon = Icons.Filled.Notifications)

@@ -153,7 +153,6 @@
     <string name="settings_control_clipboard">Presse-papiers</string>
     <string name="settings_control_dnd">NPD</string>
     <string name="settings_control_lock">Verrouiller</string>
-    <string name="settings_control_mobile_data">Données mobiles</string>
     <string name="settings_control_notes">Notes</string>
     <string name="settings_control_notifications">Notifications</string>
     <string name="settings_control_power">Alimentation</string>
@@ -325,7 +324,6 @@
     <string name="quick_control_calculator_label">Calculatrice</string>
     <string name="quick_control_wifi_label">Wifi</string>
     <string name="quick_control_bluetooth_label">Bluetooth</string>
-    <string name="quick_control_mobile_data_label">Données</string>
     <string name="quick_control_share_label">Partager</string>
     <string name="quick_control_notif_history_label">Notifs</string>
     <string name="quick_control_music_label">Musique</string>

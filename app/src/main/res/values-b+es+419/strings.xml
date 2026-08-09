@@ -153,7 +153,6 @@
     <string name="settings_control_clipboard">Portapapeles</string>
     <string name="settings_control_dnd">No molestar</string>
     <string name="settings_control_lock">Bloqueo</string>
-    <string name="settings_control_mobile_data">Datos móviles</string>
     <string name="settings_control_notes">Notas</string>
     <string name="settings_control_notifications">Notificaciones</string>
     <string name="settings_control_power">Energía</string>
@@ -325,7 +324,6 @@
     <string name="quick_control_calculator_label">Calculadora</string>
     <string name="quick_control_wifi_label">Wifi</string>
     <string name="quick_control_bluetooth_label">Bluetooth</string>
-    <string name="quick_control_mobile_data_label">Datos</string>
     <string name="quick_control_share_label">Compartir</string>
     <string name="quick_control_notif_history_label">Notifs</string>
     <string name="quick_control_music_label">Música</string>
