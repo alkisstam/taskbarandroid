@@ -10,6 +10,7 @@ App sort order.
 
 ### Added
 - **App order setting** — Settings → Apps → App order lets you sort the app menu's app grid by Name, Install time (newest first), or Usage (most-launched first). Also available via a new sort button (⋮) next to the search bar inside the app menu panel itself.
+- **App battery usage guide** — Settings → General → Permissions now has an expandable "App battery usage" section with per-manufacturer steps (Samsung, MIUI, OnePlus, Redmi, OPPO, vivo/iQOO, realme, Motorola, Pixel, HUAWEI/HONOR) for exempting Floating Dock from aggressive battery optimization. Translated into all 16 supported languages.
 
 ### Fixed
 - **Janky app-menu close animation** — sorting/filtering the app grid and reading launch-count history ran on the main thread on every app launch, stealing frame time right as the menu's close animation played. Moved off the main thread.
