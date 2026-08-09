@@ -303,6 +303,7 @@ private fun GeneralTab(
     val disableOnLockscreen by viewModel.disableOnLockscreen.collectAsState()
     val hapticFeedbackEnabled by viewModel.hapticFeedbackEnabled.collectAsState()
     val context = LocalContext.current
+    var batteryUsageExpanded by remember { mutableStateOf(false) }
 
     val backupLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
         uri?.let { viewModel.exportBackup(it) }
@@ -537,6 +538,29 @@ private fun GeneralTab(
                 granted = hasBatteryOptimizationExcluded,
                 onClick = onRequestBatteryOptimizationExclusion
             )
+        }
+
+        ExpandableSection(
+            title = stringResource(R.string.settings_battery_usage_section_title),
+            expanded = batteryUsageExpanded,
+            onToggle = { batteryUsageExpanded = !batteryUsageExpanded }
+        ) {
+            Text(
+                text = stringResource(R.string.settings_battery_usage_intro),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            BatteryUsageDeviceSection(R.string.settings_battery_usage_samsung_title, R.string.settings_battery_usage_samsung_steps)
+            BatteryUsageDeviceSection(R.string.settings_battery_usage_miui_title, R.string.settings_battery_usage_miui_steps)
+            BatteryUsageDeviceSection(R.string.settings_battery_usage_oneplus_title, R.string.settings_battery_usage_oneplus_steps)
+            BatteryUsageDeviceSection(R.string.settings_battery_usage_redmi_title, R.string.settings_battery_usage_redmi_steps)
+            BatteryUsageDeviceSection(R.string.settings_battery_usage_oppo_title, R.string.settings_battery_usage_oppo_steps)
+            BatteryUsageDeviceSection(R.string.settings_battery_usage_vivo_title, R.string.settings_battery_usage_vivo_steps)
+            BatteryUsageDeviceSection(R.string.settings_battery_usage_realme_title, R.string.settings_battery_usage_realme_steps)
+            BatteryUsageDeviceSection(R.string.settings_battery_usage_motorola_title, R.string.settings_battery_usage_motorola_steps)
+            BatteryUsageDeviceSection(R.string.settings_battery_usage_pixel_title, R.string.settings_battery_usage_pixel_steps)
+            BatteryUsageDeviceSection(R.string.settings_battery_usage_huawei_title, R.string.settings_battery_usage_huawei_steps, isLast = true)
         }
 
         SettingsCard(title = stringResource(R.string.settings_backup_restore_title)) {
@@ -1532,6 +1556,23 @@ private fun PermissionStatusRow(
             contentDescription = if (granted) stringResource(R.string.settings_permission_granted_content_description) else stringResource(R.string.settings_permission_not_granted_content_description),
             tint = if (granted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
         )
+    }
+}
+
+@Composable
+private fun BatteryUsageDeviceSection(titleRes: Int, stepsRes: Int, isLast: Boolean = false) {
+    Text(
+        text = stringResource(titleRes),
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.primary
+    )
+    Text(
+        text = stringResource(stepsRes),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+    if (!isLast) {
+        Spacer(modifier = Modifier.height(12.dp))
     }
 }
 

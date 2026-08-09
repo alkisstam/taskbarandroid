@@ -693,7 +693,7 @@ private fun PillPositionPreview(
 }
 
 @Composable
-private fun ExpandableSection(
+internal fun ExpandableSection(
     title: String,
     expanded: Boolean,
     onToggle: () -> Unit,
