@@ -193,6 +193,9 @@ class AppMenuViewModel @Inject constructor(
     private val _notesPanelVisible = MutableStateFlow(false)
     val notesPanelVisible: StateFlow<Boolean> = _notesPanelVisible.asStateFlow()
 
+    private val _quickSettingsPanelVisible = MutableStateFlow(false)
+    val quickSettingsPanelVisible: StateFlow<Boolean> = _quickSettingsPanelVisible.asStateFlow()
+
     val mediaState: StateFlow<MediaState> = mediaRepository.mediaState
 
     private val _brightnessLevel = MutableStateFlow(128)
@@ -286,6 +289,7 @@ class AppMenuViewModel @Inject constructor(
             _calculatorPanelVisible.value = false
             _notificationPanelVisible.value = false
             _notesPanelVisible.value = false
+            _quickSettingsPanelVisible.value = false
         }
         _clipboardPanelVisible.value = newValue
     }
@@ -300,6 +304,7 @@ class AppMenuViewModel @Inject constructor(
             _calculatorPanelVisible.value = false
             _notificationPanelVisible.value = false
             _clipboardPanelVisible.value = false
+            _quickSettingsPanelVisible.value = false
         }
         _notesPanelVisible.value = newValue
     }
@@ -312,6 +317,21 @@ class AppMenuViewModel @Inject constructor(
         _notesPanelVisible.value = false
     }
 
+    fun toggleQuickSettingsPanel() {
+        val newValue = !_quickSettingsPanelVisible.value
+        if (newValue) {
+            _calculatorPanelVisible.value = false
+            _notificationPanelVisible.value = false
+            _clipboardPanelVisible.value = false
+            _notesPanelVisible.value = false
+        }
+        _quickSettingsPanelVisible.value = newValue
+    }
+
+    fun dismissQuickSettingsPanel() {
+        _quickSettingsPanelVisible.value = false
+    }
+
     fun toggleCalculatorPanel() {
         val newValue = !_calculatorPanelVisible.value
         if (newValue) {
@@ -321,6 +341,7 @@ class AppMenuViewModel @Inject constructor(
             _clipboardPanelVisible.value = false
             _notificationPanelVisible.value = false
             _notesPanelVisible.value = false
+            _quickSettingsPanelVisible.value = false
             _menuVisible.value = false
             _isSearching.value = false
         }
@@ -339,6 +360,7 @@ class AppMenuViewModel @Inject constructor(
             _calculatorPanelVisible.value = false
             _clipboardPanelVisible.value = false
             _notesPanelVisible.value = false
+            _quickSettingsPanelVisible.value = false
         }
         _notificationPanelVisible.value = newValue
     }

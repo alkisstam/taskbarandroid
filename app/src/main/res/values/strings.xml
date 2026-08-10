@@ -170,6 +170,7 @@
     <string name="settings_enable_accessibility_button">Enable Accessibility Service</string>
     <string name="settings_enable_quick_controls_desc">Show quick controls in the Dock. Swipe up to show the quick controls. Swipe down to hide them.</string>
     <string name="settings_enable_quick_controls_title">Enable Quick Controls</string>
+    <string name="settings_enable_quick_settings_panel_title">Enable Quick Settings</string>
     <string name="settings_fuzzy_search_desc">Match apps even with typos or partial names</string>
     <string name="settings_fuzzy_search_title">Fuzzy Search</string>
     <string name="settings_grant_notification_access_button">Grant Notification Access</string>
@@ -327,6 +328,7 @@
     <string name="quick_control_share_label">Share</string>
     <string name="quick_control_notif_history_label">Notifs</string>
     <string name="quick_control_music_label">Music</string>
+    <string name="quick_control_settings_label">Settings</string>
     <string name="calculator_error">Error</string>
     <string name="calculator_clear_label">AC</string>
     <string name="calculator_backspace_description">Backspace</string>

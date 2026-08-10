@@ -127,6 +127,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private var musicPanelView: View? = null
     private var clipboardPanelView: View? = null
     private var notesPanelView: View? = null
+    private var quickSettingsPanelView: View? = null
     private var clipboardBlurView: View? = null
     private var calculatorPanelView: View? = null
     private var notificationPanelView: View? = null
@@ -171,6 +172,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                         brightnessPanelView?.visibility = View.GONE
                         clipboardPanelView?.visibility = View.GONE
                         notesPanelView?.visibility = View.GONE
+                        quickSettingsPanelView?.visibility = View.GONE
                         calculatorPanelView?.visibility = View.GONE
                         notificationPanelView?.visibility = View.GONE
                         if (disablePill && !pillDisabledForLockscreen) {
@@ -374,6 +376,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         addBrightnessPanelView()
         addClipboardPanelView()
         addNotesPanelView()
+        addQuickSettingsPanelView()
         addNotificationPanelView()
         addCalculatorPanelView()
         if (!observersStarted) {
@@ -388,6 +391,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             observeTranslucentMode()
             observeClipboardPanel()
             observeNotesPanel()
+            observeQuickSettingsPanel()
             observeNotificationPanel()
         }
         return START_STICKY
@@ -406,7 +410,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         listOf(
             overlayView, taskbarView, pillView, pillView2, searchView,
             volumePanelView, brightnessPanelView, volumeScrimView, musicPanelView,
-            clipboardPanelView, notesPanelView, clipboardBlurView,
+            clipboardPanelView, notesPanelView, quickSettingsPanelView, clipboardBlurView,
             calculatorPanelView, notificationPanelView
         ).forEach { it?.dispatchConfigurationChanged(newConfig) }
     }
@@ -1124,6 +1128,61 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         }
     }
 
+    private fun addQuickSettingsPanelView() {
+        if (quickSettingsPanelView?.isAttachedToWindow == true) return
+        quickSettingsPanelView?.let { removeViewFromAnyWM(it) }
+        quickSettingsPanelView = null
+        try {
+            val composeView = ComposeView(this).apply {
+                setViewTreeLifecycleOwner(this@OverlayService)
+                setViewTreeViewModelStoreOwner(this@OverlayService)
+                setViewTreeSavedStateRegistryOwner(this@OverlayService)
+                setContent {
+                    val hapticEnabled by taskbarViewModel.hapticFeedbackEnabled.collectAsState()
+                    CompositionLocalProvider(LocalHapticEnabled provides hapticEnabled) {
+                        QuickSettingsPanelContent(
+                            taskbarViewModel = taskbarViewModel,
+                            appMenuViewModel = appMenuViewModel
+                        )
+                    }
+                }
+            }
+            val wrapper = object : FrameLayout(this) {
+                override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+                    if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+                        appMenuViewModel.dismissQuickSettingsPanel()
+                        return true
+                    }
+                    return super.dispatchKeyEvent(event)
+                }
+            }
+            wrapper.setViewTreeLifecycleOwner(this@OverlayService)
+            wrapper.setViewTreeViewModelStoreOwner(this@OverlayService)
+            wrapper.setViewTreeSavedStateRegistryOwner(this@OverlayService)
+            wrapper.addView(composeView)
+            val visible = appMenuViewModel.quickSettingsPanelVisible.value
+            wrapper.visibility = if (visible) View.VISIBLE else View.GONE
+            quickSettingsPanelView = wrapper
+            windowManager.addView(wrapper, searchLayoutParams(focusable = visible))
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to add quick settings panel view", e)
+            quickSettingsPanelView = null
+        }
+    }
+
+    private fun observeQuickSettingsPanel() {
+        serviceScope.launch {
+            appMenuViewModel.quickSettingsPanelVisible.collect { visible ->
+                quickSettingsPanelView?.visibility = if (visible) View.VISIBLE else View.GONE
+                quickSettingsPanelView?.let { view ->
+                    try { windowManager.updateViewLayoutKeepingType(view, searchLayoutParams(focusable = visible)) }
+                    catch (e: Exception) { Log.w(TAG, "Failed to update quick settings panel flags", e) }
+                }
+                updateClipboardBlur()
+            }
+        }
+    }
+
     private fun addNotificationPanelView() {
         if (notificationPanelView?.isAttachedToWindow == true) return
         notificationPanelView?.let { removeViewFromAnyWM(it) }
@@ -1184,7 +1243,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private fun fullScreenPanelBlurActive(): Boolean =
         translucentModeEnabled &&
             (appMenuViewModel.clipboardPanelVisible.value || appMenuViewModel.notesPanelVisible.value ||
-                appMenuViewModel.notificationPanelVisible.value)
+                appMenuViewModel.notificationPanelVisible.value || appMenuViewModel.quickSettingsPanelVisible.value)
 
     private fun updateClipboardBlur() {
         clipboardBlurView?.let { blur ->
@@ -1213,6 +1272,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         musicPanelView?.let { removeViewFromAnyWM(it) }; musicPanelView = null
         clipboardPanelView?.let { removeViewFromAnyWM(it) }; clipboardPanelView = null
         notesPanelView?.let { removeViewFromAnyWM(it) }; notesPanelView = null
+        quickSettingsPanelView?.let { removeViewFromAnyWM(it) }; quickSettingsPanelView = null
         notificationPanelView?.let { removeViewFromAnyWM(it) }; notificationPanelView = null
         clipboardBlurView?.let { removeViewFromAnyWM(it) }; clipboardBlurView = null
         calculatorPanelView?.let { removeViewFromAnyWM(it) }; calculatorPanelView = null
@@ -1233,6 +1293,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         addBrightnessPanelView()
         addClipboardPanelView()
         addNotesPanelView()
+        addQuickSettingsPanelView()
         addNotificationPanelView()
         addCalculatorPanelView()
     }

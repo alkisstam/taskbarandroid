@@ -96,6 +96,9 @@ class TaskbarViewModel @Inject constructor(
     val quickControlsEnabled: StateFlow<Boolean> = prefsRepository.quickControlsEnabled
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
+    val quickSettingsPanelEnabled: StateFlow<Boolean> = prefsRepository.quickSettingsPanelEnabled
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     val controlsOrder: StateFlow<List<String>> = prefsRepository.controlsOrder
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), PreferencesRepository.ALL_CONTROL_IDS)
 
@@ -428,6 +431,12 @@ class TaskbarViewModel @Inject constructor(
     fun setQuickControlsEnabled(enabled: Boolean) {
         viewModelScope.launch {
             prefsRepository.setQuickControlsEnabled(enabled)
+        }
+    }
+
+    fun setQuickSettingsPanelEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            prefsRepository.setQuickSettingsPanelEnabled(enabled)
         }
     }
 

@@ -297,10 +297,6 @@ private fun GeneralTab(
     bottomPadding: Dp = 0.dp
 ) {
     val overlayEnabled by viewModel.overlayEnabled.collectAsState()
-    val autoHideInFullscreen by viewModel.autoHideInFullscreen.collectAsState()
-    val autoHideInLandscape by viewModel.autoHideInLandscape.collectAsState()
-    val disableOnLockscreen by viewModel.disableOnLockscreen.collectAsState()
-    val hapticFeedbackEnabled by viewModel.hapticFeedbackEnabled.collectAsState()
     val context = LocalContext.current
     var batteryUsageExpanded by remember { mutableStateOf(false) }
 
@@ -388,80 +384,7 @@ private fun GeneralTab(
             )
         }
 
-        SettingsCard(title = stringResource(R.string.settings_behaviour_card_title)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(stringResource(R.string.settings_autohide_fullscreen_title), style = MaterialTheme.typography.bodyLarge)
-                    Text(
-                        stringResource(R.string.settings_autohide_fullscreen_desc),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                Switch(
-                    checked = autoHideInFullscreen,
-                    onCheckedChange = { viewModel.setAutoHideInFullscreen(it) }
-                )
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(stringResource(R.string.settings_autohide_landscape_title), style = MaterialTheme.typography.bodyLarge)
-                    Text(
-                        stringResource(R.string.settings_autohide_landscape_desc),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                Switch(
-                    checked = autoHideInLandscape,
-                    onCheckedChange = { viewModel.setAutoHideInLandscape(it) }
-                )
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(stringResource(R.string.settings_disable_lockscreen_title), style = MaterialTheme.typography.bodyLarge)
-                    Text(
-                        stringResource(R.string.settings_disable_lockscreen_desc),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                Switch(
-                    checked = disableOnLockscreen,
-                    onCheckedChange = { viewModel.setDisableOnLockscreen(it) }
-                )
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(stringResource(R.string.settings_vibrate_feedback_title), style = MaterialTheme.typography.bodyLarge)
-                    Text(
-                        stringResource(R.string.settings_vibrate_feedback_desc),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                Switch(
-                    checked = hapticFeedbackEnabled,
-                    onCheckedChange = { viewModel.setHapticFeedbackEnabled(it) }
-                )
-            }
-        }
+        BehaviourCard(viewModel = viewModel)
 
         MusicPanelSettingsCard(
             viewModel = viewModel,
@@ -682,7 +605,90 @@ private fun GeneralTab(
 }
 
 @Composable
-private fun MusicPanelSettingsCard(
+internal fun BehaviourCard(viewModel: TaskbarViewModel) {
+    val autoHideInFullscreen by viewModel.autoHideInFullscreen.collectAsState()
+    val autoHideInLandscape by viewModel.autoHideInLandscape.collectAsState()
+    val disableOnLockscreen by viewModel.disableOnLockscreen.collectAsState()
+    val hapticFeedbackEnabled by viewModel.hapticFeedbackEnabled.collectAsState()
+
+    SettingsCard(title = stringResource(R.string.settings_behaviour_card_title)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(stringResource(R.string.settings_autohide_fullscreen_title), style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    stringResource(R.string.settings_autohide_fullscreen_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(
+                checked = autoHideInFullscreen,
+                onCheckedChange = { viewModel.setAutoHideInFullscreen(it) }
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(stringResource(R.string.settings_autohide_landscape_title), style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    stringResource(R.string.settings_autohide_landscape_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(
+                checked = autoHideInLandscape,
+                onCheckedChange = { viewModel.setAutoHideInLandscape(it) }
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(stringResource(R.string.settings_disable_lockscreen_title), style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    stringResource(R.string.settings_disable_lockscreen_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(
+                checked = disableOnLockscreen,
+                onCheckedChange = { viewModel.setDisableOnLockscreen(it) }
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(stringResource(R.string.settings_vibrate_feedback_title), style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    stringResource(R.string.settings_vibrate_feedback_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(
+                checked = hapticFeedbackEnabled,
+                onCheckedChange = { viewModel.setHapticFeedbackEnabled(it) }
+            )
+        }
+    }
+}
+
+@Composable
+internal fun MusicPanelSettingsCard(
     viewModel: TaskbarViewModel,
     context: android.content.Context,
     notificationAccessGranted: Boolean
@@ -755,7 +761,7 @@ private fun MusicPanelSettingsCard(
 }
 
 @Composable
-private fun SearchSettingsCard(viewModel: TaskbarViewModel) {
+internal fun SearchSettingsCard(viewModel: TaskbarViewModel) {
     val fuzzySearchEnabled by viewModel.fuzzySearchEnabled.collectAsState()
     val showRecentApps by viewModel.showRecentApps.collectAsState()
     SettingsCard(title = stringResource(R.string.settings_search_card_title)) {
@@ -835,92 +841,7 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
             )
         }
         item {
-            SettingsCard(title = stringResource(R.string.settings_pinned_apps_title, pinnedApps.size)) {
-                if (pinnedApps.isEmpty()) {
-                    Text(
-                        text = stringResource(R.string.settings_pinned_apps_empty_desc),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                } else {
-                    val lazyListState = rememberLazyListState()
-                    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
-                    val hapticEnabled = LocalHapticEnabled.current
-                    // Local working copy during a drag: persisting per-swap races the async
-                    // DataStore save and can store a stale intermediate order.
-                    var localPinned by remember(pinnedApps) { mutableStateOf(pinnedApps) }
-                    val reorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
-                        localPinned = localPinned.toMutableList().apply {
-                            if (from.index in indices && to.index in indices) add(to.index, removeAt(from.index))
-                        }
-                    }
-                    LazyRow(
-                        state = lazyListState,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        contentPadding = PaddingValues(vertical = 4.dp)
-                    ) {
-                        items(localPinned, key = { it.packageName }) { app ->
-                            ReorderableItem(reorderableState, key = app.packageName) { isDragging ->
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                                    modifier = Modifier
-                                        .longPressDraggableHandle(
-                                            onDragStarted = {
-                                                if (hapticEnabled) haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
-                                            },
-                                            onDragStopped = {
-                                                viewModel.reorderPinnedApps(localPinned.map { it.packageName })
-                                            }
-                                        )
-                                ) {
-                                    Box {
-                                        AppIconImage(
-                                            icon = app.icon,
-                                            contentDescription = app.label,
-                                            shape = iconShape,
-                                            modifier = Modifier
-                                                .size(48.dp)
-                                                .then(
-                                                    if (isDragging) Modifier.background(
-                                                        MaterialTheme.colorScheme.primaryContainer,
-                                                        iconShape
-                                                    ) else Modifier
-                                                )
-                                        )
-                                        Box(
-                                            modifier = Modifier
-                                                .align(Alignment.TopEnd)
-                                                .size(16.dp)
-                                                .background(
-                                                    color = MaterialTheme.colorScheme.error,
-                                                    shape = CircleShape
-                                                )
-                                                .clickable { viewModel.unpinApp(app.packageName) },
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Filled.Close,
-                                                contentDescription = stringResource(R.string.settings_pinned_app_unpin_content_description),
-                                                tint = MaterialTheme.colorScheme.onError,
-                                                modifier = Modifier.size(10.dp)
-                                            )
-                                        }
-                                    }
-                                    Text(
-                                        text = app.label,
-                                        style = MaterialTheme.typography.labelSmall,
-                                        maxLines = 1,
-                                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                                        modifier = Modifier.width(48.dp),
-                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            PinnedAppsReorderCard(viewModel = viewModel, pinnedApps = pinnedApps, iconShape = iconShape)
         }
         item {
             SettingsCard(title = stringResource(R.string.settings_hidden_apps_title, hiddenApps.size)) {
@@ -1048,48 +969,148 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
             }
         }
         item {
-            SettingsCard(title = stringResource(R.string.settings_app_order_title)) {
-                val appSortOrder by viewModel.appSortOrder.collectAsState()
-                val options = listOf(
-                    stringResource(R.string.app_sort_order_name) to AppSortOrder.NAME,
-                    stringResource(R.string.app_sort_order_install_time) to AppSortOrder.INSTALL_TIME,
-                    stringResource(R.string.app_sort_order_usage) to AppSortOrder.USAGE
-                )
-                GradientDropdownField(
-                    icon = Icons.AutoMirrored.Filled.Sort,
-                    selectedLabel = options.first { it.second == appSortOrder }.first,
-                    options = options,
-                    isSelected = { it == appSortOrder },
-                    onSelect = { viewModel.setAppSortOrder(it) }
-                )
-            }
+            AppOrderCard(viewModel = viewModel)
         }
         item {
-            SettingsCard(title = stringResource(R.string.settings_app_grid_title)) {
-                Column {
-                    SettingsSlider(
-                        label = stringResource(R.string.settings_app_grid_columns_label),
-                        value = appGridColumns.toFloat(),
-                        valueRange = 3f..6f,
-                        unit = "",
-                        step = 1f,
-                        sliderSteps = 2,
-                        displayTransform = { "${it.toInt()}" },
-                        onValueChange = { viewModel.setAppGridColumns(it.roundToInt()) }
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-                    SettingsSlider(
-                        label = stringResource(R.string.settings_app_grid_rows_label),
-                        value = appGridRows.toFloat(),
-                        valueRange = 3f..6f,
-                        unit = "",
-                        step = 1f,
-                        sliderSteps = 2,
-                        displayTransform = { "${it.toInt()}" },
-                        onValueChange = { viewModel.setAppGridRows(it.roundToInt()) }
-                    )
+            AppGridCard(viewModel = viewModel, appGridColumns = appGridColumns, appGridRows = appGridRows)
+        }
+    }
+}
+
+@Composable
+internal fun PinnedAppsReorderCard(viewModel: TaskbarViewModel, pinnedApps: List<AppInfo>, iconShape: Shape) {
+    SettingsCard(title = stringResource(R.string.settings_pinned_apps_title, pinnedApps.size)) {
+        if (pinnedApps.isEmpty()) {
+            Text(
+                text = stringResource(R.string.settings_pinned_apps_empty_desc),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        } else {
+            val lazyListState = rememberLazyListState()
+            val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
+            val hapticEnabled = LocalHapticEnabled.current
+            // Local working copy during a drag: persisting per-swap races the async
+            // DataStore save and can store a stale intermediate order.
+            var localPinned by remember(pinnedApps) { mutableStateOf(pinnedApps) }
+            val reorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
+                localPinned = localPinned.toMutableList().apply {
+                    if (from.index in indices && to.index in indices) add(to.index, removeAt(from.index))
                 }
             }
+            LazyRow(
+                state = lazyListState,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(vertical = 4.dp)
+            ) {
+                items(localPinned, key = { it.packageName }) { app ->
+                    ReorderableItem(reorderableState, key = app.packageName) { isDragging ->
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                            modifier = Modifier
+                                .longPressDraggableHandle(
+                                    onDragStarted = {
+                                        if (hapticEnabled) haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                                    },
+                                    onDragStopped = {
+                                        viewModel.reorderPinnedApps(localPinned.map { it.packageName })
+                                    }
+                                )
+                        ) {
+                            Box {
+                                AppIconImage(
+                                    icon = app.icon,
+                                    contentDescription = app.label,
+                                    shape = iconShape,
+                                    modifier = Modifier
+                                        .size(48.dp)
+                                        .then(
+                                            if (isDragging) Modifier.background(
+                                                MaterialTheme.colorScheme.primaryContainer,
+                                                iconShape
+                                            ) else Modifier
+                                        )
+                                )
+                                Box(
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .size(16.dp)
+                                        .background(
+                                            color = MaterialTheme.colorScheme.error,
+                                            shape = CircleShape
+                                        )
+                                        .clickable { viewModel.unpinApp(app.packageName) },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Close,
+                                        contentDescription = stringResource(R.string.settings_pinned_app_unpin_content_description),
+                                        tint = MaterialTheme.colorScheme.onError,
+                                        modifier = Modifier.size(10.dp)
+                                    )
+                                }
+                            }
+                            Text(
+                                text = app.label,
+                                style = MaterialTheme.typography.labelSmall,
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                                modifier = Modifier.width(48.dp),
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+internal fun AppOrderCard(viewModel: TaskbarViewModel) {
+    SettingsCard(title = stringResource(R.string.settings_app_order_title)) {
+        val appSortOrder by viewModel.appSortOrder.collectAsState()
+        val options = listOf(
+            stringResource(R.string.app_sort_order_name) to AppSortOrder.NAME,
+            stringResource(R.string.app_sort_order_install_time) to AppSortOrder.INSTALL_TIME,
+            stringResource(R.string.app_sort_order_usage) to AppSortOrder.USAGE
+        )
+        GradientDropdownField(
+            icon = Icons.AutoMirrored.Filled.Sort,
+            selectedLabel = options.first { it.second == appSortOrder }.first,
+            options = options,
+            isSelected = { it == appSortOrder },
+            onSelect = { viewModel.setAppSortOrder(it) }
+        )
+    }
+}
+
+@Composable
+internal fun AppGridCard(viewModel: TaskbarViewModel, appGridColumns: Int, appGridRows: Int) {
+    SettingsCard(title = stringResource(R.string.settings_app_grid_title)) {
+        Column {
+            SettingsSlider(
+                label = stringResource(R.string.settings_app_grid_columns_label),
+                value = appGridColumns.toFloat(),
+                valueRange = 3f..6f,
+                unit = "",
+                step = 1f,
+                sliderSteps = 2,
+                displayTransform = { "${it.toInt()}" },
+                onValueChange = { viewModel.setAppGridColumns(it.roundToInt()) }
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            SettingsSlider(
+                label = stringResource(R.string.settings_app_grid_rows_label),
+                value = appGridRows.toFloat(),
+                valueRange = 3f..6f,
+                unit = "",
+                step = 1f,
+                sliderSteps = 2,
+                displayTransform = { "${it.toInt()}" },
+                onValueChange = { viewModel.setAppGridRows(it.roundToInt()) }
+            )
         }
     }
 }
@@ -1211,6 +1232,79 @@ private fun HideAppPickerDialog(
 }
 
 @Composable
+internal fun QuickControlsToggleCard(viewModel: TaskbarViewModel) {
+    val quickControlsEnabled by viewModel.quickControlsEnabled.collectAsState()
+    val taskbarSettings by viewModel.taskbarSettings.collectAsState()
+    val quickSettingsPanelEnabled by viewModel.quickSettingsPanelEnabled.collectAsState()
+
+    SettingsCard(title = stringResource(R.string.settings_quick_controls_title)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
+                Text(stringResource(R.string.settings_enable_quick_controls_title), style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    stringResource(R.string.settings_enable_quick_controls_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(
+                checked = quickControlsEnabled,
+                onCheckedChange = { viewModel.setQuickControlsEnabled(it) }
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .alpha(if (quickControlsEnabled) 1f else 0.38f),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(stringResource(R.string.settings_show_control_labels_title), style = MaterialTheme.typography.bodyLarge)
+            Switch(
+                checked = taskbarSettings.showControlLabels,
+                onCheckedChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(showControlLabels = it)) },
+                enabled = quickControlsEnabled
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .alpha(if (quickControlsEnabled) 1f else 0.38f),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(stringResource(R.string.settings_keep_controls_expanded_title), style = MaterialTheme.typography.bodyLarge)
+            Switch(
+                checked = taskbarSettings.keepDockExpanded,
+                onCheckedChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(keepDockExpanded = it)) },
+                enabled = quickControlsEnabled
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .alpha(if (quickControlsEnabled) 1f else 0.38f),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(stringResource(R.string.settings_enable_quick_settings_panel_title), style = MaterialTheme.typography.bodyLarge)
+            Switch(
+                checked = quickSettingsPanelEnabled,
+                onCheckedChange = { viewModel.setQuickSettingsPanelEnabled(it) },
+                enabled = quickControlsEnabled
+            )
+        }
+    }
+}
+
+@Composable
 private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
     val quickControlsEnabled by viewModel.quickControlsEnabled.collectAsState()
     val taskbarSettings by viewModel.taskbarSettings.collectAsState()
@@ -1273,56 +1367,7 @@ private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
-            SettingsCard(title = stringResource(R.string.settings_quick_controls_title)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
-                        Text(stringResource(R.string.settings_enable_quick_controls_title), style = MaterialTheme.typography.bodyLarge)
-                        Text(
-                            stringResource(R.string.settings_enable_quick_controls_desc),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    Switch(
-                        checked = quickControlsEnabled,
-                        onCheckedChange = { viewModel.setQuickControlsEnabled(it) }
-                    )
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .alpha(if (quickControlsEnabled) 1f else 0.38f),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(stringResource(R.string.settings_show_control_labels_title), style = MaterialTheme.typography.bodyLarge)
-                    Switch(
-                        checked = taskbarSettings.showControlLabels,
-                        onCheckedChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(showControlLabels = it)) },
-                        enabled = quickControlsEnabled
-                    )
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .alpha(if (quickControlsEnabled) 1f else 0.38f),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(stringResource(R.string.settings_keep_controls_expanded_title), style = MaterialTheme.typography.bodyLarge)
-                    Switch(
-                        checked = taskbarSettings.keepDockExpanded,
-                        onCheckedChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(keepDockExpanded = it)) },
-                        enabled = quickControlsEnabled
-                    )
-                }
-            }
+            QuickControlsToggleCard(viewModel = viewModel)
         }
 
         item {

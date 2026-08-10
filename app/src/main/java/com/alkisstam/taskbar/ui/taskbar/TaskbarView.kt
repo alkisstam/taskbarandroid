@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.Battery5Bar
 import androidx.compose.material.icons.filled.BatteryChargingFull
 import androidx.compose.material.icons.filled.BatteryFull
 import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -84,6 +85,8 @@ fun TaskbarView(
     val controlsDisabledIds by taskbarViewModel.controlsDisabledIds.collectAsState()
     val musicPanelEnabled by taskbarViewModel.musicPanelEnabled.collectAsState()
     val musicPanelVisible by appMenuViewModel.musicPanelVisible.collectAsState()
+    val quickSettingsPanelEnabled by taskbarViewModel.quickSettingsPanelEnabled.collectAsState()
+    val quickSettingsPanelVisible by appMenuViewModel.quickSettingsPanelVisible.collectAsState()
     val quickControls by appMenuViewModel.quickControlsState.collectAsState()
     val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
     val dockExpandProgress by taskbarViewModel.dockExpandProgress.collectAsState()
@@ -234,6 +237,22 @@ fun TaskbarView(
                                                     icon = Icons.Filled.MusicNote
                                                 ),
                                                 onToggle = { appMenuViewModel.toggleMusicPanel() },
+                                                showLabel = taskbarSettings.showControlLabels,
+                                                tileSize = taskbarSettings.quickControlSizeDp.dp
+                                            )
+                                        }
+                                    }
+                                    if (quickSettingsPanelEnabled) {
+                                        item {
+                                            val quickSettingsLabel = stringResource(R.string.quick_control_settings_label)
+                                            QuickControlItem(
+                                                item = QuickControlItemData(
+                                                    id = "quick_settings",
+                                                    label = quickSettingsLabel,
+                                                    active = quickSettingsPanelVisible,
+                                                    icon = Icons.Filled.Settings
+                                                ),
+                                                onToggle = { appMenuViewModel.toggleQuickSettingsPanel() },
                                                 showLabel = taskbarSettings.showControlLabels,
                                                 tileSize = taskbarSettings.quickControlSizeDp.dp
                                             )

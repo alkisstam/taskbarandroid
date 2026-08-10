@@ -39,6 +39,7 @@ import com.alkisstam.taskbar.ui.appmenu.VolumePanel
 import com.alkisstam.taskbar.ui.clipboard.ClipboardPanel
 import com.alkisstam.taskbar.ui.clipboard.NotesPanel
 import com.alkisstam.taskbar.ui.notifications.NotificationHistoryPanel
+import com.alkisstam.taskbar.ui.settings.QuickSettingsPanel
 import com.alkisstam.taskbar.ui.taskbar.TaskbarView
 import com.alkisstam.taskbar.ui.taskbar.TriggerPillView
 import com.alkisstam.taskbar.ui.theme.TaskBarTheme
@@ -331,6 +332,51 @@ internal fun NotesPanelContent(
                 taskbarViewModel.hideTaskbar()
                 appMenuViewModel.dismissMusicPanel()
             },
+            panelOutlineEnabled = panelOutlineEnabled,
+            translucentMode = translucentMode,
+            translucentAlpha = translucentAlpha,
+            grainAlpha = grainAlpha,
+            surfaceTintColor = surfaceTintColor,
+            dockBottomPadding = dockBottomPadding
+        )
+    }
+}
+
+private fun notificationListenerEnabled(context: android.content.Context): Boolean {
+    val flat = android.provider.Settings.Secure.getString(context.contentResolver, "enabled_notification_listeners") ?: return false
+    val cn = android.content.ComponentName(context, MediaListenerService::class.java)
+    return flat.split(":").any { android.content.ComponentName.unflattenFromString(it.trim()) == cn }
+}
+
+@Composable
+internal fun QuickSettingsPanelContent(
+    taskbarViewModel: TaskbarViewModel,
+    appMenuViewModel: AppMenuViewModel
+) {
+    val themeMode by taskbarViewModel.themeMode.collectAsState()
+    val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
+    val translucentMode by taskbarViewModel.translucentMode.collectAsState()
+    val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
+    val grainAlpha by taskbarViewModel.grainAlpha.collectAsState()
+    val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
+    val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
+    val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
+    val quickControlsEnabled by taskbarViewModel.quickControlsEnabled.collectAsState()
+    val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
+    val quickSettingsPanelVisible by appMenuViewModel.quickSettingsPanelVisible.collectAsState()
+
+    val expandedRows = if (isDockExpanded && quickControlsEnabled) 1 else 0
+    val dockBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.heightDp, expandedRows, taskbarSettings.dockPadding.bottomGapDp)
+    val context = LocalContext.current
+    val hasNotificationListenerPermission = remember(quickSettingsPanelVisible) {
+        notificationListenerEnabled(context)
+    }
+
+    TaskBarTheme(themeMode = themeMode) {
+        QuickSettingsPanel(
+            taskbarViewModel = taskbarViewModel,
+            hasNotificationListenerPermission = hasNotificationListenerPermission,
+            onDismiss = appMenuViewModel::dismissQuickSettingsPanel,
             panelOutlineEnabled = panelOutlineEnabled,
             translucentMode = translucentMode,
             translucentAlpha = translucentAlpha,
