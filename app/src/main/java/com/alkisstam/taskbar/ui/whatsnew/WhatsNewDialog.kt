@@ -205,7 +205,10 @@ val whatsNewReleases = listOf(
         versionCode = 58,
         highlights = listOf(
             "New App order setting in Settings → Apps — sort the app menu's app grid by Name, Install time, or Usage",
-            "New sort button (⋮) next to the search bar in the app menu panel for the same setting"
+            "New sort button (⋮) next to the search bar in the app menu panel for the same setting",
+            "New App battery usage guide in Settings → General → Permissions — per-manufacturer steps to exempt Floating Dock from battery optimization",
+            "New optional Quick Settings dock panel — enable it in Settings → Controls → Quick Controls for a tile that opens a focused Settings panel right from the dock",
+            "Removed the Mobile Data quick control — it wasn't reliably actionable across phone brands"
         )
     )
 )
