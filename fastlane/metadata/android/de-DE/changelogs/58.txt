@@ -1,0 +1,14 @@
+Neu
+• App-Reihenfolge — sortiere das App-Raster nach Name, Installationszeit oder Nutzung
+• Akkunutzung-Anleitung mit herstellerspezifischen Schritten
+• Optionales Schnelleinstellungen-Panel im Dock
+
+Geändert
+• Berechtigungen-Bereich ist jetzt einklappbar
+• Klarere Beschreibungen bei einigen Einstellungen; Schnelleinstellungen jetzt standardmäßig aktiv
+
+Entfernt
+• Schnellzugriff für mobile Daten
+
+Behoben
+• Ruckelige Schließanimation des App-Menüs

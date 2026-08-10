@@ -1,0 +1,14 @@
+Added
+• App order — sort the app grid by name, install time, or usage
+• App battery usage guide with per-manufacturer steps
+• Optional Quick Settings dock panel for fast access to key settings
+
+Changed
+• Permissions section is now collapsible
+• Clearer setting descriptions; Quick Settings on by default
+
+Removed
+• Mobile Data quick control
+
+Fixed
+• Janky app-menu close animation

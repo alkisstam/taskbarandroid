@@ -1,0 +1,14 @@
+Yenilikler
+• Uygulama Sırası — uygulama ızgarasını ada, yükleme zamanına veya kullanıma göre sırala
+• Üreticiye özel adımlar içeren uygulama pil kullanımı rehberi
+• Önemli ayarlara hızlı erişim için Dock'ta isteğe bağlı Hızlı Ayarlar paneli
+
+Değişiklikler
+• İzinler bölümü artık daraltılabilir
+• Bazı ayarlarda daha net açıklamalar; Hızlı Ayarlar artık varsayılan olarak açık
+
+Kaldırıldı
+• Mobil Veri hızlı kontrolü
+
+Düzeltmeler
+• Uygulama menüsü kapanış animasyonundaki takılmalar

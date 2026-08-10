@@ -1,0 +1,14 @@
+Novità
+• Ordine app — ordina la griglia app per nome, data di installazione o utilizzo
+• Guida all'utilizzo della batteria con passaggi per produttore
+• Pannello Impostazioni rapide opzionale nel dock
+
+Modifiche
+• La sezione Autorizzazioni ora è comprimibile
+• Descrizioni più chiare per alcune impostazioni; Impostazioni rapide ora attive di default
+
+Rimosso
+• Il controllo rapido Dati mobili
+
+Correzioni
+• Animazione di chiusura del menu app scattosa

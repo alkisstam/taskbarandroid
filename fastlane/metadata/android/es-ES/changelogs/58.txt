@@ -1,0 +1,14 @@
+Novedades
+• Orden de apps — ordena la cuadrícula de apps por nombre, fecha de instalación o uso
+• Guía de uso de batería de la app con pasos por fabricante
+• Panel de Configuración rápida opcional en el dock
+
+Cambios
+• La sección de Permisos ahora se puede colapsar
+• Descripciones más claras en varios ajustes; Configuración rápida activada por defecto
+
+Eliminado
+• Control rápido de Datos móviles
+
+Corregido
+• Animación de cierre del menú de apps con tirones

@@ -1,0 +1,14 @@
+Novidades
+• Ordem dos Apps — organize a grade de apps por nome, data de instalação ou uso
+• Guia de uso de bateria do app com passos por fabricante
+• Painel opcional de Configurações rápidas no Dock
+
+Alterações
+• A seção Permissões agora pode ser recolhida
+• Descrições mais claras em algumas configurações; Configurações rápidas ativas por padrão
+
+Removido
+• Controle rápido de Dados móveis
+
+Correções
+• Animação de fechamento do menu de apps travada

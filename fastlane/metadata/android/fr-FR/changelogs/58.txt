@@ -1,0 +1,14 @@
+Nouveautés
+• Ordre des applications — triez la grille par nom, date d'installation ou utilisation
+• Guide d'utilisation de la batterie avec étapes par fabricant
+• Panneau Paramètres rapides optionnel dans le dock
+
+Modifications
+• Section Autorisations désormais repliable
+• Descriptions plus claires pour certains réglages ; Paramètres rapides activés par défaut
+
+Supprimé
+• Contrôle rapide Données mobiles
+
+Corrections
+• Animation de fermeture saccadée du menu des applications

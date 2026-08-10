@@ -1,0 +1,14 @@
+Nieuw
+• App-volgorde — sorteer het app-raster op naam, installatietijd of gebruik
+• Batterijgebruikgids met stappen per fabrikant
+• Optioneel Snelle instellingen-paneel in de dock voor snelle toegang tot belangrijke instellingen
+
+Gewijzigd
+• Toestemmingen-sectie is nu inklapbaar
+• Duidelijkere beschrijvingen bij enkele instellingen; Snelle instellingen nu standaard aan
+
+Verwijderd
+• Snelle bediening voor mobiele data
+
+Opgelost
+• Haperende sluitanimatie van het app-menu

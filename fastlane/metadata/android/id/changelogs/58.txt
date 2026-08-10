@@ -1,0 +1,14 @@
+Baru
+• Urutan Aplikasi — urutkan grid aplikasi berdasarkan nama, waktu instal, atau penggunaan
+• Panduan penggunaan baterai aplikasi dengan langkah per produsen
+• Panel Pengaturan Cepat opsional di Dock untuk akses cepat ke pengaturan utama
+
+Perubahan
+• Bagian Izin kini dapat diciutkan
+• Deskripsi lebih jelas pada beberapa pengaturan; Pengaturan Cepat kini aktif secara default
+
+Dihapus
+• Kontrol cepat Data Seluler
+
+Perbaikan
+• Animasi penutupan menu aplikasi yang patah-patah
