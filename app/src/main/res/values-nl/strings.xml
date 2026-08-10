@@ -114,6 +114,7 @@
     <string name="settings_app_grid_columns_label">Kolommen</string>
     <string name="settings_app_grid_rows_label">Rijen</string>
     <string name="settings_app_grid_title">App-raster</string>
+    <string name="settings_app_order_desc">Wijzig de app-volgorde in het App-menu</string>
     <string name="settings_app_order_title">App-volgorde</string>
     <string name="settings_autohide_fullscreen_desc">Verberg de dock wanneer een app volledig scherm gebruikt</string>
     <string name="settings_autohide_fullscreen_title">Automatisch verbergen in volledig scherm</string>
@@ -170,6 +171,8 @@
     <string name="settings_enable_accessibility_button">Toegankelijkheidsservice inschakelen</string>
     <string name="settings_enable_quick_controls_desc">Toon snelle bediening in de dock. Veeg omhoog om ze te tonen. Veeg omlaag om ze te verbergen.</string>
     <string name="settings_enable_quick_controls_title">Snelle bediening inschakelen</string>
+    <string name="settings_enable_quick_settings_panel_desc">Toon een instellingenpictogram in de snelle bediening in de dock en open het Snelle instellingen-paneel</string>
+    <string name="settings_enable_quick_settings_panel_title">Snelle instellingen inschakelen</string>
     <string name="settings_fuzzy_search_desc">Vindt apps ook bij typefouten of gedeeltelijke namen</string>
     <string name="settings_fuzzy_search_title">Fuzzy-zoeken</string>
     <string name="settings_grant_notification_access_button">Meldingstoegang geven</string>
@@ -178,7 +181,8 @@
     <string name="settings_hide_apps_dialog_title">Apps verbergen</string>
     <string name="settings_hide_apps_done_button">Klaar</string>
     <string name="settings_hide_apps_search_placeholder">Apps zoeken</string>
-    <string name="settings_keep_controls_expanded_title">Bedieningselementen uitgeklapt houden</string>
+    <string name="settings_keep_controls_expanded_desc">Snelle bediening automatisch uitklappen bij het openen van de dock</string>
+    <string name="settings_keep_controls_expanded_title">Bediening automatisch uitklappen</string>
     <string name="settings_language_card_title">Taal</string>
     <string name="settings_language_system_default">Systeemstandaard</string>
     <string name="settings_music_panel_notification_required_desc">Vereist meldingstoegang om nummerinfo te lezen en afspelen te bedienen.</string>

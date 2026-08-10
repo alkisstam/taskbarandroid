@@ -299,6 +299,7 @@ private fun GeneralTab(
     val overlayEnabled by viewModel.overlayEnabled.collectAsState()
     val context = LocalContext.current
     var batteryUsageExpanded by remember { mutableStateOf(false) }
+    var permissionsExpanded by remember { mutableStateOf(false) }
 
     val backupLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
         uri?.let { viewModel.exportBackup(it) }
@@ -417,7 +418,11 @@ private fun GeneralTab(
             }
         }
 
-        SettingsCard(title = stringResource(R.string.settings_permissions_card_title)) {
+        ExpandableSection(
+            title = stringResource(R.string.settings_permissions_card_title),
+            expanded = permissionsExpanded,
+            onToggle = { permissionsExpanded = !permissionsExpanded }
+        ) {
             PermissionStatusRow(
                 name = stringResource(R.string.settings_permission_overlay_name),
                 description = stringResource(R.string.settings_permission_overlay_desc),
@@ -1070,6 +1075,11 @@ internal fun PinnedAppsReorderCard(viewModel: TaskbarViewModel, pinnedApps: List
 @Composable
 internal fun AppOrderCard(viewModel: TaskbarViewModel) {
     SettingsCard(title = stringResource(R.string.settings_app_order_title)) {
+        Text(
+            text = stringResource(R.string.settings_app_order_desc),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
         val appSortOrder by viewModel.appSortOrder.collectAsState()
         val options = listOf(
             stringResource(R.string.app_sort_order_name) to AppSortOrder.NAME,
@@ -1279,7 +1289,14 @@ internal fun QuickControlsToggleCard(viewModel: TaskbarViewModel) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(stringResource(R.string.settings_keep_controls_expanded_title), style = MaterialTheme.typography.bodyLarge)
+            Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
+                Text(stringResource(R.string.settings_keep_controls_expanded_title), style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    stringResource(R.string.settings_keep_controls_expanded_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
             Switch(
                 checked = taskbarSettings.keepDockExpanded,
                 onCheckedChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(keepDockExpanded = it)) },
@@ -1294,7 +1311,14 @@ internal fun QuickControlsToggleCard(viewModel: TaskbarViewModel) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(stringResource(R.string.settings_enable_quick_settings_panel_title), style = MaterialTheme.typography.bodyLarge)
+            Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
+                Text(stringResource(R.string.settings_enable_quick_settings_panel_title), style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    stringResource(R.string.settings_enable_quick_settings_panel_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
             Switch(
                 checked = quickSettingsPanelEnabled,
                 onCheckedChange = { viewModel.setQuickSettingsPanelEnabled(it) },

@@ -114,6 +114,7 @@
     <string name="settings_app_grid_columns_label">עמודות</string>
     <string name="settings_app_grid_rows_label">שורות</string>
     <string name="settings_app_grid_title">רשת אפליקציות</string>
+    <string name="settings_app_order_desc">שינוי סדר האפליקציות בתפריט האפליקציות</string>
     <string name="settings_app_order_title">סדר אפליקציות</string>
     <string name="settings_autohide_fullscreen_desc">הסתרת הדוק כשאפליקציה עוברת למסך מלא</string>
     <string name="settings_autohide_fullscreen_title">הסתרה אוטומטית במסך מלא</string>
@@ -170,6 +171,8 @@
     <string name="settings_enable_accessibility_button">הפעלת שירות הנגישות</string>
     <string name="settings_enable_quick_controls_desc">הצגת פקדים מהירים בדוק. החלקה למעלה מציגה אותם, למטה מסתירה אותם.</string>
     <string name="settings_enable_quick_controls_title">הפעלת פקדים מהירים</string>
+    <string name="settings_enable_quick_settings_panel_desc">הצגת סמל הגדרות בפקדים המהירים בדוק וגישה ללוח ההגדרות המהירות</string>
+    <string name="settings_enable_quick_settings_panel_title">הפעלת הגדרות מהירות</string>
     <string name="settings_fuzzy_search_desc">התאמת אפליקציות גם עם שגיאות הקלדה או שמות חלקיים</string>
     <string name="settings_fuzzy_search_title">חיפוש מקורב</string>
     <string name="settings_grant_notification_access_button">הענקת גישה להתראות</string>
@@ -178,7 +181,8 @@
     <string name="settings_hide_apps_dialog_title">הסתרת אפליקציות</string>
     <string name="settings_hide_apps_done_button">סיום</string>
     <string name="settings_hide_apps_search_placeholder">חיפוש אפליקציות</string>
-    <string name="settings_keep_controls_expanded_title">השארת הפקדים במצב מורחב</string>
+    <string name="settings_keep_controls_expanded_desc">הרחבת הפקדים המהירים אוטומטית בעת הפעלת הדוק</string>
+    <string name="settings_keep_controls_expanded_title">הרחבת הפקדים אוטומטית</string>
     <string name="settings_language_card_title">שפה</string>
     <string name="settings_language_system_default">ברירת המחדל של המערכת</string>
     <string name="settings_music_panel_notification_required_desc">דורש גישה להתראות כדי לקרוא פרטי רצועה ולשלוט בהשמעה.</string>

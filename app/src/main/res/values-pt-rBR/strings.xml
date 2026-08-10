@@ -114,6 +114,7 @@
     <string name="settings_app_grid_columns_label">Colunas</string>
     <string name="settings_app_grid_rows_label">Linhas</string>
     <string name="settings_app_grid_title">Grade de Apps</string>
+    <string name="settings_app_order_desc">Altera a ordem dos apps no Menu de Apps</string>
     <string name="settings_app_order_title">Ordem dos Apps</string>
     <string name="settings_autohide_fullscreen_desc">Oculta o dock quando um app entra em tela cheia</string>
     <string name="settings_autohide_fullscreen_title">Ocultar Automaticamente em Tela Cheia</string>
@@ -170,6 +171,8 @@
     <string name="settings_enable_accessibility_button">Ativar Serviço de Acessibilidade</string>
     <string name="settings_enable_quick_controls_desc">Exibe os controles rápidos no Dock. Deslize para cima para mostrá-los. Deslize para baixo para ocultá-los.</string>
     <string name="settings_enable_quick_controls_title">Ativar Controles Rápidos</string>
+    <string name="settings_enable_quick_settings_panel_desc">Exibe um ícone de configurações nos controles rápidos do Dock e acessa o painel de Configurações rápidas</string>
+    <string name="settings_enable_quick_settings_panel_title">Ativar Configurações rápidas</string>
     <string name="settings_fuzzy_search_desc">Encontra apps mesmo com erros de digitação ou nomes parciais</string>
     <string name="settings_fuzzy_search_title">Busca Aproximada</string>
     <string name="settings_grant_notification_access_button">Conceder Acesso a Notificações</string>
@@ -178,7 +181,8 @@
     <string name="settings_hide_apps_dialog_title">Ocultar Apps</string>
     <string name="settings_hide_apps_done_button">Concluído</string>
     <string name="settings_hide_apps_search_placeholder">Pesquisar apps</string>
-    <string name="settings_keep_controls_expanded_title">Manter controles expandidos</string>
+    <string name="settings_keep_controls_expanded_desc">Expande automaticamente os controles rápidos ao acionar o Dock</string>
+    <string name="settings_keep_controls_expanded_title">Expandir controles automaticamente</string>
     <string name="settings_language_card_title">Idioma</string>
     <string name="settings_language_system_default">Padrão do Sistema</string>
     <string name="settings_music_panel_notification_required_desc">Requer Acesso a Notificações para ler informações da faixa e controlar a reprodução.</string>

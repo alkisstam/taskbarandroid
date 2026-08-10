@@ -114,6 +114,7 @@
     <string name="settings_app_grid_columns_label">Columns</string>
     <string name="settings_app_grid_rows_label">Rows</string>
     <string name="settings_app_grid_title">App Grid</string>
+    <string name="settings_app_order_desc">Change the app order in the App Menu</string>
     <string name="settings_app_order_title">App order</string>
     <string name="settings_autohide_fullscreen_desc">Hide the dock when an app goes fullscreen</string>
     <string name="settings_autohide_fullscreen_title">Auto-hide in Fullscreen</string>
@@ -170,6 +171,7 @@
     <string name="settings_enable_accessibility_button">Enable Accessibility Service</string>
     <string name="settings_enable_quick_controls_desc">Show quick controls in the Dock. Swipe up to show the quick controls. Swipe down to hide them.</string>
     <string name="settings_enable_quick_controls_title">Enable Quick Controls</string>
+    <string name="settings_enable_quick_settings_panel_desc">Show a settings icon in Quick Controls in Dock and access the Quick Settings panel</string>
     <string name="settings_enable_quick_settings_panel_title">Enable Quick Settings</string>
     <string name="settings_fuzzy_search_desc">Match apps even with typos or partial names</string>
     <string name="settings_fuzzy_search_title">Fuzzy Search</string>
@@ -179,7 +181,8 @@
     <string name="settings_hide_apps_dialog_title">Hide Apps</string>
     <string name="settings_hide_apps_done_button">Done</string>
     <string name="settings_hide_apps_search_placeholder">Search apps</string>
-    <string name="settings_keep_controls_expanded_title">Keep controls expanded</string>
+    <string name="settings_keep_controls_expanded_desc">Auto expand the Quick Controls when triggering the Dock</string>
+    <string name="settings_keep_controls_expanded_title">Auto expand controls</string>
     <string name="settings_language_card_title">Language</string>
     <string name="settings_language_system_default">System Default</string>
     <string name="settings_music_panel_notification_required_desc">Requires Notification Access to read track info and control playback.</string>

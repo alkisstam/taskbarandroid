@@ -114,6 +114,7 @@
     <string name="settings_app_grid_columns_label">कॉलम</string>
     <string name="settings_app_grid_rows_label">पंक्तियां</string>
     <string name="settings_app_grid_title">ऐप ग्रिड</string>
+    <string name="settings_app_order_desc">ऐप मेनू में ऐप्स का क्रम बदलें</string>
     <string name="settings_app_order_title">ऐप क्रम</string>
     <string name="settings_autohide_fullscreen_desc">जब कोई ऐप फुलस्क्रीन हो जाए तो डॉक को छिपाएं</string>
     <string name="settings_autohide_fullscreen_title">फुलस्क्रीन में ऑटो-हाइड</string>
@@ -170,6 +171,8 @@
     <string name="settings_enable_accessibility_button">एक्सेसिबिलिटी सेवा सक्षम करें</string>
     <string name="settings_enable_quick_controls_desc">डॉक में क्विक कंट्रोल्स दिखाएं। क्विक कंट्रोल्स दिखाने के लिए ऊपर स्वाइप करें। छिपाने के लिए नीचे स्वाइप करें।</string>
     <string name="settings_enable_quick_controls_title">क्विक कंट्रोल्स सक्षम करें</string>
+    <string name="settings_enable_quick_settings_panel_desc">डॉक में क्विक कंट्रोल्स में सेटिंग्स आइकन दिखाएं और क्विक सेटिंग्स पैनल एक्सेस करें</string>
+    <string name="settings_enable_quick_settings_panel_title">क्विक सेटिंग्स सक्षम करें</string>
     <string name="settings_fuzzy_search_desc">टाइपो या आंशिक नामों के साथ भी ऐप्स को मैच करें</string>
     <string name="settings_fuzzy_search_title">फजी सर्च</string>
     <string name="settings_grant_notification_access_button">सूचना एक्सेस की अनुमति दें</string>
@@ -178,7 +181,8 @@
     <string name="settings_hide_apps_dialog_title">ऐप्स छिपाएं</string>
     <string name="settings_hide_apps_done_button">हो गया</string>
     <string name="settings_hide_apps_search_placeholder">ऐप्स खोजें</string>
-    <string name="settings_keep_controls_expanded_title">नियंत्रण विस्तृत रखें</string>
+    <string name="settings_keep_controls_expanded_desc">डॉक ट्रिगर करने पर क्विक कंट्रोल्स को अपने आप विस्तृत करें</string>
+    <string name="settings_keep_controls_expanded_title">नियंत्रण अपने आप विस्तृत करें</string>
     <string name="settings_language_card_title">भाषा</string>
     <string name="settings_language_system_default">सिस्टम डिफ़ॉल्ट</string>
     <string name="settings_music_panel_notification_required_desc">ट्रैक जानकारी पढ़ने और प्लेबैक नियंत्रित करने के लिए सूचना एक्सेस आवश्यक है।</string>

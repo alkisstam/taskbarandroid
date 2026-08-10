@@ -114,6 +114,7 @@
     <string name="settings_app_grid_columns_label">Columnas</string>
     <string name="settings_app_grid_rows_label">Filas</string>
     <string name="settings_app_grid_title">Cuadrícula de aplicaciones</string>
+    <string name="settings_app_order_desc">Cambia el orden de las apps en el Menú de aplicaciones</string>
     <string name="settings_app_order_title">Orden de apps</string>
     <string name="settings_autohide_fullscreen_desc">Oculta el dock cuando una app pasa a pantalla completa</string>
     <string name="settings_autohide_fullscreen_title">Ocultar automáticamente en pantalla completa</string>
@@ -170,6 +171,8 @@
     <string name="settings_enable_accessibility_button">Activar servicio de accesibilidad</string>
     <string name="settings_enable_quick_controls_desc">Muestra los controles rápidos en el dock. Desliza hacia arriba para mostrarlos y hacia abajo para ocultarlos.</string>
     <string name="settings_enable_quick_controls_title">Activar controles rápidos</string>
+    <string name="settings_enable_quick_settings_panel_desc">Muestra un ícono de configuración en los controles rápidos del dock y accede al panel de Configuración rápida</string>
+    <string name="settings_enable_quick_settings_panel_title">Activar Configuración rápida</string>
     <string name="settings_fuzzy_search_desc">Encuentra apps aunque haya errores de escritura o nombres incompletos</string>
     <string name="settings_fuzzy_search_title">Búsqueda flexible</string>
     <string name="settings_grant_notification_access_button">Otorgar acceso a las notificaciones</string>
@@ -178,7 +181,8 @@
     <string name="settings_hide_apps_dialog_title">Ocultar aplicaciones</string>
     <string name="settings_hide_apps_done_button">Listo</string>
     <string name="settings_hide_apps_search_placeholder">Buscar aplicaciones</string>
-    <string name="settings_keep_controls_expanded_title">Mantener controles expandidos</string>
+    <string name="settings_keep_controls_expanded_desc">Expande automáticamente los controles rápidos al activar el dock</string>
+    <string name="settings_keep_controls_expanded_title">Expandir controles automáticamente</string>
     <string name="settings_language_card_title">Idioma</string>
     <string name="settings_language_system_default">Predeterminado del sistema</string>
     <string name="settings_music_panel_notification_required_desc">Requiere acceso a las notificaciones para leer la información de la pista y controlar la reproducción.</string>

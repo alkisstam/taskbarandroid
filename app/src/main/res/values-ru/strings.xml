@@ -114,6 +114,7 @@
     <string name="settings_app_grid_columns_label">Столбцы</string>
     <string name="settings_app_grid_rows_label">Строки</string>
     <string name="settings_app_grid_title">Сетка приложений</string>
+    <string name="settings_app_order_desc">Изменяет порядок приложений в меню приложений</string>
     <string name="settings_app_order_title">Порядок приложений</string>
     <string name="settings_autohide_fullscreen_desc">Скрывать панель, когда приложение переходит в полноэкранный режим</string>
     <string name="settings_autohide_fullscreen_title">Автоскрытие в полноэкранном режиме</string>
@@ -170,6 +171,8 @@
     <string name="settings_enable_accessibility_button">Включить специальные возможности</string>
     <string name="settings_enable_quick_controls_desc">Показывать быстрые кнопки на панели. Проведите вверх, чтобы показать их, и вниз, чтобы скрыть.</string>
     <string name="settings_enable_quick_controls_title">Включить быстрые кнопки</string>
+    <string name="settings_enable_quick_settings_panel_desc">Показывает значок настроек в быстрых кнопках на панели и открывает доступ к панели быстрых настроек</string>
+    <string name="settings_enable_quick_settings_panel_title">Включить быстрые настройки</string>
     <string name="settings_fuzzy_search_desc">Находить приложения даже при опечатках или неполном названии</string>
     <string name="settings_fuzzy_search_title">Нечёткий поиск</string>
     <string name="settings_grant_notification_access_button">Предоставить доступ к уведомлениям</string>
@@ -178,7 +181,8 @@
     <string name="settings_hide_apps_dialog_title">Скрыть приложения</string>
     <string name="settings_hide_apps_done_button">Готово</string>
     <string name="settings_hide_apps_search_placeholder">Поиск приложений</string>
-    <string name="settings_keep_controls_expanded_title">Не сворачивать кнопки</string>
+    <string name="settings_keep_controls_expanded_desc">Автоматически разворачивать быстрые кнопки при открытии панели</string>
+    <string name="settings_keep_controls_expanded_title">Разворачивать кнопки автоматически</string>
     <string name="settings_language_card_title">Язык</string>
     <string name="settings_language_system_default">Как в системе</string>
     <string name="settings_music_panel_notification_required_desc">Требуется доступ к уведомлениям для чтения информации о треке и управления воспроизведением.</string>

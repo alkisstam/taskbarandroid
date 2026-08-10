@@ -114,6 +114,7 @@
     <string name="settings_app_grid_columns_label">Kolom</string>
     <string name="settings_app_grid_rows_label">Baris</string>
     <string name="settings_app_grid_title">Grid Aplikasi</string>
+    <string name="settings_app_order_desc">Mengubah urutan aplikasi di Menu Aplikasi</string>
     <string name="settings_app_order_title">Urutan Aplikasi</string>
     <string name="settings_autohide_fullscreen_desc">Sembunyikan dock saat aplikasi masuk mode layar penuh</string>
     <string name="settings_autohide_fullscreen_title">Sembunyikan Otomatis saat Layar Penuh</string>
@@ -170,6 +171,8 @@
     <string name="settings_enable_accessibility_button">Aktifkan Layanan Aksesibilitas</string>
     <string name="settings_enable_quick_controls_desc">Tampilkan kontrol cepat di Dock. Geser ke atas untuk menampilkan kontrol cepat. Geser ke bawah untuk menyembunyikannya.</string>
     <string name="settings_enable_quick_controls_title">Aktifkan Kontrol Cepat</string>
+    <string name="settings_enable_quick_settings_panel_desc">Menampilkan ikon pengaturan di Kontrol Cepat pada Dock dan mengakses panel Pengaturan Cepat</string>
+    <string name="settings_enable_quick_settings_panel_title">Aktifkan Pengaturan Cepat</string>
     <string name="settings_fuzzy_search_desc">Cocokkan aplikasi meski ada salah ketik atau nama sebagian</string>
     <string name="settings_fuzzy_search_title">Pencarian Fuzzy</string>
     <string name="settings_grant_notification_access_button">Berikan Akses Notifikasi</string>
@@ -178,7 +181,8 @@
     <string name="settings_hide_apps_dialog_title">Sembunyikan Aplikasi</string>
     <string name="settings_hide_apps_done_button">Selesai</string>
     <string name="settings_hide_apps_search_placeholder">Cari aplikasi</string>
-    <string name="settings_keep_controls_expanded_title">Pertahankan kontrol tetap terbuka</string>
+    <string name="settings_keep_controls_expanded_desc">Otomatis memperluas Kontrol Cepat saat memicu Dock</string>
+    <string name="settings_keep_controls_expanded_title">Perluas kontrol secara otomatis</string>
     <string name="settings_language_card_title">Bahasa</string>
     <string name="settings_language_system_default">Bawaan Sistem</string>
     <string name="settings_music_panel_notification_required_desc">Memerlukan Akses Notifikasi untuk membaca info lagu dan mengontrol pemutaran.</string>

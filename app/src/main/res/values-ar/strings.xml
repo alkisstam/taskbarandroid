@@ -114,6 +114,7 @@
     <string name="settings_app_grid_columns_label">الأعمدة</string>
     <string name="settings_app_grid_rows_label">الصفوف</string>
     <string name="settings_app_grid_title">شبكة التطبيقات</string>
+    <string name="settings_app_order_desc">تغيير ترتيب التطبيقات في قائمة التطبيقات</string>
     <string name="settings_app_order_title">ترتيب التطبيقات</string>
     <string name="settings_autohide_fullscreen_desc">إخفاء الرصيف عندما ينتقل تطبيق إلى وضع ملء الشاشة</string>
     <string name="settings_autohide_fullscreen_title">الإخفاء التلقائي في وضع ملء الشاشة</string>
@@ -170,6 +171,8 @@
     <string name="settings_enable_accessibility_button">تفعيل خدمة إمكانية الوصول</string>
     <string name="settings_enable_quick_controls_desc">إظهار عناصر التحكم السريع في الرصيف. مرر لأعلى لإظهارها ولأسفل لإخفائها.</string>
     <string name="settings_enable_quick_controls_title">تفعيل عناصر التحكم السريع</string>
+    <string name="settings_enable_quick_settings_panel_desc">إظهار أيقونة الإعدادات في عناصر التحكم السريع في الرصيف والوصول إلى لوحة الإعدادات السريعة</string>
+    <string name="settings_enable_quick_settings_panel_title">تفعيل الإعدادات السريعة</string>
     <string name="settings_fuzzy_search_desc">مطابقة التطبيقات حتى مع وجود أخطاء إملائية أو أسماء جزئية</string>
     <string name="settings_fuzzy_search_title">البحث التقريبي</string>
     <string name="settings_grant_notification_access_button">منح الوصول إلى الإشعارات</string>
@@ -178,7 +181,8 @@
     <string name="settings_hide_apps_dialog_title">إخفاء التطبيقات</string>
     <string name="settings_hide_apps_done_button">تم</string>
     <string name="settings_hide_apps_search_placeholder">ابحث عن التطبيقات</string>
-    <string name="settings_keep_controls_expanded_title">إبقاء عناصر التحكم موسعة</string>
+    <string name="settings_keep_controls_expanded_desc">توسيع عناصر التحكم السريع تلقائيًا عند تشغيل الرصيف</string>
+    <string name="settings_keep_controls_expanded_title">توسيع عناصر التحكم تلقائيًا</string>
     <string name="settings_language_card_title">اللغة</string>
     <string name="settings_language_system_default">افتراضي النظام</string>
     <string name="settings_music_panel_notification_required_desc">يتطلب الوصول إلى الإشعارات لقراءة معلومات المقطع والتحكم في التشغيل.</string>

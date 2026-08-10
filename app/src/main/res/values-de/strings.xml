@@ -114,6 +114,7 @@
     <string name="settings_app_grid_columns_label">Spalten</string>
     <string name="settings_app_grid_rows_label">Zeilen</string>
     <string name="settings_app_grid_title">App-Raster</string>
+    <string name="settings_app_order_desc">Ändert die Reihenfolge der Apps im App-Menü</string>
     <string name="settings_app_order_title">App-Reihenfolge</string>
     <string name="settings_autohide_fullscreen_desc">Das Dock ausblenden, wenn eine App in den Vollbildmodus wechselt</string>
     <string name="settings_autohide_fullscreen_title">Automatisch ausblenden im Vollbildmodus</string>
@@ -170,6 +171,8 @@
     <string name="settings_enable_accessibility_button">Bedienungshilfen-Dienst aktivieren</string>
     <string name="settings_enable_quick_controls_desc">Schnellzugriffe im Dock anzeigen. Nach oben wischen, um sie einzublenden. Nach unten wischen, um sie auszublenden.</string>
     <string name="settings_enable_quick_controls_title">Schnellzugriffe aktivieren</string>
+    <string name="settings_enable_quick_settings_panel_desc">Zeigt ein Einstellungssymbol in den Schnellzugriffen im Dock und öffnet das Schnelleinstellungen-Panel</string>
+    <string name="settings_enable_quick_settings_panel_title">Schnelleinstellungen aktivieren</string>
     <string name="settings_fuzzy_search_desc">Findet Apps auch bei Tippfehlern oder Teilnamen</string>
     <string name="settings_fuzzy_search_title">Unscharfe Suche</string>
     <string name="settings_grant_notification_access_button">Benachrichtigungszugriff gewähren</string>
@@ -178,7 +181,8 @@
     <string name="settings_hide_apps_dialog_title">Apps ausblenden</string>
     <string name="settings_hide_apps_done_button">Fertig</string>
     <string name="settings_hide_apps_search_placeholder">Apps suchen</string>
-    <string name="settings_keep_controls_expanded_title">Steuerelemente ausgeklappt halten</string>
+    <string name="settings_keep_controls_expanded_desc">Schnellzugriffe beim Öffnen des Docks automatisch ausklappen</string>
+    <string name="settings_keep_controls_expanded_title">Steuerelemente automatisch ausklappen</string>
     <string name="settings_language_card_title">Sprache</string>
     <string name="settings_language_system_default">Systemstandard</string>
     <string name="settings_music_panel_notification_required_desc">Erfordert Benachrichtigungszugriff, um Titelinfos zu lesen und die Wiedergabe zu steuern.</string>

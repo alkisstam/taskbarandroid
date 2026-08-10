@@ -114,6 +114,7 @@
     <string name="settings_app_grid_columns_label">Sütun</string>
     <string name="settings_app_grid_rows_label">Satır</string>
     <string name="settings_app_grid_title">Uygulama Izgarası</string>
+    <string name="settings_app_order_desc">Uygulama Menüsü\'ndeki uygulama sırasını değiştirir</string>
     <string name="settings_app_order_title">Uygulama Sırası</string>
     <string name="settings_autohide_fullscreen_desc">Bir uygulama tam ekrana geçtiğinde dock\'u gizle</string>
     <string name="settings_autohide_fullscreen_title">Tam Ekranda Otomatik Gizle</string>
@@ -170,6 +171,8 @@
     <string name="settings_enable_accessibility_button">Erişilebilirlik Hizmetini Etkinleştir</string>
     <string name="settings_enable_quick_controls_desc">Dock\'ta hızlı kontrolleri göster. Hızlı kontrolleri göstermek için yukarı kaydırın. Gizlemek için aşağı kaydırın.</string>
     <string name="settings_enable_quick_controls_title">Hızlı Kontrolleri Etkinleştir</string>
+    <string name="settings_enable_quick_settings_panel_desc">Dock\'taki hızlı kontrollerde bir ayarlar simgesi gösterir ve Hızlı Ayarlar paneline erişim sağlar</string>
+    <string name="settings_enable_quick_settings_panel_title">Hızlı Ayarları Etkinleştir</string>
     <string name="settings_fuzzy_search_desc">Yazım hatası olsa veya isim eksik yazılsa bile uygulamaları eşleştirir</string>
     <string name="settings_fuzzy_search_title">Bulanık Arama</string>
     <string name="settings_grant_notification_access_button">Bildirim Erişimi Ver</string>
@@ -178,7 +181,8 @@
     <string name="settings_hide_apps_dialog_title">Uygulamaları Gizle</string>
     <string name="settings_hide_apps_done_button">Bitti</string>
     <string name="settings_hide_apps_search_placeholder">Uygulama ara</string>
-    <string name="settings_keep_controls_expanded_title">Kontrolleri genişletilmiş tut</string>
+    <string name="settings_keep_controls_expanded_desc">Dock tetiklendiğinde hızlı kontrolleri otomatik genişletir</string>
+    <string name="settings_keep_controls_expanded_title">Kontrolleri otomatik genişlet</string>
     <string name="settings_language_card_title">Dil</string>
     <string name="settings_language_system_default">Sistem Varsayılanı</string>
     <string name="settings_music_panel_notification_required_desc">Parça bilgisini okumak ve oynatmayı kontrol etmek için Bildirim Erişimi gerektirir.</string>

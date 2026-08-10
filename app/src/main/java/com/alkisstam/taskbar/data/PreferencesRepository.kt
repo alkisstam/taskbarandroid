@@ -409,7 +409,7 @@ class PreferencesRepository @Inject constructor(
     }
 
     val quickSettingsPanelEnabled: Flow<Boolean> = safeData.map { prefs ->
-        prefs[QUICK_SETTINGS_PANEL_ENABLED_KEY] ?: false
+        prefs[QUICK_SETTINGS_PANEL_ENABLED_KEY] ?: true
     }
 
     suspend fun setQuickSettingsPanelEnabled(enabled: Boolean) {

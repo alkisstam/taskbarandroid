@@ -114,6 +114,7 @@
     <string name="settings_app_grid_columns_label">列数</string>
     <string name="settings_app_grid_rows_label">行数</string>
     <string name="settings_app_grid_title">应用网格</string>
+    <string name="settings_app_order_desc">更改应用菜单中的应用排序</string>
     <string name="settings_app_order_title">应用排序</string>
     <string name="settings_autohide_fullscreen_desc">应用全屏时隐藏程序坞</string>
     <string name="settings_autohide_fullscreen_title">全屏时自动隐藏</string>
@@ -170,6 +171,8 @@
     <string name="settings_enable_accessibility_button">启用无障碍服务</string>
     <string name="settings_enable_quick_controls_desc">在程序坞中显示快捷控制。向上滑动显示，向下滑动隐藏。</string>
     <string name="settings_enable_quick_controls_title">启用快捷控制</string>
+    <string name="settings_enable_quick_settings_panel_desc">在程序坞的快捷控制中显示设置图标，并访问快速设置面板</string>
+    <string name="settings_enable_quick_settings_panel_title">启用快速设置</string>
     <string name="settings_fuzzy_search_desc">即使输入有误或只输入部分名称，也能匹配应用</string>
     <string name="settings_fuzzy_search_title">模糊搜索</string>
     <string name="settings_grant_notification_access_button">授予通知访问权限</string>
@@ -178,7 +181,8 @@
     <string name="settings_hide_apps_dialog_title">隐藏应用</string>
     <string name="settings_hide_apps_done_button">完成</string>
     <string name="settings_hide_apps_search_placeholder">搜索应用</string>
-    <string name="settings_keep_controls_expanded_title">始终展开控制面板</string>
+    <string name="settings_keep_controls_expanded_desc">触发程序坞时自动展开快捷控制</string>
+    <string name="settings_keep_controls_expanded_title">自动展开控制面板</string>
     <string name="settings_language_card_title">语言</string>
     <string name="settings_language_system_default">跟随系统</string>
     <string name="settings_music_panel_notification_required_desc">需要通知访问权限才能读取曲目信息并控制播放。</string>

@@ -114,6 +114,7 @@
     <string name="settings_app_grid_columns_label">คอลัมน์</string>
     <string name="settings_app_grid_rows_label">แถว</string>
     <string name="settings_app_grid_title">ตารางแอป</string>
+    <string name="settings_app_order_desc">เปลี่ยนลำดับแอปในเมนูแอป</string>
     <string name="settings_app_order_title">ลำดับแอป</string>
     <string name="settings_autohide_fullscreen_desc">ซ่อนด็อกเมื่อแอปเข้าสู่โหมดเต็มจอ</string>
     <string name="settings_autohide_fullscreen_title">ซ่อนอัตโนมัติเมื่อเต็มจอ</string>
@@ -170,6 +171,8 @@
     <string name="settings_enable_accessibility_button">เปิดใช้บริการการเข้าถึงพิเศษ</string>
     <string name="settings_enable_quick_controls_desc">แสดงควบคุมด่วนในด็อก ปัดขึ้นเพื่อแสดงควบคุมด่วน ปัดลงเพื่อซ่อน</string>
     <string name="settings_enable_quick_controls_title">เปิดใช้ควบคุมด่วน</string>
+    <string name="settings_enable_quick_settings_panel_desc">แสดงไอคอนการตั้งค่าในควบคุมด่วนบนด็อก และเข้าถึงแผงการตั้งค่าด่วน</string>
+    <string name="settings_enable_quick_settings_panel_title">เปิดใช้งานการตั้งค่าด่วน</string>
     <string name="settings_fuzzy_search_desc">ค้นหาแอปเจอแม้พิมพ์ผิดหรือใส่ชื่อไม่ครบ</string>
     <string name="settings_fuzzy_search_title">ค้นหาแบบยืดหยุ่น</string>
     <string name="settings_grant_notification_access_button">อนุญาตการเข้าถึงการแจ้งเตือน</string>
@@ -178,7 +181,8 @@
     <string name="settings_hide_apps_dialog_title">ซ่อนแอป</string>
     <string name="settings_hide_apps_done_button">เสร็จสิ้น</string>
     <string name="settings_hide_apps_search_placeholder">ค้นหาแอป</string>
-    <string name="settings_keep_controls_expanded_title">ขยายตัวควบคุมค้างไว้</string>
+    <string name="settings_keep_controls_expanded_desc">ขยายควบคุมด่วนอัตโนมัติเมื่อเรียกด็อก</string>
+    <string name="settings_keep_controls_expanded_title">ขยายตัวควบคุมอัตโนมัติ</string>
     <string name="settings_language_card_title">ภาษา</string>
     <string name="settings_language_system_default">ค่าเริ่มต้นของระบบ</string>
     <string name="settings_music_panel_notification_required_desc">ต้องมีสิทธิ์เข้าถึงการแจ้งเตือนเพื่ออ่านข้อมูลเพลงและควบคุมการเล่น</string>
