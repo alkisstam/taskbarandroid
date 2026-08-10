@@ -13,6 +13,10 @@ App sort order, Quick Settings panel.
 - **App battery usage guide** — Settings → General → Permissions now has an expandable "App battery usage" section with per-manufacturer steps (Samsung, MIUI, OnePlus, Redmi, OPPO, vivo/iQOO, realme, Motorola, Pixel, HUAWEI/HONOR) for exempting Floating Dock from aggressive battery optimization. Translated into all 16 supported languages.
 - **Quick Settings dock panel** — new optional quick control (enable via Settings → Controls → Quick Controls → "Enable Quick Settings") that puts a Settings tile right after the Music tile in the dock's quick controls strip. Tapping it opens a 4-tab panel with a focused subset of Settings: General (Behaviour, Music Panel, Search), Apps (Pinned Apps, App order, App Grid), Controls (Quick Controls), and the full Design tab — so you can tweak the dock without leaving the current app.
 
+### Changed
+- **Permissions section is now collapsible** — Settings → General → Permissions is now an expandable section (collapsed by default), matching the App battery usage guide beneath it.
+- **Quick Controls settings now explain themselves** — "Keep controls expanded" renamed to "Auto expand controls" with a new description; "Enable Quick Settings" gained a description and now defaults to on; Settings → Apps → App order also gained a description. New/changed strings translated into all 16 supported languages.
+
 ### Removed
 - **Mobile Data quick control** — dropped; its status/toggle behavior wasn't reliably actionable across OEMs.
 

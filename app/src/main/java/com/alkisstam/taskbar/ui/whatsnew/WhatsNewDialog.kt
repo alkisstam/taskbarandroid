@@ -208,7 +208,10 @@ val whatsNewReleases = listOf(
             "New sort button (⋮) next to the search bar in the app menu panel for the same setting",
             "New App battery usage guide in Settings → General → Permissions — per-manufacturer steps to exempt Floating Dock from battery optimization",
             "New optional Quick Settings dock panel — enable it in Settings → Controls → Quick Controls for a tile that opens a focused Settings panel right from the dock",
-            "Removed the Mobile Data quick control — it wasn't reliably actionable across phone brands"
+            "Removed the Mobile Data quick control — it wasn't reliably actionable across phone brands",
+            "Settings → General → Permissions is now a collapsible section",
+            "Renamed \"Keep controls expanded\" to \"Auto expand controls\" and added descriptions to it, Enable Quick Settings, and App order",
+            "Quick Settings dock panel is now enabled by default"
         )
     )
 )
