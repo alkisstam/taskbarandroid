@@ -188,7 +188,7 @@
     <string name="settings_music_panel_notification_required_desc">Erfordert Benachrichtigungszugriff, um Titelinfos zu lesen und die Wiedergabe zu steuern.</string>
     <string name="settings_music_panel_title">Musik-Panel</string>
     <string name="settings_navbar_overlay_active_desc">Der Bedienungshilfen-Dienst ist aktiv. Das Overlay erscheint über der Navigationsleiste.</string>
-    <string name="settings_navbar_overlay_enable_desc">Aktiviere den Floating Dock-Bedienungshilfen-Dienst, damit das Overlay über der System-Navigationsleiste angezeigt werden kann.</string>
+    <string name="settings_navbar_overlay_enable_desc">Aktiviere den Floating Dock-Bedienungshilfen-Dienst, damit das Overlay über der System-Navigationsleiste angezeigt wird und keine Tipps auf sicherheitsrelevanten Bildschirmen anderer Apps blockiert (z. B. Play Store, Banking, Wallet).</string>
     <string name="settings_navbar_overlay_title">Navigationsleisten-Overlay</string>
     <string name="settings_no_controls_enabled_desc">Keine Steuerelemente aktiviert. Aktiviere unten welche.</string>
     <string name="settings_no_email_app_toast">Keine E-Mail-App gefunden</string>
@@ -199,7 +199,7 @@
     <string name="settings_overlay_status_stopped">Dock ist gestoppt</string>
     <string name="settings_overlay_status_stopped_desc">Zum Aktivieren auf Start tippen</string>
     <string name="settings_overlay_status_title">Overlay-Status</string>
-    <string name="settings_permission_accessibility_desc">Optional — über der Navigationsleiste und Systemaktionen anzeigen</string>
+    <string name="settings_permission_accessibility_desc">Empfohlen — wird über der Navigationsleiste und Systemaktionen angezeigt; ohne diesen Dienst können Tipps auf sicherheitsrelevanten Bildschirmen anderer Apps blockiert werden</string>
     <string name="settings_permission_accessibility_name">Bedienungshilfen-Dienst</string>
     <string name="settings_permission_battery_desc">Optional — hält das Dock im Hintergrund am Laufen</string>
     <string name="settings_permission_battery_name">Akkuoptimierung ignorieren</string>
@@ -274,7 +274,7 @@
     <string name="onboarding_permission_overlay_title">Über anderen Apps anzeigen</string>
     <string name="onboarding_permission_overlay_desc">Erforderlich, um das Dock über allen anderen Apps anzuzeigen.</string>
     <string name="onboarding_accessibility_dialog_title">Bedienungshilfen-Dienst</string>
-    <string name="onboarding_accessibility_dialog_desc">Erforderlich, um das Dock über der Navigationsleiste anzuzeigen und Screenshots sowie Sperrbildschirm-Steuerung zu ermöglichen.</string>
+    <string name="onboarding_accessibility_dialog_desc">Zeigt das Dock über der Navigationsleiste an und ermöglicht Screenshots sowie Sperrbildschirm-Steuerung. Ohne diesen Dienst kann das Overlay Tipps auf sicherheitsrelevanten Bildschirmen anderer Apps blockieren (z. B. Play Store, Banking, Wallet).</string>
     <string name="onboarding_cancel">Abbrechen</string>
     <string name="onboarding_accept">Akzeptieren</string>
     <string name="onboarding_battery_optimization_title">Akkuoptimierung deaktivieren</string>

@@ -188,7 +188,7 @@
     <string name="settings_music_panel_notification_required_desc">Requires Notification Access to read track info and control playback.</string>
     <string name="settings_music_panel_title">Music Panel</string>
     <string name="settings_navbar_overlay_active_desc">Accessibility Service is active. The overlay will appear above the navigation bar.</string>
-    <string name="settings_navbar_overlay_enable_desc">Enable the Floating Dock Accessibility Service to allow the overlay to draw above the system navigation bar.</string>
+    <string name="settings_navbar_overlay_enable_desc">Enable the Floating Dock Accessibility Service to draw the overlay above the system navigation bar, and to stop it blocking taps on sensitive screens in other apps (e.g. Play Store, banking, wallet).</string>
     <string name="settings_navbar_overlay_title">Navigation Bar Overlay</string>
     <string name="settings_no_controls_enabled_desc">No controls enabled. Enable some below.</string>
     <string name="settings_no_email_app_toast">No email app found</string>
@@ -199,7 +199,7 @@
     <string name="settings_overlay_status_stopped">Dock is stopped</string>
     <string name="settings_overlay_status_stopped_desc">Tap start to enable</string>
     <string name="settings_overlay_status_title">Overlay Status</string>
-    <string name="settings_permission_accessibility_desc">Optional — draw over the navigation bar and system actions</string>
+    <string name="settings_permission_accessibility_desc">Recommended — draws over the navigation bar and system actions; without it, taps on sensitive screens in other apps can get blocked</string>
     <string name="settings_permission_accessibility_name">Accessibility Service</string>
     <string name="settings_permission_battery_desc">Optional — keeps the dock running in the background</string>
     <string name="settings_permission_battery_name">Ignore battery optimization</string>
@@ -274,7 +274,7 @@
     <string name="onboarding_permission_overlay_title">Draw over other apps</string>
     <string name="onboarding_permission_overlay_desc">Required to display the dock above all other apps.</string>
     <string name="onboarding_accessibility_dialog_title">Accessibility Service</string>
-    <string name="onboarding_accessibility_dialog_desc">Required to draw the dock above the navigation bar and enable screenshots and lock screen controls.</string>
+    <string name="onboarding_accessibility_dialog_desc">Draws the dock above the navigation bar and enables screenshots and lock screen controls. Without it, the overlay can block taps on sensitive screens in other apps (e.g. Play Store, banking, wallet).</string>
     <string name="onboarding_cancel">Cancel</string>
     <string name="onboarding_accept">Accept</string>
     <string name="onboarding_battery_optimization_title">Disable Battery Optimization</string>

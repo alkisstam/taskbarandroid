@@ -188,7 +188,7 @@
     <string name="settings_music_panel_notification_required_desc">דורש גישה להתראות כדי לקרוא פרטי רצועה ולשלוט בהשמעה.</string>
     <string name="settings_music_panel_title">לוח מוזיקה</string>
     <string name="settings_navbar_overlay_active_desc">שירות הנגישות פעיל. שכבת-העל תופיע מעל שורת הניווט.</string>
-    <string name="settings_navbar_overlay_enable_desc">הפעל את שירות הנגישות של Floating Dock כדי לאפשר לשכבת-העל להופיע מעל שורת הניווט של המערכת.</string>
+    <string name="settings_navbar_overlay_enable_desc">הפעל את שירות הנגישות של Floating Dock כדי שהשכבת-העל תוצג מעל שורת הניווט של המערכת, ולמנוע ממנה לחסום הקשות במסכים רגישים באפליקציות אחרות (למשל Play Store, בנקאות, ארנק).</string>
     <string name="settings_navbar_overlay_title">שכבת-על לשורת הניווט</string>
     <string name="settings_no_controls_enabled_desc">לא הופעלו פקדים. הפעל כמה מהם למטה.</string>
     <string name="settings_no_email_app_toast">לא נמצאה אפליקציית אימייל</string>
@@ -199,7 +199,7 @@
     <string name="settings_overlay_status_stopped">הדוק מופסק</string>
     <string name="settings_overlay_status_stopped_desc">הקש על התחלה כדי להפעיל</string>
     <string name="settings_overlay_status_title">מצב שכבת-העל</string>
-    <string name="settings_permission_accessibility_desc">אופציונלי — הצגה מעל שורת הניווט ופעולות המערכת</string>
+    <string name="settings_permission_accessibility_desc">מומלץ — הצגה מעל שורת הניווט ופעולות המערכת; בלעדיו, הקשות במסכים רגישים באפליקציות אחרות עלולות להיחסם</string>
     <string name="settings_permission_accessibility_name">שירות נגישות</string>
     <string name="settings_permission_battery_desc">אופציונלי — שומר על פעילות הדוק ברקע</string>
     <string name="settings_permission_battery_name">התעלמות מאופטימיזציית סוללה</string>
@@ -274,7 +274,7 @@
     <string name="onboarding_permission_overlay_title">הצגה מעל אפליקציות אחרות</string>
     <string name="onboarding_permission_overlay_desc">נדרש כדי להציג את הדוק מעל כל האפליקציות האחרות.</string>
     <string name="onboarding_accessibility_dialog_title">שירות נגישות</string>
-    <string name="onboarding_accessibility_dialog_desc">נדרש כדי לצייר את הדוק מעל שורת הניווט ולאפשר צילומי מסך ופקדי מסך נעילה.</string>
+    <string name="onboarding_accessibility_dialog_desc">מציג את הדוק מעל שורת הניווט ומאפשר צילומי מסך ופקדי מסך נעילה. בלעדיו, שכבת-העל עלולה לחסום הקשות במסכים רגישים באפליקציות אחרות (למשל Play Store, בנקאות, ארנק).</string>
     <string name="onboarding_cancel">ביטול</string>
     <string name="onboarding_accept">אישור</string>
     <string name="onboarding_battery_optimization_title">השבתת אופטימיזציית סוללה</string>

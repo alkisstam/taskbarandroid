@@ -188,7 +188,7 @@
     <string name="settings_music_panel_notification_required_desc">曲情報の取得と再生操作には通知へのアクセスが必要です。</string>
     <string name="settings_music_panel_title">音楽パネル</string>
     <string name="settings_navbar_overlay_active_desc">ユーザー補助サービスが有効です。オーバーレイはナビゲーションバーの上に表示されます。</string>
-    <string name="settings_navbar_overlay_enable_desc">Floating Dockのユーザー補助サービスを有効にすると、オーバーレイをシステムナビゲーションバーの上に表示できます。</string>
+    <string name="settings_navbar_overlay_enable_desc">Floating Dockのユーザー補助サービスを有効にすると、オーバーレイをシステムナビゲーションバーの上に表示できます。また、他のアプリのセキュリティ関連の画面（Playストア、銀行アプリ、ウォレットなど）でタップがブロックされるのを防ぎます。</string>
     <string name="settings_navbar_overlay_title">ナビゲーションバーオーバーレイ</string>
     <string name="settings_no_controls_enabled_desc">有効なコントロールがありません。下から有効にしてください。</string>
     <string name="settings_no_email_app_toast">メールアプリが見つかりません</string>
@@ -199,7 +199,7 @@
     <string name="settings_overlay_status_stopped">ドックは停止しています</string>
     <string name="settings_overlay_status_stopped_desc">タップして開始</string>
     <string name="settings_overlay_status_title">オーバーレイの状態</string>
-    <string name="settings_permission_accessibility_desc">任意 — ナビゲーションバーやシステム操作の上に表示</string>
+    <string name="settings_permission_accessibility_desc">推奨 — ナビゲーションバーやシステム操作の上に表示します。無効の場合、他のアプリのセキュリティ関連の画面でタップがブロックされることがあります</string>
     <string name="settings_permission_accessibility_name">ユーザー補助サービス</string>
     <string name="settings_permission_battery_desc">任意 — ドックをバックグラウンドで動作し続けさせます</string>
     <string name="settings_permission_battery_name">バッテリー最適化を無視</string>
@@ -274,7 +274,7 @@
     <string name="onboarding_permission_overlay_title">他のアプリの上に重ねて表示</string>
     <string name="onboarding_permission_overlay_desc">ドックを他のすべてのアプリの上に表示するために必要です。</string>
     <string name="onboarding_accessibility_dialog_title">ユーザー補助サービス</string>
-    <string name="onboarding_accessibility_dialog_desc">ナビゲーションバーの上にドックを表示し、スクリーンショットやロック画面での操作を有効にするために必要です。</string>
+    <string name="onboarding_accessibility_dialog_desc">ナビゲーションバーの上にドックを表示し、スクリーンショットやロック画面での操作を有効にします。無効にすると、他のアプリのセキュリティ関連の画面（Playストア、銀行アプリ、ウォレットなど）でタップがブロックされることがあります。</string>
     <string name="onboarding_cancel">キャンセル</string>
     <string name="onboarding_accept">同意する</string>
     <string name="onboarding_battery_optimization_title">バッテリー最適化を無効にする</string>

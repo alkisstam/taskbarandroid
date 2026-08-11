@@ -188,7 +188,7 @@
     <string name="settings_music_panel_notification_required_desc">Memerlukan Akses Notifikasi untuk membaca info lagu dan mengontrol pemutaran.</string>
     <string name="settings_music_panel_title">Panel Musik</string>
     <string name="settings_navbar_overlay_active_desc">Layanan Aksesibilitas aktif. Overlay akan muncul di atas bilah navigasi.</string>
-    <string name="settings_navbar_overlay_enable_desc">Aktifkan Layanan Aksesibilitas Floating Dock agar overlay dapat tampil di atas bilah navigasi sistem.</string>
+    <string name="settings_navbar_overlay_enable_desc">Aktifkan Layanan Aksesibilitas Floating Dock agar overlay tampil di atas bilah navigasi sistem, dan agar tidak memblokir ketukan pada layar sensitif di aplikasi lain (misalnya Play Store, perbankan, dompet).</string>
     <string name="settings_navbar_overlay_title">Overlay Bilah Navigasi</string>
     <string name="settings_no_controls_enabled_desc">Tidak ada kontrol yang diaktifkan. Aktifkan beberapa di bawah ini.</string>
     <string name="settings_no_email_app_toast">Tidak ada aplikasi email yang ditemukan</string>
@@ -199,7 +199,7 @@
     <string name="settings_overlay_status_stopped">Dock berhenti</string>
     <string name="settings_overlay_status_stopped_desc">Ketuk mulai untuk mengaktifkan</string>
     <string name="settings_overlay_status_title">Status Overlay</string>
-    <string name="settings_permission_accessibility_desc">Opsional — tampil di atas bilah navigasi dan aksi sistem</string>
+    <string name="settings_permission_accessibility_desc">Disarankan — tampil di atas bilah navigasi dan aksi sistem; tanpa ini, ketukan pada layar sensitif di aplikasi lain dapat terblokir</string>
     <string name="settings_permission_accessibility_name">Layanan Aksesibilitas</string>
     <string name="settings_permission_battery_desc">Opsional — menjaga dock tetap berjalan di latar belakang</string>
     <string name="settings_permission_battery_name">Abaikan optimisasi baterai</string>
@@ -274,7 +274,7 @@
     <string name="onboarding_permission_overlay_title">Tampil di atas aplikasi lain</string>
     <string name="onboarding_permission_overlay_desc">Diperlukan untuk menampilkan dock di atas semua aplikasi lain.</string>
     <string name="onboarding_accessibility_dialog_title">Layanan Aksesibilitas</string>
-    <string name="onboarding_accessibility_dialog_desc">Diperlukan untuk menampilkan dock di atas bilah navigasi serta mengaktifkan tangkapan layar dan kontrol layar kunci.</string>
+    <string name="onboarding_accessibility_dialog_desc">Menampilkan dock di atas bilah navigasi serta mengaktifkan tangkapan layar dan kontrol layar kunci. Tanpa ini, overlay dapat memblokir ketukan pada layar sensitif di aplikasi lain (misalnya Play Store, perbankan, dompet).</string>
     <string name="onboarding_cancel">Batal</string>
     <string name="onboarding_accept">Terima</string>
     <string name="onboarding_battery_optimization_title">Nonaktifkan Optimisasi Baterai</string>

@@ -188,7 +188,7 @@
     <string name="settings_music_panel_notification_required_desc">Требуется доступ к уведомлениям для чтения информации о треке и управления воспроизведением.</string>
     <string name="settings_music_panel_title">Панель музыки</string>
     <string name="settings_navbar_overlay_active_desc">Специальные возможности включены. Оверлей будет отображаться поверх панели навигации.</string>
-    <string name="settings_navbar_overlay_enable_desc">Включите службу специальных возможностей Floating Dock, чтобы оверлей отображался поверх системной панели навигации.</string>
+    <string name="settings_navbar_overlay_enable_desc">Включите службу специальных возможностей Floating Dock, чтобы оверлей отображался поверх системной панели навигации, и чтобы он не блокировал нажатия на защищённых экранах других приложений (например, Play Store, банковские приложения, кошелёк).</string>
     <string name="settings_navbar_overlay_title">Оверлей панели навигации</string>
     <string name="settings_no_controls_enabled_desc">Нет включённых кнопок. Включите нужные ниже.</string>
     <string name="settings_no_email_app_toast">Не найдено приложение для почты</string>
@@ -199,7 +199,7 @@
     <string name="settings_overlay_status_stopped">Панель остановлена</string>
     <string name="settings_overlay_status_stopped_desc">Нажмите «Запустить», чтобы включить</string>
     <string name="settings_overlay_status_title">Статус оверлея</string>
-    <string name="settings_permission_accessibility_desc">Необязательно — отображение поверх панели навигации и системных действий</string>
+    <string name="settings_permission_accessibility_desc">Рекомендуется — отображение поверх панели навигации и системных действий; без этого нажатия на защищённых экранах других приложений могут блокироваться</string>
     <string name="settings_permission_accessibility_name">Специальные возможности</string>
     <string name="settings_permission_battery_desc">Необязательно — не даёт панели закрыться в фоне</string>
     <string name="settings_permission_battery_name">Игнорировать оптимизацию батареи</string>
@@ -274,7 +274,7 @@
     <string name="onboarding_permission_overlay_title">Отображение поверх других приложений</string>
     <string name="onboarding_permission_overlay_desc">Необходимо для отображения панели поверх всех остальных приложений.</string>
     <string name="onboarding_accessibility_dialog_title">Специальные возможности</string>
-    <string name="onboarding_accessibility_dialog_desc">Необходимо для отображения панели поверх панели навигации, а также для скриншотов и управления на экране блокировки.</string>
+    <string name="onboarding_accessibility_dialog_desc">Отображает панель над панелью навигации и включает скриншоты и управление на экране блокировки. Без неё оверлей может блокировать нажатия на защищённых экранах других приложений (например, Play Store, банковские приложения, кошелёк).</string>
     <string name="onboarding_cancel">Отмена</string>
     <string name="onboarding_accept">Принять</string>
     <string name="onboarding_battery_optimization_title">Отключить оптимизацию батареи</string>

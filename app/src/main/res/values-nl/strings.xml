@@ -188,7 +188,7 @@
     <string name="settings_music_panel_notification_required_desc">Vereist meldingstoegang om nummerinfo te lezen en afspelen te bedienen.</string>
     <string name="settings_music_panel_title">Muziekpaneel</string>
     <string name="settings_navbar_overlay_active_desc">De toegankelijkheidsservice is actief. De overlay verschijnt boven de navigatiebalk.</string>
-    <string name="settings_navbar_overlay_enable_desc">Schakel de Floating Dock-toegankelijkheidsservice in zodat de overlay boven de systeemnavigatiebalk kan worden weergegeven.</string>
+    <string name="settings_navbar_overlay_enable_desc">Schakel de Floating Dock-toegankelijkheidsservice in zodat de overlay boven de systeemnavigatiebalk wordt weergegeven, en om te voorkomen dat deze tikken blokkeert op gevoelige schermen in andere apps (bijv. Play Store, bankieren, wallet).</string>
     <string name="settings_navbar_overlay_title">Navigatiebalkoverlay</string>
     <string name="settings_no_controls_enabled_desc">Geen bedieningselementen ingeschakeld. Schakel er hieronder een paar in.</string>
     <string name="settings_no_email_app_toast">Geen e-mailapp gevonden</string>
@@ -199,7 +199,7 @@
     <string name="settings_overlay_status_stopped">Dock is gestopt</string>
     <string name="settings_overlay_status_stopped_desc">Tik op start om in te schakelen</string>
     <string name="settings_overlay_status_title">Overlaystatus</string>
-    <string name="settings_permission_accessibility_desc">Optioneel — weergeven boven de navigatiebalk en systeemacties</string>
+    <string name="settings_permission_accessibility_desc">Aanbevolen — weergeven boven de navigatiebalk en systeemacties; zonder deze dienst kunnen tikken op gevoelige schermen in andere apps worden geblokkeerd</string>
     <string name="settings_permission_accessibility_name">Toegankelijkheidsservice</string>
     <string name="settings_permission_battery_desc">Optioneel — houdt de dock actief op de achtergrond</string>
     <string name="settings_permission_battery_name">Batterijoptimalisatie negeren</string>
@@ -274,7 +274,7 @@
     <string name="onboarding_permission_overlay_title">Over andere apps weergeven</string>
     <string name="onboarding_permission_overlay_desc">Vereist om de dock boven alle andere apps weer te geven.</string>
     <string name="onboarding_accessibility_dialog_title">Toegankelijkheidsservice</string>
-    <string name="onboarding_accessibility_dialog_desc">Vereist om de dock boven de navigatiebalk weer te geven en schermafbeeldingen en vergrendelschermbediening mogelijk te maken.</string>
+    <string name="onboarding_accessibility_dialog_desc">Toont de dock boven de navigatiebalk en maakt schermafbeeldingen en vergrendelschermbediening mogelijk. Zonder deze dienst kan de overlay tikken blokkeren op gevoelige schermen in andere apps (bijv. Play Store, bankieren, wallet).</string>
     <string name="onboarding_cancel">Annuleren</string>
     <string name="onboarding_accept">Accepteren</string>
     <string name="onboarding_battery_optimization_title">Batterijoptimalisatie uitschakelen</string>

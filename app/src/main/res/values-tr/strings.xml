@@ -188,7 +188,7 @@
     <string name="settings_music_panel_notification_required_desc">Parça bilgisini okumak ve oynatmayı kontrol etmek için Bildirim Erişimi gerektirir.</string>
     <string name="settings_music_panel_title">Müzik Paneli</string>
     <string name="settings_navbar_overlay_active_desc">Erişilebilirlik Hizmeti etkin. Kaplama, gezinme çubuğunun üzerinde görünecek.</string>
-    <string name="settings_navbar_overlay_enable_desc">Kaplamanın sistem gezinme çubuğunun üzerinde görüntülenebilmesi için Floating Dock Erişilebilirlik Hizmetini etkinleştirin.</string>
+    <string name="settings_navbar_overlay_enable_desc">Kaplamanın sistem gezinme çubuğunun üzerinde görüntülenmesi ve diğer uygulamalardaki hassas ekranlarda (ör. Play Store, bankacılık, cüzdan) dokunuşları engellememesi için Floating Dock Erişilebilirlik Hizmetini etkinleştirin.</string>
     <string name="settings_navbar_overlay_title">Gezinme Çubuğu Kaplaması</string>
     <string name="settings_no_controls_enabled_desc">Hiçbir kontrol etkin değil. Aşağıdan birkaçını etkinleştirin.</string>
     <string name="settings_no_email_app_toast">E-posta uygulaması bulunamadı</string>
@@ -199,7 +199,7 @@
     <string name="settings_overlay_status_stopped">Dock durduruldu</string>
     <string name="settings_overlay_status_stopped_desc">Etkinleştirmek için başlata dokunun</string>
     <string name="settings_overlay_status_title">Kaplama Durumu</string>
-    <string name="settings_permission_accessibility_desc">İsteğe bağlı — gezinme çubuğu ve sistem eylemlerinin üzerinde gösterir</string>
+    <string name="settings_permission_accessibility_desc">Önerilir — gezinme çubuğu ve sistem eylemlerinin üzerinde gösterir; bu olmadan, diğer uygulamalardaki hassas ekranlarda dokunuşlar engellenebilir</string>
     <string name="settings_permission_accessibility_name">Erişilebilirlik Hizmeti</string>
     <string name="settings_permission_battery_desc">İsteğe bağlı — dock\'un arka planda çalışmaya devam etmesini sağlar</string>
     <string name="settings_permission_battery_name">Pil optimizasyonunu yok say</string>
@@ -274,7 +274,7 @@
     <string name="onboarding_permission_overlay_title">Diğer uygulamaların üzerinde göster</string>
     <string name="onboarding_permission_overlay_desc">Dock\'u diğer tüm uygulamaların üzerinde göstermek için gereklidir.</string>
     <string name="onboarding_accessibility_dialog_title">Erişilebilirlik Hizmeti</string>
-    <string name="onboarding_accessibility_dialog_desc">Dock\'u gezinme çubuğunun üzerinde göstermek ve ekran görüntüsü ile kilit ekranı kontrollerini etkinleştirmek için gereklidir.</string>
+    <string name="onboarding_accessibility_dialog_desc">Dock\'u gezinme çubuğunun üzerinde gösterir, ekran görüntüsü almayı ve kilit ekranı kontrollerini etkinleştirir. Bu olmadan, kaplama diğer uygulamalardaki hassas ekranlarda (ör. Play Store, bankacılık, cüzdan) dokunuşları engelleyebilir.</string>
     <string name="onboarding_cancel">İptal</string>
     <string name="onboarding_accept">Kabul Et</string>
     <string name="onboarding_battery_optimization_title">Pil Optimizasyonunu Devre Dışı Bırak</string>

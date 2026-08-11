@@ -188,7 +188,7 @@
     <string name="settings_music_panel_notification_required_desc">ट्रैक जानकारी पढ़ने और प्लेबैक नियंत्रित करने के लिए सूचना एक्सेस आवश्यक है।</string>
     <string name="settings_music_panel_title">म्यूजिक पैनल</string>
     <string name="settings_navbar_overlay_active_desc">एक्सेसिबिलिटी सेवा सक्रिय है। ओवरले नेविगेशन बार के ऊपर दिखाई देगा।</string>
-    <string name="settings_navbar_overlay_enable_desc">ओवरले को सिस्टम नेविगेशन बार के ऊपर दिखाने के लिए Floating Dock एक्सेसिबिलिटी सेवा सक्षम करें।</string>
+    <string name="settings_navbar_overlay_enable_desc">ओवरले को सिस्टम नेविगेशन बार के ऊपर दिखाने के लिए Floating Dock एक्सेसिबिलिटी सेवा सक्षम करें, और इसे अन्य ऐप्स की संवेदनशील स्क्रीन (जैसे Play Store, बैंकिंग, वॉलेट) पर टैप ब्लॉक करने से रोकें।</string>
     <string name="settings_navbar_overlay_title">नेविगेशन बार ओवरले</string>
     <string name="settings_no_controls_enabled_desc">कोई नियंत्रण सक्षम नहीं है। नीचे कुछ सक्षम करें।</string>
     <string name="settings_no_email_app_toast">कोई ईमेल ऐप नहीं मिला</string>
@@ -199,7 +199,7 @@
     <string name="settings_overlay_status_stopped">डॉक बंद है</string>
     <string name="settings_overlay_status_stopped_desc">सक्षम करने के लिए स्टार्ट टैप करें</string>
     <string name="settings_overlay_status_title">ओवरले स्थिति</string>
-    <string name="settings_permission_accessibility_desc">वैकल्पिक — नेविगेशन बार और सिस्टम एक्शन के ऊपर बनाएं</string>
+    <string name="settings_permission_accessibility_desc">अनुशंसित — नेविगेशन बार और सिस्टम एक्शन के ऊपर दिखाता है; इसके बिना, अन्य ऐप्स की संवेदनशील स्क्रीन पर टैप ब्लॉक हो सकते हैं</string>
     <string name="settings_permission_accessibility_name">एक्सेसिबिलिटी सेवा</string>
     <string name="settings_permission_battery_desc">वैकल्पिक — डॉक को बैकग्राउंड में चालू रखता है</string>
     <string name="settings_permission_battery_name">बैटरी ऑप्टिमाइज़ेशन नज़रअंदाज़ करें</string>
@@ -274,7 +274,7 @@
     <string name="onboarding_permission_overlay_title">अन्य ऐप्स पर प्रदर्शित करें</string>
     <string name="onboarding_permission_overlay_desc">डॉक को अन्य सभी ऐप्स के ऊपर दिखाने के लिए आवश्यक है।</string>
     <string name="onboarding_accessibility_dialog_title">एक्सेसिबिलिटी सेवा</string>
-    <string name="onboarding_accessibility_dialog_desc">डॉक को नेविगेशन बार के ऊपर दिखाने और स्क्रीनशॉट व लॉक स्क्रीन नियंत्रण सक्षम करने के लिए आवश्यक है।</string>
+    <string name="onboarding_accessibility_dialog_desc">डॉक को नेविगेशन बार के ऊपर दिखाता है और स्क्रीनशॉट व लॉक स्क्रीन नियंत्रण सक्षम करता है। इसके बिना, ओवरले अन्य ऐप्स की संवेदनशील स्क्रीन (जैसे Play Store, बैंकिंग, वॉलेट) पर टैप को ब्लॉक कर सकता है।</string>
     <string name="onboarding_cancel">रद्द करें</string>
     <string name="onboarding_accept">स्वीकार करें</string>
     <string name="onboarding_battery_optimization_title">बैटरी ऑप्टिमाइज़ेशन बंद करें</string>

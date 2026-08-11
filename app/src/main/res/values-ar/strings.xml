@@ -188,7 +188,7 @@
     <string name="settings_music_panel_notification_required_desc">يتطلب الوصول إلى الإشعارات لقراءة معلومات المقطع والتحكم في التشغيل.</string>
     <string name="settings_music_panel_title">لوحة الموسيقى</string>
     <string name="settings_navbar_overlay_active_desc">خدمة إمكانية الوصول نشطة. سيظهر التراكب فوق شريط التنقل.</string>
-    <string name="settings_navbar_overlay_enable_desc">فعّل خدمة إمكانية الوصول الخاصة بـ Floating Dock للسماح للتراكب بالظهور فوق شريط التنقل الخاص بالنظام.</string>
+    <string name="settings_navbar_overlay_enable_desc">فعّل خدمة إمكانية الوصول الخاصة بـ Floating Dock ليظهر التراكب فوق شريط التنقل الخاص بالنظام، ولمنعه من حظر النقرات على الشاشات الحساسة في تطبيقات أخرى (مثل متجر Play، التطبيقات المصرفية، والمحفظة).</string>
     <string name="settings_navbar_overlay_title">تراكب شريط التنقل</string>
     <string name="settings_no_controls_enabled_desc">لا توجد عناصر تحكم مفعّلة. فعّل بعضها أدناه.</string>
     <string name="settings_no_email_app_toast">لم يتم العثور على تطبيق بريد إلكتروني</string>
@@ -199,7 +199,7 @@
     <string name="settings_overlay_status_stopped">الرصيف متوقف</string>
     <string name="settings_overlay_status_stopped_desc">اضغط على ابدأ للتفعيل</string>
     <string name="settings_overlay_status_title">حالة التراكب</string>
-    <string name="settings_permission_accessibility_desc">اختياري — الظهور فوق شريط التنقل وإجراءات النظام</string>
+    <string name="settings_permission_accessibility_desc">موصى به — الظهور فوق شريط التنقل وإجراءات النظام؛ بدونه، قد تُحظر النقرات على الشاشات الحساسة في تطبيقات أخرى</string>
     <string name="settings_permission_accessibility_name">خدمة إمكانية الوصول</string>
     <string name="settings_permission_battery_desc">اختياري — يبقي الرصيف يعمل في الخلفية</string>
     <string name="settings_permission_battery_name">تجاهل تحسين البطارية</string>
@@ -274,7 +274,7 @@
     <string name="onboarding_permission_overlay_title">الظهور فوق التطبيقات الأخرى</string>
     <string name="onboarding_permission_overlay_desc">مطلوب لعرض الرصيف فوق جميع التطبيقات الأخرى.</string>
     <string name="onboarding_accessibility_dialog_title">خدمة إمكانية الوصول</string>
-    <string name="onboarding_accessibility_dialog_desc">مطلوب لرسم الرصيف فوق شريط التنقل وتفعيل لقطات الشاشة وعناصر تحكم شاشة القفل.</string>
+    <string name="onboarding_accessibility_dialog_desc">يُستخدم لرسم الرصيف فوق شريط التنقل وتفعيل لقطات الشاشة وعناصر تحكم شاشة القفل. بدونه، قد تحظر الطبقة التراكبية النقرات على الشاشات الحساسة في تطبيقات أخرى (مثل متجر Play، التطبيقات المصرفية، والمحفظة).</string>
     <string name="onboarding_cancel">إلغاء</string>
     <string name="onboarding_accept">قبول</string>
     <string name="onboarding_battery_optimization_title">تعطيل تحسين البطارية</string>

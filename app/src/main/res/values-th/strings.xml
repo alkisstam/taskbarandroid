@@ -188,7 +188,7 @@
     <string name="settings_music_panel_notification_required_desc">ต้องมีสิทธิ์เข้าถึงการแจ้งเตือนเพื่ออ่านข้อมูลเพลงและควบคุมการเล่น</string>
     <string name="settings_music_panel_title">แผงเพลง</string>
     <string name="settings_navbar_overlay_active_desc">บริการการเข้าถึงพิเศษเปิดใช้งานอยู่ โอเวอร์เลย์จะแสดงทับแถบนำทาง</string>
-    <string name="settings_navbar_overlay_enable_desc">เปิดใช้บริการการเข้าถึงพิเศษของ Floating Dock เพื่อให้โอเวอร์เลย์แสดงทับแถบนำทางของระบบได้</string>
+    <string name="settings_navbar_overlay_enable_desc">เปิดใช้บริการการเข้าถึงพิเศษของ Floating Dock เพื่อให้โอเวอร์เลย์แสดงทับแถบนำทางของระบบ และป้องกันไม่ให้บล็อกการแตะบนหน้าจอที่มีความละเอียดอ่อนในแอปอื่น (เช่น Play Store, แอปธนาคาร, กระเป๋าเงิน)</string>
     <string name="settings_navbar_overlay_title">โอเวอร์เลย์แถบนำทาง</string>
     <string name="settings_no_controls_enabled_desc">ยังไม่ได้เปิดใช้ตัวควบคุมใดๆ เปิดใช้บางส่วนด้านล่าง</string>
     <string name="settings_no_email_app_toast">ไม่พบแอปอีเมล</string>
@@ -199,7 +199,7 @@
     <string name="settings_overlay_status_stopped">ด็อกหยุดทำงาน</string>
     <string name="settings_overlay_status_stopped_desc">แตะเริ่มเพื่อเปิดใช้งาน</string>
     <string name="settings_overlay_status_title">สถานะโอเวอร์เลย์</string>
-    <string name="settings_permission_accessibility_desc">ไม่บังคับ — แสดงทับแถบนำทางและการกระทำของระบบ</string>
+    <string name="settings_permission_accessibility_desc">แนะนำ — แสดงทับแถบนำทางและการกระทำของระบบ; หากไม่เปิดใช้ การแตะบนหน้าจอที่มีความละเอียดอ่อนในแอปอื่นอาจถูกบล็อก</string>
     <string name="settings_permission_accessibility_name">บริการการเข้าถึงพิเศษ</string>
     <string name="settings_permission_battery_desc">ไม่บังคับ — ทำให้ด็อกทำงานต่อในพื้นหลัง</string>
     <string name="settings_permission_battery_name">ไม่ให้ระบบจำกัดการใช้พลังงาน</string>
@@ -274,7 +274,7 @@
     <string name="onboarding_permission_overlay_title">แสดงทับแอปอื่น</string>
     <string name="onboarding_permission_overlay_desc">จำเป็นสำหรับการแสดงด็อกทับแอปอื่นทั้งหมด</string>
     <string name="onboarding_accessibility_dialog_title">บริการการเข้าถึงพิเศษ</string>
-    <string name="onboarding_accessibility_dialog_desc">จำเป็นสำหรับการแสดงด็อกทับแถบนำทาง และเปิดใช้การจับภาพหน้าจอกับการควบคุมที่หน้าจอล็อก</string>
+    <string name="onboarding_accessibility_dialog_desc">แสดงด็อกทับแถบนำทาง และเปิดใช้การจับภาพหน้าจอกับการควบคุมที่หน้าจอล็อก หากไม่เปิดใช้ โอเวอร์เลย์อาจบล็อกการแตะบนหน้าจอที่มีความละเอียดอ่อนในแอปอื่น (เช่น Play Store, แอปธนาคาร, กระเป๋าเงิน)</string>
     <string name="onboarding_cancel">ยกเลิก</string>
     <string name="onboarding_accept">ยอมรับ</string>
     <string name="onboarding_battery_optimization_title">ปิดการจำกัดการใช้พลังงาน</string>

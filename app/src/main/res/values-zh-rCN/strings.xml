@@ -188,7 +188,7 @@
     <string name="settings_music_panel_notification_required_desc">需要通知访问权限才能读取曲目信息并控制播放。</string>
     <string name="settings_music_panel_title">音乐面板</string>
     <string name="settings_navbar_overlay_active_desc">无障碍服务已启用，悬浮层将显示在导航栏上方。</string>
-    <string name="settings_navbar_overlay_enable_desc">启用 Floating Dock 无障碍服务，让悬浮层可以显示在系统导航栏上方。</string>
+    <string name="settings_navbar_overlay_enable_desc">启用 Floating Dock 无障碍服务，让悬浮层显示在系统导航栏上方，并防止它阻止其他应用中敏感界面（如 Play 商店、银行、钱包）的点击。</string>
     <string name="settings_navbar_overlay_title">导航栏悬浮层</string>
     <string name="settings_no_controls_enabled_desc">未启用任何控制，请在下方启用一些控制。</string>
     <string name="settings_no_email_app_toast">未找到邮件应用</string>
@@ -199,7 +199,7 @@
     <string name="settings_overlay_status_stopped">程序坞已停止</string>
     <string name="settings_overlay_status_stopped_desc">点击启动</string>
     <string name="settings_overlay_status_title">悬浮层状态</string>
-    <string name="settings_permission_accessibility_desc">可选 — 在导航栏和系统操作上方显示</string>
+    <string name="settings_permission_accessibility_desc">推荐 — 在导航栏和系统操作上方显示；如果未启用，其他应用中敏感界面的点击可能会被阻止</string>
     <string name="settings_permission_accessibility_name">无障碍服务</string>
     <string name="settings_permission_battery_desc">可选 — 让程序坞在后台持续运行</string>
     <string name="settings_permission_battery_name">忽略电池优化</string>
@@ -274,7 +274,7 @@
     <string name="onboarding_permission_overlay_title">在其他应用上层显示</string>
     <string name="onboarding_permission_overlay_desc">用于将程序坞显示在所有其他应用上方。</string>
     <string name="onboarding_accessibility_dialog_title">无障碍服务</string>
-    <string name="onboarding_accessibility_dialog_desc">用于在导航栏上方绘制程序坞，并启用截图和锁屏控制功能。</string>
+    <string name="onboarding_accessibility_dialog_desc">用于在导航栏上方绘制程序坞，并启用截图和锁屏控制功能。如果未启用，悬浮层可能会阻止其他应用中敏感界面（如 Play 商店、银行、钱包）的点击。</string>
     <string name="onboarding_cancel">取消</string>
     <string name="onboarding_accept">同意</string>
     <string name="onboarding_battery_optimization_title">关闭电池优化</string>

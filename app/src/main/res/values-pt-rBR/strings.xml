@@ -188,7 +188,7 @@
     <string name="settings_music_panel_notification_required_desc">Requer Acesso a Notificações para ler informações da faixa e controlar a reprodução.</string>
     <string name="settings_music_panel_title">Painel de Música</string>
     <string name="settings_navbar_overlay_active_desc">O Serviço de Acessibilidade está ativo. A sobreposição aparecerá acima da barra de navegação.</string>
-    <string name="settings_navbar_overlay_enable_desc">Ative o Serviço de Acessibilidade do Floating Dock para permitir que a sobreposição seja exibida acima da barra de navegação do sistema.</string>
+    <string name="settings_navbar_overlay_enable_desc">Ative o Serviço de Acessibilidade do Floating Dock para exibir a sobreposição acima da barra de navegação do sistema, e para evitar que ela bloqueie toques em telas sensíveis de outros apps (por exemplo, Play Store, banco, carteira).</string>
     <string name="settings_navbar_overlay_title">Sobreposição da Barra de Navegação</string>
     <string name="settings_no_controls_enabled_desc">Nenhum controle ativado. Ative alguns abaixo.</string>
     <string name="settings_no_email_app_toast">Nenhum app de e-mail encontrado</string>
@@ -199,7 +199,7 @@
     <string name="settings_overlay_status_stopped">O dock está parado</string>
     <string name="settings_overlay_status_stopped_desc">Toque em iniciar para ativar</string>
     <string name="settings_overlay_status_title">Status da Sobreposição</string>
-    <string name="settings_permission_accessibility_desc">Opcional — exibir sobre a barra de navegação e ações do sistema</string>
+    <string name="settings_permission_accessibility_desc">Recomendado — exibe sobre a barra de navegação e ações do sistema; sem ele, toques em telas sensíveis de outros apps podem ser bloqueados</string>
     <string name="settings_permission_accessibility_name">Serviço de Acessibilidade</string>
     <string name="settings_permission_battery_desc">Opcional — mantém o dock em execução em segundo plano</string>
     <string name="settings_permission_battery_name">Ignorar otimização de bateria</string>
@@ -274,7 +274,7 @@
     <string name="onboarding_permission_overlay_title">Sobrepor a outros apps</string>
     <string name="onboarding_permission_overlay_desc">Necessário para exibir o dock acima de todos os outros apps.</string>
     <string name="onboarding_accessibility_dialog_title">Serviço de Acessibilidade</string>
-    <string name="onboarding_accessibility_dialog_desc">Necessário para exibir o dock acima da barra de navegação e habilitar capturas de tela e controles na tela de bloqueio.</string>
+    <string name="onboarding_accessibility_dialog_desc">Exibe o dock acima da barra de navegação e habilita capturas de tela e controles na tela de bloqueio. Sem ele, a sobreposição pode bloquear toques em telas sensíveis de outros apps (por exemplo, Play Store, banco, carteira).</string>
     <string name="onboarding_cancel">Cancelar</string>
     <string name="onboarding_accept">Aceitar</string>
     <string name="onboarding_battery_optimization_title">Desativar Otimização de Bateria</string>
