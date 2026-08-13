@@ -213,6 +213,15 @@ val whatsNewReleases = listOf(
             "Renamed \"Keep controls expanded\" to \"Auto expand controls\" and added descriptions to it, Enable Quick Settings, and App order",
             "Quick Settings dock panel is now enabled by default"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.5.6",
+        versionCode = 59,
+        highlights = listOf(
+            "Fixed the QR scanner quick control doing nothing on Samsung, Xiaomi, Huawei, Pixel, and most other non-OPPO phones",
+            "QR scanner now falls back to the Google Play services scanner on any device with Play services",
+            "Onboarding and Settings now explain why the optional Accessibility permission matters — without it, taps can be rejected on protected screens in other apps"
+        )
     )
 )
 

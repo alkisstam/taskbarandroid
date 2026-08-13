@@ -4,11 +4,12 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
-## [1.5.6] - 2026-08-11
+## [1.5.6] - 2026-08-13
 
-Clearer accessibility permission messaging.
+QR scanner fixed on most brands, clearer accessibility permission messaging.
 
 ### Fixed
+- **QR scanner quick control did nothing on non-OPPO devices** — the launch intents used for Samsung, Xiaomi, Huawei, and stock Android didn't exist, so the tile silently failed everywhere except ColorOS. Replaced with verified per-manufacturer intents (Samsung One UI camera QR mode, MIUI scanner, Huawei HiVision) and added a universal fallback to the Google Play services QR scanner — the same one the Pixel Quick Settings tile opens — so the control now works on any device with Play services.
 - **Unresponsive taps on sensitive screens in other apps** (e.g. Play Store "Manage apps", Google Wallet "Add loyalty card") when the Accessibility Service permission was skipped or disabled — without it, the overlay draws as an untrusted window type that Android flags as "obscuring" other apps, and tapjacking-protected screens reject input through it. The permission is still optional, but onboarding and Settings now explain this consequence directly so users know why granting it matters. Updated strings translated into all 16 supported languages.
 
 ---
