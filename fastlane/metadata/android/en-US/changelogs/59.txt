@@ -1,0 +1,3 @@
+Fixed
+• QR scanner quick control now works on Samsung, Xiaomi, Huawei, Pixel, and most other brands — with a fallback to the Google Play services scanner
+• Onboarding and Settings now explain why the optional Accessibility permission matters — without it, taps can be rejected on protected screens in other apps

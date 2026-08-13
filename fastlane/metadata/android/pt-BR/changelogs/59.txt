@@ -1,0 +1,3 @@
+Correções
+• O controle rápido do leitor de QR agora funciona em Samsung, Xiaomi, Huawei, Pixel e na maioria das outras marcas — com alternativa para o leitor do Google Play Services
+• A introdução e as Configurações agora explicam por que a permissão opcional de Acessibilidade importa — sem ela, toques podem ser rejeitados em telas protegidas de outros apps

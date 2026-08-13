@@ -1,0 +1,3 @@
+Behoben
+• Der QR-Scanner-Schnellzugriff funktioniert jetzt auf Samsung, Xiaomi, Huawei, Pixel und den meisten anderen Marken — mit Fallback auf den Google-Play-Dienste-Scanner
+• Einrichtung und Einstellungen erklären jetzt, warum die optionale Bedienungshilfen-Berechtigung wichtig ist — ohne sie können Tipper auf geschützten Bildschirmen anderer Apps abgewiesen werden

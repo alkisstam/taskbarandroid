@@ -1,0 +1,3 @@
+Düzeltmeler
+• QR tarayıcı hızlı denetimi artık Samsung, Xiaomi, Huawei, Pixel ve çoğu diğer markada çalışıyor — Google Play hizmetleri tarayıcısına geri dönüş ile
+• Tanıtım ve Ayarlar artık isteğe bağlı Erişilebilirlik izninin neden önemli olduğunu açıklıyor — izin olmadan diğer uygulamaların korumalı ekranlarında dokunuşlar reddedilebilir

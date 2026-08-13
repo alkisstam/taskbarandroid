@@ -1,0 +1,3 @@
+Corrections
+• Le contrôle rapide du scanner QR fonctionne désormais sur Samsung, Xiaomi, Huawei, Pixel et la plupart des marques — avec repli sur le scanner des services Google Play
+• L'accueil et les Réglages expliquent désormais l'importance de la permission d'Accessibilité optionnelle — sans elle, les appuis peuvent être rejetés sur les écrans protégés d'autres applis

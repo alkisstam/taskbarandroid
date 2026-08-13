@@ -1,0 +1,3 @@
+Perbaikan
+• Kontrol cepat pemindai QR kini berfungsi di Samsung, Xiaomi, Huawei, Pixel, dan sebagian besar merek lain — dengan cadangan ke pemindai layanan Google Play
+• Orientasi dan Setelan kini menjelaskan pentingnya izin Aksesibilitas opsional — tanpanya, ketukan bisa ditolak di layar terlindungi aplikasi lain

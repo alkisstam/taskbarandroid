@@ -1,0 +1,3 @@
+Opgelost
+• De QR-scanner-snelknop werkt nu op Samsung, Xiaomi, Huawei, Pixel en de meeste andere merken — met terugval op de scanner van Google Play-services
+• De introductie en Instellingen leggen nu uit waarom de optionele Toegankelijkheidsmachtiging belangrijk is — zonder kunnen tikken op beveiligde schermen in andere apps worden geweigerd
