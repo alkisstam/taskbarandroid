@@ -308,16 +308,14 @@ class QuickControlsRepository @Inject constructor(
             add(Intent("coloros.intent.action.CAMERA_SCANNER"))
             add(Intent("coloros.intent.action.SCANNER_MAIN_PAGE"))
             // Samsung (One UI — opens camera in QR mode)
-            add(Intent("com.samsung.android.scanner.SCAN_QR_CODE"))
-            add(Intent("com.sec.android.app.camera.BARCODE_SCANNER"))
+            add(Intent("com.sec.android.app.camera.action.SCAN_QR_CODE"))
+            add(Intent("com.sec.android.app.camera.action.QR_SCANNER_MODE"))
             // Xiaomi / MIUI
-            add(Intent("com.xiaomi.scanner.action.SCAN"))
-            // Huawei
-            add(Intent("com.huawei.scanner.action.SCAN_AND_RESULT"))
-            // Standard Android 9+ (API 28+) — works on Pixel and other AOSP-based devices
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-                add(Intent("android.media.action.SCAN_BARCODE"))
-            }
+            add(Intent("miui.intent.action.scanbarcode"))
+            // Huawei HiVision (no public action; EMUI framework launches this component)
+            add(Intent().setClassName("com.huawei.scanner", "com.huawei.scanner.view.ScannerActivity"))
+            // Play services ML Kit scanner — any GMS device (Pixel QS tile target)
+            add(Intent("com.google.android.gms.mlkit_barcode_ui.SCAN_QR_CODE"))
             // ZXing standalone app (user-installed)
             add(Intent("com.google.zxing.client.android.SCAN").apply {
                 putExtra("SCAN_MODE", "QR_CODE_MODE")
