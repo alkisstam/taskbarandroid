@@ -4,6 +4,15 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.5.7] - 2026-08-14
+
+Stability release.
+
+### Fixed
+- **Rare crash when opening the app right as the What's New dialog appeared** — if the settings screen was closed (or recreated by the system, e.g. entering multi-window) in the same instant the dialog was about to show, the app could crash with a `BadTokenException`. The dialog now only shows while the screen is actively in the foreground.
+
+---
+
 ## [1.5.6] - 2026-08-13
 
 QR scanner fixed on most brands, clearer accessibility permission messaging.

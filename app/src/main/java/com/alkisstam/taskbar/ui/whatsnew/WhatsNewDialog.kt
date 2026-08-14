@@ -222,6 +222,13 @@ val whatsNewReleases = listOf(
             "QR scanner now falls back to the Google Play services scanner on any device with Play services",
             "Onboarding and Settings now explain why the optional Accessibility permission matters — without it, taps can be rejected on protected screens in other apps"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.5.7",
+        versionCode = 60,
+        highlights = listOf(
+            "Fixed a rare crash when opening the app right as this What's New dialog appeared"
+        )
     )
 )
 
