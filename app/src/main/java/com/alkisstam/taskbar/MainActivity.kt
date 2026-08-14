@@ -26,6 +26,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.pm.PackageInfoCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.currentStateAsState
 import com.alkisstam.taskbar.data.GestureAction
 import com.alkisstam.taskbar.data.PillEdgePosition
 import com.alkisstam.taskbar.service.OverlayService
@@ -172,7 +175,11 @@ class MainActivity : AppCompatActivity() {
                             onRequestNotificationListenerPermission = ::requestNotificationListenerPermission,
                             onRequestBatteryOptimizationExclusion = ::requestBatteryOptimizationExclusion
                         )
-                        if (showWhatsNew) {
+                        // Compose defers Dialog.show() a frame; if the activity is
+                        // finishing or being recreated by then, addView hits a dead
+                        // window token (BadTokenException). Only show while RESUMED.
+                        val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
+                        if (showWhatsNew && lifecycleState.isAtLeast(Lifecycle.State.RESUMED)) {
                             val releases = whatsNewReleases.filter {
                                 it.versionCode in (seenAtDialogOpen + 1)..currentVersionCode
                             }
