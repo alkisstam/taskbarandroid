@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -43,17 +44,28 @@ class AppRepository @Inject constructor(
 
     private var loadJob: Job? = null
 
+    // Decoded icons keyed by packageName, so a package-changed broadcast or an
+    // icon-skip retry doesn't re-decode apps that already succeeded. Bounded by
+    // installed-app count, so no eviction policy beyond invalidation below is needed.
+    private val iconCache = ConcurrentHashMap<String, Bitmap>()
+
     private val packageReceiver = object : BroadcastReceiver() {
         override fun onReceive(ctx: Context, intent: Intent) {
             iconPackRepository.invalidateCache()
+            // Icon may have changed (or the package is gone); only that entry is stale.
+            intent.data?.schemeSpecificPart?.let { iconCache.remove(it) }
             loadApps()
         }
     }
 
     init {
-        // First emission covers the initial load; later emissions re-theme icons live.
+        // First emission covers the initial load; later emissions re-theme icons live,
+        // so every cached icon is stale (drawn from a different pack) and must be dropped.
         scope.launch {
-            preferencesRepository.iconPackPackage.distinctUntilChanged().collect { loadApps() }
+            preferencesRepository.iconPackPackage.distinctUntilChanged().collect {
+                iconCache.clear()
+                loadApps()
+            }
         }
         val filter = IntentFilter().apply {
             addAction(Intent.ACTION_PACKAGE_ADDED)
@@ -75,6 +87,7 @@ class AppRepository @Inject constructor(
         loadJob?.cancel()
         loadJob = scope.launch {
             var retriesLeft = 3
+            var iconRetriesLeft = 8
             while (true) {
                 try {
                     val pm = context.packageManager
@@ -96,14 +109,14 @@ class AppRepository @Inject constructor(
                             // the missing icons in once memory recovers. lowMemory alone
                             // lags (flips only below the OEM threshold, and other processes
                             // can eat the remainder between our check and the allocation),
-                            // so also skip while availMem is within 1.5× of the threshold.
+                            // so also skip while availMem is within 1.25× of the threshold.
                             am.getMemoryInfo(memInfo)
-                            memoryLow = memInfo.lowMemory || memInfo.availMem < memInfo.threshold * 3 / 2
+                            memoryLow = memInfo.lowMemory || memInfo.availMem < memInfo.threshold * 5 / 4
                             // Load the icon separately so a broken icon doesn't drop the whole app
                             // from the list: MIUI's IconCustomizer inflates huge bitmaps and throws
                             // OutOfMemoryError (an Error, hence Throwable) on some devices. Keep the
                             // app with a null icon (UI renders a placeholder) instead of hiding it.
-                            val icon = if (memoryLow) {
+                            val icon = iconCache[activityInfo.packageName] ?: if (memoryLow) {
                                 iconsSkipped = true
                                 null
                             } else try {
@@ -137,9 +150,11 @@ class AppRepository @Inject constructor(
                                 // in that case — unconditional copy doubled native allocations
                                 // per icon, which matters when this crashes the process under
                                 // memory pressure (scudo abort in allocateHeapBitmap).
-                                if (bmp === (mutated as? BitmapDrawable)?.bitmap) {
+                                val result = if (bmp === (mutated as? BitmapDrawable)?.bitmap) {
                                     bmp.copy(Bitmap.Config.ARGB_8888, false)
                                 } else bmp
+                                iconCache[activityInfo.packageName] = result
+                                result
                             } catch (e: Throwable) {
                                 Log.w("AppRepository", "Icon load failed, keeping app without icon: ${activityInfo.packageName}", e)
                                 null
@@ -158,8 +173,8 @@ class AppRepository @Inject constructor(
                         }
                         .distinctBy { it.packageName }
                         .sortedBy { it.label.lowercase() }
-                    if (iconsSkipped && retriesLeft > 0) {
-                        retriesLeft--
+                    if (iconsSkipped && iconRetriesLeft > 0) {
+                        iconRetriesLeft--
                         delay(5000)
                         continue
                     }
