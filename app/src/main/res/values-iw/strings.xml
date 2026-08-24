@@ -103,6 +103,7 @@
     <string name="pinned_apps_drag_reorder_content_description">גרירה לסידור מחדש</string>
     <string name="pinned_apps_unpin_content_description">ביטול נעיצה</string>
     <string name="settings_active_controls_title">פקדים פעילים</string>
+    <string name="settings_active_controls_desc">גע וגרור סמל כדי לסדר אותו מחדש</string>
     <string name="settings_add_app_content_description">הוספת אפליקציה</string>
     <string name="settings_add_label">הוספה</string>
     <string name="settings_all_apps_pin_content_description">נעיצה</string>

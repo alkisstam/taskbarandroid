@@ -103,6 +103,7 @@
     <string name="pinned_apps_drag_reorder_content_description">Zum Umsortieren ziehen</string>
     <string name="pinned_apps_unpin_content_description">Lösen</string>
     <string name="settings_active_controls_title">Aktive Steuerelemente</string>
+    <string name="settings_active_controls_desc">Zum Neuanordnen ein Symbol berühren und ziehen</string>
     <string name="settings_add_app_content_description">App hinzufügen</string>
     <string name="settings_add_label">Hinzufügen</string>
     <string name="settings_all_apps_pin_content_description">Anheften</string>

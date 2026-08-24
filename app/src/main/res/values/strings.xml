@@ -103,6 +103,7 @@
     <string name="pinned_apps_drag_reorder_content_description">Drag to reorder</string>
     <string name="pinned_apps_unpin_content_description">Unpin</string>
     <string name="settings_active_controls_title">Active Controls</string>
+    <string name="settings_active_controls_desc">Touch and drag an icon to re-order it</string>
     <string name="settings_add_app_content_description">Add App</string>
     <string name="settings_add_label">Add</string>
     <string name="settings_all_apps_pin_content_description">Pin</string>

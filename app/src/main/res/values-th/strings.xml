@@ -103,6 +103,7 @@
     <string name="pinned_apps_drag_reorder_content_description">ลากเพื่อจัดลำดับใหม่</string>
     <string name="pinned_apps_unpin_content_description">เลิกปักหมุด</string>
     <string name="settings_active_controls_title">ตัวควบคุมที่ใช้งานอยู่</string>
+    <string name="settings_active_controls_desc">แตะและลากไอคอนเพื่อจัดลำดับใหม่</string>
     <string name="settings_add_app_content_description">เพิ่มแอป</string>
     <string name="settings_add_label">เพิ่ม</string>
     <string name="settings_all_apps_pin_content_description">ปักหมุด</string>

@@ -1406,6 +1406,11 @@ private fun ControlsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp) {
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 } else {
+                    Text(
+                        stringResource(R.string.settings_active_controls_desc),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                     val lazyListState = rememberLazyListState()
                     val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
                     val hapticEnabled = LocalHapticEnabled.current

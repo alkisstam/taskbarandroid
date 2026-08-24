@@ -103,6 +103,7 @@
     <string name="pinned_apps_drag_reorder_content_description">拖动以重新排序</string>
     <string name="pinned_apps_unpin_content_description">取消固定</string>
     <string name="settings_active_controls_title">已启用的控制</string>
+    <string name="settings_active_controls_desc">触摸并拖动图标即可重新排序</string>
     <string name="settings_add_app_content_description">添加应用</string>
     <string name="settings_add_label">添加</string>
     <string name="settings_all_apps_pin_content_description">固定</string>

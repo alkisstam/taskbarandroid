@@ -103,6 +103,7 @@
     <string name="pinned_apps_drag_reorder_content_description">Slepen om te herschikken</string>
     <string name="pinned_apps_unpin_content_description">Losmaken</string>
     <string name="settings_active_controls_title">Actieve bedieningselementen</string>
+    <string name="settings_active_controls_desc">Raak een pictogram aan en sleep het om de volgorde te wijzigen</string>
     <string name="settings_add_app_content_description">App toevoegen</string>
     <string name="settings_add_label">Toevoegen</string>
     <string name="settings_all_apps_pin_content_description">Vastzetten</string>

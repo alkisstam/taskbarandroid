@@ -103,6 +103,7 @@
     <string name="pinned_apps_drag_reorder_content_description">Перетащите, чтобы изменить порядок</string>
     <string name="pinned_apps_unpin_content_description">Открепить</string>
     <string name="settings_active_controls_title">Активные кнопки</string>
+    <string name="settings_active_controls_desc">Коснитесь значка и перетащите его, чтобы изменить порядок</string>
     <string name="settings_add_app_content_description">Добавить приложение</string>
     <string name="settings_add_label">Добавить</string>
     <string name="settings_all_apps_pin_content_description">Закрепить</string>

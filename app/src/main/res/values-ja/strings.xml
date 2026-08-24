@@ -103,6 +103,7 @@
     <string name="pinned_apps_drag_reorder_content_description">ドラッグして並べ替え</string>
     <string name="pinned_apps_unpin_content_description">ピン留めを解除</string>
     <string name="settings_active_controls_title">有効なコントロール</string>
+    <string name="settings_active_controls_desc">アイコンをタッチしてドラッグすると並べ替えられます</string>
     <string name="settings_add_app_content_description">アプリを追加</string>
     <string name="settings_add_label">追加</string>
     <string name="settings_all_apps_pin_content_description">ピン留め</string>

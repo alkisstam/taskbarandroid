@@ -103,6 +103,7 @@
     <string name="pinned_apps_drag_reorder_content_description">क्रम बदलने के लिए खींचें</string>
     <string name="pinned_apps_unpin_content_description">अनपिन करें</string>
     <string name="settings_active_controls_title">सक्रिय नियंत्रण</string>
+    <string name="settings_active_controls_desc">फिर से क्रम में लगाने के लिए किसी आइकन को छूकर खींचें</string>
     <string name="settings_add_app_content_description">ऐप जोड़ें</string>
     <string name="settings_add_label">जोड़ें</string>
     <string name="settings_all_apps_pin_content_description">पिन करें</string>

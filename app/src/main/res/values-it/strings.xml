@@ -103,6 +103,7 @@
     <string name="pinned_apps_drag_reorder_content_description">Trascina per riordinare</string>
     <string name="pinned_apps_unpin_content_description">Sblocca</string>
     <string name="settings_active_controls_title">Controlli attivi</string>
+    <string name="settings_active_controls_desc">Tocca e trascina un\'icona per riordinarla</string>
     <string name="settings_add_app_content_description">Aggiungi app</string>
     <string name="settings_add_label">Aggiungi</string>
     <string name="settings_all_apps_pin_content_description">Blocca</string>
