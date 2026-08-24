@@ -227,7 +227,9 @@ val whatsNewReleases = listOf(
         versionName = "1.5.7",
         versionCode = 60,
         highlights = listOf(
-            "Fixed a rare crash when opening the app right as this What's New dialog appeared"
+            "Fixed a rare crash when opening the app right as this What's New dialog appeared",
+            "Fixed blank app icons on some high-RAM phones",
+            "Active Controls now shows a hint that you can drag to reorder"
         )
     )
 )

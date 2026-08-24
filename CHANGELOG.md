@@ -4,12 +4,16 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
-## [1.5.7] - 2026-08-14
+## [1.5.7] - 2026-08-24
 
 Stability release.
 
+### Added
+- **Reorder hint in Settings → Controls → Active Controls** — a short description explaining you can touch and drag an icon to re-order it.
+
 ### Fixed
 - **Rare crash when opening the app right as the What's New dialog appeared** — if the settings screen was closed (or recreated by the system, e.g. entering multi-window) in the same instant the dialog was about to show, the app could crash with a `BadTokenException`. The dialog now only shows while the screen is actively in the foreground.
+- **Blank app icons in the app menu on high-RAM devices** (e.g. Pixel 7) — the low-memory guard's threshold was too aggressive and could keep skipping icon decode well past real memory pressure, so icons stayed blank after the retry window expired. Loosened the threshold and gave icon-skip retries their own longer recovery window. Decoded icons are now also cached per package, cutting redundant work on package updates and icon-pack switches.
 
 ---
 
