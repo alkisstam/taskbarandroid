@@ -1,0 +1,6 @@
+Baru
+• Bagian Kontrol Aktif kini menampilkan petunjuk bahwa Anda bisa menyentuh dan menyeret ikon untuk mengurutkannya ulang
+
+Perbaikan
+• Crash langka saat membuka aplikasi tepat ketika dialog "Yang Baru" muncul
+• Ikon aplikasi kosong di beberapa ponsel dengan RAM besar (mis. Pixel 7)

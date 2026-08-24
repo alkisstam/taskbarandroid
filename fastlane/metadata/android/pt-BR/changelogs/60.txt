@@ -1,0 +1,6 @@
+Novidades
+• A seção Controles Ativos agora mostra uma dica: toque e arraste um ícone para reordená-lo
+
+Correções
+• Falha rara ao abrir o app bem no momento em que a janela de novidades aparecia
+• Ícones de apps em branco em alguns celulares com bastante RAM (ex. Pixel 7)

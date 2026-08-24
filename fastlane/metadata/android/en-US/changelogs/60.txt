@@ -1,0 +1,6 @@
+Added
+• Active Controls now shows a hint that you can drag an icon to reorder it
+
+Fixed
+• Rare crash opening the app right as the What's New dialog appeared
+• Blank app icons on some high-RAM phones (e.g. Pixel 7)

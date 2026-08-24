@@ -1,0 +1,6 @@
+Nouveautés
+• La section Contrôles actifs affiche désormais une astuce : touchez et faites glisser une icône pour la réorganiser
+
+Corrections
+• Plantage rare à l'ouverture de l'app pile au moment où la fenêtre "Nouveautés" apparaissait
+• Icônes d'applications vides sur certains téléphones avec beaucoup de RAM (ex. Pixel 7)

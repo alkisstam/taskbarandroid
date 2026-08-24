@@ -1,0 +1,6 @@
+Novità
+• La sezione Controlli attivi ora mostra un suggerimento: tocca e trascina un'icona per riordinarla
+
+Correzioni
+• Rarissimo crash all'apertura dell'app proprio nell'istante in cui appariva la finestra "Novità"
+• Icone delle app vuote su alcuni telefoni con molta RAM (es. Pixel 7)

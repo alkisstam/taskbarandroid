@@ -1,0 +1,6 @@
+Yenilikler
+• Etkin Kontroller bölümü artık bir simgeye dokunup sürükleyerek yeniden sıralayabileceğinizi belirten bir ipucu gösteriyor
+
+Düzeltmeler
+• "Yenilikler" penceresi tam açılırken uygulamayı açmanın neden olduğu nadir çökme sorunu giderildi
+• Yüksek RAM'li bazı telefonlarda (ör. Pixel 7) boş uygulama simgesi sorunu giderildi

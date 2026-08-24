@@ -1,0 +1,6 @@
+Neu
+• Aktive Steuerelemente zeigen jetzt einen Hinweis, dass man ein Symbol zum Neuanordnen ziehen kann
+
+Behoben
+• Seltener Absturz beim Öffnen der App genau in dem Moment, in dem der "Neuigkeiten"-Dialog erschien
+• Leere App-Symbole auf manchen Geräten mit viel RAM (z. B. Pixel 7)

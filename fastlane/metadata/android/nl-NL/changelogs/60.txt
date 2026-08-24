@@ -1,0 +1,6 @@
+Nieuw
+• Actieve bedieningselementen toont nu een tip dat je een pictogram kunt aanraken en slepen om de volgorde te wijzigen
+
+Opgelost
+• Zeldzame crash bij het openen van de app precies op het moment dat het "Nieuw in deze versie"-venster verscheen
+• Lege app-pictogrammen op sommige telefoons met veel RAM (bijv. Pixel 7)

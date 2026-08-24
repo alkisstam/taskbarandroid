@@ -1,0 +1,6 @@
+Novedades
+• Controles activos ahora muestra una sugerencia: toca y arrastra un ícono para reordenarlo
+
+Correcciones
+• Fallo poco frecuente al abrir la app justo cuando aparecía el diálogo de novedades
+• Íconos de apps en blanco en algunos teléfonos con mucha RAM (ej. Pixel 7)
