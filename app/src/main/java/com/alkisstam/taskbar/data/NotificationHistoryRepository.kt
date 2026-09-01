@@ -75,18 +75,20 @@ class NotificationHistoryRepository @Inject constructor(
             ?: extras.getCharSequence(Notification.EXTRA_BIG_TEXT)?.toString().orEmpty()).stripImageSpanChar()
         if (title.isBlank() && text.isBlank()) return
 
-        val entry = NotificationEntry(
-            id = sbn.key,
-            packageName = sbn.packageName,
-            appLabel = resolveAppLabel(sbn.packageName),
-            title = title,
-            text = text,
-            timestamp = sbn.postTime
-        )
         val actions = notification.actions
             ?.filter { it.actionIntent != null && it.remoteInputs.isNullOrEmpty() && !it.title.isNullOrBlank() }
             .orEmpty()
         scope.launch {
+            // resolveAppLabel does a binder IPC to the package manager; record() runs on
+            // the listener's main thread, and that call stalling has caused ANRs.
+            val entry = NotificationEntry(
+                id = sbn.key,
+                packageName = sbn.packageName,
+                appLabel = resolveAppLabel(sbn.packageName),
+                title = title,
+                text = text,
+                timestamp = sbn.postTime
+            )
             try {
                 context.notificationHistoryDataStore.edit { prefs ->
                     val current = prefs[NOTIFICATIONS_KEY]?.let { deserializeEntries(it) } ?: emptyList()
@@ -120,15 +122,17 @@ class NotificationHistoryRepository @Inject constructor(
 
     private fun String.stripImageSpanChar(): String = replace("￼", "").trim()
 
-    private fun resolveAppLabel(packageName: String): String =
-        labelCache.getOrPut(packageName) {
-            try {
-                val pm = context.packageManager
-                pm.getApplicationInfo(packageName, 0).loadLabel(pm).toString()
-            } catch (e: Exception) {
-                packageName
-            }
+    private fun resolveAppLabel(packageName: String): String {
+        synchronized(labelCache) { labelCache[packageName] }?.let { return it }
+        val label = try {
+            val pm = context.packageManager
+            pm.getApplicationInfo(packageName, 0).loadLabel(pm).toString()
+        } catch (e: Exception) {
+            packageName
         }
+        synchronized(labelCache) { labelCache[packageName] = label }
+        return label
+    }
 
     internal fun serializeEntries(entries: List<NotificationEntry>): String {
         val arr = JSONArray()
