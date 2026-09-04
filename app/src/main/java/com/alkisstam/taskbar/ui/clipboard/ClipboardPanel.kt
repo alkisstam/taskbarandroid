@@ -52,6 +52,7 @@ import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.ClipItem
 import com.alkisstam.taskbar.data.ClipType
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
+import com.alkisstam.taskbar.ui.theme.glassSheen
 import com.alkisstam.taskbar.ui.theme.grain
 import com.alkisstam.taskbar.viewmodel.ClipboardViewModel
 import kotlinx.coroutines.launch
@@ -101,7 +102,6 @@ fun ClipboardPanel(
 
     val panelShape = RoundedCornerShape(24.dp)
     val panelColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
-    val glassBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
 
     Box(modifier = Modifier.fillMaxSize()) {
         Box(
@@ -120,9 +120,9 @@ fun ClipboardPanel(
                 .padding(top = 4.dp, start = 2.dp, end = 2.dp)
                 .padding(bottom = dockBottomPadding)
                 .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, panelShape) else Modifier)
-                .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor, panelShape) else Modifier)
                 .clip(panelShape)
-                .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha),
+                .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
+                .glassSheen(enabled = translucentMode && !panelOutlineEnabled, shape = panelShape),
             shape = panelShape,
             color = if (translucentMode) panelColor.copy(alpha = translucentAlpha) else panelColor,
             tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 2.dp,

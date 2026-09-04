@@ -43,6 +43,7 @@ import com.alkisstam.taskbar.data.IconShape
 import com.alkisstam.taskbar.ui.common.AppIconImage
 import com.alkisstam.taskbar.ui.common.toComposeShape
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
+import com.alkisstam.taskbar.ui.theme.glassSheen
 import com.alkisstam.taskbar.ui.theme.grain
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
@@ -89,15 +90,14 @@ fun AppMenuPanel(
                     .padding(bottom = 4.dp),
                 contentAlignment = Alignment.Center
             ) {
-            val glassBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
             Surface(
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
                     .wrapContentHeight()
                     .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, RoundedCornerShape(20.dp)) else Modifier)
-                    .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor, RoundedCornerShape(20.dp)) else Modifier)
                     .clip(RoundedCornerShape(20.dp))
-                    .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha),
+                    .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
+                    .glassSheen(enabled = translucentMode && !panelOutlineEnabled, shape = RoundedCornerShape(20.dp)),
                 shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 20.dp, bottomEnd = 20.dp),
                 color = if (translucentMode) panelColor.copy(alpha = translucentAlpha) else panelColor,
                 tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 4.dp,

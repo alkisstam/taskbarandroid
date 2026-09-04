@@ -1,6 +1,5 @@
 package com.alkisstam.taskbar.ui.appmenu
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -43,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.IconShape
+import com.alkisstam.taskbar.ui.theme.glassSheen
 import com.alkisstam.taskbar.ui.theme.grain
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
 
@@ -84,7 +84,6 @@ fun FloatingSearchBar(
                 ) { viewModel.closeSearch() }
         )
         val surfaceColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
-        val glassBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -95,9 +94,9 @@ fun FloatingSearchBar(
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .then(if (translucentMode) Modifier.border(1.dp, glassBorderColor, RoundedCornerShape(16.dp)) else Modifier)
                     .clip(RoundedCornerShape(16.dp))
-                    .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha),
+                    .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
+                    .glassSheen(enabled = translucentMode, shape = RoundedCornerShape(16.dp)),
                 shape = RoundedCornerShape(16.dp),
                 color = if (translucentMode) surfaceColor.copy(alpha = translucentAlpha) else surfaceColor,
                 tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 8.dp,
@@ -146,9 +145,9 @@ fun FloatingSearchBar(
                         .fillMaxWidth()
                         .padding(top = 4.dp)
                         .heightIn(max = 360.dp)
-                        .then(if (translucentMode) Modifier.border(1.dp, glassBorderColor, RoundedCornerShape(16.dp)) else Modifier)
                         .clip(RoundedCornerShape(16.dp))
-                        .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha),
+                        .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
+                        .glassSheen(enabled = translucentMode, shape = RoundedCornerShape(16.dp)),
                     shape = RoundedCornerShape(16.dp),
                     color = if (translucentMode) surfaceColor.copy(alpha = translucentAlpha) else surfaceColor,
                     tonalElevation = if (translucentMode) 0.dp else 6.dp,
@@ -178,9 +177,9 @@ fun FloatingSearchBar(
                         .fillMaxWidth()
                         .padding(top = 4.dp)
                         .heightIn(max = 360.dp)
-                        .then(if (translucentMode) Modifier.border(1.dp, glassBorderColor, RoundedCornerShape(16.dp)) else Modifier)
                         .clip(RoundedCornerShape(16.dp))
-                        .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha),
+                        .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
+                        .glassSheen(enabled = translucentMode, shape = RoundedCornerShape(16.dp)),
                     shape = RoundedCornerShape(16.dp),
                     color = if (translucentMode) surfaceColor.copy(alpha = translucentAlpha) else surfaceColor,
                     tonalElevation = if (translucentMode) 0.dp else 6.dp,

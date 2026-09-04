@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.MediaState
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
+import com.alkisstam.taskbar.ui.theme.glassSheen
 import com.alkisstam.taskbar.ui.theme.grain
 
 @Composable
@@ -57,7 +58,6 @@ fun MusicPanel(
     modifier: Modifier = Modifier
 ) {
     val surfaceColor = MaterialTheme.colorScheme.surface
-    val glassBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
     val cornerShape = RoundedCornerShape(cornerRadiusDp.dp)
     Surface(
         shape = cornerShape,
@@ -68,9 +68,9 @@ fun MusicPanel(
         modifier = modifier
             .fillMaxWidth(dockWidthFraction)
             .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, cornerShape) else Modifier)
-            .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor, cornerShape) else Modifier)
             .clip(cornerShape)
             .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
+            .glassSheen(enabled = translucentMode && !panelOutlineEnabled, shape = cornerShape)
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),

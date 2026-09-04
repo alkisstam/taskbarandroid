@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
+import com.alkisstam.taskbar.ui.theme.glassSheen
 import com.alkisstam.taskbar.ui.theme.grain
 
 data class VolumeStreamInfo(
@@ -74,13 +75,12 @@ fun VolumePanel(
     modifier: Modifier = Modifier
 ) {
     val surfaceColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
-    val glassBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
     Surface(
         modifier = modifier
             .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, RoundedCornerShape(20.dp)) else Modifier)
-            .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor, RoundedCornerShape(20.dp)) else Modifier)
             .clip(RoundedCornerShape(20.dp))
-            .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha),
+            .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
+            .glassSheen(enabled = translucentMode && !panelOutlineEnabled, shape = RoundedCornerShape(20.dp)),
         shape = RoundedCornerShape(20.dp),
         color = if (translucentMode) surfaceColor.copy(alpha = translucentAlpha) else surfaceColor,
         contentColor = MaterialTheme.colorScheme.onSurface,
@@ -225,13 +225,12 @@ fun BrightnessPanel(
     }
 
     val surfaceColor2 = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
-    val glassBorderColor2 = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
     Surface(
         modifier = modifier
             .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, RoundedCornerShape(20.dp)) else Modifier)
-            .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor2, RoundedCornerShape(20.dp)) else Modifier)
             .clip(RoundedCornerShape(20.dp))
-            .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha),
+            .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
+            .glassSheen(enabled = translucentMode && !panelOutlineEnabled, shape = RoundedCornerShape(20.dp)),
         shape = RoundedCornerShape(20.dp),
         color = if (translucentMode) surfaceColor2.copy(alpha = translucentAlpha) else surfaceColor2,
         contentColor = MaterialTheme.colorScheme.onSurface,

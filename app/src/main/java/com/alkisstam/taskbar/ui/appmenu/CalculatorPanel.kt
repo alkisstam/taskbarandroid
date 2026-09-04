@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
+import com.alkisstam.taskbar.ui.theme.glassSheen
 import com.alkisstam.taskbar.ui.theme.grain
 import kotlin.math.abs
 import kotlin.math.ln
@@ -212,7 +213,6 @@ fun CalculatorPanel(
     val clearLabel = stringResource(R.string.calculator_clear_label)
 
     val surfaceColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
-    val glassBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
     val cornerShape = RoundedCornerShape(cornerRadiusDp.dp)
 
     Surface(
@@ -224,9 +224,9 @@ fun CalculatorPanel(
         modifier = modifier
             .fillMaxWidth(dockWidthFraction)
             .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, cornerShape) else Modifier)
-            .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor, cornerShape) else Modifier)
             .clip(cornerShape)
             .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
+            .glassSheen(enabled = translucentMode && !panelOutlineEnabled, shape = cornerShape)
     ) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
             Text(

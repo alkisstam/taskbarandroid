@@ -13,9 +13,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.ThemeMode
 
 private val DarkColorScheme = darkColorScheme(
@@ -56,6 +62,43 @@ fun TaskBarTheme(
         typography = Typography,
         content = content
     )
+}
+
+fun Modifier.glassSheen(enabled: Boolean, shape: Shape): Modifier {
+    if (!enabled) return this
+    return drawWithContent {
+        drawContent()
+        val w = size.width
+        val h = size.height
+        drawRect(
+            brush = Brush.verticalGradient(
+                0f to Color.White.copy(alpha = 0.16f),
+                1f to Color.Transparent,
+                startY = 0f,
+                endY = h * 0.4f
+            )
+        )
+        drawRect(
+            brush = Brush.verticalGradient(
+                0f to Color.Transparent,
+                1f to Color.Black.copy(alpha = 0.10f),
+                startY = h * 0.8f,
+                endY = h
+            )
+        )
+        // Stroke straddles the clip edge, so 2dp width leaves a 1dp inner rim.
+        drawOutline(
+            outline = shape.createOutline(size, layoutDirection, this),
+            brush = Brush.linearGradient(
+                0f to Color.White.copy(alpha = 0.55f),
+                0.5f to Color.White.copy(alpha = 0.08f),
+                1f to Color.White.copy(alpha = 0.25f),
+                start = Offset.Zero,
+                end = Offset(w, h)
+            ),
+            style = Stroke(width = 2.dp.toPx())
+        )
+    }
 }
 
 fun Modifier.grain(enabled: Boolean = true, alpha: Float = 0.10f): Modifier {

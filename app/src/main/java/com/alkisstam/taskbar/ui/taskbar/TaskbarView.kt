@@ -63,6 +63,7 @@ import java.time.format.DateTimeFormatter
 import com.alkisstam.taskbar.ui.appmenu.QuickControlItem
 import com.alkisstam.taskbar.ui.appmenu.toItems
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
+import com.alkisstam.taskbar.ui.theme.glassSheen
 import com.alkisstam.taskbar.ui.theme.grain
 import com.alkisstam.taskbar.util.Constants
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
@@ -124,15 +125,14 @@ fun TaskbarView(
         modifier = modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
-        val glassBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
         Surface(
             modifier = Modifier
                 .fillMaxWidth(dockWidthFraction)
                 .wrapContentHeight()
                 .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, dockCornerShape) else Modifier)
-                .then(if (translucentMode && !panelOutlineEnabled) Modifier.border(1.dp, glassBorderColor, dockCornerShape) else Modifier)
                 .clip(dockCornerShape)
                 .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
+                .glassSheen(enabled = translucentMode && !panelOutlineEnabled, shape = dockCornerShape)
                 .pointerInput(isDockExpanded, taskbarSettings.heightDp) {
                     val maxDragPx = with(density) { taskbarSettings.heightDp.dp.toPx() }
                     var totalDragY = 0f
