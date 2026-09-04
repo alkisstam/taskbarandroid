@@ -231,6 +231,16 @@ val whatsNewReleases = listOf(
             "Fixed blank app icons on some high-RAM phones",
             "Active Controls now shows a hint that you can drag to reorder"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.5.8",
+        versionCode = 61,
+        highlights = listOf(
+            "Pill swipe-down can now open the Notification Panel, Quick Tiles, or the Power Menu",
+            "Richer glass look in translucent mode — top highlight, bottom shade, and a gradient rim on the dock and all panels",
+            "Fixed the dock collapsing on its own right after swiping up from the home screen",
+            "Fixed a rare freeze when opening the notification history panel"
+        )
     )
 )
 
