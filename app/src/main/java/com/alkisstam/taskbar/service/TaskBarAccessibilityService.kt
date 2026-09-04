@@ -97,10 +97,18 @@ class TaskBarAccessibilityService : AccessibilityService() {
         return launcherPackages
     }
 
+    private var lastForegroundPackage: String? = null
+
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             val pkg = event.packageName?.toString() ?: return
-            if (pkg in launcherPackages()) {
+            // OneUI (and other launchers) refire WINDOW_STATE_CHANGED for the launcher package
+            // while already in the foreground (icon layout/widget refresh etc). Only dismiss on
+            // an actual transition into the launcher, or the pill triggers this while sitting on
+            // the home screen and the dock collapses itself right after showing.
+            val enteredFromElsewhere = pkg != lastForegroundPackage
+            lastForegroundPackage = pkg
+            if (pkg in launcherPackages() && enteredFromElsewhere) {
                 sendBroadcast(
                     Intent(OverlayService.ACTION_DISMISS_ALL).setPackage(packageName)
                 )
