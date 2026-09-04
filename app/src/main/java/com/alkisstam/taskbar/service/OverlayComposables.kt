@@ -177,6 +177,11 @@ internal fun TriggerPillContent(taskbarViewModel: TaskbarViewModel) {
                         if (svc != null) svc.expandQuickSettings()
                         else Toast.makeText(context, "Requires accessibility service", Toast.LENGTH_SHORT).show()
                     }
+                    GestureAction.POWER_MENU -> {
+                        val svc = TaskBarAccessibilityService.instance
+                        if (svc != null) svc.showPowerMenu()
+                        else Toast.makeText(context, "Requires accessibility service", Toast.LENGTH_SHORT).show()
+                    }
                     GestureAction.DISABLED -> {}
                 }
             }

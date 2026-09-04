@@ -69,8 +69,6 @@
     <string name="pill_icon_shape_default">افتراضي</string>
     <string name="pill_icon_shape_square">مربع</string>
     <string name="pill_icon_shape_squircle">سكويركل</string>
-    <string name="pill_notification_panel_desc">مرر لأسفل لعرض لوحة الإشعارات</string>
-    <string name="pill_notification_panel_title">لوحة الإشعارات</string>
     <string name="pill_panel_outline_label">إطار اللوحة</string>
     <string name="pill_position_along_edge_label">الموضع على طول الحافة</string>
     <string name="pill_position_from_bottom_label">الموضع من الأسفل</string>

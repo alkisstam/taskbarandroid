@@ -69,8 +69,6 @@
     <string name="pill_icon_shape_default">Predefinita</string>
     <string name="pill_icon_shape_square">Quadrato</string>
     <string name="pill_icon_shape_squircle">Squircle</string>
-    <string name="pill_notification_panel_desc">Scorri verso il basso per il pannello notifiche</string>
-    <string name="pill_notification_panel_title">Pannello notifiche</string>
     <string name="pill_panel_outline_label">Contorno pannello</string>
     <string name="pill_position_along_edge_label">Posizione lungo il bordo</string>
     <string name="pill_position_from_bottom_label">Posizione dal basso</string>

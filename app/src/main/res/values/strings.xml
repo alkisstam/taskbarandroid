@@ -69,8 +69,10 @@
     <string name="pill_icon_shape_default">Default</string>
     <string name="pill_icon_shape_square">Square</string>
     <string name="pill_icon_shape_squircle">Squircle</string>
-    <string name="pill_notification_panel_desc">Swipe down for Notification Panel</string>
-    <string name="pill_notification_panel_title">Notification Panel</string>
+    <string name="pill_swipe_down_action_label">Swipe Down Action</string>
+    <string name="pill_swipe_down_action_notifications">Notification Panel</string>
+    <string name="pill_swipe_down_action_quick_settings">Quick Tiles Panel</string>
+    <string name="pill_swipe_down_action_power_menu">Power Menu</string>
     <string name="pill_panel_outline_label">Panel Outline</string>
     <string name="pill_position_along_edge_label">Position along edge</string>
     <string name="pill_position_from_bottom_label">Position from bottom</string>

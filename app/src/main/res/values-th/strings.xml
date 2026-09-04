@@ -69,8 +69,6 @@
     <string name="pill_icon_shape_default">ค่าเริ่มต้น</string>
     <string name="pill_icon_shape_square">สี่เหลี่ยม</string>
     <string name="pill_icon_shape_squircle">Squircle</string>
-    <string name="pill_notification_panel_desc">ปัดลงเพื่อเปิดแผงการแจ้งเตือน</string>
-    <string name="pill_notification_panel_title">แผงการแจ้งเตือน</string>
     <string name="pill_panel_outline_label">เส้นขอบแผง</string>
     <string name="pill_position_along_edge_label">ตำแหน่งตามแนวขอบ</string>
     <string name="pill_position_from_bottom_label">ตำแหน่งจากด้านล่าง</string>

@@ -57,11 +57,12 @@ val DARK_TINT_PRESETS: List<Pair<String, Long>> = listOf(
     "Espresso" to 0xFF2C221B
 )
 
-enum class GestureAction { SHOW_DOCK, SHOW_NOTIFICATIONS, SHOW_QUICK_SETTINGS, DISABLED }
+enum class GestureAction { SHOW_DOCK, SHOW_NOTIFICATIONS, SHOW_QUICK_SETTINGS, POWER_MENU, DISABLED }
 
 private fun String?.toGestureAction() = when (this) {
     "SHOW_NOTIFICATIONS"  -> GestureAction.SHOW_NOTIFICATIONS
     "SHOW_QUICK_SETTINGS" -> GestureAction.SHOW_QUICK_SETTINGS
+    "POWER_MENU"          -> GestureAction.POWER_MENU
     "DISABLED"            -> GestureAction.DISABLED
     else                  -> GestureAction.SHOW_DOCK
 }

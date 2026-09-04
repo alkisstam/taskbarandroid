@@ -69,8 +69,6 @@
     <string name="pill_icon_shape_default">По умолчанию</string>
     <string name="pill_icon_shape_square">Квадрат</string>
     <string name="pill_icon_shape_squircle">Сквиркл</string>
-    <string name="pill_notification_panel_desc">Проведите вниз, чтобы открыть панель уведомлений</string>
-    <string name="pill_notification_panel_title">Панель уведомлений</string>
     <string name="pill_panel_outline_label">Обводка панели</string>
     <string name="pill_position_along_edge_label">Положение вдоль края</string>
     <string name="pill_position_from_bottom_label">Положение от низа экрана</string>

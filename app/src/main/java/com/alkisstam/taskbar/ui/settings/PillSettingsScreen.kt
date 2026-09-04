@@ -43,6 +43,7 @@ import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Remove
@@ -378,28 +379,28 @@ fun PillSettingsScreen(
             }
             if (pillSettings.edgePosition != PillEdgePosition.BOTTOM) {
                 Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(stringResource(R.string.pill_notification_panel_title), style = MaterialTheme.typography.bodyMedium)
-                        Text(
-                            stringResource(R.string.pill_notification_panel_desc),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                Text(stringResource(R.string.pill_swipe_down_action_label), style = MaterialTheme.typography.bodyMedium)
+                Spacer(modifier = Modifier.height(4.dp))
+                val swipeDownNotificationsLabel = stringResource(R.string.pill_swipe_down_action_notifications)
+                val swipeDownQuickSettingsLabel = stringResource(R.string.pill_swipe_down_action_quick_settings)
+                val swipeDownPowerMenuLabel = stringResource(R.string.pill_swipe_down_action_power_menu)
+                GradientDropdownField(
+                    icon = Icons.Filled.Notifications,
+                    selectedLabel = when (pillSettings.swipeDownAction) {
+                        GestureAction.SHOW_QUICK_SETTINGS -> swipeDownQuickSettingsLabel
+                        GestureAction.POWER_MENU          -> swipeDownPowerMenuLabel
+                        else                               -> swipeDownNotificationsLabel
+                    },
+                    options = listOf(
+                        swipeDownNotificationsLabel to GestureAction.SHOW_NOTIFICATIONS,
+                        swipeDownQuickSettingsLabel to GestureAction.SHOW_QUICK_SETTINGS,
+                        swipeDownPowerMenuLabel to GestureAction.POWER_MENU
+                    ),
+                    isSelected = { it == pillSettings.swipeDownAction },
+                    onSelect = { action ->
+                        viewModel.savePillSettings(pillSettings.copy(swipeDownAction = action))
                     }
-                    Switch(
-                        checked = pillSettings.swipeDownAction == GestureAction.SHOW_NOTIFICATIONS,
-                        onCheckedChange = { enabled ->
-                            viewModel.savePillSettings(pillSettings.copy(
-                                swipeDownAction = if (enabled) GestureAction.SHOW_NOTIFICATIONS else GestureAction.DISABLED
-                            ))
-                        }
-                    )
-                }
+                )
                 Spacer(modifier = Modifier.height(8.dp))
                 SettingsSlider(
                     label = stringResource(R.string.pill_position_along_edge_label),

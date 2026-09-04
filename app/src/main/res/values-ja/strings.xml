@@ -69,8 +69,6 @@
     <string name="pill_icon_shape_default">デフォルト</string>
     <string name="pill_icon_shape_square">四角形</string>
     <string name="pill_icon_shape_squircle">スクイークル</string>
-    <string name="pill_notification_panel_desc">下にスワイプして通知パネルを開く</string>
-    <string name="pill_notification_panel_title">通知パネル</string>
     <string name="pill_panel_outline_label">パネルの輪郭線</string>
     <string name="pill_position_along_edge_label">端に沿った位置</string>
     <string name="pill_position_from_bottom_label">下からの位置</string>
