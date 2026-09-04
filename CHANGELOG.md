@@ -4,6 +4,19 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.5.8] - 2026-09-04
+
+Dock swipe-down action, dock auto-collapse fix.
+
+### Added
+- **Swipe Down Action dropdown** — Settings → Design → Pill Size & Appearance's "Notification Panel" on/off toggle is now a 3-way dropdown: Notification Panel, Quick Tiles Panel, or Power Menu.
+
+### Fixed
+- **Dock collapsing right after swipe-up on the home screen** — the accessibility service treated every window-state-changed event for the launcher as "user went home" and force-collapsed the dock, even while already sitting on the home screen (some launchers, e.g. OneUI, refire that event without an actual app switch). Swiping the pill up from the home screen could land right on one of these spurious events and the dock would immediately collapse itself, sometimes several times in a row. Now only dismisses on an actual transition into the launcher.
+- **Rare ANR from notification history** — resolving an app's label for the notification panel did a blocking package-manager call on the main thread; moved off it.
+
+---
+
 ## [1.5.7] - 2026-08-24
 
 Stability release.
