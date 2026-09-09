@@ -69,6 +69,10 @@
     <string name="pill_icon_shape_default">默认</string>
     <string name="pill_icon_shape_square">方形</string>
     <string name="pill_icon_shape_squircle">圆角方形</string>
+    <string name="pill_swipe_down_action_label">下滑操作</string>
+    <string name="pill_swipe_down_action_notifications">通知面板</string>
+    <string name="pill_swipe_down_action_quick_settings">快速设置面板</string>
+    <string name="pill_swipe_down_action_power_menu">电源菜单</string>
     <string name="pill_panel_outline_label">面板轮廓</string>
     <string name="pill_position_along_edge_label">沿边缘的位置</string>
     <string name="pill_position_from_bottom_label">距底部的位置</string>
@@ -330,6 +334,7 @@
     <string name="quick_control_share_label">分享</string>
     <string name="quick_control_notif_history_label">通知</string>
     <string name="quick_control_music_label">音乐</string>
+    <string name="quick_control_settings_label">设置</string>
     <string name="calculator_error">错误</string>
     <string name="calculator_clear_label">AC</string>
     <string name="calculator_backspace_description">退格</string>

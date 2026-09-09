@@ -69,6 +69,10 @@
     <string name="pill_icon_shape_default">Predefinita</string>
     <string name="pill_icon_shape_square">Quadrato</string>
     <string name="pill_icon_shape_squircle">Squircle</string>
+    <string name="pill_swipe_down_action_label">Azione di scorrimento verso il basso</string>
+    <string name="pill_swipe_down_action_notifications">Pannello notifiche</string>
+    <string name="pill_swipe_down_action_quick_settings">Pannello impostazioni rapide</string>
+    <string name="pill_swipe_down_action_power_menu">Menu di alimentazione</string>
     <string name="pill_panel_outline_label">Contorno pannello</string>
     <string name="pill_position_along_edge_label">Posizione lungo il bordo</string>
     <string name="pill_position_from_bottom_label">Posizione dal basso</string>
@@ -330,6 +334,7 @@
     <string name="quick_control_share_label">Condividi</string>
     <string name="quick_control_notif_history_label">Notifiche</string>
     <string name="quick_control_music_label">Musica</string>
+    <string name="quick_control_settings_label">Impostazioni</string>
     <string name="calculator_error">Errore</string>
     <string name="calculator_clear_label">AC</string>
     <string name="calculator_backspace_description">Backspace</string>

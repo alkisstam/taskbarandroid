@@ -69,6 +69,10 @@
     <string name="pill_icon_shape_default">Bawaan</string>
     <string name="pill_icon_shape_square">Persegi</string>
     <string name="pill_icon_shape_squircle">Squircle</string>
+    <string name="pill_swipe_down_action_label">Aksi Geser ke Bawah</string>
+    <string name="pill_swipe_down_action_notifications">Panel Notifikasi</string>
+    <string name="pill_swipe_down_action_quick_settings">Panel Pengaturan Cepat</string>
+    <string name="pill_swipe_down_action_power_menu">Menu Daya</string>
     <string name="pill_panel_outline_label">Garis Tepi Panel</string>
     <string name="pill_position_along_edge_label">Posisi di sepanjang tepi</string>
     <string name="pill_position_from_bottom_label">Posisi dari bawah</string>
@@ -330,6 +334,7 @@
     <string name="quick_control_share_label">Bagikan</string>
     <string name="quick_control_notif_history_label">Notif</string>
     <string name="quick_control_music_label">Musik</string>
+    <string name="quick_control_settings_label">Pengaturan</string>
     <string name="calculator_error">Error</string>
     <string name="calculator_clear_label">AC</string>
     <string name="calculator_backspace_description">Hapus mundur</string>

@@ -69,6 +69,10 @@
     <string name="pill_icon_shape_default">ค่าเริ่มต้น</string>
     <string name="pill_icon_shape_square">สี่เหลี่ยม</string>
     <string name="pill_icon_shape_squircle">Squircle</string>
+    <string name="pill_swipe_down_action_label">การดำเนินการปัดลง</string>
+    <string name="pill_swipe_down_action_notifications">แผงการแจ้งเตือน</string>
+    <string name="pill_swipe_down_action_quick_settings">แผงการตั้งค่าด่วน</string>
+    <string name="pill_swipe_down_action_power_menu">เมนูเพาเวอร์</string>
     <string name="pill_panel_outline_label">เส้นขอบแผง</string>
     <string name="pill_position_along_edge_label">ตำแหน่งตามแนวขอบ</string>
     <string name="pill_position_from_bottom_label">ตำแหน่งจากด้านล่าง</string>
@@ -330,6 +334,7 @@
     <string name="quick_control_share_label">แชร์</string>
     <string name="quick_control_notif_history_label">แจ้งเตือน</string>
     <string name="quick_control_music_label">เพลง</string>
+    <string name="quick_control_settings_label">การตั้งค่า</string>
     <string name="calculator_error">ข้อผิดพลาด</string>
     <string name="calculator_clear_label">AC</string>
     <string name="calculator_backspace_description">ลบถอยหลัง</string>

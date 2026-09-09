@@ -69,6 +69,10 @@
     <string name="pill_icon_shape_default">Standaard</string>
     <string name="pill_icon_shape_square">Vierkant</string>
     <string name="pill_icon_shape_squircle">Squircle</string>
+    <string name="pill_swipe_down_action_label">Actie omlaag vegen</string>
+    <string name="pill_swipe_down_action_notifications">Meldingenpaneel</string>
+    <string name="pill_swipe_down_action_quick_settings">Paneel snelle instellingen</string>
+    <string name="pill_swipe_down_action_power_menu">Aan/uit-menu</string>
     <string name="pill_panel_outline_label">Paneelomlijning</string>
     <string name="pill_position_along_edge_label">Positie langs de rand</string>
     <string name="pill_position_from_bottom_label">Positie vanaf onderkant</string>
@@ -330,6 +334,7 @@
     <string name="quick_control_share_label">Delen</string>
     <string name="quick_control_notif_history_label">Meldingen</string>
     <string name="quick_control_music_label">Muziek</string>
+    <string name="quick_control_settings_label">Instellingen</string>
     <string name="calculator_error">Fout</string>
     <string name="calculator_clear_label">AC</string>
     <string name="calculator_backspace_description">Backspace</string>
