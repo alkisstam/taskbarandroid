@@ -77,6 +77,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.currentStateAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -970,7 +973,10 @@ private fun SurfaceTintColorPicker(
         }
     }
 
-    if (showCustomPicker) {
+    // Compose defers Dialog.show() a frame; if the activity is finishing or
+    // being recreated by then, addView hits a dead window token (BadTokenException).
+    val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
+    if (showCustomPicker && lifecycleState.isAtLeast(Lifecycle.State.RESUMED)) {
         CustomColorPickerDialog(
             initialColor = if (isCustomSelected) currentColor else 0xFF808080L,
             onDismiss = { showCustomPicker = false },

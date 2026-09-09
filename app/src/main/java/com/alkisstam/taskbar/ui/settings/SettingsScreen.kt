@@ -37,6 +37,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.currentStateAsState
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.Dp
@@ -823,7 +826,10 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
     val showRecentAppsRow by viewModel.showRecentAppsRow.collectAsState()
     var showHideAppPicker by remember { mutableStateOf(false) }
 
-    if (showHideAppPicker) {
+    // Compose defers Dialog.show() a frame; if the activity is finishing or
+    // being recreated by then, addView hits a dead window token (BadTokenException).
+    val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
+    if (showHideAppPicker && lifecycleState.isAtLeast(Lifecycle.State.RESUMED)) {
         HideAppPickerDialog(
             apps = allApps,
             iconShape = iconShape,
