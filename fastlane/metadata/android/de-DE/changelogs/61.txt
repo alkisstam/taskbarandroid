@@ -1,0 +1,8 @@
+Neu
+• Wisch-nach-unten an der Pille öffnet jetzt Benachrichtigungen, Schnelleinstellungen oder das Ein-/Aus-Menü
+• Reicheres Glas im transparenten Modus — Lichtkante, Schatten und Rand-Leuchten auf Dock und Panels
+
+Behoben
+• Dock klappte nach dem Wischen vom Startbildschirm manchmal von selbst wieder ein
+• Seltenes Einfrieren beim Öffnen des Benachrichtigungsverlaufs
+• Seltener Absturz beim Schließen eines Einstellungsdialogs zur falschen Zeit

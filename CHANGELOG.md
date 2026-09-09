@@ -15,6 +15,8 @@ Dock swipe-down action, richer glass look, dock auto-collapse fix.
 ### Fixed
 - **Dock collapsing right after swipe-up on the home screen** — the accessibility service treated every window-state-changed event for the launcher as "user went home" and force-collapsed the dock, even while already sitting on the home screen (some launchers, e.g. OneUI, refire that event without an actual app switch). Swiping the pill up from the home screen could land right on one of these spurious events and the dock would immediately collapse itself, sometimes several times in a row. Now only dismisses on an actual transition into the launcher.
 - **Rare ANR from notification history** — resolving an app's label for the notification panel did a blocking package-manager call on the main thread; moved off it.
+- **Same `BadTokenException` dialog-close race as 1.5.7, in two more dialogs** — the Hide App picker and the pill's custom color picker could hit the same dead-window-token crash if the screen was closed or recreated the instant Compose showed the dialog. Both now gate on the RESUMED lifecycle state like the What's New dialog already did.
+- **Missing translations** — `pill_swipe_down_action_*` and `quick_control_settings_label`, added earlier in this release, were never localized; all 16 non-English locales fell back to English for these 5 strings.
 
 ---
 

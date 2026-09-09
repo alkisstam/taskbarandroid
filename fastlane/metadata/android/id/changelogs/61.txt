@@ -1,0 +1,8 @@
+Baru
+• Aksi geser ke bawah pada pil kini bisa membuka Panel Notifikasi, Panel Pengaturan Cepat, atau Menu Daya
+• Tampilan kaca yang lebih kaya dalam mode transparan — sorotan atas, bayangan bawah, dan tepi bercahaya pada dock dan panel
+
+Perbaikan
+• Dock tidak lagi menciut sendiri tepat setelah menggeser ke atas dari layar utama
+• Macet langka saat membuka panel riwayat notifikasi
+• Crash langka saat menutup dialog pengaturan pada saat yang salah

@@ -239,7 +239,8 @@ val whatsNewReleases = listOf(
             "Pill swipe-down can now open the Notification Panel, Quick Tiles, or the Power Menu",
             "Richer glass look in translucent mode — top highlight, bottom shade, and a gradient rim on the dock and all panels",
             "Fixed the dock collapsing on its own right after swiping up from the home screen",
-            "Fixed a rare freeze when opening the notification history panel"
+            "Fixed a rare freeze when opening the notification history panel",
+            "Fixed a rare crash when closing a settings dialog at the wrong moment"
         )
     )
 )

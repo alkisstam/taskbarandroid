@@ -1,0 +1,8 @@
+Novedades
+• Deslizar hacia abajo en la píldora ahora abre el Panel de notificaciones, Configuración rápida o el Menú de energía
+• Vidrio más rico en modo translúcido — brillo, sombra y borde luminoso en la barra y los paneles
+
+Correcciones
+• La barra ya no se colapsa sola tras deslizar hacia arriba desde inicio
+• Congelamiento poco frecuente al abrir el historial de notificaciones
+• Fallo poco frecuente al cerrar un diálogo de ajustes en mal momento

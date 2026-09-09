@@ -1,0 +1,8 @@
+Nieuw
+• De omlaag-veeg-actie van de pil kan nu het Meldingenpaneel, het Paneel snelle instellingen of het Aan/uit-menu openen
+• Rijkere glaslook in doorschijnende modus — lichtrand bovenaan, schaduw onderaan en een gloeiende rand op dock en panelen
+
+Opgelost
+• Het dock klapte vanzelf weer in vlak na het omhoog vegen vanaf het startscherm
+• Zeldzame bevriezing bij het openen van het meldingengeschiedenispaneel
+• Zeldzame crash bij het sluiten van een instellingendialoog op het verkeerde moment

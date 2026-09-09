@@ -1,0 +1,8 @@
+Novidades
+• Deslizar para baixo na pílula agora abre Notificações, Configurações Rápidas ou o Menu de Energia
+• Vidro mais rico no modo translúcido — brilho, sombra e borda luminosa no dock e nos painéis
+
+Correções
+• O dock não recolhe mais sozinho após deslizar para cima a partir da tela inicial
+• Congelamento raro ao abrir o histórico de notificações
+• Falha rara ao fechar uma caixa de diálogo no momento errado

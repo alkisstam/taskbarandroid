@@ -1,0 +1,8 @@
+Added
+• Pill swipe-down action can now open the Notification Panel, Quick Tiles, or the Power Menu
+• Richer glass look in translucent mode — top highlight, bottom shade, and rim light on the dock and panels
+
+Fixed
+• Dock collapsing on its own right after swiping up from the home screen
+• Rare freeze when opening the notification history panel
+• Rare crash when closing a settings dialog at the wrong moment

@@ -1,0 +1,8 @@
+Novità
+• Lo swipe verso il basso sulla pillola apre ora Notifiche, Impostazioni rapide o il Menu di alimentazione
+• Vetro più ricco in modalità traslucida — luce, ombra e bordo luminoso su dock e pannelli
+
+Correzioni
+• Il dock non si richiude più da solo dopo lo swipe verso l'alto dalla Home
+• Rarissimo blocco all'apertura della cronologia notifiche
+• Rarissimo crash chiudendo una finestra di dialogo nel momento sbagliato

@@ -1,0 +1,8 @@
+Yenilikler
+• Hapta aşağı kaydırma artık Bildirimler, Hızlı Ayarlar veya Güç Menüsünü açabiliyor
+• Yarı saydam modda daha zengin cam görünümü — parlaklık, gölge ve parlayan kenar
+
+Düzeltmeler
+• Ana ekrandan yukarı kaydırdıktan sonra dock'un kendiliğinden kapanması giderildi
+• Bildirim geçmişini açarken nadiren yaşanan donma giderildi
+• Ayarlar penceresini yanlış anda kapatırken nadiren yaşanan çökme giderildi

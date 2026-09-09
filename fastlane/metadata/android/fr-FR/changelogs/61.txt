@@ -1,0 +1,8 @@
+Nouveautés
+• Glisser vers le bas sur la pilule ouvre désormais les Notifications, les Paramètres rapides ou le Menu d'alimentation
+• Verre plus riche en mode translucide — reflet, ombre et liseré lumineux sur la barre et les panneaux
+
+Corrections
+• La barre ne se replie plus seule après un glissement vers le haut depuis l'accueil
+• Gel rare à l'ouverture de l'historique des notifications
+• Plantage rare en fermant une boîte de dialogue au mauvais moment
