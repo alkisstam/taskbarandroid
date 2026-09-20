@@ -81,6 +81,7 @@
     <string name="pill_hold_drag_brightness">Яркость</string>
     <string name="pill_hold_drag_volume">Громкость мультимедиа</string>
     <string name="pill_hold_drag_hint">Удерживайте пилюлю, затем проведите вверх или вниз.</string>
+    <string name="pill_action_requires_accessibility">Требуется служба специальных возможностей</string>
     <string name="pill_panel_outline_label">Обводка панели</string>
     <string name="pill_position_along_edge_label">Положение вдоль края</string>
     <string name="pill_position_from_bottom_label">Положение от низа экрана</string>

@@ -81,6 +81,7 @@
     <string name="pill_hold_drag_brightness">明るさ</string>
     <string name="pill_hold_drag_volume">メディア音量</string>
     <string name="pill_hold_drag_hint">ピルを長押ししてから、上または下にドラッグします。</string>
+    <string name="pill_action_requires_accessibility">ユーザー補助サービスが必要です</string>
     <string name="pill_panel_outline_label">パネルの輪郭線</string>
     <string name="pill_position_along_edge_label">端に沿った位置</string>
     <string name="pill_position_from_bottom_label">下からの位置</string>

@@ -81,6 +81,7 @@
     <string name="pill_hold_drag_brightness">בהירות</string>
     <string name="pill_hold_drag_volume">עוצמת מדיה</string>
     <string name="pill_hold_drag_hint">החזק את הפיל לרגע, ואז גרור למעלה או למטה.</string>
+    <string name="pill_action_requires_accessibility">נדרש שירות נגישות</string>
     <string name="pill_panel_outline_label">מתאר הלוח</string>
     <string name="pill_position_along_edge_label">מיקום לאורך הקצה</string>
     <string name="pill_position_from_bottom_label">מיקום מהתחתית</string>

@@ -81,6 +81,7 @@
     <string name="pill_hold_drag_brightness">Brightness</string>
     <string name="pill_hold_drag_volume">Media Volume</string>
     <string name="pill_hold_drag_hint">Hold the pill briefly, then drag up or down.</string>
+    <string name="pill_action_requires_accessibility">Requires accessibility service</string>
     <string name="pill_panel_outline_label">Panel Outline</string>
     <string name="pill_position_along_edge_label">Position along edge</string>
     <string name="pill_position_from_bottom_label">Position from bottom</string>

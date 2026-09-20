@@ -81,6 +81,7 @@
     <string name="pill_hold_drag_brightness">ความสว่าง</string>
     <string name="pill_hold_drag_volume">ระดับเสียงสื่อ</string>
     <string name="pill_hold_drag_hint">กดแถบค้างไว้สักครู่ แล้วลากขึ้นหรือลง</string>
+    <string name="pill_action_requires_accessibility">ต้องใช้บริการการช่วยการเข้าถึง</string>
     <string name="pill_panel_outline_label">เส้นขอบแผง</string>
     <string name="pill_position_along_edge_label">ตำแหน่งตามแนวขอบ</string>
     <string name="pill_position_from_bottom_label">ตำแหน่งจากด้านล่าง</string>

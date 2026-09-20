@@ -81,6 +81,7 @@
     <string name="pill_hold_drag_brightness">Luminosité</string>
     <string name="pill_hold_drag_volume">Volume multimédia</string>
     <string name="pill_hold_drag_hint">Maintenez la pilule, puis faites glisser vers le haut ou le bas.</string>
+    <string name="pill_action_requires_accessibility">Nécessite le service d\'accessibilité</string>
     <string name="pill_panel_outline_label">Contour du panneau</string>
     <string name="pill_position_along_edge_label">Position le long du bord</string>
     <string name="pill_position_from_bottom_label">Position depuis le bas</string>

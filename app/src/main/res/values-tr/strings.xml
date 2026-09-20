@@ -81,6 +81,7 @@
     <string name="pill_hold_drag_brightness">Parlaklık</string>
     <string name="pill_hold_drag_volume">Medya ses düzeyi</string>
     <string name="pill_hold_drag_hint">Hapı kısa süre basılı tutun, ardından yukarı veya aşağı sürükleyin.</string>
+    <string name="pill_action_requires_accessibility">Erişilebilirlik hizmeti gerekli</string>
     <string name="pill_panel_outline_label">Panel Çerçevesi</string>
     <string name="pill_position_along_edge_label">Kenar boyunca konum</string>
     <string name="pill_position_from_bottom_label">Alttan konum</string>

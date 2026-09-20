@@ -81,6 +81,7 @@
     <string name="pill_hold_drag_brightness">Helligkeit</string>
     <string name="pill_hold_drag_volume">Medienlautstärke</string>
     <string name="pill_hold_drag_hint">Pille kurz halten, dann nach oben oder unten ziehen.</string>
+    <string name="pill_action_requires_accessibility">Erfordert den Bedienungshilfen-Dienst</string>
     <string name="pill_panel_outline_label">Panelumriss</string>
     <string name="pill_position_along_edge_label">Position entlang der Kante</string>
     <string name="pill_position_from_bottom_label">Position von unten</string>

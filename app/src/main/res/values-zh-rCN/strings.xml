@@ -81,6 +81,7 @@
     <string name="pill_hold_drag_brightness">亮度</string>
     <string name="pill_hold_drag_volume">媒体音量</string>
     <string name="pill_hold_drag_hint">先按住指示条片刻,再向上或向下拖动。</string>
+    <string name="pill_action_requires_accessibility">需要无障碍服务</string>
     <string name="pill_panel_outline_label">面板轮廓</string>
     <string name="pill_position_along_edge_label">沿边缘的位置</string>
     <string name="pill_position_from_bottom_label">距底部的位置</string>

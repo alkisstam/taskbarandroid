@@ -45,6 +45,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.bottomGapDp
 import com.alkisstam.taskbar.data.widthFraction
 import com.alkisstam.taskbar.data.GestureAction
@@ -227,27 +228,27 @@ internal fun TriggerPillContent(taskbarViewModel: TaskbarViewModel, appMenuViewM
                     GestureAction.SHOW_NOTIFICATIONS -> {
                         val svc = TaskBarAccessibilityService.instance
                         if (svc != null) svc.expandNotifications()
-                        else Toast.makeText(context, "Requires accessibility service", Toast.LENGTH_SHORT).show()
+                        else Toast.makeText(context, context.getString(R.string.pill_action_requires_accessibility), Toast.LENGTH_SHORT).show()
                     }
                     GestureAction.SHOW_QUICK_SETTINGS -> {
                         val svc = TaskBarAccessibilityService.instance
                         if (svc != null) svc.expandQuickSettings()
-                        else Toast.makeText(context, "Requires accessibility service", Toast.LENGTH_SHORT).show()
+                        else Toast.makeText(context, context.getString(R.string.pill_action_requires_accessibility), Toast.LENGTH_SHORT).show()
                     }
                     GestureAction.POWER_MENU -> {
                         val svc = TaskBarAccessibilityService.instance
                         if (svc != null) svc.showPowerMenu()
-                        else Toast.makeText(context, "Requires accessibility service", Toast.LENGTH_SHORT).show()
+                        else Toast.makeText(context, context.getString(R.string.pill_action_requires_accessibility), Toast.LENGTH_SHORT).show()
                     }
                     GestureAction.TAKE_SCREENSHOT -> {
                         val svc = TaskBarAccessibilityService.instance
                         if (svc != null) appMenuViewModel.captureScreenshotHidingPill { svc.takeScreenshot() }
-                        else Toast.makeText(context, "Requires accessibility service", Toast.LENGTH_SHORT).show()
+                        else Toast.makeText(context, context.getString(R.string.pill_action_requires_accessibility), Toast.LENGTH_SHORT).show()
                     }
                     GestureAction.LOCK_SCREEN -> {
                         val svc = TaskBarAccessibilityService.instance
                         if (svc != null) svc.lockScreen()
-                        else Toast.makeText(context, "Requires accessibility service", Toast.LENGTH_SHORT).show()
+                        else Toast.makeText(context, context.getString(R.string.pill_action_requires_accessibility), Toast.LENGTH_SHORT).show()
                     }
                     GestureAction.TOGGLE_FLASHLIGHT -> appMenuViewModel.toggleTorch()
                     GestureAction.DISABLED -> {}

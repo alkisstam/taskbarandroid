@@ -81,6 +81,7 @@
     <string name="pill_hold_drag_brightness">Helderheid</string>
     <string name="pill_hold_drag_volume">Mediavolume</string>
     <string name="pill_hold_drag_hint">Houd de pil kort ingedrukt en sleep omhoog of omlaag.</string>
+    <string name="pill_action_requires_accessibility">Toegankelijkheidsservice vereist</string>
     <string name="pill_panel_outline_label">Paneelomlijning</string>
     <string name="pill_position_along_edge_label">Positie langs de rand</string>
     <string name="pill_position_from_bottom_label">Positie vanaf onderkant</string>

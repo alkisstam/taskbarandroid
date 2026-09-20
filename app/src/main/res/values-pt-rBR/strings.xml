@@ -81,6 +81,7 @@
     <string name="pill_hold_drag_brightness">Brilho</string>
     <string name="pill_hold_drag_volume">Volume de mídia</string>
     <string name="pill_hold_drag_hint">Segure a pílula por um instante e arraste para cima ou para baixo.</string>
+    <string name="pill_action_requires_accessibility">Requer o serviço de acessibilidade</string>
     <string name="pill_panel_outline_label">Contorno do Painel</string>
     <string name="pill_position_along_edge_label">Posição ao longo da borda</string>
     <string name="pill_position_from_bottom_label">Posição a partir da parte inferior</string>

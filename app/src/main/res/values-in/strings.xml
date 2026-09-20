@@ -81,6 +81,7 @@
     <string name="pill_hold_drag_brightness">Kecerahan</string>
     <string name="pill_hold_drag_volume">Volume media</string>
     <string name="pill_hold_drag_hint">Tahan pil sebentar, lalu seret ke atas atau bawah.</string>
+    <string name="pill_action_requires_accessibility">Memerlukan layanan aksesibilitas</string>
     <string name="pill_panel_outline_label">Garis Tepi Panel</string>
     <string name="pill_position_along_edge_label">Posisi di sepanjang tepi</string>
     <string name="pill_position_from_bottom_label">Posisi dari bawah</string>
