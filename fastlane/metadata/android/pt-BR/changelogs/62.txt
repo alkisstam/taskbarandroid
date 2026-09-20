@@ -1,0 +1,7 @@
+Novidades
+• Deslizar a pílula para baixo agora pode capturar a tela, alternar a lanterna, bloquear a tela ou ser desativado
+• Novo gesto de segurar e arrastar: segure a pílula e arraste para cima ou para baixo para mudar o brilho ou o volume de mídia, com indicador de nível na tela
+• A pílula se esconde enquanto uma captura de tela é feita
+
+Correções
+• Rótulo incorreto na configuração de deslizar para baixo em algumas opções

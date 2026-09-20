@@ -242,6 +242,15 @@ val whatsNewReleases = listOf(
             "Fixed a rare freeze when opening the notification history panel",
             "Fixed a rare crash when closing a settings dialog at the wrong moment"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.5.9",
+        versionCode = 62,
+        highlights = listOf(
+            "Pill swipe-down can now take a screenshot, toggle the flashlight, lock the screen, or be turned off",
+            "New Hold and Drag pill gesture — hold the pill, then drag up or down to change brightness or media volume, with an on-screen level indicator",
+            "The pill now hides itself while a screenshot is taken"
+        )
     )
 )
 

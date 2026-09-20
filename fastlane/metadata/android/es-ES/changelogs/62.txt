@@ -1,0 +1,7 @@
+Novedades
+• Deslizar la píldora hacia abajo ahora puede hacer una captura, encender la linterna, bloquear la pantalla o desactivarse
+• Nuevo gesto de mantener y arrastrar: mantén pulsada la píldora y arrastra hacia arriba o abajo para cambiar el brillo o el volumen multimedia, con indicador de nivel en pantalla
+• La píldora se oculta mientras se hace una captura de pantalla
+
+Solucionado
+• Etiqueta incorrecta en el ajuste de deslizar hacia abajo para algunas opciones

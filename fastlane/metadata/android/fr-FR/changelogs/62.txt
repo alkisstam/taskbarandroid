@@ -1,0 +1,7 @@
+Nouveautés
+• Le balayage vers le bas sur la pilule peut maintenant faire une capture d'écran, activer la lampe torche, verrouiller l'écran ou être désactivé
+• Nouveau geste appui long et glissement : maintenez la pilule, puis glissez vers le haut ou le bas pour régler la luminosité ou le volume multimédia, avec indicateur de niveau à l'écran
+• La pilule se masque pendant une capture d'écran
+
+Corrections
+• Libellé incorrect dans le réglage du balayage vers le bas pour certaines options

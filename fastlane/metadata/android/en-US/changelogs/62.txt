@@ -1,0 +1,7 @@
+Added
+• Pill swipe-down can now take a screenshot, toggle the flashlight, lock the screen, or be turned off
+• New Hold and Drag pill gesture — hold the pill, then drag up or down to change brightness or media volume, with an on-screen level indicator
+• The pill hides itself while a screenshot is taken
+
+Fixed
+• Swipe-down setting showing the wrong label for some choices

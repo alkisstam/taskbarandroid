@@ -1,0 +1,7 @@
+Yenilikler
+• Hap üzerinde aşağı kaydırma artık ekran görüntüsü alabilir, feneri açıp kapatabilir, ekranı kilitleyebilir veya kapatılabilir
+• Yeni Basılı Tut ve Sürükle hareketi — hapı basılı tutup yukarı veya aşağı sürükleyerek parlaklığı veya medya ses düzeyini değiştirin, ekranda düzey göstergesiyle
+• Ekran görüntüsü alınırken hap kendini gizler
+
+Düzeltmeler
+• Aşağı kaydırma ayarında bazı seçenekler için yanlış etiket

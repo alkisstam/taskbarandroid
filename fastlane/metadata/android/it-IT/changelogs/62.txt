@@ -1,0 +1,7 @@
+Novità
+• Lo scorrimento verso il basso sulla pillola ora può acquisire uno screenshot, attivare la torcia, bloccare lo schermo o essere disattivato
+• Nuovo gesto Tieni premuto e trascina: tieni premuta la pillola, poi trascina verso l'alto o il basso per cambiare luminosità o volume multimediale, con indicatore di livello a schermo
+• La pillola si nasconde mentre viene acquisito uno screenshot
+
+Correzioni
+• Etichetta errata nell'impostazione dello scorrimento verso il basso per alcune opzioni

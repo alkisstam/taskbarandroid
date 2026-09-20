@@ -1,0 +1,7 @@
+Neu
+• Wisch-nach-unten an der Pille kann jetzt einen Screenshot aufnehmen, die Taschenlampe schalten, den Bildschirm sperren oder ausgeschaltet werden
+• Neue Halten-und-Ziehen-Geste — Pille halten, dann nach oben oder unten ziehen, um Helligkeit oder Medienlautstärke zu ändern, mit Pegelanzeige auf dem Bildschirm
+• Die Pille blendet sich beim Aufnehmen eines Screenshots aus
+
+Behoben
+• Falsche Bezeichnung in der Wisch-nach-unten-Einstellung bei einigen Optionen

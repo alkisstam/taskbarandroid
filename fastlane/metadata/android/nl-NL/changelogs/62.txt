@@ -1,0 +1,7 @@
+Nieuw
+• Omlaag vegen op de pil kan nu een screenshot maken, de zaklamp schakelen, het scherm vergrendelen of worden uitgezet
+• Nieuw vasthouden-en-slepen-gebaar — houd de pil vast en sleep omhoog of omlaag om de helderheid of het mediavolume te wijzigen, met niveau-indicator op het scherm
+• De pil verbergt zich tijdens het maken van een screenshot
+
+Opgelost
+• Verkeerd label in de instelling voor omlaag vegen bij sommige opties

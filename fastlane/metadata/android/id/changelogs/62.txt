@@ -1,0 +1,7 @@
+Baru
+• Geser ke bawah pada pil kini bisa mengambil tangkapan layar, menyalakan senter, mengunci layar, atau dinonaktifkan
+• Gestur baru Tahan dan Seret — tahan pil, lalu seret ke atas atau bawah untuk mengubah kecerahan atau volume media, dengan indikator level di layar
+• Pil bersembunyi otomatis saat tangkapan layar diambil
+
+Perbaikan
+• Label yang salah pada pengaturan geser ke bawah untuk beberapa pilihan

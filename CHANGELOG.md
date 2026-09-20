@@ -4,6 +4,22 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.5.9] - 2026-09-20
+
+More pill gestures: new swipe-down actions, hold-and-drag for brightness and volume.
+
+### Added
+- **More swipe-down actions** — Settings → Design → Pill Size & Appearance's Swipe Down Action dropdown now also offers Take Screenshot, Toggle Flashlight, Lock Screen, and Disabled (turns the gesture off).
+- **Hold and Drag pill gesture** — new "Hold and Drag" dropdown in the same section: hold the pill briefly, then drag up or down to change screen brightness or media volume. Off by default. Brightness needs the Write Settings permission (the app opens the grant screen if missing).
+- **On-screen level indicator** — a small pill at the top of the screen shows brightness or volume while you drag, and fades out shortly after release.
+- **Pill hides during screenshots** — the trigger pill fades out before the screenshot is taken and returns afterwards, for both the swipe-down screenshot action and the Screenshot quick control.
+
+### Fixed
+- **Swipe Down Action showing "Notification Panel" for other values** — a Disabled (or unset) action was labelled as Notification Panel in the dropdown.
+- **Untranslated toast** — the "Requires accessibility service" toast shown by pill actions was hardcoded English; now localized in all 17 languages.
+
+---
+
 ## [1.5.8] - 2026-09-04
 
 Dock swipe-down action, richer glass look, dock auto-collapse fix.
