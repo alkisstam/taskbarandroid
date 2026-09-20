@@ -73,6 +73,14 @@
     <string name="pill_swipe_down_action_notifications">सूचना पैनल</string>
     <string name="pill_swipe_down_action_quick_settings">क्विक सेटिंग्स पैनल</string>
     <string name="pill_swipe_down_action_power_menu">पावर मेनू</string>
+    <string name="pill_swipe_down_action_screenshot">स्क्रीनशॉट लें</string>
+    <string name="pill_swipe_down_action_flashlight">टॉर्च चालू/बंद करें</string>
+    <string name="pill_swipe_down_action_lock_screen">स्क्रीन लॉक करें</string>
+    <string name="pill_swipe_down_action_disabled">बंद</string>
+    <string name="pill_hold_drag_label">दबाकर रखें और खींचें</string>
+    <string name="pill_hold_drag_brightness">चमक</string>
+    <string name="pill_hold_drag_volume">मीडिया वॉल्यूम</string>
+    <string name="pill_hold_drag_hint">पिल को कुछ देर दबाकर रखें, फिर ऊपर या नीचे खींचें।</string>
     <string name="pill_panel_outline_label">पैनल आउटलाइन</string>
     <string name="pill_position_along_edge_label">किनारे के साथ स्थिति</string>
     <string name="pill_position_from_bottom_label">नीचे से स्थिति</string>

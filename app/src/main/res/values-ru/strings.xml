@@ -73,6 +73,14 @@
     <string name="pill_swipe_down_action_notifications">Панель уведомлений</string>
     <string name="pill_swipe_down_action_quick_settings">Панель быстрых настроек</string>
     <string name="pill_swipe_down_action_power_menu">Меню питания</string>
+    <string name="pill_swipe_down_action_screenshot">Сделать снимок экрана</string>
+    <string name="pill_swipe_down_action_flashlight">Включить/выключить фонарик</string>
+    <string name="pill_swipe_down_action_lock_screen">Заблокировать экран</string>
+    <string name="pill_swipe_down_action_disabled">Отключено</string>
+    <string name="pill_hold_drag_label">Удержание и перетаскивание</string>
+    <string name="pill_hold_drag_brightness">Яркость</string>
+    <string name="pill_hold_drag_volume">Громкость мультимедиа</string>
+    <string name="pill_hold_drag_hint">Удерживайте пилюлю, затем проведите вверх или вниз.</string>
     <string name="pill_panel_outline_label">Обводка панели</string>
     <string name="pill_position_along_edge_label">Положение вдоль края</string>
     <string name="pill_position_from_bottom_label">Положение от низа экрана</string>

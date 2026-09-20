@@ -21,6 +21,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -60,7 +62,12 @@ data class QuickControlsState(
     val bluetoothEnabled: Boolean = false
 )
 
+data class LevelIndicator(val isBrightness: Boolean, val level: Int, val max: Int)
+
 private const val TAG = "AppMenuViewModel"
+private const val LEVEL_INDICATOR_LINGER_MS = 800L
+private const val PILL_FADE_BEFORE_SHOT_MS = 400L
+private const val PILL_RESTORE_AFTER_SHOT_MS = 1200L
 
 private fun sortApps(apps: List<AppInfo>, order: AppSortOrder, counts: Map<String, Int>): List<AppInfo> =
     when (order) {
@@ -393,6 +400,58 @@ class AppMenuViewModel @Inject constructor(
         }
     }
 
+    fun beginBrightnessDrag(): Int? {
+        if (quickControls.canWriteSettings()) {
+            return quickControls.getBrightness().also { _brightnessLevel.value = it }
+        }
+        val intent = android.content.Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
+            data = android.net.Uri.parse("package:${context.packageName}")
+            addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        try {
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to open write-settings screen", e)
+        }
+        return null
+    }
+
+    private val _levelIndicator = MutableStateFlow<LevelIndicator?>(null)
+    val levelIndicator: StateFlow<LevelIndicator?> = _levelIndicator.asStateFlow()
+    private var levelIndicatorHideJob: Job? = null
+
+    fun showLevelIndicator(isBrightness: Boolean, level: Int, max: Int) {
+        levelIndicatorHideJob?.cancel()
+        _levelIndicator.value = LevelIndicator(isBrightness, level, max)
+    }
+
+    fun hideLevelIndicatorSoon() {
+        levelIndicatorHideJob?.cancel()
+        levelIndicatorHideJob = viewModelScope.launch {
+            delay(LEVEL_INDICATOR_LINGER_MS)
+            _levelIndicator.value = null
+        }
+    }
+
+    private val _pillHiddenForScreenshot = MutableStateFlow(false)
+    val pillHiddenForScreenshot: StateFlow<Boolean> = _pillHiddenForScreenshot.asStateFlow()
+
+    fun captureScreenshotHidingPill(fadeDelayMs: Long = PILL_FADE_BEFORE_SHOT_MS, capture: () -> Unit) {
+        viewModelScope.launch {
+            _pillHiddenForScreenshot.value = true
+            try {
+                delay(fadeDelayMs)
+                capture()
+                delay(PILL_RESTORE_AFTER_SHOT_MS)
+            } finally {
+                _pillHiddenForScreenshot.value = false
+            }
+        }
+    }
+
+    fun musicVolumeSnapshot(): Pair<Int, Int> =
+        audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) to audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+
     fun setStreamVolume(streamType: Int, value: Int) {
         // Off the main thread: a large jump means up to hundreds of synchronous binder
         // calls. Mutex keeps rapid slider events from interleaving their adjust loops.
@@ -643,7 +702,7 @@ class AppMenuViewModel @Inject constructor(
             "dnd" -> if (_quickControlsState.value.dndPermissionGranted) toggleDnd() else openDndSettings()
             "qr" -> openQrScanner()
             "power" -> showPowerMenu()
-            "screenshot" -> viewModelScope.launch { kotlinx.coroutines.delay(700); takeScreenshot() }
+            "screenshot" -> captureScreenshotHidingPill(fadeDelayMs = 700) { takeScreenshot() }
             "lockscreen" -> lockScreen()
             "caffeine" -> cycleCaffeineTimeout()
             "clipboard" -> toggleClipboardPanel()

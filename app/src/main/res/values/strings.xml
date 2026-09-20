@@ -73,6 +73,14 @@
     <string name="pill_swipe_down_action_notifications">Notification Panel</string>
     <string name="pill_swipe_down_action_quick_settings">Quick Tiles Panel</string>
     <string name="pill_swipe_down_action_power_menu">Power Menu</string>
+    <string name="pill_swipe_down_action_screenshot">Take Screenshot</string>
+    <string name="pill_swipe_down_action_flashlight">Toggle Flashlight</string>
+    <string name="pill_swipe_down_action_lock_screen">Lock Screen</string>
+    <string name="pill_swipe_down_action_disabled">Disabled</string>
+    <string name="pill_hold_drag_label">Hold and Drag</string>
+    <string name="pill_hold_drag_brightness">Brightness</string>
+    <string name="pill_hold_drag_volume">Media Volume</string>
+    <string name="pill_hold_drag_hint">Hold the pill briefly, then drag up or down.</string>
     <string name="pill_panel_outline_label">Panel Outline</string>
     <string name="pill_position_along_edge_label">Position along edge</string>
     <string name="pill_position_from_bottom_label">Position from bottom</string>

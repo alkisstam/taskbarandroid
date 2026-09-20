@@ -57,14 +57,28 @@ val DARK_TINT_PRESETS: List<Pair<String, Long>> = listOf(
     "Espresso" to 0xFF2C221B
 )
 
-enum class GestureAction { SHOW_DOCK, SHOW_NOTIFICATIONS, SHOW_QUICK_SETTINGS, POWER_MENU, DISABLED }
+enum class GestureAction {
+    SHOW_DOCK, SHOW_NOTIFICATIONS, SHOW_QUICK_SETTINGS, POWER_MENU, DISABLED,
+    TAKE_SCREENSHOT, TOGGLE_FLASHLIGHT, LOCK_SCREEN
+}
 
 private fun String?.toGestureAction() = when (this) {
     "SHOW_NOTIFICATIONS"  -> GestureAction.SHOW_NOTIFICATIONS
     "SHOW_QUICK_SETTINGS" -> GestureAction.SHOW_QUICK_SETTINGS
     "POWER_MENU"          -> GestureAction.POWER_MENU
     "DISABLED"            -> GestureAction.DISABLED
+    "TAKE_SCREENSHOT"     -> GestureAction.TAKE_SCREENSHOT
+    "TOGGLE_FLASHLIGHT"   -> GestureAction.TOGGLE_FLASHLIGHT
+    "LOCK_SCREEN"         -> GestureAction.LOCK_SCREEN
     else                  -> GestureAction.SHOW_DOCK
+}
+
+enum class PillHoldDragAction { DISABLED, BRIGHTNESS, VOLUME }
+
+private fun String?.toPillHoldDragAction() = when (this) {
+    "BRIGHTNESS" -> PillHoldDragAction.BRIGHTNESS
+    "VOLUME"     -> PillHoldDragAction.VOLUME
+    else         -> PillHoldDragAction.DISABLED
 }
 
 enum class PillEdgePosition { BOTTOM, LEFT, RIGHT, BOTH }
@@ -124,6 +138,7 @@ data class PillSettings(
     val swipeUpAction: GestureAction = GestureAction.SHOW_DOCK,
     val swipeDownAction: GestureAction = GestureAction.SHOW_DOCK,
     val doubleTapAction: GestureAction = GestureAction.SHOW_DOCK,
+    val holdDragAction: PillHoldDragAction = PillHoldDragAction.DISABLED,
     val widthDp: Float = 4f,
     val heightDp: Float = 90f,
     val alpha: Float = 0.30f,
@@ -154,6 +169,7 @@ class PreferencesRepository @Inject constructor(
         private val PILL_SWIPE_UP_ACTION_KEY = stringPreferencesKey("pill_swipe_up_action")
         private val PILL_SWIPE_DOWN_ACTION_KEY = stringPreferencesKey("pill_swipe_down_action")
         private val PILL_DOUBLE_TAP_ACTION_KEY = stringPreferencesKey("pill_double_tap_action")
+        private val PILL_HOLD_DRAG_ACTION_KEY = stringPreferencesKey("pill_hold_drag_action")
         private val PILL_WIDTH_KEY = floatPreferencesKey("pill_width")
         private val PILL_HEIGHT_KEY = floatPreferencesKey("pill_height")
         private val PILL_ALPHA_KEY = floatPreferencesKey("pill_alpha")
@@ -347,6 +363,7 @@ class PreferencesRepository @Inject constructor(
             swipeUpAction    = prefs[PILL_SWIPE_UP_ACTION_KEY].toGestureAction(),
             swipeDownAction  = prefs[PILL_SWIPE_DOWN_ACTION_KEY].toGestureAction(),
             doubleTapAction  = prefs[PILL_DOUBLE_TAP_ACTION_KEY].toGestureAction(),
+            holdDragAction   = prefs[PILL_HOLD_DRAG_ACTION_KEY].toPillHoldDragAction(),
             widthDp      = prefs[PILL_WIDTH_KEY]           ?: 4f,
             heightDp     = prefs[PILL_HEIGHT_KEY]          ?: 90f,
             alpha        = prefs[PILL_ALPHA_KEY]            ?: 0.30f,
@@ -466,6 +483,7 @@ class PreferencesRepository @Inject constructor(
             prefs[PILL_SWIPE_UP_ACTION_KEY]    = settings.swipeUpAction.name
             prefs[PILL_SWIPE_DOWN_ACTION_KEY]  = settings.swipeDownAction.name
             prefs[PILL_DOUBLE_TAP_ACTION_KEY]  = settings.doubleTapAction.name
+            prefs[PILL_HOLD_DRAG_ACTION_KEY]   = settings.holdDragAction.name
             prefs[PILL_WIDTH_KEY]          = settings.widthDp
             prefs[PILL_HEIGHT_KEY]         = settings.heightDp
             prefs[PILL_ALPHA_KEY]          = settings.alpha
@@ -733,6 +751,7 @@ class PreferencesRepository @Inject constructor(
             prefs[PILL_SWIPE_UP_ACTION_KEY]?.let { put("pill_swipe_up_action", it) }
             prefs[PILL_SWIPE_DOWN_ACTION_KEY]?.let { put("pill_swipe_down_action", it) }
             prefs[PILL_DOUBLE_TAP_ACTION_KEY]?.let { put("pill_double_tap_action", it) }
+            prefs[PILL_HOLD_DRAG_ACTION_KEY]?.let { put("pill_hold_drag_action", it) }
             prefs[PILL_WIDTH_KEY]?.let { put("pill_width", it) }
             prefs[PILL_HEIGHT_KEY]?.let { put("pill_height", it) }
             prefs[PILL_ALPHA_KEY]?.let { put("pill_alpha", it) }
@@ -789,6 +808,7 @@ class PreferencesRepository @Inject constructor(
             if (obj.has("pill_swipe_up_action")) prefs[PILL_SWIPE_UP_ACTION_KEY] = obj.getString("pill_swipe_up_action")
             if (obj.has("pill_swipe_down_action")) prefs[PILL_SWIPE_DOWN_ACTION_KEY] = obj.getString("pill_swipe_down_action")
             if (obj.has("pill_double_tap_action")) prefs[PILL_DOUBLE_TAP_ACTION_KEY] = obj.getString("pill_double_tap_action")
+            if (obj.has("pill_hold_drag_action")) prefs[PILL_HOLD_DRAG_ACTION_KEY] = obj.getString("pill_hold_drag_action")
             if (obj.has("pill_width")) prefs[PILL_WIDTH_KEY] = obj.getDouble("pill_width").toFloat()
             if (obj.has("pill_height")) prefs[PILL_HEIGHT_KEY] = obj.getDouble("pill_height").toFloat()
             if (obj.has("pill_alpha")) prefs[PILL_ALPHA_KEY] = obj.getDouble("pill_alpha").toFloat()

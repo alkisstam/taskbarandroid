@@ -73,6 +73,14 @@
     <string name="pill_swipe_down_action_notifications">Bildirim Paneli</string>
     <string name="pill_swipe_down_action_quick_settings">Hızlı Ayarlar Paneli</string>
     <string name="pill_swipe_down_action_power_menu">Güç Menüsü</string>
+    <string name="pill_swipe_down_action_screenshot">Ekran görüntüsü al</string>
+    <string name="pill_swipe_down_action_flashlight">Feneri aç/kapat</string>
+    <string name="pill_swipe_down_action_lock_screen">Ekranı kilitle</string>
+    <string name="pill_swipe_down_action_disabled">Devre dışı</string>
+    <string name="pill_hold_drag_label">Basılı tut ve sürükle</string>
+    <string name="pill_hold_drag_brightness">Parlaklık</string>
+    <string name="pill_hold_drag_volume">Medya ses düzeyi</string>
+    <string name="pill_hold_drag_hint">Hapı kısa süre basılı tutun, ardından yukarı veya aşağı sürükleyin.</string>
     <string name="pill_panel_outline_label">Panel Çerçevesi</string>
     <string name="pill_position_along_edge_label">Kenar boyunca konum</string>
     <string name="pill_position_from_bottom_label">Alttan konum</string>

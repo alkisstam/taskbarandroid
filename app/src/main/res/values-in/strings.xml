@@ -73,6 +73,14 @@
     <string name="pill_swipe_down_action_notifications">Panel Notifikasi</string>
     <string name="pill_swipe_down_action_quick_settings">Panel Pengaturan Cepat</string>
     <string name="pill_swipe_down_action_power_menu">Menu Daya</string>
+    <string name="pill_swipe_down_action_screenshot">Ambil tangkapan layar</string>
+    <string name="pill_swipe_down_action_flashlight">Nyalakan/matikan senter</string>
+    <string name="pill_swipe_down_action_lock_screen">Kunci layar</string>
+    <string name="pill_swipe_down_action_disabled">Nonaktif</string>
+    <string name="pill_hold_drag_label">Tahan dan seret</string>
+    <string name="pill_hold_drag_brightness">Kecerahan</string>
+    <string name="pill_hold_drag_volume">Volume media</string>
+    <string name="pill_hold_drag_hint">Tahan pil sebentar, lalu seret ke atas atau bawah.</string>
     <string name="pill_panel_outline_label">Garis Tepi Panel</string>
     <string name="pill_position_along_edge_label">Posisi di sepanjang tepi</string>
     <string name="pill_position_from_bottom_label">Posisi dari bawah</string>

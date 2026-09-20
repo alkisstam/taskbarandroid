@@ -159,6 +159,24 @@ internal fun Context.volumePanelLayoutParams(yOffsetDp: Float, translucentMode: 
     }
 }
 
+internal fun Context.levelIndicatorLayoutParams(): WindowManager.LayoutParams {
+    val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+    return WindowManager.LayoutParams(
+        WindowManager.LayoutParams.WRAP_CONTENT,
+        WindowManager.LayoutParams.WRAP_CONTENT,
+        overlayWindowType(),
+        flags,
+        PixelFormat.TRANSLUCENT
+    ).apply {
+        gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+        y = (72 * resources.displayMetrics.density).toInt()
+    }
+}
+
 internal fun Context.taskbarLayoutParams(interactive: Boolean = true): WindowManager.LayoutParams {
     val flags = (if (!interactive) WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE else 0) or
             WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or

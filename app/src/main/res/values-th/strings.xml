@@ -73,6 +73,14 @@
     <string name="pill_swipe_down_action_notifications">แผงการแจ้งเตือน</string>
     <string name="pill_swipe_down_action_quick_settings">แผงการตั้งค่าด่วน</string>
     <string name="pill_swipe_down_action_power_menu">เมนูเพาเวอร์</string>
+    <string name="pill_swipe_down_action_screenshot">ถ่ายภาพหน้าจอ</string>
+    <string name="pill_swipe_down_action_flashlight">เปิด/ปิดไฟฉาย</string>
+    <string name="pill_swipe_down_action_lock_screen">ล็อกหน้าจอ</string>
+    <string name="pill_swipe_down_action_disabled">ปิดใช้งาน</string>
+    <string name="pill_hold_drag_label">กดค้างแล้วลาก</string>
+    <string name="pill_hold_drag_brightness">ความสว่าง</string>
+    <string name="pill_hold_drag_volume">ระดับเสียงสื่อ</string>
+    <string name="pill_hold_drag_hint">กดแถบค้างไว้สักครู่ แล้วลากขึ้นหรือลง</string>
     <string name="pill_panel_outline_label">เส้นขอบแผง</string>
     <string name="pill_position_along_edge_label">ตำแหน่งตามแนวขอบ</string>
     <string name="pill_position_from_bottom_label">ตำแหน่งจากด้านล่าง</string>

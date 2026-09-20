@@ -73,6 +73,14 @@
     <string name="pill_swipe_down_action_notifications">Painel de Notificações</string>
     <string name="pill_swipe_down_action_quick_settings">Painel de Configurações Rápidas</string>
     <string name="pill_swipe_down_action_power_menu">Menu de Energia</string>
+    <string name="pill_swipe_down_action_screenshot">Capturar tela</string>
+    <string name="pill_swipe_down_action_flashlight">Alternar lanterna</string>
+    <string name="pill_swipe_down_action_lock_screen">Bloquear tela</string>
+    <string name="pill_swipe_down_action_disabled">Desativado</string>
+    <string name="pill_hold_drag_label">Segurar e arrastar</string>
+    <string name="pill_hold_drag_brightness">Brilho</string>
+    <string name="pill_hold_drag_volume">Volume de mídia</string>
+    <string name="pill_hold_drag_hint">Segure a pílula por um instante e arraste para cima ou para baixo.</string>
     <string name="pill_panel_outline_label">Contorno do Painel</string>
     <string name="pill_position_along_edge_label">Posição ao longo da borda</string>
     <string name="pill_position_from_bottom_label">Posição a partir da parte inferior</string>

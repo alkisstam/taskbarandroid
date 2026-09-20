@@ -36,6 +36,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.BrightnessMedium
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CropSquare
 import androidx.compose.material.icons.filled.DarkMode
@@ -103,6 +104,7 @@ import com.alkisstam.taskbar.data.DockPadding
 import com.alkisstam.taskbar.data.IconShape
 import com.alkisstam.taskbar.data.LIGHT_TINT_PRESETS
 import com.alkisstam.taskbar.data.GestureAction
+import com.alkisstam.taskbar.data.PillHoldDragAction
 import com.alkisstam.taskbar.data.PillEdgePosition
 import com.alkisstam.taskbar.data.ThemeMode
 import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
@@ -387,17 +389,29 @@ fun PillSettingsScreen(
                 val swipeDownNotificationsLabel = stringResource(R.string.pill_swipe_down_action_notifications)
                 val swipeDownQuickSettingsLabel = stringResource(R.string.pill_swipe_down_action_quick_settings)
                 val swipeDownPowerMenuLabel = stringResource(R.string.pill_swipe_down_action_power_menu)
+                val swipeDownScreenshotLabel = stringResource(R.string.pill_swipe_down_action_screenshot)
+                val swipeDownFlashlightLabel = stringResource(R.string.pill_swipe_down_action_flashlight)
+                val swipeDownLockLabel = stringResource(R.string.pill_swipe_down_action_lock_screen)
+                val swipeDownDisabledLabel = stringResource(R.string.pill_swipe_down_action_disabled)
                 GradientDropdownField(
                     icon = Icons.Filled.Notifications,
                     selectedLabel = when (pillSettings.swipeDownAction) {
                         GestureAction.SHOW_QUICK_SETTINGS -> swipeDownQuickSettingsLabel
                         GestureAction.POWER_MENU          -> swipeDownPowerMenuLabel
+                        GestureAction.TAKE_SCREENSHOT     -> swipeDownScreenshotLabel
+                        GestureAction.TOGGLE_FLASHLIGHT   -> swipeDownFlashlightLabel
+                        GestureAction.LOCK_SCREEN         -> swipeDownLockLabel
+                        GestureAction.DISABLED            -> swipeDownDisabledLabel
                         else                               -> swipeDownNotificationsLabel
                     },
                     options = listOf(
                         swipeDownNotificationsLabel to GestureAction.SHOW_NOTIFICATIONS,
                         swipeDownQuickSettingsLabel to GestureAction.SHOW_QUICK_SETTINGS,
-                        swipeDownPowerMenuLabel to GestureAction.POWER_MENU
+                        swipeDownPowerMenuLabel to GestureAction.POWER_MENU,
+                        swipeDownScreenshotLabel to GestureAction.TAKE_SCREENSHOT,
+                        swipeDownFlashlightLabel to GestureAction.TOGGLE_FLASHLIGHT,
+                        swipeDownLockLabel to GestureAction.LOCK_SCREEN,
+                        swipeDownDisabledLabel to GestureAction.DISABLED
                     ),
                     isSelected = { it == pillSettings.swipeDownAction },
                     onSelect = { action ->
@@ -415,6 +429,34 @@ fun PillSettingsScreen(
                     onValueChange = { viewModel.savePillSettings(pillSettings.copy(sidePositionPct = it)) }
                 )
             }
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(stringResource(R.string.pill_hold_drag_label), style = MaterialTheme.typography.bodyMedium)
+            Spacer(modifier = Modifier.height(4.dp))
+            val holdDragDisabledLabel = stringResource(R.string.pill_swipe_down_action_disabled)
+            val holdDragBrightnessLabel = stringResource(R.string.pill_hold_drag_brightness)
+            val holdDragVolumeLabel = stringResource(R.string.pill_hold_drag_volume)
+            GradientDropdownField(
+                icon = Icons.Filled.BrightnessMedium,
+                selectedLabel = when (pillSettings.holdDragAction) {
+                    PillHoldDragAction.BRIGHTNESS -> holdDragBrightnessLabel
+                    PillHoldDragAction.VOLUME     -> holdDragVolumeLabel
+                    PillHoldDragAction.DISABLED   -> holdDragDisabledLabel
+                },
+                options = listOf(
+                    holdDragDisabledLabel to PillHoldDragAction.DISABLED,
+                    holdDragBrightnessLabel to PillHoldDragAction.BRIGHTNESS,
+                    holdDragVolumeLabel to PillHoldDragAction.VOLUME
+                ),
+                isSelected = { it == pillSettings.holdDragAction },
+                onSelect = { action ->
+                    viewModel.savePillSettings(pillSettings.copy(holdDragAction = action))
+                }
+            )
+            Text(
+                text = stringResource(R.string.pill_hold_drag_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
             Spacer(modifier = Modifier.height(12.dp))
             PillPositionPreview(pillSettings.edgePosition, pillSettings.widthDp, pillSettings.heightDp, pillSettings.alpha, pillSettings.sidePositionPct, pillSettings.restrictTriggerToPill, pillSettings.positionXPct)
             Spacer(modifier = Modifier.height(8.dp))

@@ -73,6 +73,14 @@
     <string name="pill_swipe_down_action_notifications">Panel de notificaciones</string>
     <string name="pill_swipe_down_action_quick_settings">Panel de configuración rápida</string>
     <string name="pill_swipe_down_action_power_menu">Menú de encendido</string>
+    <string name="pill_swipe_down_action_screenshot">Hacer captura de pantalla</string>
+    <string name="pill_swipe_down_action_flashlight">Activar o desactivar la linterna</string>
+    <string name="pill_swipe_down_action_lock_screen">Bloquear pantalla</string>
+    <string name="pill_swipe_down_action_disabled">Desactivado</string>
+    <string name="pill_hold_drag_label">Mantener y arrastrar</string>
+    <string name="pill_hold_drag_brightness">Brillo</string>
+    <string name="pill_hold_drag_volume">Volumen multimedia</string>
+    <string name="pill_hold_drag_hint">Mantén pulsada la píldora y arrastra hacia arriba o abajo.</string>
     <string name="pill_panel_outline_label">Contorno del panel</string>
     <string name="pill_position_along_edge_label">Posición en el borde</string>
     <string name="pill_position_from_bottom_label">Posición desde abajo</string>

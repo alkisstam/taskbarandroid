@@ -1,14 +1,30 @@
 package com.alkisstam.taskbar.service
 
+import android.media.AudioManager
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
+import androidx.compose.material.icons.filled.BrightnessMedium
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,6 +34,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -30,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.bottomGapDp
 import com.alkisstam.taskbar.data.widthFraction
 import com.alkisstam.taskbar.data.GestureAction
+import com.alkisstam.taskbar.data.PillHoldDragAction
 import com.alkisstam.taskbar.ui.appmenu.AppMenuPanel
 import com.alkisstam.taskbar.ui.appmenu.BrightnessPanel
 import com.alkisstam.taskbar.ui.appmenu.CalculatorPanel
@@ -45,8 +64,10 @@ import com.alkisstam.taskbar.ui.taskbar.TriggerPillView
 import com.alkisstam.taskbar.ui.theme.TaskBarTheme
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
 import com.alkisstam.taskbar.viewmodel.ClipboardViewModel
+import com.alkisstam.taskbar.viewmodel.LevelIndicator
 import com.alkisstam.taskbar.viewmodel.NotificationHistoryViewModel
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
+import kotlin.math.roundToInt
 
 private fun dockAwarePanelBottomPadding(isTaskbarVisible: Boolean, heightDp: Float, expandedRows: Int, bottomGapDp: Float) =
     if (isTaskbarVisible) (bottomGapDp + heightDp * (1 + expandedRows) + 16f + 28f).dp else 0.dp
@@ -145,25 +166,61 @@ internal fun TaskbarContent(
 }
 
 @Composable
-internal fun TriggerPillContent(taskbarViewModel: TaskbarViewModel) {
+internal fun TriggerPillContent(taskbarViewModel: TaskbarViewModel, appMenuViewModel: AppMenuViewModel) {
     val themeMode by taskbarViewModel.themeMode.collectAsState()
     val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
     val pillSettings by taskbarViewModel.pillSettings.collectAsState()
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
+    val pillHiddenForScreenshot by appMenuViewModel.pillHiddenForScreenshot.collectAsState()
     val context = LocalContext.current
     val density = LocalDensity.current
     val dockRevealMaxDragPx = remember(taskbarSettings.heightDp, density) {
         with(density) { taskbarSettings.heightDp.dp.toPx() }
     }
+    var holdBase by remember { mutableIntStateOf(-1) }
+    var holdMax by remember { mutableIntStateOf(0) }
+    var holdLast by remember { mutableIntStateOf(-1) }
 
     TaskBarTheme(themeMode = themeMode) {
         TriggerPillView(
-            isCollapsed = !isTaskbarVisible,
+            isCollapsed = !isTaskbarVisible && !pillHiddenForScreenshot,
             pillSettings = pillSettings,
             dockRevealMaxDragPx = dockRevealMaxDragPx,
             onRevealProgress = { taskbarViewModel.setRevealProgress(it) },
             onRevealCommit = { taskbarViewModel.showTaskbar() },
             onRevealCancel = { taskbarViewModel.cancelReveal() },
+            onHoldDragStart = {
+                holdLast = -1
+                when (pillSettings.holdDragAction) {
+                    PillHoldDragAction.BRIGHTNESS -> {
+                        holdBase = appMenuViewModel.beginBrightnessDrag() ?: -1
+                        holdMax = 255
+                        if (holdBase >= 0) appMenuViewModel.showLevelIndicator(true, holdBase, holdMax)
+                    }
+                    PillHoldDragAction.VOLUME -> {
+                        val (current, max) = appMenuViewModel.musicVolumeSnapshot()
+                        holdBase = current
+                        holdMax = max
+                        appMenuViewModel.showLevelIndicator(false, current, max)
+                    }
+                    PillHoldDragAction.DISABLED -> holdBase = -1
+                }
+            },
+            onHoldDrag = { upwardPx ->
+                if (holdBase >= 0) {
+                    val span = context.resources.displayMetrics.heightPixels * 0.6f
+                    val min = if (pillSettings.holdDragAction == PillHoldDragAction.BRIGHTNESS) 1 else 0
+                    val target = (holdBase + upwardPx / span * holdMax).roundToInt().coerceIn(min, holdMax)
+                    if (target != holdLast) {
+                        holdLast = target
+                        val isBrightness = pillSettings.holdDragAction == PillHoldDragAction.BRIGHTNESS
+                        if (isBrightness) appMenuViewModel.setBrightnessLevel(target)
+                        else appMenuViewModel.setStreamVolume(AudioManager.STREAM_MUSIC, target)
+                        appMenuViewModel.showLevelIndicator(isBrightness, target, holdMax)
+                    }
+                }
+            },
+            onHoldDragEnd = { appMenuViewModel.hideLevelIndicatorSoon() },
             onAction = { action ->
                 when (action) {
                     GestureAction.SHOW_DOCK -> taskbarViewModel.showTaskbar()
@@ -182,10 +239,64 @@ internal fun TriggerPillContent(taskbarViewModel: TaskbarViewModel) {
                         if (svc != null) svc.showPowerMenu()
                         else Toast.makeText(context, "Requires accessibility service", Toast.LENGTH_SHORT).show()
                     }
+                    GestureAction.TAKE_SCREENSHOT -> {
+                        val svc = TaskBarAccessibilityService.instance
+                        if (svc != null) appMenuViewModel.captureScreenshotHidingPill { svc.takeScreenshot() }
+                        else Toast.makeText(context, "Requires accessibility service", Toast.LENGTH_SHORT).show()
+                    }
+                    GestureAction.LOCK_SCREEN -> {
+                        val svc = TaskBarAccessibilityService.instance
+                        if (svc != null) svc.lockScreen()
+                        else Toast.makeText(context, "Requires accessibility service", Toast.LENGTH_SHORT).show()
+                    }
+                    GestureAction.TOGGLE_FLASHLIGHT -> appMenuViewModel.toggleTorch()
                     GestureAction.DISABLED -> {}
                 }
             }
         )
+    }
+}
+
+@Composable
+internal fun LevelIndicatorContent(taskbarViewModel: TaskbarViewModel, appMenuViewModel: AppMenuViewModel) {
+    val themeMode by taskbarViewModel.themeMode.collectAsState()
+    val indicator by appMenuViewModel.levelIndicator.collectAsState()
+    var shown by remember { mutableStateOf<LevelIndicator?>(null) }
+    if (indicator != null) shown = indicator
+    TaskBarTheme(themeMode = themeMode) {
+        AnimatedVisibility(visible = indicator != null, enter = fadeIn(), exit = fadeOut()) {
+            shown?.let { level ->
+                val fraction = if (level.max > 0) level.level.toFloat() / level.max else 0f
+                Surface(
+                    shape = RoundedCornerShape(percent = 50),
+                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.94f),
+                    shadowElevation = 6.dp
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = if (level.isBrightness) Icons.Filled.BrightnessMedium else Icons.AutoMirrored.Filled.VolumeUp,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        LinearProgressIndicator(
+                            progress = { fraction },
+                            modifier = Modifier.padding(horizontal = 12.dp).width(140.dp),
+                            trackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.15f)
+                        )
+                        Text(
+                            text = "${(fraction * 100).roundToInt()}%",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.width(40.dp)
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 

@@ -73,6 +73,14 @@
     <string name="pill_swipe_down_action_notifications">Benachrichtigungspanel</string>
     <string name="pill_swipe_down_action_quick_settings">Schnelleinstellungen-Panel</string>
     <string name="pill_swipe_down_action_power_menu">Ein-/Aus-Menü</string>
+    <string name="pill_swipe_down_action_screenshot">Screenshot aufnehmen</string>
+    <string name="pill_swipe_down_action_flashlight">Taschenlampe umschalten</string>
+    <string name="pill_swipe_down_action_lock_screen">Bildschirm sperren</string>
+    <string name="pill_swipe_down_action_disabled">Deaktiviert</string>
+    <string name="pill_hold_drag_label">Halten und ziehen</string>
+    <string name="pill_hold_drag_brightness">Helligkeit</string>
+    <string name="pill_hold_drag_volume">Medienlautstärke</string>
+    <string name="pill_hold_drag_hint">Pille kurz halten, dann nach oben oder unten ziehen.</string>
     <string name="pill_panel_outline_label">Panelumriss</string>
     <string name="pill_position_along_edge_label">Position entlang der Kante</string>
     <string name="pill_position_from_bottom_label">Position von unten</string>

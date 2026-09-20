@@ -73,6 +73,14 @@
     <string name="pill_swipe_down_action_notifications">Pannello notifiche</string>
     <string name="pill_swipe_down_action_quick_settings">Pannello impostazioni rapide</string>
     <string name="pill_swipe_down_action_power_menu">Menu di alimentazione</string>
+    <string name="pill_swipe_down_action_screenshot">Acquisisci screenshot</string>
+    <string name="pill_swipe_down_action_flashlight">Attiva/disattiva torcia</string>
+    <string name="pill_swipe_down_action_lock_screen">Blocca schermo</string>
+    <string name="pill_swipe_down_action_disabled">Disattivato</string>
+    <string name="pill_hold_drag_label">Tieni premuto e trascina</string>
+    <string name="pill_hold_drag_brightness">Luminosità</string>
+    <string name="pill_hold_drag_volume">Volume multimediale</string>
+    <string name="pill_hold_drag_hint">Tieni premuta la pillola, poi trascina verso l\'alto o il basso.</string>
     <string name="pill_panel_outline_label">Contorno pannello</string>
     <string name="pill_position_along_edge_label">Posizione lungo il bordo</string>
     <string name="pill_position_from_bottom_label">Posizione dal basso</string>

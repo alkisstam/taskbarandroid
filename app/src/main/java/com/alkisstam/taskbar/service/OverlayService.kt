@@ -131,6 +131,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private var clipboardBlurView: View? = null
     private var calculatorPanelView: View? = null
     private var notificationPanelView: View? = null
+    private var levelIndicatorView: View? = null
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var observersStarted = false
 
@@ -379,6 +380,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         addQuickSettingsPanelView()
         addNotificationPanelView()
         addCalculatorPanelView()
+        addLevelIndicatorView()
         if (!observersStarted) {
             observersStarted = true
             observePillPosition()
@@ -411,7 +413,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             overlayView, taskbarView, pillView, pillView2, searchView,
             volumePanelView, brightnessPanelView, volumeScrimView, musicPanelView,
             clipboardPanelView, notesPanelView, quickSettingsPanelView, clipboardBlurView,
-            calculatorPanelView, notificationPanelView
+            calculatorPanelView, notificationPanelView, levelIndicatorView
         ).forEach { it?.dispatchConfigurationChanged(newConfig) }
     }
 
@@ -528,7 +530,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 setViewTreeLifecycleOwner(this@OverlayService)
                 setViewTreeViewModelStoreOwner(this@OverlayService)
                 setViewTreeSavedStateRegistryOwner(this@OverlayService)
-                setContent { TriggerPillContent(taskbarViewModel = taskbarViewModel) }
+                setContent { TriggerPillContent(taskbarViewModel = taskbarViewModel, appMenuViewModel = appMenuViewModel) }
             }
             pillView2 = composeView
             if (hiddenForLandscape) composeView.visibility = View.GONE
@@ -806,7 +808,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 setViewTreeLifecycleOwner(this@OverlayService)
                 setViewTreeViewModelStoreOwner(this@OverlayService)
                 setViewTreeSavedStateRegistryOwner(this@OverlayService)
-                setContent { TriggerPillContent(taskbarViewModel = taskbarViewModel) }
+                setContent { TriggerPillContent(taskbarViewModel = taskbarViewModel, appMenuViewModel = appMenuViewModel) }
             }
             pillView = composeView
             if (hiddenForLandscape) composeView.visibility = View.GONE
@@ -937,6 +939,31 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add brightness panel view", e)
             brightnessPanelView = null
+        }
+    }
+
+    private fun addLevelIndicatorView() {
+        if (levelIndicatorView?.isAttachedToWindow == true) return
+        levelIndicatorView?.let { removeViewFromAnyWM(it) }
+        levelIndicatorView = null
+        try {
+            val composeView = ComposeView(this).apply {
+                setBackgroundColor(android.graphics.Color.TRANSPARENT)
+                setViewTreeLifecycleOwner(this@OverlayService)
+                setViewTreeViewModelStoreOwner(this@OverlayService)
+                setViewTreeSavedStateRegistryOwner(this@OverlayService)
+                setContent {
+                    LevelIndicatorContent(
+                        taskbarViewModel = taskbarViewModel,
+                        appMenuViewModel = appMenuViewModel
+                    )
+                }
+            }
+            levelIndicatorView = composeView
+            windowManager.addView(composeView, levelIndicatorLayoutParams())
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to add level indicator view", e)
+            levelIndicatorView = null
         }
     }
 
@@ -1276,6 +1303,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         notificationPanelView?.let { removeViewFromAnyWM(it) }; notificationPanelView = null
         clipboardBlurView?.let { removeViewFromAnyWM(it) }; clipboardBlurView = null
         calculatorPanelView?.let { removeViewFromAnyWM(it) }; calculatorPanelView = null
+        levelIndicatorView?.let { removeViewFromAnyWM(it) }; levelIndicatorView = null
     }
 
     private fun refreshAllViews() {
@@ -1296,6 +1324,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         addQuickSettingsPanelView()
         addNotificationPanelView()
         addCalculatorPanelView()
+        addLevelIndicatorView()
     }
 
     // endregion

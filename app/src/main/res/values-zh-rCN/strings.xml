@@ -73,6 +73,14 @@
     <string name="pill_swipe_down_action_notifications">通知面板</string>
     <string name="pill_swipe_down_action_quick_settings">快速设置面板</string>
     <string name="pill_swipe_down_action_power_menu">电源菜单</string>
+    <string name="pill_swipe_down_action_screenshot">截取屏幕截图</string>
+    <string name="pill_swipe_down_action_flashlight">开关手电筒</string>
+    <string name="pill_swipe_down_action_lock_screen">锁定屏幕</string>
+    <string name="pill_swipe_down_action_disabled">已停用</string>
+    <string name="pill_hold_drag_label">按住并拖动</string>
+    <string name="pill_hold_drag_brightness">亮度</string>
+    <string name="pill_hold_drag_volume">媒体音量</string>
+    <string name="pill_hold_drag_hint">先按住指示条片刻,再向上或向下拖动。</string>
     <string name="pill_panel_outline_label">面板轮廓</string>
     <string name="pill_position_along_edge_label">沿边缘的位置</string>
     <string name="pill_position_from_bottom_label">距底部的位置</string>
