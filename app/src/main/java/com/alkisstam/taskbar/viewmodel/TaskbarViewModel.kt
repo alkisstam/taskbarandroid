@@ -194,6 +194,12 @@ class TaskbarViewModel @Inject constructor(
     val grainAlpha: StateFlow<Float> = prefsRepository.grainAlpha
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.10f)
 
+    val blurRadiusDp: StateFlow<Float> = prefsRepository.blurRadiusDp
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 24f)
+
+    val blurTint: StateFlow<Boolean> = prefsRepository.blurTint
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
     val appGridColumns: StateFlow<Int> = prefsRepository.appGridColumns
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 4)
 
@@ -223,6 +229,14 @@ class TaskbarViewModel @Inject constructor(
 
     fun setGrainAlpha(value: Float) {
         viewModelScope.launch { prefsRepository.setGrainAlpha(value) }
+    }
+
+    fun setBlurRadiusDp(value: Float) {
+        viewModelScope.launch { prefsRepository.setBlurRadiusDp(value) }
+    }
+
+    fun setBlurTint(enabled: Boolean) {
+        viewModelScope.launch { prefsRepository.setBlurTint(enabled) }
     }
 
     fun setAppGridColumns(value: Int) {

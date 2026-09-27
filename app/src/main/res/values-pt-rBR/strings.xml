@@ -64,6 +64,8 @@
     <string name="pill_gesture_double_tap">Toque Duplo</string>
     <string name="pill_gesture_swipe_up">Deslizar para Cima</string>
     <string name="pill_grain_label">Granulado</string>
+    <string name="pill_blur_label">Desfoque</string>
+    <string name="pill_blur_tint_label">Tonalidade sobre o desfoque</string>
     <string name="pill_height_label">Altura</string>
     <string name="pill_icon_shape_circle">Círculo</string>
     <string name="pill_icon_shape_default">Padrão</string>

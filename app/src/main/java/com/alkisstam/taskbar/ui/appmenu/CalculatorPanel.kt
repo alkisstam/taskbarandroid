@@ -43,11 +43,13 @@ import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 import com.alkisstam.taskbar.ui.theme.glassSheen
+import com.alkisstam.taskbar.ui.theme.GlassBackdrop
 import com.alkisstam.taskbar.ui.theme.grain
 import kotlin.math.abs
 import kotlin.math.ln
 import kotlin.math.log10
 import kotlin.math.sqrt
+import com.alkisstam.taskbar.ui.theme.glass
 
 // '-' kept last so it isn't parsed as a character-class range (e.g. "+-×" == range '+'..'×').
 private const val OPERATORS = "+×÷^-"
@@ -228,130 +230,132 @@ fun CalculatorPanel(
             .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
             .glassSheen(enabled = translucentMode && !panelOutlineEnabled, shape = cornerShape)
     ) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
-            Text(
-                text = state.expression,
-                style = MaterialTheme.typography.displaySmall,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                textAlign = TextAlign.End,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
-            )
-            val preview = state.preview(errorText)
-            Text(
-                text = preview.orEmpty(),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                textAlign = TextAlign.End,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp)
-            )
+        GlassBackdrop(enabled = translucentMode, cornerRadius = cornerRadiusDp.dp, tint = surfaceColor.copy(alpha = translucentAlpha)) {
+            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
+                Text(
+                    text = state.expression,
+                    style = MaterialTheme.typography.displaySmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                )
+                val preview = state.preview(errorText)
+                Text(
+                    text = preview.orEmpty(),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                )
 
-            var dragAccum by remember { mutableStateOf(0f) }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp)
-                    .pointerInput(Unit) {
-                        detectVerticalDragGestures(
-                            onDragStart = { dragAccum = 0f },
-                            onVerticalDrag = { change, dragAmount ->
-                                dragAccum += dragAmount
-                                change.consume()
-                            },
-                            onDragEnd = {
-                                if (dragAccum < -40f) sciExpanded = true
-                                else if (dragAccum > 40f) sciExpanded = false
-                            }
-                        )
-                    },
-                contentAlignment = Alignment.Center
-            ) {
+                var dragAccum by remember { mutableStateOf(0f) }
                 Box(
                     modifier = Modifier
-                        .width(36.dp)
-                        .height(4.dp)
-                        .clip(RoundedCornerShape(2.dp))
-                        .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f))
-                )
-            }
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .animateContentSize(),
-                verticalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                if (sciExpanded) {
-                    SciRow(
-                        keys = listOf("sin", "cos", "tan", "√"),
-                        onClick = { label ->
-                            state = when (label) {
-                                "sin" -> state.unary(errorText, ::sinDeg)
-                                "cos" -> state.unary(errorText, ::cosDeg)
-                                "tan" -> state.unary(errorText, ::tanDeg)
-                                else -> state.unary(errorText, ::sqrt)
-                            }
-                        }
-                    )
-                    SciRow(
-                        keys = listOf("ln", "log", "^", "π"),
-                        onClick = { label ->
-                            state = when (label) {
-                                "ln" -> state.unary(errorText, ::ln)
-                                "log" -> state.unary(errorText, ::log10)
-                                "^" -> state.operator('^')
-                                else -> state.insertPi(errorText)
-                            }
-                        }
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                        .pointerInput(Unit) {
+                            detectVerticalDragGestures(
+                                onDragStart = { dragAccum = 0f },
+                                onVerticalDrag = { change, dragAmount ->
+                                    dragAccum += dragAmount
+                                    change.consume()
+                                },
+                                onDragEnd = {
+                                    if (dragAccum < -40f) sciExpanded = true
+                                    else if (dragAccum > 40f) sciExpanded = false
+                                }
+                            )
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .width(36.dp)
+                            .height(4.dp)
+                            .clip(RoundedCornerShape(2.dp))
+                            .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f))
                     )
                 }
-            }
 
-            Box(modifier = Modifier.height(4.dp))
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateContentSize(),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    if (sciExpanded) {
+                        SciRow(
+                            keys = listOf("sin", "cos", "tan", "√"),
+                            onClick = { label ->
+                                state = when (label) {
+                                    "sin" -> state.unary(errorText, ::sinDeg)
+                                    "cos" -> state.unary(errorText, ::cosDeg)
+                                    "tan" -> state.unary(errorText, ::tanDeg)
+                                    else -> state.unary(errorText, ::sqrt)
+                                }
+                            }
+                        )
+                        SciRow(
+                            keys = listOf("ln", "log", "^", "π"),
+                            onClick = { label ->
+                                state = when (label) {
+                                    "ln" -> state.unary(errorText, ::ln)
+                                    "log" -> state.unary(errorText, ::log10)
+                                    "^" -> state.operator('^')
+                                    else -> state.insertPi(errorText)
+                                }
+                            }
+                        )
+                    }
+                }
 
-            val digitColor = MaterialTheme.colorScheme.surfaceVariant
-            val onDigitColor = MaterialTheme.colorScheme.onSurfaceVariant
-            val opColor = MaterialTheme.colorScheme.secondaryContainer
-            val onOpColor = MaterialTheme.colorScheme.onSecondaryContainer
-            val equalsColor = MaterialTheme.colorScheme.primary
-            val onEqualsColor = MaterialTheme.colorScheme.onPrimary
+                Box(modifier = Modifier.height(4.dp))
 
-            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                CalcRow {
-                    CalcButton(clearLabel, digitColor, onDigitColor, Modifier.weight(1f)) { state = CalculatorState() }
-                    CalcButton("%", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.percent(errorText) }
-                    CalcIconButton(Icons.AutoMirrored.Filled.Backspace, digitColor, onDigitColor, Modifier.weight(1f)) { state = state.backspace() }
-                    CalcButton("÷", opColor, onOpColor, Modifier.weight(1f)) { state = state.operator('÷') }
-                }
-                CalcRow {
-                    CalcButton("7", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.digit("7") }
-                    CalcButton("8", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.digit("8") }
-                    CalcButton("9", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.digit("9") }
-                    CalcButton("×", opColor, onOpColor, Modifier.weight(1f)) { state = state.operator('×') }
-                }
-                CalcRow {
-                    CalcButton("4", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.digit("4") }
-                    CalcButton("5", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.digit("5") }
-                    CalcButton("6", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.digit("6") }
-                    CalcButton("−", opColor, onOpColor, Modifier.weight(1f)) { state = state.operator('-') }
-                }
-                CalcRow {
-                    CalcButton("1", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.digit("1") }
-                    CalcButton("2", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.digit("2") }
-                    CalcButton("3", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.digit("3") }
-                    CalcButton("+", opColor, onOpColor, Modifier.weight(1f)) { state = state.operator('+') }
-                }
-                CalcRow {
-                    CalcButton("00", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.digit("00") }
-                    CalcButton("0", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.digit("0") }
-                    CalcButton(".", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.dot() }
-                    CalcButton("=", equalsColor, onEqualsColor, Modifier.weight(1f)) { state = state.equals(errorText) }
+                val digitColor = MaterialTheme.colorScheme.surfaceVariant.glass()
+                val onDigitColor = MaterialTheme.colorScheme.onSurfaceVariant
+                val opColor = MaterialTheme.colorScheme.secondaryContainer.glass()
+                val onOpColor = MaterialTheme.colorScheme.onSecondaryContainer
+                val equalsColor = MaterialTheme.colorScheme.primary
+                val onEqualsColor = MaterialTheme.colorScheme.onPrimary
+
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    CalcRow {
+                        CalcButton(clearLabel, digitColor, onDigitColor, Modifier.weight(1f)) { state = CalculatorState() }
+                        CalcButton("%", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.percent(errorText) }
+                        CalcIconButton(Icons.AutoMirrored.Filled.Backspace, digitColor, onDigitColor, Modifier.weight(1f)) { state = state.backspace() }
+                        CalcButton("÷", opColor, onOpColor, Modifier.weight(1f)) { state = state.operator('÷') }
+                    }
+                    CalcRow {
+                        CalcButton("7", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.digit("7") }
+                        CalcButton("8", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.digit("8") }
+                        CalcButton("9", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.digit("9") }
+                        CalcButton("×", opColor, onOpColor, Modifier.weight(1f)) { state = state.operator('×') }
+                    }
+                    CalcRow {
+                        CalcButton("4", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.digit("4") }
+                        CalcButton("5", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.digit("5") }
+                        CalcButton("6", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.digit("6") }
+                        CalcButton("−", opColor, onOpColor, Modifier.weight(1f)) { state = state.operator('-') }
+                    }
+                    CalcRow {
+                        CalcButton("1", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.digit("1") }
+                        CalcButton("2", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.digit("2") }
+                        CalcButton("3", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.digit("3") }
+                        CalcButton("+", opColor, onOpColor, Modifier.weight(1f)) { state = state.operator('+') }
+                    }
+                    CalcRow {
+                        CalcButton("00", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.digit("00") }
+                        CalcButton("0", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.digit("0") }
+                        CalcButton(".", digitColor, onDigitColor, Modifier.weight(1f)) { state = state.dot() }
+                        CalcButton("=", equalsColor, onEqualsColor, Modifier.weight(1f)) { state = state.equals(errorText) }
+                    }
                 }
             }
         }
@@ -369,7 +373,7 @@ private fun CalcRow(content: @Composable RowScope.() -> Unit) {
 
 @Composable
 private fun SciRow(keys: List<String>, onClick: (String) -> Unit) {
-    val sciColor = MaterialTheme.colorScheme.tertiaryContainer
+    val sciColor = MaterialTheme.colorScheme.tertiaryContainer.glass()
     val onSciColor = MaterialTheme.colorScheme.onTertiaryContainer
     CalcRow {
         keys.forEach { label ->

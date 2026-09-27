@@ -61,6 +61,7 @@ import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
 import com.alkisstam.taskbar.viewmodel.ClipboardViewModel
 import com.alkisstam.taskbar.viewmodel.NotificationHistoryViewModel
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
+import com.alkisstam.taskbar.ui.theme.GlassBlur
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -444,6 +445,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             observeQuickSettingsPanel()
             observeNotificationPanel()
             observeDockBlur()
+            observeBlurRadius()
         }
         return START_STICKY
     }
@@ -471,6 +473,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private var volumePanelYOffsetDp: Float = 0f
     private var musicPanelYOffsetDp: Float = 0f
     private var translucentModeEnabled: Boolean = false
+    private var blurRadiusDp: Float = 24f
     private var taskbarInteractive: Boolean = true
 
     private fun setOverlayFlags(interactive: Boolean, focusable: Boolean) {
@@ -488,8 +491,16 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private fun setSearchFlags(active: Boolean) {
         val view = searchView ?: return
-        try { windowManager.updateViewLayoutKeepingType(view, searchLayoutParams(focusable = active, blurBehind = translucentModeEnabled && active)) }
+        try { windowManager.updateViewLayoutKeepingType(view, searchLayoutParams(focusable = active, blurBehind = translucentModeEnabled && active, blurRadiusDp = blurRadiusDp)) }
         catch (e: Exception) { Log.w(TAG, "Failed to update search layout flags", e) }
+        semBlurFallback(view, translucentModeEnabled && active)
+    }
+
+    // FLAG_BLUR_BEHIND is a no-op where cross-window blur is off (all of One UI); frost the
+    // full-screen window through Samsung's own blur instead.
+    private fun semBlurFallback(view: View, active: Boolean) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || crossWindowBlurEnabled()) return
+        view.semSetBlur(if (active) (blurRadiusDp * resources.displayMetrics.density).toInt() else 0, 0f)
     }
 
     private fun setVolumeScrimActive(active: Boolean) {
@@ -655,8 +666,9 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 updateClipboardBlur()
                 searchView?.let { view ->
                     val searching = appMenuViewModel.isSearching.value
-                    try { windowManager.updateViewLayoutKeepingType(view, searchLayoutParams(focusable = searching, blurBehind = enabled && searching)) }
+                    try { windowManager.updateViewLayoutKeepingType(view, searchLayoutParams(focusable = searching, blurBehind = enabled && searching, blurRadiusDp = blurRadiusDp)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update search blur", e) }
+                    semBlurFallback(view, enabled && searching)
                 }
             }
         }
@@ -911,7 +923,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             wrapper.visibility = if (appMenuViewModel.isSearching.value) View.VISIBLE else View.GONE
             searchView = wrapper
             val searching = appMenuViewModel.isSearching.value
-            windowManager.addView(wrapper, searchLayoutParams(focusable = searching, blurBehind = translucentModeEnabled && searching))
+            windowManager.addView(wrapper, searchLayoutParams(focusable = searching, blurBehind = translucentModeEnabled && searching, blurRadiusDp = blurRadiusDp))
+            semBlurFallback(wrapper, translucentModeEnabled && searching)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add search view", e)
             searchView = null
@@ -1095,7 +1108,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             val view = View(this)
             view.visibility = if (active) View.VISIBLE else View.GONE
             clipboardBlurView = view
-            windowManager.addView(view, clipboardBlurLayoutParams(blurBehind = active))
+            windowManager.addView(view, clipboardBlurLayoutParams(blurBehind = active, blurRadiusDp = blurRadiusDp))
+            semBlurFallback(view, active)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add clipboard blur view", e)
             clipboardBlurView = null
@@ -1110,6 +1124,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         if (taskbarView?.isAttachedToWindow == true && TaskBarAccessibilityService.instance == null) return
         try {
             val window = dockBlurWindow ?: DockBlurWindow(this).also { dockBlurWindow = it }
+            window.setBlurRadius((blurRadiusDp * resources.displayMetrics.density).toInt())
             window.attach()
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add dock blur window", e)
@@ -1137,9 +1152,31 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             }.distinctUntilChanged().collectLatest { target ->
                 val blur = dockBlurWindow ?: return@collectLatest
                 blur.hide()
-                if (target == null) return@collectLatest
+                // Without cross-window blur (One UI) TaskbarView blurs in-window via SemBlurInfo.
+                if (target == null || !crossWindowBlurEnabled()) return@collectLatest
                 delay(DOCK_BLUR_SETTLE_MS)
                 blur.show(target.first, target.second)
+            }
+        }
+    }
+
+    // Applied in place rather than through observeDockBlur so dragging the slider doesn't
+    // hide and re-settle the dock blur on every step.
+    private fun observeBlurRadius() {
+        GlassBlur.available = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+            !crossWindowBlurEnabled() && semBlurSupported()
+        serviceScope.launch {
+            taskbarViewModel.blurTint.collect { GlassBlur.tintOverBlur = it }
+        }
+        serviceScope.launch {
+            taskbarViewModel.blurRadiusDp.collect { dp ->
+                blurRadiusDp = dp
+                GlassBlur.radiusPx = (dp * resources.displayMetrics.density).toInt()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    dockBlurWindow?.setBlurRadius((dp * resources.displayMetrics.density).toInt())
+                }
+                updateClipboardBlur()
+                if (appMenuViewModel.isSearching.value) setSearchFlags(true)
             }
         }
     }
@@ -1379,8 +1416,9 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             // 0x0 resize alone can leave the surface alive for ~1s on some skins, so the
             // blur lingers after the panel hides; GONE destroys the surface immediately.
             blur.visibility = if (active) View.VISIBLE else View.GONE
-            try { windowManager.updateViewLayoutKeepingType(blur, clipboardBlurLayoutParams(blurBehind = active)) }
+            try { windowManager.updateViewLayoutKeepingType(blur, clipboardBlurLayoutParams(blurBehind = active, blurRadiusDp = blurRadiusDp)) }
             catch (e: Exception) { Log.w(TAG, "Failed to update clipboard blur", e) }
+            semBlurFallback(blur, active)
         }
     }
 

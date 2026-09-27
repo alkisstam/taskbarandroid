@@ -59,6 +59,7 @@ import com.alkisstam.taskbar.data.NoteItem
 import com.alkisstam.taskbar.data.TodoItem
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 import com.alkisstam.taskbar.ui.theme.glassSheen
+import com.alkisstam.taskbar.ui.theme.GlassBackdrop
 import com.alkisstam.taskbar.ui.theme.grain
 import com.alkisstam.taskbar.viewmodel.ClipboardViewModel
 import kotlinx.coroutines.launch
@@ -108,98 +109,101 @@ fun NotesPanel(
                 .glassSheen(enabled = translucentMode && !panelOutlineEnabled, shape = panelShape),
             shape = panelShape,
             color = if (translucentMode) panelColor.copy(alpha = translucentAlpha) else panelColor,
+            contentColor = MaterialTheme.colorScheme.onSurface,
             tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 2.dp,
             shadowElevation = 8.dp
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                Box(modifier = Modifier.weight(1f)) {
-                    HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
-                        when (page) {
-                            0 -> NotesTab(
-                                noteItems = noteItems.sortedWith(
-                                    compareByDescending<NoteItem> { it.isPinned }.thenByDescending { it.timestamp }
-                                ),
-                                onAdd = viewModel::addNote,
-                                onTogglePin = viewModel::toggleNotePin,
-                                onDelete = viewModel::removeNote,
-                                onEdit = viewModel::updateNote,
-                                onOpenExternal = onOpenExternal
-                            )
-                            1 -> ToDoTab(
-                                todoItems = todoItems,
-                                onAdd = viewModel::addTodo,
-                                onToggleDone = viewModel::toggleTodoDone,
-                                onTogglePin = viewModel::toggleTodoPin,
-                                onDelete = viewModel::removeTodo,
-                                onEdit = viewModel::updateTodo
-                            )
+            GlassBackdrop(enabled = translucentMode, cornerRadius = 24.dp, tint = panelColor.copy(alpha = translucentAlpha)) {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    Box(modifier = Modifier.weight(1f)) {
+                        HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
+                            when (page) {
+                                0 -> NotesTab(
+                                    noteItems = noteItems.sortedWith(
+                                        compareByDescending<NoteItem> { it.isPinned }.thenByDescending { it.timestamp }
+                                    ),
+                                    onAdd = viewModel::addNote,
+                                    onTogglePin = viewModel::toggleNotePin,
+                                    onDelete = viewModel::removeNote,
+                                    onEdit = viewModel::updateNote,
+                                    onOpenExternal = onOpenExternal
+                                )
+                                1 -> ToDoTab(
+                                    todoItems = todoItems,
+                                    onAdd = viewModel::addTodo,
+                                    onToggleDone = viewModel::toggleTodoDone,
+                                    onTogglePin = viewModel::toggleTodoPin,
+                                    onDelete = viewModel::removeTodo,
+                                    onEdit = viewModel::updateTodo
+                                )
+                            }
                         }
                     }
-                }
 
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp, start = 16.dp, end = 16.dp),
-                    shape = RoundedCornerShape(40.dp),
-                    tonalElevation = 6.dp,
-                    shadowElevation = 16.dp
-                ) {
-                    Row(
+                    Surface(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 8.dp, vertical = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                            .padding(bottom = 16.dp, start = 16.dp, end = 16.dp),
+                        shape = RoundedCornerShape(40.dp),
+                        tonalElevation = 6.dp,
+                        shadowElevation = 16.dp
                     ) {
-                        tabs.forEachIndexed { index, title ->
-                            val selected = pagerState.currentPage == index
-                            Box(
-                                modifier = Modifier.weight(1f),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                if (selected) {
-                                    Surface(
-                                        modifier = Modifier.clickable(
-                                            indication = null,
-                                            interactionSource = remember { MutableInteractionSource() }
-                                        ) { coroutineScope.launch { pagerState.animateScrollToPage(index) } },
-                                        shape = RoundedCornerShape(28.dp),
-                                        color = MaterialTheme.colorScheme.primaryContainer
-                                    ) {
-                                        Row(
-                                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp, vertical = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            tabs.forEachIndexed { index, title ->
+                                val selected = pagerState.currentPage == index
+                                Box(
+                                    modifier = Modifier.weight(1f),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    if (selected) {
+                                        Surface(
+                                            modifier = Modifier.clickable(
+                                                indication = null,
+                                                interactionSource = remember { MutableInteractionSource() }
+                                            ) { coroutineScope.launch { pagerState.animateScrollToPage(index) } },
+                                            shape = RoundedCornerShape(28.dp),
+                                            color = MaterialTheme.colorScheme.primaryContainer
+                                        ) {
+                                            Row(
+                                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                            ) {
+                                                Icon(
+                                                    tabIcons[index],
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(18.dp),
+                                                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                                                )
+                                                Text(
+                                                    title,
+                                                    style = MaterialTheme.typography.labelMedium,
+                                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                                    maxLines = 1
+                                                )
+                                            }
+                                        }
+                                    } else {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(48.dp)
+                                                .clip(RoundedCornerShape(24.dp))
+                                                .clickable { coroutineScope.launch { pagerState.animateScrollToPage(index) } },
+                                            contentAlignment = Alignment.Center
                                         ) {
                                             Icon(
                                                 tabIcons[index],
-                                                contentDescription = null,
-                                                modifier = Modifier.size(18.dp),
-                                                tint = MaterialTheme.colorScheme.onPrimaryContainer
-                                            )
-                                            Text(
-                                                title,
-                                                style = MaterialTheme.typography.labelMedium,
-                                                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                                maxLines = 1
+                                                contentDescription = title,
+                                                modifier = Modifier.size(22.dp),
+                                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
                                         }
-                                    }
-                                } else {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(48.dp)
-                                            .clip(RoundedCornerShape(24.dp))
-                                            .clickable { coroutineScope.launch { pagerState.animateScrollToPage(index) } },
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Icon(
-                                            tabIcons[index],
-                                            contentDescription = title,
-                                            modifier = Modifier.size(22.dp),
-                                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
                                     }
                                 }
                             }

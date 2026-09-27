@@ -14,11 +14,11 @@ internal fun overlayWindowType() =
     else
         WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
 
-private fun Context.applyBlurBehind(params: WindowManager.LayoutParams, blur: Boolean) {
+private fun Context.applyBlurBehind(params: WindowManager.LayoutParams, blur: Boolean, radiusDp: Float) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return
-    if (blur && getSystemService(WindowManager::class.java)?.isCrossWindowBlurEnabled == true) {
+    if (blur && radiusDp > 0f && getSystemService(WindowManager::class.java)?.isCrossWindowBlurEnabled == true) {
         params.flags = params.flags or WindowManager.LayoutParams.FLAG_BLUR_BEHIND
-        params.blurBehindRadius = (24 * resources.displayMetrics.density).toInt()
+        params.blurBehindRadius = (radiusDp * resources.displayMetrics.density).toInt()
     }
 }
 
@@ -100,7 +100,7 @@ private fun Context.bottomPositionOffsetPx(settings: PillSettings, density: Floa
     return ((settings.positionXPct - 50f) / 100f * availableW).toInt()
 }
 
-internal fun Context.searchLayoutParams(focusable: Boolean = false, blurBehind: Boolean = false): WindowManager.LayoutParams {
+internal fun Context.searchLayoutParams(focusable: Boolean = false, blurBehind: Boolean = false, blurRadiusDp: Float = 0f): WindowManager.LayoutParams {
     val flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
@@ -117,11 +117,11 @@ internal fun Context.searchLayoutParams(focusable: Boolean = false, blurBehind: 
         // Without this the system picks ADJUST_PAN and shifts the whole window above the
         // keyboard, doubling the inset-driven composer lift done in Compose.
         softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
-        applyBlurBehind(this, blurBehind)
+        applyBlurBehind(this, blurBehind, blurRadiusDp)
     }
 }
 
-internal fun Context.clipboardBlurLayoutParams(blurBehind: Boolean = false): WindowManager.LayoutParams {
+internal fun Context.clipboardBlurLayoutParams(blurBehind: Boolean = false, blurRadiusDp: Float = 0f): WindowManager.LayoutParams {
     val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
             WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
             WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
@@ -137,7 +137,7 @@ internal fun Context.clipboardBlurLayoutParams(blurBehind: Boolean = false): Win
         PixelFormat.TRANSLUCENT
     ).apply {
         gravity = Gravity.TOP or Gravity.START
-        applyBlurBehind(this, blurBehind)
+        applyBlurBehind(this, blurBehind, blurRadiusDp)
     }
 }
 

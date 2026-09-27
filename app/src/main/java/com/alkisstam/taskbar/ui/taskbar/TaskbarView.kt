@@ -66,6 +66,7 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import com.alkisstam.taskbar.ui.appmenu.QuickControlItem
 import com.alkisstam.taskbar.ui.appmenu.toItems
+import com.alkisstam.taskbar.ui.theme.GlassBackdrop
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 import com.alkisstam.taskbar.ui.theme.glassSheen
 import com.alkisstam.taskbar.ui.theme.grain
@@ -200,161 +201,169 @@ fun TaskbarView(
             tonalElevation = if (translucentMode) 0.dp else 3.dp,
             shadowElevation = 8.dp
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Spacer(modifier = Modifier.height(6.dp))
-                Box(
-                    modifier = Modifier
-                        .width(36.dp)
-                        .height(4.dp)
-                        .background(
-                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
-                            RoundedCornerShape(2.dp)
-                        )
-                )
-                Spacer(modifier = Modifier.height(6.dp))
+            // In-window, so it tracks the dock every frame (reveal, expand) instead of
+            // waiting for a separate blur window to catch up.
+            GlassBackdrop(
+                enabled = translucentMode,
+                cornerRadius = taskbarSettings.cornerRadiusDp.dp,
+                tint = surfaceColor.copy(alpha = translucentAlpha)
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Box(
+                        modifier = Modifier
+                            .width(36.dp)
+                            .height(4.dp)
+                            .background(
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                                RoundedCornerShape(2.dp)
+                            )
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
 
-                if (quickControlsEnabled) {
-                    val expandAnim = remember { Animatable(if (isDockExpanded) 1f else 0f) }
-                    val maxControlsHeight = taskbarSettings.heightDp.dp + 1.dp
+                    if (quickControlsEnabled) {
+                        val expandAnim = remember { Animatable(if (isDockExpanded) 1f else 0f) }
+                        val maxControlsHeight = taskbarSettings.heightDp.dp + 1.dp
 
-                    LaunchedEffect(isDockExpanded, dockExpandProgress) {
-                        when {
-                            isDockExpanded && dockExpandProgress >= 1f ->
-                                expandAnim.animateTo(1f, tween(220))
-                            !isDockExpanded && dockExpandProgress == 0f ->
-                                expandAnim.animateTo(0f, tween(180))
-                            else ->
-                                expandAnim.snapTo(dockExpandProgress)
+                        LaunchedEffect(isDockExpanded, dockExpandProgress) {
+                            when {
+                                isDockExpanded && dockExpandProgress >= 1f ->
+                                    expandAnim.animateTo(1f, tween(220))
+                                !isDockExpanded && dockExpandProgress == 0f ->
+                                    expandAnim.animateTo(0f, tween(180))
+                                else ->
+                                    expandAnim.snapTo(dockExpandProgress)
+                            }
                         }
-                    }
 
-                    if (expandAnim.value > 0.001f) {
-                        val quickControlItems = quickControls.toItems(controlsOrder, controlsDisabledIds)
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(maxControlsHeight * expandAnim.value)
-                                .clipToBounds()
-                        ) {
-                            Column {
-                                LazyRow(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(taskbarSettings.heightDp.dp),
-                                    contentPadding = PaddingValues(horizontal = 12.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    if (musicPanelEnabled) {
-                                        item {
-                                            val musicLabel = stringResource(R.string.taskbar_music_control_label)
+                        if (expandAnim.value > 0.001f) {
+                            val quickControlItems = quickControls.toItems(controlsOrder, controlsDisabledIds)
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(maxControlsHeight * expandAnim.value)
+                                    .clipToBounds()
+                            ) {
+                                Column {
+                                    LazyRow(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(taskbarSettings.heightDp.dp),
+                                        contentPadding = PaddingValues(horizontal = 12.dp),
+                                        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        if (musicPanelEnabled) {
+                                            item {
+                                                val musicLabel = stringResource(R.string.taskbar_music_control_label)
+                                                QuickControlItem(
+                                                    item = QuickControlItemData(
+                                                        id = "music",
+                                                        label = musicLabel,
+                                                        active = musicPanelVisible,
+                                                        icon = Icons.Filled.MusicNote
+                                                    ),
+                                                    onToggle = { appMenuViewModel.toggleMusicPanel() },
+                                                    showLabel = taskbarSettings.showControlLabels,
+                                                    tileSize = taskbarSettings.quickControlSizeDp.dp
+                                                )
+                                            }
+                                        }
+                                        if (quickSettingsPanelEnabled) {
+                                            item {
+                                                val quickSettingsLabel = stringResource(R.string.quick_control_settings_label)
+                                                QuickControlItem(
+                                                    item = QuickControlItemData(
+                                                        id = "quick_settings",
+                                                        label = quickSettingsLabel,
+                                                        active = quickSettingsPanelVisible,
+                                                        icon = Icons.Filled.Settings
+                                                    ),
+                                                    onToggle = { appMenuViewModel.toggleQuickSettingsPanel() },
+                                                    showLabel = taskbarSettings.showControlLabels,
+                                                    tileSize = taskbarSettings.quickControlSizeDp.dp
+                                                )
+                                            }
+                                        }
+                                        items(quickControlItems) { item ->
                                             QuickControlItem(
-                                                item = QuickControlItemData(
-                                                    id = "music",
-                                                    label = musicLabel,
-                                                    active = musicPanelVisible,
-                                                    icon = Icons.Filled.MusicNote
-                                                ),
-                                                onToggle = { appMenuViewModel.toggleMusicPanel() },
+                                                item = item,
+                                                onToggle = {
+                                                    appMenuViewModel.handleQuickControlAction(item.id)
+                                                    if (item.id in listOf("qr", "power", "screenshot", "lockscreen", "wifi", "bluetooth", "share"))
+                                                        taskbarViewModel.hideTaskbar()
+                                                    if (item.id in listOf("wifi", "bluetooth", "share")) {
+                                                        appMenuViewModel.dismissMusicPanel()
+                                                        appMenuViewModel.dismissCalculatorPanel()
+                                                    }
+                                                },
                                                 showLabel = taskbarSettings.showControlLabels,
                                                 tileSize = taskbarSettings.quickControlSizeDp.dp
                                             )
                                         }
                                     }
-                                    if (quickSettingsPanelEnabled) {
-                                        item {
-                                            val quickSettingsLabel = stringResource(R.string.quick_control_settings_label)
-                                            QuickControlItem(
-                                                item = QuickControlItemData(
-                                                    id = "quick_settings",
-                                                    label = quickSettingsLabel,
-                                                    active = quickSettingsPanelVisible,
-                                                    icon = Icons.Filled.Settings
-                                                ),
-                                                onToggle = { appMenuViewModel.toggleQuickSettingsPanel() },
-                                                showLabel = taskbarSettings.showControlLabels,
-                                                tileSize = taskbarSettings.quickControlSizeDp.dp
-                                            )
-                                        }
-                                    }
-                                    items(quickControlItems) { item ->
-                                        QuickControlItem(
-                                            item = item,
-                                            onToggle = {
-                                                appMenuViewModel.handleQuickControlAction(item.id)
-                                                if (item.id in listOf("qr", "power", "screenshot", "lockscreen", "wifi", "bluetooth", "share"))
-                                                    taskbarViewModel.hideTaskbar()
-                                                if (item.id in listOf("wifi", "bluetooth", "share")) {
-                                                    appMenuViewModel.dismissMusicPanel()
-                                                    appMenuViewModel.dismissCalculatorPanel()
-                                                }
-                                            },
-                                            showLabel = taskbarSettings.showControlLabels,
-                                            tileSize = taskbarSettings.quickControlSizeDp.dp
-                                        )
-                                    }
+                                    HorizontalDivider(
+                                        modifier = Modifier.padding(horizontal = 12.dp),
+                                        thickness = 1.dp,
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+                                    )
                                 }
-                                HorizontalDivider(
-                                    modifier = Modifier.padding(horizontal = 12.dp),
-                                    thickness = 1.dp,
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
-                                )
                             }
                         }
                     }
-                }
 
-                val buttonOnLeft = taskbarSettings.appMenuButtonSide == AppMenuButtonSide.LEFT
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(taskbarSettings.heightDp.dp)
-                        .padding(vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    if (buttonOnLeft) {
-                        AppMenuButton(
-                            menuOpen = menuVisible,
-                            onClick = { appMenuViewModel.toggleMenu() },
-                            size = iconSize,
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
-                    }
-
-                    LazyRow(
-                        state = pinnedListState,
-                        modifier = Modifier.weight(1f),
-                        horizontalArrangement = Arrangement.spacedBy(taskbarSettings.pinnedIconPaddingDp.dp, Alignment.CenterHorizontally),
+                    val buttonOnLeft = taskbarSettings.appMenuButtonSide == AppMenuButtonSide.LEFT
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(taskbarSettings.heightDp.dp)
+                            .padding(vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically,
-                        contentPadding = PaddingValues(horizontal = 4.dp)
+                        horizontalArrangement = Arrangement.Start
                     ) {
-                            items(pinnedApps, key = { it.packageName }) { app ->
-                                PinnedAppItem(
-                                    app = app,
-                                    iconSize = iconSize,
-                                    showLabel = false,
-                                    iconShape = taskbarSettings.iconShape,
-                                    onLaunch = {
-                                        taskbarViewModel.launchApp(app.packageName)
-                                        taskbarViewModel.hideTaskbar()
-                                    },
-                                    onUnpin = { taskbarViewModel.unpinApp(app.packageName) }
-                                )
-                            }
+                        if (buttonOnLeft) {
+                            AppMenuButton(
+                                menuOpen = menuVisible,
+                                onClick = { appMenuViewModel.toggleMenu() },
+                                size = iconSize,
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
                         }
 
-                    if (!buttonOnLeft) {
-                        AppMenuButton(
-                            menuOpen = menuVisible,
-                            onClick = { appMenuViewModel.toggleMenu() },
-                            size = iconSize,
-                            modifier = Modifier.padding(end = 8.dp)
-                        )
-                    }
-                }
+                        LazyRow(
+                            state = pinnedListState,
+                            modifier = Modifier.weight(1f),
+                            horizontalArrangement = Arrangement.spacedBy(taskbarSettings.pinnedIconPaddingDp.dp, Alignment.CenterHorizontally),
+                            verticalAlignment = Alignment.CenterVertically,
+                            contentPadding = PaddingValues(horizontal = 4.dp)
+                        ) {
+                                items(pinnedApps, key = { it.packageName }) { app ->
+                                    PinnedAppItem(
+                                        app = app,
+                                        iconSize = iconSize,
+                                        showLabel = false,
+                                        iconShape = taskbarSettings.iconShape,
+                                        onLaunch = {
+                                            taskbarViewModel.launchApp(app.packageName)
+                                            taskbarViewModel.hideTaskbar()
+                                        },
+                                        onUnpin = { taskbarViewModel.unpinApp(app.packageName) }
+                                    )
+                                }
+                            }
 
-                StatusBarRow(batteryLevel = batteryLevel, isCharging = isCharging)
+                        if (!buttonOnLeft) {
+                            AppMenuButton(
+                                menuOpen = menuVisible,
+                                onClick = { appMenuViewModel.toggleMenu() },
+                                size = iconSize,
+                                modifier = Modifier.padding(end = 8.dp)
+                            )
+                        }
+                    }
+
+                    StatusBarRow(batteryLevel = batteryLevel, isCharging = isCharging)
+                }
             }
         }
     }

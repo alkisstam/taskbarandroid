@@ -44,6 +44,7 @@ import com.alkisstam.taskbar.ui.common.AppIconImage
 import com.alkisstam.taskbar.ui.common.toComposeShape
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 import com.alkisstam.taskbar.ui.theme.glassSheen
+import com.alkisstam.taskbar.ui.theme.GlassBackdrop
 import com.alkisstam.taskbar.ui.theme.grain
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
@@ -100,96 +101,100 @@ fun AppMenuPanel(
                     .glassSheen(enabled = translucentMode && !panelOutlineEnabled, shape = RoundedCornerShape(20.dp)),
                 shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 20.dp, bottomEnd = 20.dp),
                 color = if (translucentMode) panelColor.copy(alpha = translucentAlpha) else panelColor,
+                contentColor = MaterialTheme.colorScheme.onSurface,
                 tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 4.dp,
                 shadowElevation = 8.dp
             ) {
-            Column(
-                modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                // Samsung's blur ignores Compose alpha, so drop it as soon as the fade-out starts.
+                GlassBackdrop(enabled = translucentMode && menuVisible, cornerRadius = 20.dp, tint = panelColor.copy(alpha = translucentAlpha)) {
+                Column(
+                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
                 ) {
-                    Surface(
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(12.dp),
-                        color = if (translucentMode) MaterialTheme.colorScheme.surface.copy(alpha = 0.70f) else MaterialTheme.colorScheme.surface,
-                        tonalElevation = if (translucentMode) 0.dp else 2.dp,
-                        onClick = { viewModel.openSearch() }
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 12.dp, vertical = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                Icons.Filled.Search,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Text(
-                                text = stringResource(R.string.search_apps),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(start = 8.dp)
-                            )
-                        }
-                    }
-                    Spacer(Modifier.width(4.dp))
-                    AppSortMenuButton(
-                        currentOrder = appSortOrder,
-                        onSelect = viewModel::setAppSortOrder
-                    )
-                }
-
-                if (showRecentAppsRow && recentApps.isNotEmpty()) {
-                    // Same contentPadding + horizontalArrangement as AppGrid's LazyVerticalGrid
-                    // below, so each icon's column center lines up with the grid's columns.
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 4.dp, vertical = 4.dp),
-                        horizontalArrangement = Arrangement.spacedBy(2.dp)
+                            .padding(horizontal = 12.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        repeat(appGridColumns) { index ->
-                            Box(
-                                modifier = Modifier.weight(1f),
-                                contentAlignment = Alignment.Center
+                        Surface(
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(12.dp),
+                            color = if (translucentMode) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f) else MaterialTheme.colorScheme.surface,
+                            tonalElevation = if (translucentMode) 0.dp else 2.dp,
+                            onClick = { viewModel.openSearch() }
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 12.dp, vertical = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                recentApps.getOrNull(index)?.let { app ->
-                                    RecentAppIcon(
-                                        app = app,
-                                        iconShape = taskbarSettings.iconShape,
-                                        onLaunch = { viewModel.launchApp(app.packageName); onHideTaskbar() }
-                                    )
+                                Icon(
+                                    Icons.Filled.Search,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Text(
+                                    text = stringResource(R.string.search_apps),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(start = 8.dp)
+                                )
+                            }
+                        }
+                        Spacer(Modifier.width(4.dp))
+                        AppSortMenuButton(
+                            currentOrder = appSortOrder,
+                            onSelect = viewModel::setAppSortOrder
+                        )
+                    }
+
+                    if (showRecentAppsRow && recentApps.isNotEmpty()) {
+                        // Same contentPadding + horizontalArrangement as AppGrid's LazyVerticalGrid
+                        // below, so each icon's column center lines up with the grid's columns.
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 4.dp, vertical = 4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(2.dp)
+                        ) {
+                            repeat(appGridColumns) { index ->
+                                Box(
+                                    modifier = Modifier.weight(1f),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    recentApps.getOrNull(index)?.let { app ->
+                                        RecentAppIcon(
+                                            app = app,
+                                            iconShape = taskbarSettings.iconShape,
+                                            onLaunch = { viewModel.launchApp(app.packageName); onHideTaskbar() }
+                                        )
+                                    }
                                 }
                             }
                         }
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 12.dp),
+                            thickness = 1.dp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+                        )
                     }
-                    HorizontalDivider(
-                        modifier = Modifier.padding(horizontal = 12.dp),
-                        thickness = 1.dp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+
+                    AppGrid(
+                        apps = apps,
+                        pinnedPackages = pinnedPackages,
+                        onLaunchApp = { pkg -> viewModel.launchApp(pkg); onHideTaskbar() },
+                        onPinApp = viewModel::pinApp,
+                        onUnpinApp = viewModel::unpinApp,
+                        onHideApp = viewModel::hideApp,
+                        columns = appGridColumns,
+                        iconShape = taskbarSettings.iconShape,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(gridHeight)
                     )
                 }
-
-                AppGrid(
-                    apps = apps,
-                    pinnedPackages = pinnedPackages,
-                    onLaunchApp = { pkg -> viewModel.launchApp(pkg); onHideTaskbar() },
-                    onPinApp = viewModel::pinApp,
-                    onUnpinApp = viewModel::unpinApp,
-                    onHideApp = viewModel::hideApp,
-                    columns = appGridColumns,
-                    iconShape = taskbarSettings.iconShape,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(gridHeight)
-                )
-            }
+                }
             }   // Surface
             }   // inner Box (margin wrapper)
     }           // AnimatedVisibility

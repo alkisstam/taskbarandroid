@@ -64,6 +64,8 @@
     <string name="pill_gesture_double_tap">Ketuk Dua Kali</string>
     <string name="pill_gesture_swipe_up">Geser ke Atas</string>
     <string name="pill_grain_label">Butiran</string>
+    <string name="pill_blur_label">Buram</string>
+    <string name="pill_blur_tint_label">Warna di atas buram</string>
     <string name="pill_height_label">Tinggi</string>
     <string name="pill_icon_shape_circle">Lingkaran</string>
     <string name="pill_icon_shape_default">Bawaan</string>

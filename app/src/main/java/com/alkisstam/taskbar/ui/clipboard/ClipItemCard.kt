@@ -71,6 +71,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import com.alkisstam.taskbar.ui.theme.glass
 
 @Composable
 fun ClipItemCard(
@@ -87,7 +88,8 @@ fun ClipItemCard(
 
     Surface(
         shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant,
+        color = MaterialTheme.colorScheme.surfaceVariant.glass(),
+        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = modifier.fillMaxWidth()
     ) {
         Column(
@@ -99,7 +101,7 @@ fun ClipItemCard(
                     modifier = Modifier
                         .size(32.dp)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.secondaryContainer),
+                        .background(MaterialTheme.colorScheme.secondaryContainer.glass()),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -119,7 +121,8 @@ fun ClipItemCard(
                 Spacer(Modifier.width(8.dp))
                 Surface(
                     shape = RoundedCornerShape(4.dp),
-                    color = MaterialTheme.colorScheme.surface
+                    color = MaterialTheme.colorScheme.surface.glass(),
+                    contentColor = MaterialTheme.colorScheme.onSurface
                 ) {
                     Text(
                         text = item.sourceApp,
@@ -237,7 +240,7 @@ fun ClipItemCard(
                                 .fillMaxWidth()
                                 .height(100.dp)
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(MaterialTheme.colorScheme.surface),
+                                .background(MaterialTheme.colorScheme.surface.glass()),
                             contentAlignment = Alignment.Center
                         ) {
                             if (loadFailed) {
@@ -257,7 +260,7 @@ fun ClipItemCard(
                             .fillMaxWidth()
                             .height(120.dp)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(MaterialTheme.colorScheme.surface)
+                            .background(MaterialTheme.colorScheme.surface.glass())
                             .clickable { onOpenExternal(); openFile(context, item.content, "application/pdf") },
                         contentAlignment = Alignment.Center
                     ) {
@@ -285,7 +288,7 @@ fun ClipItemCard(
                             .fillMaxWidth()
                             .height(120.dp)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(MaterialTheme.colorScheme.surface)
+                            .background(MaterialTheme.colorScheme.surface.glass())
                             .clickable { onOpenExternal(); openFile(context, item.content, mimeType) },
                         contentAlignment = Alignment.Center
                     ) {

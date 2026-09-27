@@ -53,7 +53,9 @@ import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 import com.alkisstam.taskbar.ui.theme.glassSheen
+import com.alkisstam.taskbar.ui.theme.GlassBackdrop
 import com.alkisstam.taskbar.ui.theme.grain
+import com.alkisstam.taskbar.ui.theme.glass
 
 data class VolumeStreamInfo(
     val streamType: Int,
@@ -86,16 +88,18 @@ fun VolumePanel(
         contentColor = MaterialTheme.colorScheme.onSurface,
         tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 3.dp
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.Bottom
-        ) {
-            streams.forEach { stream ->
-                VolumeSliderColumn(
-                    stream = stream,
-                    onVolumeChange = { onVolumeChange(stream.streamType, it) }
-                )
+        GlassBackdrop(enabled = translucentMode, cornerRadius = 20.dp, tint = surfaceColor.copy(alpha = translucentAlpha)) {
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.Bottom
+            ) {
+                streams.forEach { stream ->
+                    VolumeSliderColumn(
+                        stream = stream,
+                        onVolumeChange = { onVolumeChange(stream.streamType, it) }
+                    )
+                }
             }
         }
     }
@@ -140,7 +144,7 @@ private fun VolumeSliderColumn(
             modifier = Modifier
                 .size(32.dp)
                 .background(
-                    MaterialTheme.colorScheme.surfaceVariant,
+                    MaterialTheme.colorScheme.surfaceVariant.glass(),
                     RoundedCornerShape(8.dp)
                 ),
             contentAlignment = Alignment.Center
@@ -157,7 +161,7 @@ private fun VolumeSliderColumn(
                 .width(40.dp)
                 .height(140.dp)
                 .clip(RoundedCornerShape(20.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .background(MaterialTheme.colorScheme.surfaceVariant.glass())
                 .onSizeChanged { trackHeightPx = it.height.toFloat() }
                 .draggable(
                     state = draggableState,
@@ -236,52 +240,54 @@ fun BrightnessPanel(
         contentColor = MaterialTheme.colorScheme.onSurface,
         tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 3.dp
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(32.dp)
-                    .background(
-                        if (autoBrightnessEnabled) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
-                        else MaterialTheme.colorScheme.surfaceVariant,
-                        RoundedCornerShape(8.dp)
-                    )
-                    .clip(RoundedCornerShape(8.dp))
-                    .clickable { onAutoBrightnessToggle() },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = if (autoBrightnessEnabled) Icons.Filled.BrightnessAuto else Icons.Filled.BrightnessHigh,
-                    contentDescription = if (autoBrightnessEnabled) stringResource(R.string.brightness_panel_disable_auto_description) else stringResource(R.string.brightness_panel_enable_auto_description),
-                    modifier = Modifier.size(18.dp),
-                    tint = if (autoBrightnessEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(40.dp)
-                    .alpha(if (autoBrightnessEnabled) 0.4f else 1f)
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .onSizeChanged { trackWidthPx = it.width.toFloat() }
-                    .draggable(
-                        state = draggableState,
-                        orientation = Orientation.Horizontal,
-                        onDragStarted = { isDragging = true; dragAccumulator = 0f },
-                        onDragStopped = { isDragging = false }
-                    ),
-                contentAlignment = Alignment.CenterStart
+        GlassBackdrop(enabled = translucentMode, cornerRadius = 20.dp, tint = surfaceColor2.copy(alpha = translucentAlpha)) {
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
                     modifier = Modifier
-                        .fillMaxHeight()
-                        .fillMaxWidth(fraction)
-                        .background(MaterialTheme.colorScheme.primary)
-                )
+                        .size(32.dp)
+                        .background(
+                            if (autoBrightnessEnabled) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                            else MaterialTheme.colorScheme.surfaceVariant.glass(),
+                            RoundedCornerShape(8.dp)
+                        )
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable { onAutoBrightnessToggle() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = if (autoBrightnessEnabled) Icons.Filled.BrightnessAuto else Icons.Filled.BrightnessHigh,
+                        contentDescription = if (autoBrightnessEnabled) stringResource(R.string.brightness_panel_disable_auto_description) else stringResource(R.string.brightness_panel_enable_auto_description),
+                        modifier = Modifier.size(18.dp),
+                        tint = if (autoBrightnessEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(40.dp)
+                        .alpha(if (autoBrightnessEnabled) 0.4f else 1f)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant.glass())
+                        .onSizeChanged { trackWidthPx = it.width.toFloat() }
+                        .draggable(
+                            state = draggableState,
+                            orientation = Orientation.Horizontal,
+                            onDragStarted = { isDragging = true; dragAccumulator = 0f },
+                            onDragStopped = { isDragging = false }
+                        ),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .fillMaxWidth(fraction)
+                            .background(MaterialTheme.colorScheme.primary)
+                    )
+                }
             }
         }
     }

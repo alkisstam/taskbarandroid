@@ -60,6 +60,7 @@ import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.viewmodel.QuickControlItemData
 import com.alkisstam.taskbar.viewmodel.QuickControlsState
 import com.alkisstam.taskbar.data.PreferencesRepository
+import com.alkisstam.taskbar.ui.theme.glass
 
 @Composable
 fun QuickControls(
@@ -202,7 +203,7 @@ private fun QuickControlTile(
     val containerColor = if (active)
         MaterialTheme.colorScheme.primaryContainer
     else
-        MaterialTheme.colorScheme.surfaceVariant
+        MaterialTheme.colorScheme.surfaceVariant.glass()
 
     val contentColor = if (active)
         MaterialTheme.colorScheme.onPrimaryContainer

@@ -213,6 +213,8 @@ class PreferencesRepository @Inject constructor(
         private val TRANSLUCENT_MODE_KEY = booleanPreferencesKey("translucent_mode")
         private val TRANSLUCENT_ALPHA_KEY = floatPreferencesKey("translucent_alpha")
         private val GRAIN_ALPHA_KEY = floatPreferencesKey("grain_alpha")
+        private val BLUR_RADIUS_KEY = floatPreferencesKey("blur_radius_dp")
+        private val BLUR_TINT_KEY = booleanPreferencesKey("blur_tint")
         private val FUZZY_SEARCH_ENABLED_KEY = booleanPreferencesKey("fuzzy_search_enabled")
         private val SHOW_RECENT_APPS_KEY = booleanPreferencesKey("show_recent_apps")
         private val SHOW_RECENT_APPS_ROW_KEY = booleanPreferencesKey("show_recent_apps_row")
@@ -722,6 +724,26 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
+    val blurRadiusDp: Flow<Float> = safeData.map { prefs ->
+        prefs[BLUR_RADIUS_KEY] ?: 24f
+    }
+
+    suspend fun setBlurRadiusDp(value: Float) {
+        context.dataStore.edit { prefs ->
+            prefs[BLUR_RADIUS_KEY] = value
+        }
+    }
+
+    val blurTint: Flow<Boolean> = safeData.map { prefs ->
+        prefs[BLUR_TINT_KEY] ?: false
+    }
+
+    suspend fun setBlurTint(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[BLUR_TINT_KEY] = enabled
+        }
+    }
+
     val appGridColumns: Flow<Int> = safeData.map { prefs ->
         prefs[APP_GRID_COLUMNS_KEY] ?: 4
     }
@@ -793,6 +815,8 @@ class PreferencesRepository @Inject constructor(
             prefs[TRANSLUCENT_MODE_KEY]?.let { put("translucent_mode", it) }
             prefs[TRANSLUCENT_ALPHA_KEY]?.let { put("translucent_alpha", it) }
             prefs[GRAIN_ALPHA_KEY]?.let { put("grain_alpha", it) }
+            prefs[BLUR_RADIUS_KEY]?.let { put("blur_radius_dp", it) }
+            prefs[BLUR_TINT_KEY]?.let { put("blur_tint", it) }
             prefs[ICON_PACK_KEY]?.let { put("icon_pack_package", it) }
             prefs[APP_LANGUAGE_TAG_KEY]?.let { put("app_language_tag", it) }
             prefs[APP_SORT_ORDER_KEY]?.let { put("app_sort_order", it) }
@@ -850,6 +874,8 @@ class PreferencesRepository @Inject constructor(
             if (obj.has("translucent_mode")) prefs[TRANSLUCENT_MODE_KEY] = obj.getBoolean("translucent_mode")
             if (obj.has("translucent_alpha")) prefs[TRANSLUCENT_ALPHA_KEY] = obj.getDouble("translucent_alpha").toFloat()
             if (obj.has("grain_alpha")) prefs[GRAIN_ALPHA_KEY] = obj.getDouble("grain_alpha").toFloat()
+            if (obj.has("blur_radius_dp")) prefs[BLUR_RADIUS_KEY] = obj.getDouble("blur_radius_dp").toFloat()
+            if (obj.has("blur_tint")) prefs[BLUR_TINT_KEY] = obj.getBoolean("blur_tint")
             if (obj.has("icon_pack_package")) prefs[ICON_PACK_KEY] = obj.getString("icon_pack_package")
             if (obj.has("app_language_tag")) prefs[APP_LANGUAGE_TAG_KEY] = obj.getString("app_language_tag")
             if (obj.has("app_sort_order")) prefs[APP_SORT_ORDER_KEY] = obj.getString("app_sort_order")

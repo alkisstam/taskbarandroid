@@ -1,6 +1,9 @@
 package com.alkisstam.taskbar.ui.theme
 
 import android.os.Build
+import android.view.View
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -8,6 +11,12 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -21,7 +30,11 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import com.alkisstam.taskbar.service.semSetBlur
 import com.alkisstam.taskbar.data.ThemeMode
 
 private val DarkColorScheme = darkColorScheme(
@@ -131,5 +144,41 @@ fun Modifier.grain(enabled: Boolean = true, alpha: Float = 0.10f): Modifier {
                 ty += bh
             }
         }
+    }
+}
+
+// Set by OverlayService. Shared by every overlay window so panels don't each need the settings
+// threaded through as parameters.
+object GlassBlur {
+    var available by mutableStateOf(false)
+    var radiusPx by mutableIntStateOf(0)
+    var tintOverBlur by mutableStateOf(false)
+
+    fun activeFor(enabled: Boolean) = enabled && available && radiusPx > 0
+}
+
+// True inside a transparent panel, so its inner backgrounds can go see-through too.
+val LocalGlassSurface = compositionLocalOf { false }
+
+// Neutral container backgrounds at half opacity on glass (matches the notification cards).
+@Composable
+fun Color.glass(): Color = if (LocalGlassSurface.current) copy(alpha = alpha * 0.5f) else this
+
+// Frosts what's behind this panel via Samsung's per-view blur, which draws opaquely over the
+// panel's own surface colour; [tint] is re-drawn on top only when the user asks for it.
+@Composable
+fun GlassBackdrop(enabled: Boolean, cornerRadius: Dp, tint: Color, content: @Composable () -> Unit) {
+    val cornerPx = with(LocalDensity.current) { cornerRadius.toPx() }
+    Box(propagateMinConstraints = true) {
+        if (GlassBlur.activeFor(enabled)) {
+            AndroidView(
+                factory = { View(it) },
+                modifier = Modifier.matchParentSize(),
+                update = { it.semSetBlur(GlassBlur.radiusPx, cornerPx) },
+                onRelease = { it.semSetBlur(0, 0f) }
+            )
+            if (GlassBlur.tintOverBlur) Box(Modifier.matchParentSize().background(tint))
+        }
+        CompositionLocalProvider(LocalGlassSurface provides enabled) { content() }
     }
 }

@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.IconShape
 import com.alkisstam.taskbar.ui.theme.glassSheen
+import com.alkisstam.taskbar.ui.theme.GlassBackdrop
 import com.alkisstam.taskbar.ui.theme.grain
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
 
@@ -102,42 +103,44 @@ fun FloatingSearchBar(
                 tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 8.dp,
                 shadowElevation = 8.dp
             ) {
-                // Show keyboard reliably when search field is laid out
-                OutlinedTextField(
-                    value = searchQuery,
-                    onValueChange = viewModel::setSearchQuery,
-                    placeholder = { Text(stringResource(R.string.search_apps)) },
-                    leadingIcon = {
-                        IconButton(onClick = { viewModel.closeSearch() }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.search_close_description))
-                        }
-                    },
-                    trailingIcon = if (searchQuery.isNotEmpty()) {
-                        {
-                            IconButton(onClick = { viewModel.setSearchQuery("") }) {
-                                Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.search_clear_description))
+                GlassBackdrop(enabled = translucentMode, cornerRadius = 16.dp, tint = surfaceColor.copy(alpha = translucentAlpha)) {
+                    // Show keyboard reliably when search field is laid out
+                    OutlinedTextField(
+                        value = searchQuery,
+                        onValueChange = viewModel::setSearchQuery,
+                        placeholder = { Text(stringResource(R.string.search_apps)) },
+                        leadingIcon = {
+                            IconButton(onClick = { viewModel.closeSearch() }) {
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.search_close_description))
                             }
-                        }
-                    } else {
-                        { Icon(Icons.Filled.Search, contentDescription = null) }
-                    },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),
-                    keyboardActions = KeyboardActions(
-                        onGo = {
-                            // Launch the top search result if any
-                            val apps = filteredApps
-                            if (apps.isNotEmpty()) {
-                                viewModel.launchApp(apps.first().packageName)
-                                onHideTaskbar()
+                        },
+                        trailingIcon = if (searchQuery.isNotEmpty()) {
+                            {
+                                IconButton(onClick = { viewModel.setSearchQuery("") }) {
+                                    Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.search_clear_description))
+                                }
                             }
-                        }
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .focusRequester(focusRequester),
-                    shape = RoundedCornerShape(16.dp)
-                )
+                        } else {
+                            { Icon(Icons.Filled.Search, contentDescription = null) }
+                        },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),
+                        keyboardActions = KeyboardActions(
+                            onGo = {
+                                // Launch the top search result if any
+                                val apps = filteredApps
+                                if (apps.isNotEmpty()) {
+                                    viewModel.launchApp(apps.first().packageName)
+                                    onHideTaskbar()
+                                }
+                            }
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(focusRequester),
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                }
             }
             if (searchQuery.isNotEmpty()) {
                 Surface(
@@ -153,21 +156,23 @@ fun FloatingSearchBar(
                     tonalElevation = if (translucentMode) 0.dp else 6.dp,
                     shadowElevation = 6.dp
                 ) {
-                    LazyColumn(modifier = Modifier.padding(vertical = 4.dp)) {
-                        itemsIndexed(filteredApps, key = { _, app -> app.packageName }) { index, app ->
-                            SearchResultItem(
-                                app = app,
-                                isPinned = pinnedPackages.contains(app.packageName),
-                                isHighlighted = index == 0,
-                                iconShape = iconShape,
-                                onLaunch = { viewModel.launchApp(app.packageName); onHideTaskbar() },
-                                onPin = {
-                                    if (pinnedPackages.contains(app.packageName))
-                                        viewModel.unpinApp(app.packageName)
-                                    else
-                                        viewModel.pinApp(app.packageName)
-                                }
-                            )
+                    GlassBackdrop(enabled = translucentMode, cornerRadius = 16.dp, tint = surfaceColor.copy(alpha = translucentAlpha)) {
+                        LazyColumn(modifier = Modifier.padding(vertical = 4.dp)) {
+                            itemsIndexed(filteredApps, key = { _, app -> app.packageName }) { index, app ->
+                                SearchResultItem(
+                                    app = app,
+                                    isPinned = pinnedPackages.contains(app.packageName),
+                                    isHighlighted = index == 0,
+                                    iconShape = iconShape,
+                                    onLaunch = { viewModel.launchApp(app.packageName); onHideTaskbar() },
+                                    onPin = {
+                                        if (pinnedPackages.contains(app.packageName))
+                                            viewModel.unpinApp(app.packageName)
+                                        else
+                                            viewModel.pinApp(app.packageName)
+                                    }
+                                )
+                            }
                         }
                     }
                 }
@@ -185,20 +190,22 @@ fun FloatingSearchBar(
                     tonalElevation = if (translucentMode) 0.dp else 6.dp,
                     shadowElevation = 6.dp
                 ) {
-                    LazyColumn(modifier = Modifier.padding(vertical = 4.dp)) {
-                        items(recentApps, key = { it.packageName }) { app ->
-                            SearchResultItem(
-                                app = app,
-                                isPinned = pinnedPackages.contains(app.packageName),
-                                iconShape = iconShape,
-                                onLaunch = { viewModel.launchApp(app.packageName); onHideTaskbar() },
-                                onPin = {
-                                    if (pinnedPackages.contains(app.packageName))
-                                        viewModel.unpinApp(app.packageName)
-                                    else
-                                        viewModel.pinApp(app.packageName)
-                                }
-                            )
+                    GlassBackdrop(enabled = translucentMode, cornerRadius = 16.dp, tint = surfaceColor.copy(alpha = translucentAlpha)) {
+                        LazyColumn(modifier = Modifier.padding(vertical = 4.dp)) {
+                            items(recentApps, key = { it.packageName }) { app ->
+                                SearchResultItem(
+                                    app = app,
+                                    isPinned = pinnedPackages.contains(app.packageName),
+                                    iconShape = iconShape,
+                                    onLaunch = { viewModel.launchApp(app.packageName); onHideTaskbar() },
+                                    onPin = {
+                                        if (pinnedPackages.contains(app.packageName))
+                                            viewModel.unpinApp(app.packageName)
+                                        else
+                                            viewModel.pinApp(app.packageName)
+                                    }
+                                )
+                            }
                         }
                     }
                 }

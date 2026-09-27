@@ -56,6 +56,12 @@ import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.NoteItem
 import com.alkisstam.taskbar.data.TodoItem
+import com.alkisstam.taskbar.ui.theme.glass
+import com.alkisstam.taskbar.ui.theme.GlassBackdrop
+import com.alkisstam.taskbar.ui.theme.LocalGlassSurface
+import com.alkisstam.taskbar.ui.theme.GlassBlur
+import androidx.compose.material3.MenuDefaults
+import androidx.compose.ui.graphics.Color
 
 @Composable
 internal fun NoteComposer(
@@ -78,7 +84,8 @@ internal fun NoteComposer(
 
     Surface(
         shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant,
+        color = MaterialTheme.colorScheme.surfaceVariant.glass(),
+        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.25f), RoundedCornerShape(12.dp))
     ) {
         Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -114,7 +121,8 @@ internal fun NoteItemCard(
 ) {
     Surface(
         shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant,
+        color = MaterialTheme.colorScheme.surfaceVariant.glass(),
+        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
@@ -126,7 +134,7 @@ internal fun NoteItemCard(
                     modifier = Modifier
                         .size(32.dp)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.secondaryContainer),
+                        .background(MaterialTheme.colorScheme.secondaryContainer.glass()),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -139,7 +147,8 @@ internal fun NoteItemCard(
                 Spacer(Modifier.width(8.dp))
                 Surface(
                     shape = RoundedCornerShape(4.dp),
-                    color = MaterialTheme.colorScheme.surface
+                    color = MaterialTheme.colorScheme.surface.glass(),
+                    contentColor = MaterialTheme.colorScheme.onSurface
                 ) {
                     Text(
                         stringResource(R.string.note_item_badge_label),
@@ -220,7 +229,8 @@ internal fun TodoItemCard(
 ) {
     Surface(
         shape = RoundedCornerShape(12.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant,
+        color = MaterialTheme.colorScheme.surfaceVariant.glass(),
+        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -271,34 +281,51 @@ internal fun TodoItemCard(
                 IconButton(onClick = { menuExpanded = true }) {
                     Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.todo_item_more_options_action), modifier = Modifier.size(20.dp))
                 }
-                DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.todo_item_edit_menu)) },
-                        leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null) },
-                        onClick = { onEdit(); menuExpanded = false }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(if (todo.isPinned) stringResource(R.string.todo_item_unpin_menu) else stringResource(R.string.todo_item_pin_menu)) },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Default.PushPin,
-                                contentDescription = null,
-                                tint = if (todo.isPinned) MaterialTheme.colorScheme.primary else LocalContentColor.current
+                val glassMenu = GlassBlur.activeFor(LocalGlassSurface.current)
+                DropdownMenu(
+                    expanded = menuExpanded,
+                    onDismissRequest = { menuExpanded = false },
+                    containerColor = if (glassMenu) Color.Transparent else MenuDefaults.containerColor,
+                    tonalElevation = if (glassMenu) 0.dp else MenuDefaults.TonalElevation,
+                    shadowElevation = if (glassMenu) 0.dp else MenuDefaults.ShadowElevation
+                ) {
+                    // The menu is its own popup window; frost it like the panel it opens from. Its Surface
+                    // goes fully transparent on glass: the blur can't reach the 8dp padding it adds.
+                    GlassBackdrop(
+                        enabled = LocalGlassSurface.current,
+                        cornerRadius = 12.dp,
+                        tint = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.8f)
+                            ) {
+                        Column {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.todo_item_edit_menu)) },
+                                leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null) },
+                                onClick = { onEdit(); menuExpanded = false }
                             )
-                        },
-                        onClick = { onTogglePin(); menuExpanded = false }
-                    )
-                    DropdownMenuItem(
-                        text = { Text(stringResource(R.string.todo_item_delete_menu), color = MaterialTheme.colorScheme.error) },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Default.Delete,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.error
+                            DropdownMenuItem(
+                                text = { Text(if (todo.isPinned) stringResource(R.string.todo_item_unpin_menu) else stringResource(R.string.todo_item_pin_menu)) },
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Default.PushPin,
+                                        contentDescription = null,
+                                        tint = if (todo.isPinned) MaterialTheme.colorScheme.primary else LocalContentColor.current
+                                    )
+                                },
+                                onClick = { onTogglePin(); menuExpanded = false }
                             )
-                        },
-                        onClick = { onDelete(); menuExpanded = false }
-                    )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.todo_item_delete_menu), color = MaterialTheme.colorScheme.error) },
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Default.Delete,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.error
+                                    )
+                                },
+                                onClick = { onDelete(); menuExpanded = false }
+                            )
+                        }
+                    }
                 }
             }
         }

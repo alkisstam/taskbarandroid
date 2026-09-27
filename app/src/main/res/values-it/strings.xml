@@ -64,6 +64,8 @@
     <string name="pill_gesture_double_tap">Doppio tocco</string>
     <string name="pill_gesture_swipe_up">Scorri verso l\'alto</string>
     <string name="pill_grain_label">Grana</string>
+    <string name="pill_blur_label">Sfocatura</string>
+    <string name="pill_blur_tint_label">Tinta sopra la sfocatura</string>
     <string name="pill_height_label">Altezza</string>
     <string name="pill_icon_shape_circle">Cerchio</string>
     <string name="pill_icon_shape_default">Predefinita</string>

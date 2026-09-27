@@ -41,6 +41,8 @@ import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.IconShape
 import com.alkisstam.taskbar.ui.common.AppIconImage
 import com.alkisstam.taskbar.ui.common.toComposeShape
+import com.alkisstam.taskbar.ui.theme.GlassBackdrop
+import com.alkisstam.taskbar.ui.theme.LocalGlassSurface
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -152,11 +154,14 @@ private fun AppGridItem(
                     shadowElevation = 8.dp,
                     modifier = Modifier.width(180.dp)
                 ) {
-                    Column {
-                        AppGridMenuAction(
-                            if (isPinned) stringResource(R.string.app_action_unpin_from_dock) else stringResource(R.string.app_action_pin_to_dock)
-                        ) { onPin(); showMenu = false }
-                        AppGridMenuAction(stringResource(R.string.app_action_hide_app)) { onHide(); showMenu = false }
+                    // Popups inherit the panel's glass state, so the menu frosts like the panel it opens from.
+                    GlassBackdrop(enabled = LocalGlassSurface.current, cornerRadius = 12.dp, tint = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)) {
+                        Column {
+                            AppGridMenuAction(
+                                if (isPinned) stringResource(R.string.app_action_unpin_from_dock) else stringResource(R.string.app_action_pin_to_dock)
+                            ) { onPin(); showMenu = false }
+                            AppGridMenuAction(stringResource(R.string.app_action_hide_app)) { onHide(); showMenu = false }
+                        }
                     }
                 }
             }

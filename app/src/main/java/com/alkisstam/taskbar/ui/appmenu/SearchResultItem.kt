@@ -33,6 +33,12 @@ import com.alkisstam.taskbar.data.IconShape
 import com.alkisstam.taskbar.ui.common.AppIconImage
 import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import com.alkisstam.taskbar.ui.common.toComposeShape
+import com.alkisstam.taskbar.ui.theme.GlassBackdrop
+import com.alkisstam.taskbar.ui.theme.LocalGlassSurface
+import androidx.compose.foundation.layout.Column
+import com.alkisstam.taskbar.ui.theme.GlassBlur
+import androidx.compose.material3.MenuDefaults
+import androidx.compose.ui.graphics.Color
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -81,14 +87,28 @@ fun SearchResultItem(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface
         )
+        val glassMenu = GlassBlur.activeFor(LocalGlassSurface.current)
         DropdownMenu(
             expanded = showMenu,
-            onDismissRequest = { showMenu = false }
+            onDismissRequest = { showMenu = false },
+            containerColor = if (glassMenu) Color.Transparent else MenuDefaults.containerColor,
+            tonalElevation = if (glassMenu) 0.dp else MenuDefaults.TonalElevation,
+            shadowElevation = if (glassMenu) 0.dp else MenuDefaults.ShadowElevation
         ) {
-            DropdownMenuItem(
-                text = { Text(if (isPinned) stringResource(R.string.app_action_unpin_from_dock) else stringResource(R.string.app_action_pin_to_dock)) },
-                onClick = { onPin(); showMenu = false }
-            )
+            // The menu is its own popup window; frost it like the panel it opens from. Its Surface
+            // goes fully transparent on glass: the blur can't reach the 8dp padding it adds.
+            GlassBackdrop(
+                enabled = LocalGlassSurface.current,
+                cornerRadius = 12.dp,
+                tint = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.8f)
+            ) {
+                Column {
+                    DropdownMenuItem(
+                        text = { Text(if (isPinned) stringResource(R.string.app_action_unpin_from_dock) else stringResource(R.string.app_action_pin_to_dock)) },
+                        onClick = { onPin(); showMenu = false }
+                    )
+                }
+            }
         }
     }
 }

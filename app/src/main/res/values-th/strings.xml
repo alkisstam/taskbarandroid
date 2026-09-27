@@ -64,6 +64,8 @@
     <string name="pill_gesture_double_tap">แตะสองครั้ง</string>
     <string name="pill_gesture_swipe_up">ปัดขึ้น</string>
     <string name="pill_grain_label">เกรน</string>
+    <string name="pill_blur_label">ความเบลอ</string>
+    <string name="pill_blur_tint_label">สีทับความเบลอ</string>
     <string name="pill_height_label">ความสูง</string>
     <string name="pill_icon_shape_circle">วงกลม</string>
     <string name="pill_icon_shape_default">ค่าเริ่มต้น</string>

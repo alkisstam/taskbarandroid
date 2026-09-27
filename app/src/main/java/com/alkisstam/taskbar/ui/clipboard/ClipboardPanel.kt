@@ -53,9 +53,11 @@ import com.alkisstam.taskbar.data.ClipItem
 import com.alkisstam.taskbar.data.ClipType
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 import com.alkisstam.taskbar.ui.theme.glassSheen
+import com.alkisstam.taskbar.ui.theme.GlassBackdrop
 import com.alkisstam.taskbar.ui.theme.grain
 import com.alkisstam.taskbar.viewmodel.ClipboardViewModel
 import kotlinx.coroutines.launch
+import com.alkisstam.taskbar.ui.theme.glass
 
 private enum class ClipCategory {
     ALL, TEXT, IMAGES, FILES, LINKS
@@ -125,125 +127,129 @@ fun ClipboardPanel(
                 .glassSheen(enabled = translucentMode && !panelOutlineEnabled, shape = panelShape),
             shape = panelShape,
             color = if (translucentMode) panelColor.copy(alpha = translucentAlpha) else panelColor,
+            contentColor = MaterialTheme.colorScheme.onSurface,
             tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 2.dp,
             shadowElevation = 8.dp
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                if (pagerState.currentPage == 0) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState())
-                            .padding(top = 12.dp, bottom = 4.dp, start = 16.dp, end = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        ClipCategory.entries.forEach { category ->
-                            val selected = category == selectedCategory
-                            Surface(
-                                shape = RoundedCornerShape(16.dp),
-                                color = if (selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
-                                modifier = Modifier.clickable(
-                                    indication = null,
-                                    interactionSource = remember { MutableInteractionSource() }
-                                ) { selectedCategory = category }
-                            ) {
-                                Text(
-                                    category.displayLabel(),
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = if (selected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
+            GlassBackdrop(enabled = translucentMode, cornerRadius = 24.dp, tint = panelColor.copy(alpha = translucentAlpha)) {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    if (pagerState.currentPage == 0) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(rememberScrollState())
+                                .padding(top = 12.dp, bottom = 4.dp, start = 16.dp, end = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            ClipCategory.entries.forEach { category ->
+                                val selected = category == selectedCategory
+                                Surface(
+                                    shape = RoundedCornerShape(16.dp),
+                                    color = if (selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant.glass(),
+                                    contentColor = if (selected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.clickable(
+                                        indication = null,
+                                        interactionSource = remember { MutableInteractionSource() }
+                                    ) { selectedCategory = category }
+                                ) {
+                                    Text(
+                                        category.displayLabel(),
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = if (selected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    Box(modifier = Modifier.weight(1f)) {
+                        HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
+                            when (page) {
+                                0 -> ClipListTab(
+                                    items = clips
+                                        .filter { selectedCategory.matches(it.type) }
+                                        .sortedWith(
+                                            compareByDescending<ClipItem> { it.isPinned }.thenByDescending { it.timestamp }
+                                        ),
+                                    viewModel = viewModel,
+                                    onOpenExternal = onOpenExternal,
+                                    showShareHint = !shareHintDismissed,
+                                    onDismissShareHint = viewModel::dismissShareHint
+                                )
+                                1 -> FavoritesTab(
+                                    items = favorites,
+                                    viewModel = viewModel,
+                                    onOpenExternal = onOpenExternal
                                 )
                             }
                         }
                     }
-                }
 
-                Box(modifier = Modifier.weight(1f)) {
-                    HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
-                        when (page) {
-                            0 -> ClipListTab(
-                                items = clips
-                                    .filter { selectedCategory.matches(it.type) }
-                                    .sortedWith(
-                                        compareByDescending<ClipItem> { it.isPinned }.thenByDescending { it.timestamp }
-                                    ),
-                                viewModel = viewModel,
-                                onOpenExternal = onOpenExternal,
-                                showShareHint = !shareHintDismissed,
-                                onDismissShareHint = viewModel::dismissShareHint
-                            )
-                            1 -> FavoritesTab(
-                                items = favorites,
-                                viewModel = viewModel,
-                                onOpenExternal = onOpenExternal
-                            )
-                        }
-                    }
-                }
-
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp, start = 16.dp, end = 16.dp),
-                    shape = RoundedCornerShape(40.dp),
-                    tonalElevation = 6.dp,
-                    shadowElevation = 16.dp
-                ) {
-                    Row(
+                    Surface(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 8.dp, vertical = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                            .padding(bottom = 16.dp, start = 16.dp, end = 16.dp),
+                        shape = RoundedCornerShape(40.dp),
+                        tonalElevation = 6.dp,
+                        shadowElevation = 16.dp
                     ) {
-                        tabs.forEachIndexed { index, title ->
-                            val selected = pagerState.currentPage == index
-                            Box(
-                                modifier = Modifier.weight(1f),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                if (selected) {
-                                    Surface(
-                                        modifier = Modifier.clickable(
-                                            indication = null,
-                                            interactionSource = remember { MutableInteractionSource() }
-                                        ) { coroutineScope.launch { pagerState.animateScrollToPage(index) } },
-                                        shape = RoundedCornerShape(28.dp),
-                                        color = MaterialTheme.colorScheme.primaryContainer
-                                    ) {
-                                        Row(
-                                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp, vertical = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            tabs.forEachIndexed { index, title ->
+                                val selected = pagerState.currentPage == index
+                                Box(
+                                    modifier = Modifier.weight(1f),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    if (selected) {
+                                        Surface(
+                                            modifier = Modifier.clickable(
+                                                indication = null,
+                                                interactionSource = remember { MutableInteractionSource() }
+                                            ) { coroutineScope.launch { pagerState.animateScrollToPage(index) } },
+                                            shape = RoundedCornerShape(28.dp),
+                                            color = MaterialTheme.colorScheme.primaryContainer
+                                        ) {
+                                            Row(
+                                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                            ) {
+                                                Icon(
+                                                    tabIcons[index],
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(18.dp),
+                                                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                                                )
+                                                Text(
+                                                    title,
+                                                    style = MaterialTheme.typography.labelMedium,
+                                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                                    maxLines = 1
+                                                )
+                                            }
+                                        }
+                                    } else {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(48.dp)
+                                                .clip(RoundedCornerShape(24.dp))
+                                                .clickable { coroutineScope.launch { pagerState.animateScrollToPage(index) } },
+                                            contentAlignment = Alignment.Center
                                         ) {
                                             Icon(
                                                 tabIcons[index],
-                                                contentDescription = null,
-                                                modifier = Modifier.size(18.dp),
-                                                tint = MaterialTheme.colorScheme.onPrimaryContainer
-                                            )
-                                            Text(
-                                                title,
-                                                style = MaterialTheme.typography.labelMedium,
-                                                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                                maxLines = 1
+                                                contentDescription = title,
+                                                modifier = Modifier.size(22.dp),
+                                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
                                         }
-                                    }
-                                } else {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(48.dp)
-                                            .clip(RoundedCornerShape(24.dp))
-                                            .clickable { coroutineScope.launch { pagerState.animateScrollToPage(index) } },
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Icon(
-                                            tabIcons[index],
-                                            contentDescription = title,
-                                            modifier = Modifier.size(22.dp),
-                                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
                                     }
                                 }
                             }

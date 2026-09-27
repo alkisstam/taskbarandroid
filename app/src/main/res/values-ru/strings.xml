@@ -64,6 +64,8 @@
     <string name="pill_gesture_double_tap">Двойное касание</string>
     <string name="pill_gesture_swipe_up">Свайп вверх</string>
     <string name="pill_grain_label">Зернистость</string>
+    <string name="pill_blur_label">Размытие</string>
+    <string name="pill_blur_tint_label">Оттенок поверх размытия</string>
     <string name="pill_height_label">Высота</string>
     <string name="pill_icon_shape_circle">Круг</string>
     <string name="pill_icon_shape_default">По умолчанию</string>

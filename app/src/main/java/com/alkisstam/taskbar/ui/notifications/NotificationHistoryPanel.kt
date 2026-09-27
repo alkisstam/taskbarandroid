@@ -61,6 +61,7 @@ import com.alkisstam.taskbar.ui.common.AppIconImage
 import com.alkisstam.taskbar.ui.common.toComposeShape
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 import com.alkisstam.taskbar.ui.theme.glassSheen
+import com.alkisstam.taskbar.ui.theme.GlassBackdrop
 import com.alkisstam.taskbar.ui.theme.grain
 import com.alkisstam.taskbar.viewmodel.NotificationHistoryViewModel
 
@@ -112,86 +113,88 @@ fun NotificationHistoryPanel(
             tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 2.dp,
             shadowElevation = 8.dp
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, end = 4.dp, top = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(R.string.notification_history_title),
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.weight(1f)
-                    )
-                    if (notifications.isNotEmpty()) {
-                        TextButton(onClick = { viewModel.clearAll() }) {
-                            Text(stringResource(R.string.notification_history_clear_all))
+            GlassBackdrop(enabled = translucentMode, cornerRadius = 24.dp, tint = panelColor.copy(alpha = translucentAlpha)) {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, end = 4.dp, top = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(R.string.notification_history_title),
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.weight(1f)
+                        )
+                        if (notifications.isNotEmpty()) {
+                            TextButton(onClick = { viewModel.clearAll() }) {
+                                Text(stringResource(R.string.notification_history_clear_all))
+                            }
+                        }
+                        IconButton(onClick = onDismiss) {
+                            Icon(Icons.Default.Close, contentDescription = stringResource(R.string.notification_history_close))
                         }
                     }
-                    IconButton(onClick = onDismiss) {
-                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.notification_history_close))
-                    }
-                }
 
-                if (notifications.isEmpty()) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(
-                            text = stringResource(R.string.notification_history_empty_state),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                } else {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        grouped.forEach { (packageName, entries) ->
-                            if (entries.size == 1) {
-                                val entry = entries[0]
-                                item(key = entry.id) {
-                                    SwipeableNotificationCard(
-                                        onClick = { onOpenApp(packageName) },
-                                        onDelete = { viewModel.remove(entry.id) }
-                                    ) {
-                                        NotificationEntryContent(
-                                            entry = entry,
-                                            icon = iconForPackage(packageName),
-                                            showAppRow = true,
-                                            iconShape = iconShape,
-                                            actions = remember(entry.id) { viewModel.actionsFor(entry.id) },
-                                            onAction = { viewModel.sendAction(it) }
-                                        )
-                                    }
-                                }
-                            } else {
-                                val expanded = expandedMap[packageName] == true
-                                item(key = "group_$packageName") {
-                                    NotificationGroupHeader(
-                                        appLabel = entries[0].appLabel,
-                                        icon = iconForPackage(packageName),
-                                        count = entries.size,
-                                        expanded = expanded,
-                                        iconShape = iconShape,
-                                        onToggle = { expandedMap[packageName] = !expanded }
-                                    )
-                                }
-                                if (expanded) {
-                                    items(entries, key = { it.id }) { entry ->
+                    if (notifications.isEmpty()) {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text(
+                                text = stringResource(R.string.notification_history_empty_state),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            grouped.forEach { (packageName, entries) ->
+                                if (entries.size == 1) {
+                                    val entry = entries[0]
+                                    item(key = entry.id) {
                                         SwipeableNotificationCard(
                                             onClick = { onOpenApp(packageName) },
                                             onDelete = { viewModel.remove(entry.id) }
                                         ) {
                                             NotificationEntryContent(
                                                 entry = entry,
-                                                icon = null,
-                                                showAppRow = false,
+                                                icon = iconForPackage(packageName),
+                                                showAppRow = true,
                                                 iconShape = iconShape,
                                                 actions = remember(entry.id) { viewModel.actionsFor(entry.id) },
                                                 onAction = { viewModel.sendAction(it) }
                                             )
+                                        }
+                                    }
+                                } else {
+                                    val expanded = expandedMap[packageName] == true
+                                    item(key = "group_$packageName") {
+                                        NotificationGroupHeader(
+                                            appLabel = entries[0].appLabel,
+                                            icon = iconForPackage(packageName),
+                                            count = entries.size,
+                                            expanded = expanded,
+                                            iconShape = iconShape,
+                                            onToggle = { expandedMap[packageName] = !expanded }
+                                        )
+                                    }
+                                    if (expanded) {
+                                        items(entries, key = { it.id }) { entry ->
+                                            SwipeableNotificationCard(
+                                                onClick = { onOpenApp(packageName) },
+                                                onDelete = { viewModel.remove(entry.id) }
+                                            ) {
+                                                NotificationEntryContent(
+                                                    entry = entry,
+                                                    icon = null,
+                                                    showAppRow = false,
+                                                    iconShape = iconShape,
+                                                    actions = remember(entry.id) { viewModel.actionsFor(entry.id) },
+                                                    onAction = { viewModel.sendAction(it) }
+                                                )
+                                            }
                                         }
                                     }
                                 }

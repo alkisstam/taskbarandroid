@@ -35,6 +35,8 @@ import com.alkisstam.taskbar.data.IconShape
 import com.alkisstam.taskbar.ui.common.AppIconImage
 import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import com.alkisstam.taskbar.ui.common.toComposeShape
+import com.alkisstam.taskbar.ui.theme.GlassBackdrop
+import com.alkisstam.taskbar.ui.theme.LocalGlassSurface
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -97,9 +99,12 @@ fun PinnedAppItem(
                     shadowElevation = 8.dp,
                     modifier = Modifier.width(180.dp)
                 ) {
-                    Column {
-                        AppMenuAction(stringResource(R.string.pinned_app_menu_open)) { onLaunch(); showMenu = false }
-                        AppMenuAction(stringResource(R.string.pinned_app_menu_unpin)) { onUnpin(); showMenu = false }
+                    // Popups inherit the panel's glass state, so the menu frosts like the panel it opens from.
+                    GlassBackdrop(enabled = LocalGlassSurface.current, cornerRadius = 12.dp, tint = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)) {
+                        Column {
+                            AppMenuAction(stringResource(R.string.pinned_app_menu_open)) { onLaunch(); showMenu = false }
+                            AppMenuAction(stringResource(R.string.pinned_app_menu_unpin)) { onUnpin(); showMenu = false }
+                        }
                     }
                 }
             }

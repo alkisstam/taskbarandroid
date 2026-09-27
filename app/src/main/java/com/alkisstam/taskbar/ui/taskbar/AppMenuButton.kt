@@ -17,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.R
+import com.alkisstam.taskbar.ui.theme.glass
 
 @Composable
 fun AppMenuButton(
@@ -33,7 +34,7 @@ fun AppMenuButton(
         color = if (menuOpen)
             MaterialTheme.colorScheme.primaryContainer
         else
-            MaterialTheme.colorScheme.surfaceVariant,
+            MaterialTheme.colorScheme.surfaceVariant.glass(),
         shape = CircleShape
     ) {
         Box(contentAlignment = Alignment.Center) {
