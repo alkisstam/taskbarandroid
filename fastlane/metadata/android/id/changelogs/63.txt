@@ -1,0 +1,5 @@
+Baru
+• Dock kaca buram: saat Transparan aktif (Android 12+), dock kini hanya memburamkan area di belakangnya, bukan seluruh layar
+
+Perbaikan
+• Layar luar menjadi hitam setelah ponsel lipat dilipat atau dibuka
