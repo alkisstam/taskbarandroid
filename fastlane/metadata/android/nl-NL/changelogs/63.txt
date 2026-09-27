@@ -1,5 +1,6 @@
 Nieuw
 • Dock van matglas: met Transparant aan (Android 12+) vervaagt het dock nu alleen wat erachter ligt, niet het hele scherm
+• Schuifregelaar "Vervaging" en schakelaar "Tint over vervaging"; op Samsung-telefoons krijgen het dock, alle panelen en menu's nu echt matglas
 
 Opgelost
 • Zwart buitenscherm na het dicht- of openvouwen van vouwbare telefoons

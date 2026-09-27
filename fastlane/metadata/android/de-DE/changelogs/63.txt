@@ -1,5 +1,6 @@
 Neu
 • Dock aus Milchglas: Mit „Transparent“ (Android 12+) verwischt das Dock jetzt nur, was direkt dahinter liegt, statt des ganzen Bildschirms
+• Regler „Unschärfe“ und Schalter „Tönung über Unschärfe“; auf Samsung-Handys bekommen Dock, alle Panels und Menüs echtes Milchglas
 
 Behoben
 • Schwarzer Außenbildschirm nach dem Zu- oder Aufklappen bei Foldables

@@ -1,5 +1,6 @@
 Baru
 • Dock kaca buram: saat Transparan aktif (Android 12+), dock kini hanya memburamkan area di belakangnya, bukan seluruh layar
+• Penggeser "Buram" dan sakelar "Warna di atas buram"; di ponsel Samsung, dock, semua panel, dan menu kini memakai kaca buram sungguhan
 
 Perbaikan
 • Layar luar menjadi hitam setelah ponsel lipat dilipat atau dibuka

@@ -1,5 +1,6 @@
 Novidades
 • Dock de vidro fosco: com Transparente ativado (Android 12+), o dock agora desfoca só o que está atrás dele, e não a tela inteira
+• Controle "Desfoque" e opção "Tonalidade sobre o desfoque"; em celulares Samsung, o dock, todos os painéis e menus agora têm vidro fosco de verdade
 
 Correções
 • Tela externa preta depois de dobrar ou desdobrar celulares dobráveis

@@ -257,6 +257,8 @@ val whatsNewReleases = listOf(
         versionCode = 63,
         highlights = listOf(
             "Frosted glass dock — with Transparent on (Android 12+), the dock blurs only what's behind it, not the whole screen",
+            "New Blur slider and Tint over blur switch next to Grain",
+            "Samsung phones: real frosted glass on the dock, every panel, popup and menu",
             "Fixed the outer screen staying black after folding or unfolding on foldable phones"
         )
     )

@@ -1,5 +1,6 @@
 Nouveautés
 • Dock en verre dépoli : avec Transparent activé (Android 12+), le dock floute désormais uniquement ce qui se trouve derrière lui, et non tout l'écran
+• Curseur « Flou » et option « Teinte sur le flou » ; sur les téléphones Samsung, le dock, tous les panneaux et menus ont désormais un vrai verre dépoli
 
 Corrections
 • Écran extérieur noir après avoir plié ou déplié un téléphone pliable

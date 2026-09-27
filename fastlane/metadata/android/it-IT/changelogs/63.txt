@@ -1,5 +1,6 @@
 Novità
 • Dock in vetro satinato: con Trasparente attivo (Android 12+), il dock ora sfoca solo ciò che si trova dietro, non tutto lo schermo
+• Cursore «Sfocatura» e interruttore «Tinta sopra la sfocatura»; sui telefoni Samsung dock, pannelli e menu ora hanno un vero vetro satinato
 
 Correzioni
 • Schermo esterno nero dopo aver piegato o aperto un telefono pieghevole
