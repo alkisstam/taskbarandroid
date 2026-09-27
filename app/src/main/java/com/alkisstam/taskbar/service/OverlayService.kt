@@ -12,11 +12,13 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
 import android.content.res.Configuration
+import android.hardware.display.DisplayManager
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
+import android.view.Display
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
@@ -257,6 +259,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 pillDisabledForLockscreen = false
                 updatePillLayoutForConfig()
             }
+            if (pendingFoldRefresh) {
+                pendingFoldRefresh = false
+                refreshAllViews()
+            }
             if (overlayView?.isAttachedToWindow != true) addOverlayView()
             if (taskbarView?.isAttachedToWindow != true) addTaskbarView()
             if (pillView?.isAttachedToWindow != true) addPillView()
@@ -266,6 +272,35 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 pillView?.visibility = View.VISIBLE
                 pillView2?.visibility = View.VISIBLE
             }
+        }
+    }
+
+    private val displayManager by lazy { getSystemService(Context.DISPLAY_SERVICE) as DisplayManager }
+    private var lastDisplaySize: Pair<Int, Int>? = null
+    private var pendingFoldRefresh = false
+
+    private fun defaultDisplaySize(): Pair<Int, Int>? =
+        displayManager.getDisplay(Display.DEFAULT_DISPLAY)?.mode?.let { it.physicalWidth to it.physicalHeight }
+
+    private val foldRefreshRunnable = Runnable {
+        if (overlayHiddenForLockscreen) pendingFoldRefresh = true else refreshAllViews()
+    }
+
+    // Foldables swap the default display's panel on fold/unfold. Windows left attached across
+    // the swap (worst with TYPE_ACCESSIBILITY_OVERLAY) can keep the newly active panel black,
+    // so detach them immediately and re-add once the display has settled.
+    private val displayListener = object : DisplayManager.DisplayListener {
+        override fun onDisplayAdded(displayId: Int) {}
+        override fun onDisplayRemoved(displayId: Int) {}
+        override fun onDisplayChanged(displayId: Int) {
+            if (displayId != Display.DEFAULT_DISPLAY) return
+            val size = defaultDisplaySize() ?: return
+            if (size == lastDisplaySize) return
+            Log.d(TAG, "Default display size $lastDisplaySize -> $size; detaching overlays")
+            lastDisplaySize = size
+            handler.removeCallbacks(foldRefreshRunnable)
+            removeOverlayView()
+            handler.postDelayed(foldRefreshRunnable, 1000)
         }
     }
 
@@ -337,6 +372,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         }
         ContextCompat.registerReceiver(this, lockscreenReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
         registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+        lastDisplaySize = defaultDisplaySize()
+        displayManager.registerDisplayListener(displayListener, handler)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -1370,6 +1407,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         // A SCREEN_ON post queued just before destroy would otherwise run after this method
         // and re-add windows that nothing ever removes (dead ViewModels, cancelled scope).
         handler.removeCallbacksAndMessages(null)
+        displayManager.unregisterDisplayListener(displayListener)
         try {
             unregisterReceiver(lockscreenReceiver)
             unregisterReceiver(batteryReceiver)
