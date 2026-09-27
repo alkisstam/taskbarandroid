@@ -21,3 +21,4 @@ skills-lock.json
 
 # Play Developer API credential
 fastlane/play-service-account.json
+fastlane/report.xml
