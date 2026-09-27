@@ -1,0 +1,5 @@
+Novedades
+• Dock de vidrio esmerilado: con Transparente activado (Android 12+), el dock ahora desenfoca solo lo que tiene detrás, no toda la pantalla
+
+Correcciones
+• Pantalla exterior en negro al plegar o desplegar teléfonos plegables

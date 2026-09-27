@@ -1,0 +1,5 @@
+Nouveautés
+• Dock en verre dépoli : avec Transparent activé (Android 12+), le dock floute désormais uniquement ce qui se trouve derrière lui, et non tout l'écran
+
+Corrections
+• Écran extérieur noir après avoir plié ou déplié un téléphone pliable

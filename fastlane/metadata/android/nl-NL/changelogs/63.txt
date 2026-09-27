@@ -1,0 +1,5 @@
+Nieuw
+• Dock van matglas: met Transparant aan (Android 12+) vervaagt het dock nu alleen wat erachter ligt, niet het hele scherm
+
+Opgelost
+• Zwart buitenscherm na het dicht- of openvouwen van vouwbare telefoons

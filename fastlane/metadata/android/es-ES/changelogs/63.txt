@@ -1,0 +1,5 @@
+Novedades
+• Dock de cristal esmerilado: con Transparente activado (Android 12+), el dock ahora desenfoca solo lo que tiene detrás, no toda la pantalla
+
+Solucionado
+• Pantalla exterior en negro al plegar o desplegar móviles plegables

@@ -4,6 +4,18 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.5.10] - 2026-09-27
+
+Frosted glass behind the dock, foldable screen fix.
+
+### Added
+- **Dock-only background blur** — with Transparent on (Android 12+), the dock now frosts just the area behind it instead of the whole screen, clipped to the dock's rounded corners. The blur hides while the dock slides, expands, or collapses and fades back in once it settles. Devices or states without cross-window blur (battery saver, some OEMs) keep the plain translucent look.
+
+### Fixed
+- **Black outer screen on foldables** — on fold/unfold the active display panel swaps; overlay windows left attached across the swap (especially accessibility overlays) could keep the outer screen black on Pixel Fold. Overlays now detach on the swap and re-attach once the display has settled.
+
+---
+
 ## [1.5.9] - 2026-09-20
 
 More pill gestures: new swipe-down actions, hold-and-drag for brightness and volume.

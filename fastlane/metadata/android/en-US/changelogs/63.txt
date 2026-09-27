@@ -1,0 +1,5 @@
+Added
+• Frosted glass dock: with Transparent on (Android 12+), the dock now blurs only what's behind it, not the whole screen
+
+Fixed
+• Black outer screen after folding or unfolding on foldable phones

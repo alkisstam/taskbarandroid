@@ -251,6 +251,14 @@ val whatsNewReleases = listOf(
             "New Hold and Drag pill gesture — hold the pill, then drag up or down to change brightness or media volume, with an on-screen level indicator",
             "The pill now hides itself while a screenshot is taken"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.5.10",
+        versionCode = 63,
+        highlights = listOf(
+            "Frosted glass dock — with Transparent on (Android 12+), the dock blurs only what's behind it, not the whole screen",
+            "Fixed the outer screen staying black after folding or unfolding on foldable phones"
+        )
     )
 )
 

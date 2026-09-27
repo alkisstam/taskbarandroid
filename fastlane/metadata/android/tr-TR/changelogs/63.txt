@@ -1,0 +1,5 @@
+Yenilikler
+• Buzlu cam dock: Saydam açıkken (Android 12+), dock artık tüm ekranı değil yalnızca arkasındakini bulanıklaştırır
+
+Düzeltmeler
+• Katlanabilir telefonlarda katlama veya açma sonrası dış ekranın siyah kalması

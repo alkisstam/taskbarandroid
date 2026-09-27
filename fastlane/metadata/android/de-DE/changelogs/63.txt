@@ -1,0 +1,5 @@
+Neu
+• Dock aus Milchglas: Mit „Transparent“ (Android 12+) verwischt das Dock jetzt nur, was direkt dahinter liegt, statt des ganzen Bildschirms
+
+Behoben
+• Schwarzer Außenbildschirm nach dem Zu- oder Aufklappen bei Foldables
