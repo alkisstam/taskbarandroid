@@ -8,6 +8,7 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import android.util.Log
+import androidx.compose.ui.unit.IntRect
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alkisstam.taskbar.data.AppInfo
@@ -277,6 +278,13 @@ class TaskbarViewModel @Inject constructor(
 
     fun setRevealProgress(p: Float) { _dockRevealProgress.value = p.coerceIn(0f, 1f) }
     fun cancelReveal() { _dockRevealProgress.value = 0f }
+
+    // Last reported on-screen bounds of the dock surface (px). May be stale while the dock is
+    // hidden; OverlayService gates the dock-only background blur on isTaskbarVisible too.
+    private val _dockBounds = MutableStateFlow<IntRect?>(null)
+    val dockBounds: StateFlow<IntRect?> = _dockBounds.asStateFlow()
+
+    fun setDockBounds(bounds: IntRect?) { _dockBounds.value = bounds }
 
     private val _isSettingsOpen = MutableStateFlow(false)
     val isSettingsOpen: StateFlow<Boolean> = _isSettingsOpen.asStateFlow()

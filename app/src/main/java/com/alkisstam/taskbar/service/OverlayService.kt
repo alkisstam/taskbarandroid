@@ -64,6 +64,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -132,6 +137,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private var calculatorPanelView: View? = null
     private var notificationPanelView: View? = null
     private var levelIndicatorView: View? = null
+    private var dockBlurWindow: DockBlurWindow? = null
+    // Whether the dock's host view is actually on screen (not GONE for lockscreen/landscape,
+    // not detached). Compose keeps reporting bounds while an ancestor is GONE.
+    private val dockHostShown = MutableStateFlow(false)
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var observersStarted = false
 
@@ -276,6 +285,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     companion object {
         private const val TAG = "OverlayService"
+        private const val DOCK_BLUR_SETTLE_MS = 120L
         private const val NOTIFICATION_ID = 1001
         private const val CHANNEL_ID = "taskbar_overlay_channel"
         const val ACTION_SETTINGS_OPEN = "com.alkisstam.taskbar.ACTION_SETTINGS_OPEN"
@@ -367,6 +377,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         }
         publishNavBarInset()
         addClipboardBlurView()
+        addDockBlurWindow()
         addTaskbarView()
         addOverlayView()
         addPillView()
@@ -395,6 +406,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             observeNotesPanel()
             observeQuickSettingsPanel()
             observeNotificationPanel()
+            observeDockBlur()
         }
         return START_STICKY
     }
@@ -764,6 +776,16 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 }
             }
             val wrapper = object : FrameLayout(this) {
+                // Identity checks: on a rebuild the old wrapper can detach after the new one
+                // has already attached, and must not clobber its state.
+                override fun onVisibilityAggregated(isVisible: Boolean) {
+                    super.onVisibilityAggregated(isVisible)
+                    if (taskbarView === this) dockHostShown.value = isVisible
+                }
+                override fun onDetachedFromWindow() {
+                    super.onDetachedFromWindow()
+                    if (taskbarView === this || taskbarView == null) dockHostShown.value = false
+                }
                 override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
                     val result = super.dispatchTouchEvent(ev)
                     if (!result && ev.action == MotionEvent.ACTION_DOWN
@@ -1043,6 +1065,48 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         }
     }
 
+    private fun addDockBlurWindow() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return
+        if (dockBlurWindow?.isAttached == true) return
+        // Without the a11y service the dock is also an app overlay, so a blur window added
+        // after it would stack on top and frost the dock itself. Wait for the next full rebuild.
+        if (taskbarView?.isAttachedToWindow == true && TaskBarAccessibilityService.instance == null) return
+        try {
+            val window = dockBlurWindow ?: DockBlurWindow(this).also { dockBlurWindow = it }
+            window.attach()
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to add dock blur window", e)
+            dockBlurWindow?.detach()
+            dockBlurWindow = null
+        }
+    }
+
+    // Dock-only frosted background in Transparent mode. The blur is a separate window, so
+    // it can't follow the dock frame-by-frame: hide it while the dock moves and fade it back
+    // in once the bounds have been stable for DOCK_BLUR_SETTLE_MS.
+    private fun observeDockBlur() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return
+        serviceScope.launch {
+            combine(
+                taskbarViewModel.translucentMode,
+                taskbarViewModel.isTaskbarVisible,
+                taskbarViewModel.dockBounds,
+                dockHostShown,
+                taskbarViewModel.taskbarSettings
+            ) { translucent, visible, bounds, hostShown, settings ->
+                if (translucent && visible && hostShown && bounds != null)
+                    bounds to settings.cornerRadiusDp * resources.displayMetrics.density
+                else null
+            }.distinctUntilChanged().collectLatest { target ->
+                val blur = dockBlurWindow ?: return@collectLatest
+                blur.hide()
+                if (target == null) return@collectLatest
+                delay(DOCK_BLUR_SETTLE_MS)
+                blur.show(target.first, target.second)
+            }
+        }
+    }
+
     private fun addClipboardPanelView() {
         if (clipboardPanelView?.isAttachedToWindow == true) return
         clipboardPanelView?.let { removeViewFromAnyWM(it) }
@@ -1302,6 +1366,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         quickSettingsPanelView?.let { removeViewFromAnyWM(it) }; quickSettingsPanelView = null
         notificationPanelView?.let { removeViewFromAnyWM(it) }; notificationPanelView = null
         clipboardBlurView?.let { removeViewFromAnyWM(it) }; clipboardBlurView = null
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) dockBlurWindow?.detach()
+        dockBlurWindow = null
         calculatorPanelView?.let { removeViewFromAnyWM(it) }; calculatorPanelView = null
         levelIndicatorView?.let { removeViewFromAnyWM(it) }; levelIndicatorView = null
     }
@@ -1310,6 +1376,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         if (!observersStarted) return
         removeOverlayView()
         addClipboardBlurView()
+        addDockBlurWindow()
         addTaskbarView()
         addOverlayView()
         addPillView()

@@ -48,9 +48,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.AppMenuButtonSide
@@ -121,6 +125,8 @@ fun TaskbarView(
     val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
     val grainAlpha by taskbarViewModel.grainAlpha.collectAsState()
 
+    val hostView = LocalView.current
+
     Box(
         modifier = modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
@@ -129,6 +135,19 @@ fun TaskbarView(
             modifier = Modifier
                 .fillMaxWidth(dockWidthFraction)
                 .wrapContentHeight()
+                .onGloballyPositioned { coords ->
+                    // boundsInWindow includes the parent's reveal translation, so the blur
+                    // window sees the dock moving and waits for it to settle.
+                    val b = coords.boundsInWindow()
+                    val origin = IntArray(2).also { hostView.getLocationOnScreen(it) }
+                    taskbarViewModel.setDockBounds(
+                        if (b.isEmpty) null
+                        else IntRect(
+                            origin[0] + b.left.toInt(), origin[1] + b.top.toInt(),
+                            origin[0] + b.right.toInt(), origin[1] + b.bottom.toInt()
+                        )
+                    )
+                }
                 .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, dockCornerShape) else Modifier)
                 .clip(dockCornerShape)
                 .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
