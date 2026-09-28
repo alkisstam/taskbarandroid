@@ -172,9 +172,11 @@ object GlassBlur {
     fun windowActiveFor(enabled: Boolean) = enabled && windowBlur && radiusPx > 0
 
     // Samsung's blur covers the panel surface, so there the tint is re-drawn by GlassBackdrop.
-    // A blur window sits under the panel window instead, so drop the surface's own tint.
-    fun surfaceAlpha(translucentAlpha: Float) =
-        if (windowBlur && radiusPx > 0 && !tintOverBlur) 0f else translucentAlpha
+    // A blur window, or a [screenBlurred] panel's full-screen blur, sits under the panel
+    // window instead, so drop the surface's own tint.
+    fun surfaceAlpha(translucentAlpha: Float, screenBlurred: Boolean = false) =
+        if (radiusPx > 0 && !tintOverBlur && (windowBlur || (screenBlurred && available))) 0f
+        else translucentAlpha
 }
 
 // True inside a transparent panel, so its inner backgrounds can go see-through too.
@@ -188,17 +190,20 @@ fun Color.glass(): Color = if (LocalGlassSurface.current) copy(alpha = alpha * 0
 // panel's own surface colour; [tint] is re-drawn on top only when the user asks for it.
 // With [windowBlur], stock Android gets a blur window under the panel instead; leave it off
 // where the window already blurs the whole screen or has its own blur window (dock).
+// [screenBlurred] panels sit in a window that frosts the whole screen, so blurring the panel
+// again would double the blur inside it.
 @Composable
 fun GlassBackdrop(
     enabled: Boolean,
     cornerRadius: Dp,
     tint: Color,
     windowBlur: Boolean = false,
+    screenBlurred: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val cornerPx = with(LocalDensity.current) { cornerRadius.toPx() }
     Box(propagateMinConstraints = true) {
-        if (GlassBlur.activeFor(enabled)) {
+        if (!screenBlurred && GlassBlur.activeFor(enabled)) {
             AndroidView(
                 factory = { View(it) },
                 modifier = Modifier.matchParentSize(),

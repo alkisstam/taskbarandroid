@@ -100,11 +100,11 @@ fun FloatingSearchBar(
                     .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
                     .glassSheen(enabled = translucentMode, shape = RoundedCornerShape(16.dp)),
                 shape = RoundedCornerShape(16.dp),
-                color = if (translucentMode) surfaceColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha)) else surfaceColor,
+                color = if (translucentMode) surfaceColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha, screenBlurred = true)) else surfaceColor,
                 tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 8.dp,
                 shadowElevation = 8.dp
             ) {
-                GlassBackdrop(enabled = translucentMode, cornerRadius = 16.dp, tint = surfaceColor.copy(alpha = translucentAlpha)) {
+                GlassBackdrop(enabled = translucentMode, cornerRadius = 16.dp, tint = surfaceColor.copy(alpha = translucentAlpha), screenBlurred = true) {
                     // Show keyboard reliably when search field is laid out
                     OutlinedTextField(
                         value = searchQuery,
@@ -153,11 +153,11 @@ fun FloatingSearchBar(
                         .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
                         .glassSheen(enabled = translucentMode, shape = RoundedCornerShape(16.dp)),
                     shape = RoundedCornerShape(16.dp),
-                    color = if (translucentMode) surfaceColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha)) else surfaceColor,
+                    color = if (translucentMode) surfaceColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha, screenBlurred = true)) else surfaceColor,
                     tonalElevation = if (translucentMode) 0.dp else 6.dp,
                     shadowElevation = 6.dp
                 ) {
-                    GlassBackdrop(enabled = translucentMode, cornerRadius = 16.dp, tint = surfaceColor.copy(alpha = translucentAlpha)) {
+                    GlassBackdrop(enabled = translucentMode, cornerRadius = 16.dp, tint = surfaceColor.copy(alpha = translucentAlpha), screenBlurred = true) {
                         LazyColumn(modifier = Modifier.padding(vertical = 4.dp)) {
                             itemsIndexed(filteredApps, key = { _, app -> app.packageName }) { index, app ->
                                 SearchResultItem(
@@ -187,11 +187,11 @@ fun FloatingSearchBar(
                         .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
                         .glassSheen(enabled = translucentMode, shape = RoundedCornerShape(16.dp)),
                     shape = RoundedCornerShape(16.dp),
-                    color = if (translucentMode) surfaceColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha)) else surfaceColor,
+                    color = if (translucentMode) surfaceColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha, screenBlurred = true)) else surfaceColor,
                     tonalElevation = if (translucentMode) 0.dp else 6.dp,
                     shadowElevation = 6.dp
                 ) {
-                    GlassBackdrop(enabled = translucentMode, cornerRadius = 16.dp, tint = surfaceColor.copy(alpha = translucentAlpha)) {
+                    GlassBackdrop(enabled = translucentMode, cornerRadius = 16.dp, tint = surfaceColor.copy(alpha = translucentAlpha), screenBlurred = true) {
                         LazyColumn(modifier = Modifier.padding(vertical = 4.dp)) {
                             items(recentApps, key = { it.packageName }) { app ->
                                 SearchResultItem(

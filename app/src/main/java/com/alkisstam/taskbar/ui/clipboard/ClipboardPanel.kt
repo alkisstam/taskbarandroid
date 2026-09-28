@@ -127,12 +127,12 @@ fun ClipboardPanel(
                 .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
                 .glassSheen(enabled = translucentMode && !panelOutlineEnabled, shape = panelShape),
             shape = panelShape,
-            color = if (translucentMode) panelColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha)) else panelColor,
+            color = if (translucentMode) panelColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha, screenBlurred = true)) else panelColor,
             contentColor = MaterialTheme.colorScheme.onSurface,
             tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 2.dp,
             shadowElevation = 8.dp
         ) {
-            GlassBackdrop(enabled = translucentMode, cornerRadius = 24.dp, tint = panelColor.copy(alpha = translucentAlpha)) {
+            GlassBackdrop(enabled = translucentMode, cornerRadius = 24.dp, tint = panelColor.copy(alpha = translucentAlpha), screenBlurred = true) {
                 Column(modifier = Modifier.fillMaxSize()) {
                     if (pagerState.currentPage == 0) {
                         Row(
