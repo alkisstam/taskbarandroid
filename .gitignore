@@ -22,3 +22,6 @@ skills-lock.json
 # Play Developer API credential
 fastlane/play-service-account.json
 fastlane/report.xml
+
+# Firebase config (public repo)
+app/google-services.json
