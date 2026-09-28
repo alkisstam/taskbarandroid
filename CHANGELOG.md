@@ -12,10 +12,12 @@ Frosted glass behind the dock and every panel, adjustable blur, foldable screen 
 - **Dock-only background blur** — with Transparent on (Android 12+), the dock now frosts just the area behind it instead of the whole screen, clipped to the dock's rounded corners. The blur hides while the dock slides, expands, or collapses and fades back in once it settles. Devices or states without cross-window blur (battery saver, some OEMs) keep the plain translucent look.
 - **Blur slider** — Settings → Design, next to Grain: sets blur strength (0–48dp, default 24dp) for the dock, search and full-screen panels; 0 turns it off. Included in backup/restore.
 - **Samsung frosted glass** — One UI disables Android's standard window blur, so on Samsung phones the dock, app menu, search, volume, brightness, music, calculator, clipboard, notes, quick settings, notification history, long-press popups and dropdown menus now blur through Samsung's own API. The blur follows the dock frame-by-frame (no settle delay) and drops the theme tint for a cleaner look; inner backgrounds (quick control circles, cards, keys, sliders) go half-transparent to match.
-- **Tint over blur** — switch under the Blur slider that brings the theme colour back on top of the glass. Off by default.
+- **Panel glass on other phones** — on Pixel, OnePlus/OPPO and other phones with Android's window blur, the app menu, volume, brightness, music and calculator panels now frost what's behind them too (needs the accessibility service). Like the dock, the blur hides while a panel moves and fades back in once it settles, and follows the Blur slider.
+- **Tint over blur** — switch under the Blur slider that brings the theme colour back on top of the glass. Off by default, which leaves the dock and panels as pure glass on every phone with blur.
 
 ### Fixed
 - **Black outer screen on foldables** — on fold/unfold the active display panel swaps; overlay windows left attached across the swap (especially accessibility overlays) could keep the outer screen black on Pixel Fold. Overlays now detach on the swap and re-attach once the display has settled.
+- **Blur stuck on the lock screen** — locking the phone with clipboard, notes, quick settings or notification history open left the full-screen blur over the lock screen and always-on display until a panel was toggled again. Those panels now close when the screen turns off; unsent note text is kept.
 
 ---
 

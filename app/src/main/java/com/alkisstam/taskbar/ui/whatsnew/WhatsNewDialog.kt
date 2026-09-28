@@ -259,7 +259,9 @@ val whatsNewReleases = listOf(
             "Frosted glass dock — with Transparent on (Android 12+), the dock blurs only what's behind it, not the whole screen",
             "New Blur slider and Tint over blur switch next to Grain",
             "Samsung phones: real frosted glass on the dock, every panel, popup and menu",
-            "Fixed the outer screen staying black after folding or unfolding on foldable phones"
+            "Other phones: the app menu, volume, brightness, music and calculator panels are frosted glass too",
+            "Fixed the outer screen staying black after folding or unfolding on foldable phones",
+            "Fixed the blur staying on the lock screen after locking with a panel open"
         )
     )
 )

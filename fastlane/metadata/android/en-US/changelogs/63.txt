@@ -1,6 +1,7 @@
 Added
 • Frosted glass dock: with Transparent on (Android 12+), the dock now blurs only what's behind it, not the whole screen
-• Blur slider and "Tint over blur" switch; on Samsung phones the dock, every panel and menu now get real frosted glass
+• Blur slider and "Tint over blur" switch; on Samsung phones the dock, every panel and menu now get real frosted glass; other phones get it on the app menu and floating panels
 
 Fixed
 • Black outer screen after folding or unfolding on foldable phones
+• Blur staying on the lock screen after locking with a panel open

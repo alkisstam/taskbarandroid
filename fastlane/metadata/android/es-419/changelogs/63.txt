@@ -1,6 +1,7 @@
 Novedades
 • Dock de vidrio esmerilado: con Transparente activado (Android 12+), el dock ahora desenfoca solo lo que tiene detrás, no toda la pantalla
-• Control «Desenfoque» e interruptor «Tinte sobre el desenfoque»; en teléfonos Samsung el dock, todos los paneles y menús ahora tienen vidrio esmerilado real
+• Control «Desenfoque» e interruptor «Tinte sobre el desenfoque»; en teléfonos Samsung el dock, todos los paneles y menús tienen vidrio esmerilado real; en otros, el menú de apps y los paneles flotantes
 
 Correcciones
 • Pantalla exterior en negro al plegar o desplegar teléfonos plegables
+• Desenfoque atascado en la pantalla de bloqueo
