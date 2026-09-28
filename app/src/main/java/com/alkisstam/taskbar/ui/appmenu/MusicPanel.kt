@@ -67,7 +67,7 @@ fun MusicPanel(
         color = if (translucentMode) surfaceColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha)) else surfaceColor,
         contentColor = MaterialTheme.colorScheme.onSurface,
         tonalElevation = if (translucentMode) 0.dp else 3.dp,
-        shadowElevation = 8.dp,
+        shadowElevation = if (translucentMode) 0.dp else 8.dp,
         modifier = modifier
             .fillMaxWidth(dockWidthFraction)
             .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, cornerShape) else Modifier)

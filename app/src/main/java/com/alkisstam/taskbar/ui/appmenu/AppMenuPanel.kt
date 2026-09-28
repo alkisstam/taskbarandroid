@@ -104,7 +104,7 @@ fun AppMenuPanel(
                 color = if (translucentMode) panelColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha)) else panelColor,
                 contentColor = MaterialTheme.colorScheme.onSurface,
                 tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 4.dp,
-                shadowElevation = 8.dp
+                shadowElevation = if (translucentMode) 0.dp else 8.dp
             ) {
                 // Samsung's blur ignores Compose alpha, so drop it as soon as the fade-out starts.
                 GlassBackdrop(enabled = translucentMode && menuVisible, cornerRadius = 20.dp, tint = panelColor.copy(alpha = translucentAlpha), windowBlur = true) {

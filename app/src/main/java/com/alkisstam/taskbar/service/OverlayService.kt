@@ -175,6 +175,15 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     val disablePill = this@OverlayService::taskbarViewModel.isInitialized &&
                             taskbarViewModel.disableOnLockscreen.value
                     handler.post {
+                        // Left open, a full-screen panel keeps its blur window frosting the
+                        // lock screen and AOD. Their compositions stay alive, so drafts survive.
+                        if (this@OverlayService::appMenuViewModel.isInitialized) {
+                            appMenuViewModel.dismissClipboardPanel()
+                            appMenuViewModel.dismissNotesPanel()
+                            appMenuViewModel.dismissQuickSettingsPanel()
+                            appMenuViewModel.dismissNotificationPanel()
+                        }
+                        updateClipboardBlur()
                         overlayView?.visibility = View.GONE
                         taskbarView?.visibility = View.GONE
                         pillView?.visibility = View.GONE

@@ -200,7 +200,7 @@ fun TaskbarView(
             shape = dockCornerShape,
             color = if (translucentMode) surfaceColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha)) else surfaceColor,
             tonalElevation = if (translucentMode) 0.dp else 3.dp,
-            shadowElevation = 8.dp
+            shadowElevation = if (translucentMode) 0.dp else 8.dp
         ) {
             // In-window, so it tracks the dock every frame (reveal, expand) instead of
             // waiting for a separate blur window to catch up.

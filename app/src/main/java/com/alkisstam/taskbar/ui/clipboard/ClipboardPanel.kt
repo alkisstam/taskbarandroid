@@ -130,7 +130,7 @@ fun ClipboardPanel(
             color = if (translucentMode) panelColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha, screenBlurred = true)) else panelColor,
             contentColor = MaterialTheme.colorScheme.onSurface,
             tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 2.dp,
-            shadowElevation = 8.dp
+            shadowElevation = if (translucentMode) 0.dp else 8.dp
         ) {
             GlassBackdrop(enabled = translucentMode, cornerRadius = 24.dp, tint = panelColor.copy(alpha = translucentAlpha), screenBlurred = true) {
                 Column(modifier = Modifier.fillMaxSize()) {

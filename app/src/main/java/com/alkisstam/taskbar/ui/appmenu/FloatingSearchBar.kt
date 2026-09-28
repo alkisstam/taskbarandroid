@@ -102,7 +102,7 @@ fun FloatingSearchBar(
                 shape = RoundedCornerShape(16.dp),
                 color = if (translucentMode) surfaceColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha, screenBlurred = true)) else surfaceColor,
                 tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 8.dp,
-                shadowElevation = 8.dp
+                shadowElevation = if (translucentMode) 0.dp else 8.dp
             ) {
                 GlassBackdrop(enabled = translucentMode, cornerRadius = 16.dp, tint = surfaceColor.copy(alpha = translucentAlpha), screenBlurred = true) {
                     // Show keyboard reliably when search field is laid out
@@ -155,7 +155,7 @@ fun FloatingSearchBar(
                     shape = RoundedCornerShape(16.dp),
                     color = if (translucentMode) surfaceColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha, screenBlurred = true)) else surfaceColor,
                     tonalElevation = if (translucentMode) 0.dp else 6.dp,
-                    shadowElevation = 6.dp
+                    shadowElevation = if (translucentMode) 0.dp else 6.dp
                 ) {
                     GlassBackdrop(enabled = translucentMode, cornerRadius = 16.dp, tint = surfaceColor.copy(alpha = translucentAlpha), screenBlurred = true) {
                         LazyColumn(modifier = Modifier.padding(vertical = 4.dp)) {
@@ -189,7 +189,7 @@ fun FloatingSearchBar(
                     shape = RoundedCornerShape(16.dp),
                     color = if (translucentMode) surfaceColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha, screenBlurred = true)) else surfaceColor,
                     tonalElevation = if (translucentMode) 0.dp else 6.dp,
-                    shadowElevation = 6.dp
+                    shadowElevation = if (translucentMode) 0.dp else 6.dp
                 ) {
                     GlassBackdrop(enabled = translucentMode, cornerRadius = 16.dp, tint = surfaceColor.copy(alpha = translucentAlpha), screenBlurred = true) {
                         LazyColumn(modifier = Modifier.padding(vertical = 4.dp)) {
