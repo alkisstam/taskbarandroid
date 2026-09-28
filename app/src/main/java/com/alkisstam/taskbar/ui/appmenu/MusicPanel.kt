@@ -41,6 +41,7 @@ import com.alkisstam.taskbar.data.MediaState
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 import com.alkisstam.taskbar.ui.theme.glassSheen
 import com.alkisstam.taskbar.ui.theme.GlassBackdrop
+import com.alkisstam.taskbar.ui.theme.GlassBlur
 import com.alkisstam.taskbar.ui.theme.grain
 import com.alkisstam.taskbar.ui.theme.glass
 
@@ -63,7 +64,7 @@ fun MusicPanel(
     val cornerShape = RoundedCornerShape(cornerRadiusDp.dp)
     Surface(
         shape = cornerShape,
-        color = if (translucentMode) surfaceColor.copy(alpha = translucentAlpha) else surfaceColor,
+        color = if (translucentMode) surfaceColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha)) else surfaceColor,
         contentColor = MaterialTheme.colorScheme.onSurface,
         tonalElevation = if (translucentMode) 0.dp else 3.dp,
         shadowElevation = 8.dp,
@@ -74,7 +75,7 @@ fun MusicPanel(
             .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
             .glassSheen(enabled = translucentMode && !panelOutlineEnabled, shape = cornerShape)
     ) {
-        GlassBackdrop(enabled = translucentMode, cornerRadius = cornerRadiusDp.dp, tint = surfaceColor.copy(alpha = translucentAlpha)) {
+        GlassBackdrop(enabled = translucentMode, cornerRadius = cornerRadiusDp.dp, tint = surfaceColor.copy(alpha = translucentAlpha), windowBlur = true) {
             Row(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically

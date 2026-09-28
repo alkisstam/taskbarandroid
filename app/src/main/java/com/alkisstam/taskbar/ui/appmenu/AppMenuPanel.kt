@@ -45,6 +45,7 @@ import com.alkisstam.taskbar.ui.common.toComposeShape
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 import com.alkisstam.taskbar.ui.theme.glassSheen
 import com.alkisstam.taskbar.ui.theme.GlassBackdrop
+import com.alkisstam.taskbar.ui.theme.GlassBlur
 import com.alkisstam.taskbar.ui.theme.grain
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
@@ -100,13 +101,13 @@ fun AppMenuPanel(
                     .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
                     .glassSheen(enabled = translucentMode && !panelOutlineEnabled, shape = RoundedCornerShape(20.dp)),
                 shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 20.dp, bottomEnd = 20.dp),
-                color = if (translucentMode) panelColor.copy(alpha = translucentAlpha) else panelColor,
+                color = if (translucentMode) panelColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha)) else panelColor,
                 contentColor = MaterialTheme.colorScheme.onSurface,
                 tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 4.dp,
                 shadowElevation = 8.dp
             ) {
                 // Samsung's blur ignores Compose alpha, so drop it as soon as the fade-out starts.
-                GlassBackdrop(enabled = translucentMode && menuVisible, cornerRadius = 20.dp, tint = panelColor.copy(alpha = translucentAlpha)) {
+                GlassBackdrop(enabled = translucentMode && menuVisible, cornerRadius = 20.dp, tint = panelColor.copy(alpha = translucentAlpha), windowBlur = true) {
                 Column(
                     modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
                 ) {

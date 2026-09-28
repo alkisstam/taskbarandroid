@@ -1,5 +1,6 @@
 package com.alkisstam.taskbar.ui.theme
 
+import android.content.Context
 import android.os.Build
 import android.view.View
 import androidx.compose.foundation.background
@@ -12,6 +13,9 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -30,11 +34,18 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.Dp
+import androidx.annotation.RequiresApi
+import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.alkisstam.taskbar.service.DockBlurWindow
 import com.alkisstam.taskbar.service.semSetBlur
+import kotlinx.coroutines.delay
 import com.alkisstam.taskbar.data.ThemeMode
 
 private val DarkColorScheme = darkColorScheme(
@@ -153,8 +164,17 @@ object GlassBlur {
     var available by mutableStateOf(false)
     var radiusPx by mutableIntStateOf(0)
     var tintOverBlur by mutableStateOf(false)
+    // Stock Android: cross-window blur on and the a11y service running, so per-panel blur
+    // windows stack below the panels.
+    var windowBlur by mutableStateOf(false)
 
     fun activeFor(enabled: Boolean) = enabled && available && radiusPx > 0
+    fun windowActiveFor(enabled: Boolean) = enabled && windowBlur && radiusPx > 0
+
+    // Samsung's blur covers the panel surface, so there the tint is re-drawn by GlassBackdrop.
+    // A blur window sits under the panel window instead, so drop the surface's own tint.
+    fun surfaceAlpha(translucentAlpha: Float) =
+        if (windowBlur && radiusPx > 0 && !tintOverBlur) 0f else translucentAlpha
 }
 
 // True inside a transparent panel, so its inner backgrounds can go see-through too.
@@ -166,8 +186,16 @@ fun Color.glass(): Color = if (LocalGlassSurface.current) copy(alpha = alpha * 0
 
 // Frosts what's behind this panel via Samsung's per-view blur, which draws opaquely over the
 // panel's own surface colour; [tint] is re-drawn on top only when the user asks for it.
+// With [windowBlur], stock Android gets a blur window under the panel instead; leave it off
+// where the window already blurs the whole screen or has its own blur window (dock).
 @Composable
-fun GlassBackdrop(enabled: Boolean, cornerRadius: Dp, tint: Color, content: @Composable () -> Unit) {
+fun GlassBackdrop(
+    enabled: Boolean,
+    cornerRadius: Dp,
+    tint: Color,
+    windowBlur: Boolean = false,
+    content: @Composable () -> Unit
+) {
     val cornerPx = with(LocalDensity.current) { cornerRadius.toPx() }
     Box(propagateMinConstraints = true) {
         if (GlassBlur.activeFor(enabled)) {
@@ -178,7 +206,58 @@ fun GlassBackdrop(enabled: Boolean, cornerRadius: Dp, tint: Color, content: @Com
                 onRelease = { it.semSetBlur(0, 0f) }
             )
             if (GlassBlur.tintOverBlur) Box(Modifier.matchParentSize().background(tint))
+        } else if (windowBlur && GlassBlur.windowActiveFor(enabled) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PanelBlurWindow(cornerPx, Modifier.matchParentSize())
         }
         CompositionLocalProvider(LocalGlassSurface provides enabled) { content() }
+    }
+}
+
+// The blur is a separate window, so it can't follow the panel frame-by-frame: hide it while
+// the panel moves or its window is GONE, fade it back in once the bounds settle.
+@RequiresApi(Build.VERSION_CODES.S)
+@Composable
+private fun PanelBlurWindow(cornerPx: Float, modifier: Modifier) {
+    val host = LocalView.current
+    val blur = remember { DockBlurWindow(host.context) }
+    var bounds by remember { mutableStateOf<IntRect?>(null) }
+    var shown by remember { mutableStateOf(host.isShown) }
+    DisposableEffect(blur) {
+        blur.attach()
+        onDispose { blur.detach() }
+    }
+    SideEffect { blur.setBlurRadius(GlassBlur.radiusPx) }
+    LaunchedEffect(bounds, shown, cornerPx) {
+        blur.hide()
+        val target = bounds ?: return@LaunchedEffect
+        if (!shown) return@LaunchedEffect
+        delay(PANEL_BLUR_SETTLE_MS)
+        blur.show(target, cornerPx)
+    }
+    AndroidView(
+        factory = { VisibilityProbe(it) { visible -> shown = visible } },
+        modifier = modifier.onGloballyPositioned { coords ->
+            val b = coords.boundsInWindow()
+            val origin = IntArray(2).also { host.getLocationOnScreen(it) }
+            bounds = if (b.isEmpty) null else IntRect(
+                origin[0] + b.left.toInt(), origin[1] + b.top.toInt(),
+                origin[0] + b.right.toInt(), origin[1] + b.bottom.toInt()
+            )
+        }
+    )
+}
+
+private const val PANEL_BLUR_SETTLE_MS = 120L
+
+// Panel windows are hidden by setting their root GONE, which keeps the composition alive.
+private class VisibilityProbe(context: Context, private val onChange: (Boolean) -> Unit) : View(context) {
+    override fun onVisibilityAggregated(isVisible: Boolean) {
+        super.onVisibilityAggregated(isVisible)
+        onChange(isVisible && windowVisibility == VISIBLE)
+    }
+
+    override fun onWindowVisibilityChanged(visibility: Int) {
+        super.onWindowVisibilityChanged(visibility)
+        onChange(visibility == VISIBLE && isShown)
     }
 }

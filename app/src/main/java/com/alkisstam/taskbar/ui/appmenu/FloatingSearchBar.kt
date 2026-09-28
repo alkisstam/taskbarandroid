@@ -44,6 +44,7 @@ import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.IconShape
 import com.alkisstam.taskbar.ui.theme.glassSheen
 import com.alkisstam.taskbar.ui.theme.GlassBackdrop
+import com.alkisstam.taskbar.ui.theme.GlassBlur
 import com.alkisstam.taskbar.ui.theme.grain
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
 
@@ -99,7 +100,7 @@ fun FloatingSearchBar(
                     .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
                     .glassSheen(enabled = translucentMode, shape = RoundedCornerShape(16.dp)),
                 shape = RoundedCornerShape(16.dp),
-                color = if (translucentMode) surfaceColor.copy(alpha = translucentAlpha) else surfaceColor,
+                color = if (translucentMode) surfaceColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha)) else surfaceColor,
                 tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 8.dp,
                 shadowElevation = 8.dp
             ) {
@@ -152,7 +153,7 @@ fun FloatingSearchBar(
                         .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
                         .glassSheen(enabled = translucentMode, shape = RoundedCornerShape(16.dp)),
                     shape = RoundedCornerShape(16.dp),
-                    color = if (translucentMode) surfaceColor.copy(alpha = translucentAlpha) else surfaceColor,
+                    color = if (translucentMode) surfaceColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha)) else surfaceColor,
                     tonalElevation = if (translucentMode) 0.dp else 6.dp,
                     shadowElevation = 6.dp
                 ) {
@@ -186,7 +187,7 @@ fun FloatingSearchBar(
                         .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
                         .glassSheen(enabled = translucentMode, shape = RoundedCornerShape(16.dp)),
                     shape = RoundedCornerShape(16.dp),
-                    color = if (translucentMode) surfaceColor.copy(alpha = translucentAlpha) else surfaceColor,
+                    color = if (translucentMode) surfaceColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha)) else surfaceColor,
                     tonalElevation = if (translucentMode) 0.dp else 6.dp,
                     shadowElevation = 6.dp
                 ) {

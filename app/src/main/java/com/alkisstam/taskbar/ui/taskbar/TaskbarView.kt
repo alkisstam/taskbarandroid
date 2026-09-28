@@ -67,6 +67,7 @@ import java.time.format.DateTimeFormatter
 import com.alkisstam.taskbar.ui.appmenu.QuickControlItem
 import com.alkisstam.taskbar.ui.appmenu.toItems
 import com.alkisstam.taskbar.ui.theme.GlassBackdrop
+import com.alkisstam.taskbar.ui.theme.GlassBlur
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 import com.alkisstam.taskbar.ui.theme.glassSheen
 import com.alkisstam.taskbar.ui.theme.grain
@@ -197,7 +198,7 @@ fun TaskbarView(
                     }
                 },
             shape = dockCornerShape,
-            color = if (translucentMode) surfaceColor.copy(alpha = translucentAlpha) else surfaceColor,
+            color = if (translucentMode) surfaceColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha)) else surfaceColor,
             tonalElevation = if (translucentMode) 0.dp else 3.dp,
             shadowElevation = 8.dp
         ) {

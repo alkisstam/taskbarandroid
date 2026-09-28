@@ -62,6 +62,7 @@ import com.alkisstam.taskbar.ui.common.toComposeShape
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 import com.alkisstam.taskbar.ui.theme.glassSheen
 import com.alkisstam.taskbar.ui.theme.GlassBackdrop
+import com.alkisstam.taskbar.ui.theme.GlassBlur
 import com.alkisstam.taskbar.ui.theme.grain
 import com.alkisstam.taskbar.viewmodel.NotificationHistoryViewModel
 
@@ -108,7 +109,7 @@ fun NotificationHistoryPanel(
                 .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
                 .glassSheen(enabled = translucentMode && !panelOutlineEnabled, shape = panelShape),
             shape = panelShape,
-            color = if (translucentMode) panelColor.copy(alpha = translucentAlpha) else panelColor,
+            color = if (translucentMode) panelColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha)) else panelColor,
             contentColor = MaterialTheme.colorScheme.onSurface,
             tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 2.dp,
             shadowElevation = 8.dp

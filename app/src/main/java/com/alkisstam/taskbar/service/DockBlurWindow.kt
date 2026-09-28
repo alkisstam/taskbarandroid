@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.IntRect
 import com.alkisstam.taskbar.R
 
 /**
- * Dock-sized window that frosts only what's under the dock.
+ * Window sized to the dock or a floating panel that frosts only what's under it.
  *
  * FLAG_BLUR_BEHIND always blurs the whole screen, so this uses window *background* blur
  * instead, which is clipped to the window's bounds and its background's rounded outline. That

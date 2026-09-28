@@ -141,6 +141,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private var notificationPanelView: View? = null
     private var levelIndicatorView: View? = null
     private var dockBlurWindow: DockBlurWindow? = null
+    private var crossWindowBlurListener: java.util.function.Consumer<Boolean>? = null
     // Whether the dock's host view is actually on screen (not GONE for lockscreen/landscape,
     // not detached). Compose keeps reporting bounds while an ancestor is GONE.
     private val dockHostShown = MutableStateFlow(false)
@@ -1165,6 +1166,13 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private fun observeBlurRadius() {
         GlassBlur.available = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
             !crossWindowBlurEnabled() && semBlurSupported()
+        updateWindowGlass()
+        // Battery saver turns cross-window blur off; panels must get their tint back.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val listener = java.util.function.Consumer<Boolean> { updateWindowGlass() }
+            crossWindowBlurListener = listener
+            getSystemService(WindowManager::class.java)?.addCrossWindowBlurEnabledListener(mainExecutor, listener)
+        }
         serviceScope.launch {
             taskbarViewModel.blurTint.collect { GlassBlur.tintOverBlur = it }
         }
@@ -1467,6 +1475,14 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         addNotificationPanelView()
         addCalculatorPanelView()
         addLevelIndicatorView()
+        updateWindowGlass()
+    }
+
+    // Panel blur windows are app overlays, so they only stack below the panels when those are
+    // accessibility overlays.
+    private fun updateWindowGlass() {
+        GlassBlur.windowBlur = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+            crossWindowBlurEnabled() && TaskBarAccessibilityService.instance != null
     }
 
     // endregion
@@ -1520,6 +1536,9 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             Log.w(TAG, "Receiver already unregistered", e)
         }
         removeOverlayView()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            crossWindowBlurListener?.let { getSystemService(WindowManager::class.java)?.removeCrossWindowBlurEnabledListener(it) }
+        }
         serviceScope.cancel()
         _viewModelStore.clear()
         // AppRepository / QuickControlsRepository are @Singleton (process-scoped) and register

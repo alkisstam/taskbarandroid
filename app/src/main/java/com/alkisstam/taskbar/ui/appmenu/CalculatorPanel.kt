@@ -44,6 +44,7 @@ import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.ui.theme.TaskbarOutlineGreen
 import com.alkisstam.taskbar.ui.theme.glassSheen
 import com.alkisstam.taskbar.ui.theme.GlassBackdrop
+import com.alkisstam.taskbar.ui.theme.GlassBlur
 import com.alkisstam.taskbar.ui.theme.grain
 import kotlin.math.abs
 import kotlin.math.ln
@@ -219,7 +220,7 @@ fun CalculatorPanel(
 
     Surface(
         shape = cornerShape,
-        color = if (translucentMode) surfaceColor.copy(alpha = translucentAlpha) else surfaceColor,
+        color = if (translucentMode) surfaceColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha)) else surfaceColor,
         contentColor = MaterialTheme.colorScheme.onSurface,
         tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 3.dp,
         shadowElevation = 8.dp,
@@ -230,7 +231,7 @@ fun CalculatorPanel(
             .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
             .glassSheen(enabled = translucentMode && !panelOutlineEnabled, shape = cornerShape)
     ) {
-        GlassBackdrop(enabled = translucentMode, cornerRadius = cornerRadiusDp.dp, tint = surfaceColor.copy(alpha = translucentAlpha)) {
+        GlassBackdrop(enabled = translucentMode, cornerRadius = cornerRadiusDp.dp, tint = surfaceColor.copy(alpha = translucentAlpha), windowBlur = true) {
             Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
                 Text(
                     text = state.expression,
