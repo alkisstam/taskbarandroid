@@ -617,6 +617,8 @@ internal fun BehaviourCard(viewModel: TaskbarViewModel) {
     val autoHideInFullscreen by viewModel.autoHideInFullscreen.collectAsState()
     val autoHideInLandscape by viewModel.autoHideInLandscape.collectAsState()
     val disableOnLockscreen by viewModel.disableOnLockscreen.collectAsState()
+    val dockAlwaysVisible by viewModel.dockAlwaysVisible.collectAsState()
+    val dockVisibleOnHome by viewModel.dockVisibleOnHome.collectAsState()
     val hapticFeedbackEnabled by viewModel.hapticFeedbackEnabled.collectAsState()
 
     SettingsCard(title = stringResource(R.string.settings_behaviour_card_title)) {
@@ -654,6 +656,43 @@ internal fun BehaviourCard(viewModel: TaskbarViewModel) {
             Switch(
                 checked = autoHideInLandscape,
                 onCheckedChange = { viewModel.setAutoHideInLandscape(it) }
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(stringResource(R.string.settings_dock_always_visible_title), style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    stringResource(R.string.settings_dock_always_visible_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(
+                checked = dockAlwaysVisible,
+                onCheckedChange = { viewModel.setDockAlwaysVisible(it) }
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(stringResource(R.string.settings_dock_visible_home_title), style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    stringResource(R.string.settings_dock_visible_home_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(
+                checked = dockVisibleOnHome || dockAlwaysVisible,
+                enabled = !dockAlwaysVisible,
+                onCheckedChange = { viewModel.setDockVisibleOnHome(it) }
             )
         }
         Row(

@@ -66,6 +66,7 @@
     <string name="pill_grain_label">Körnung</string>
     <string name="pill_blur_label">Unschärfe</string>
     <string name="pill_blur_tint_label">Tönung über Unschärfe</string>
+    <string name="pill_blur_tint_alpha_label">Tönungsstärke</string>
     <string name="pill_height_label">Höhe</string>
     <string name="pill_icon_shape_circle">Kreis</string>
     <string name="pill_icon_shape_default">Standard</string>
@@ -133,6 +134,10 @@
     <string name="settings_autohide_fullscreen_desc">Das Dock ausblenden, wenn eine App in den Vollbildmodus wechselt</string>
     <string name="settings_autohide_fullscreen_title">Automatisch ausblenden im Vollbildmodus</string>
     <string name="settings_autohide_landscape_desc">Das Dock ausblenden, wenn sich das Gerät im Querformat befindet</string>
+    <string name="settings_dock_always_visible_title">Dock immer anzeigen</string>
+    <string name="settings_dock_always_visible_desc">Dock auf dem Bildschirm behalten; es wird nur im Vollbild, Querformat oder auf dem Sperrbildschirm ausgeblendet, wenn diese Optionen aktiv sind</string>
+    <string name="settings_dock_visible_home_title">Dock auf dem Startbildschirm anzeigen</string>
+    <string name="settings_dock_visible_home_desc">Dock anzeigen, sobald der Startbildschirm geöffnet ist</string>
     <string name="settings_autohide_landscape_title">Automatisch ausblenden im Querformat</string>
     <string name="settings_backup_button">Einstellungen sichern</string>
     <string name="settings_backup_restore_title">Sichern &amp; Wiederherstellen</string>

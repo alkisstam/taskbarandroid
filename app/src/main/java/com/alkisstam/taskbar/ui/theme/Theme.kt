@@ -18,6 +18,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -164,6 +165,7 @@ object GlassBlur {
     var available by mutableStateOf(false)
     var radiusPx by mutableIntStateOf(0)
     var tintOverBlur by mutableStateOf(false)
+    var tintAlpha by mutableFloatStateOf(0.80f)
     // Stock Android: cross-window blur on and the a11y service running, so per-panel blur
     // windows stack below the panels.
     var windowBlur by mutableStateOf(false)
@@ -175,8 +177,9 @@ object GlassBlur {
     // A blur window, or a [screenBlurred] panel's full-screen blur, sits under the panel
     // window instead, so drop the surface's own tint.
     fun surfaceAlpha(translucentAlpha: Float, screenBlurred: Boolean = false) =
-        if (radiusPx > 0 && !tintOverBlur && (windowBlur || (screenBlurred && available))) 0f
-        else translucentAlpha
+        if (radiusPx > 0 && (windowBlur || (screenBlurred && available))) {
+            if (tintOverBlur) tintAlpha else 0f
+        } else translucentAlpha
 }
 
 // True inside a transparent panel, so its inner backgrounds can go see-through too.
@@ -210,7 +213,7 @@ fun GlassBackdrop(
                 update = { it.semSetBlur(GlassBlur.radiusPx, cornerPx) },
                 onRelease = { it.semSetBlur(0, 0f) }
             )
-            if (GlassBlur.tintOverBlur) Box(Modifier.matchParentSize().background(tint))
+            if (GlassBlur.tintOverBlur) Box(Modifier.matchParentSize().background(tint.copy(alpha = GlassBlur.tintAlpha)))
         } else if (windowBlur && GlassBlur.windowActiveFor(enabled) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             PanelBlurWindow(cornerPx, Modifier.matchParentSize())
         }

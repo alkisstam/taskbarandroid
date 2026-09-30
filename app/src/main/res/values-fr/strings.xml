@@ -66,6 +66,7 @@
     <string name="pill_grain_label">Grain</string>
     <string name="pill_blur_label">Flou</string>
     <string name="pill_blur_tint_label">Teinte sur le flou</string>
+    <string name="pill_blur_tint_alpha_label">Intensité de la teinte</string>
     <string name="pill_height_label">Hauteur</string>
     <string name="pill_icon_shape_circle">Cercle</string>
     <string name="pill_icon_shape_default">Par défaut</string>
@@ -133,6 +134,10 @@
     <string name="settings_autohide_fullscreen_desc">Masque le dock quand une application passe en plein écran</string>
     <string name="settings_autohide_fullscreen_title">Masquage auto en plein écran</string>
     <string name="settings_autohide_landscape_desc">Masque le dock quand l\'appareil est en mode paysage</string>
+    <string name="settings_dock_always_visible_title">Toujours afficher le dock</string>
+    <string name="settings_dock_always_visible_desc">Garder le dock à l\'écran ; il ne se masque qu\'en plein écran, en paysage ou sur l\'écran de verrouillage si ces options sont activées</string>
+    <string name="settings_dock_visible_home_title">Afficher le dock sur l\'écran d\'accueil</string>
+    <string name="settings_dock_visible_home_desc">Afficher le dock dès que l\'écran d\'accueil est ouvert</string>
     <string name="settings_autohide_landscape_title">Masquage auto en mode paysage</string>
     <string name="settings_backup_button">Sauvegarder les paramètres</string>
     <string name="settings_backup_restore_title">Sauvegarde et restauration</string>

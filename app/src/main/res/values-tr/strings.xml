@@ -66,6 +66,7 @@
     <string name="pill_grain_label">Doku</string>
     <string name="pill_blur_label">Bulanıklık</string>
     <string name="pill_blur_tint_label">Bulanıklık üzerine renk</string>
+    <string name="pill_blur_tint_alpha_label">Renk tonu yoğunluğu</string>
     <string name="pill_height_label">Yükseklik</string>
     <string name="pill_icon_shape_circle">Daire</string>
     <string name="pill_icon_shape_default">Varsayılan</string>
@@ -133,6 +134,10 @@
     <string name="settings_autohide_fullscreen_desc">Bir uygulama tam ekrana geçtiğinde dock\'u gizle</string>
     <string name="settings_autohide_fullscreen_title">Tam Ekranda Otomatik Gizle</string>
     <string name="settings_autohide_landscape_desc">Cihaz yatay konumdayken dock\'u gizle</string>
+    <string name="settings_dock_always_visible_title">Dock\'u her zaman göster</string>
+    <string name="settings_dock_always_visible_desc">Dock ekranda kalır; yalnızca bu seçenekler açıksa tam ekranda, yatay modda veya kilit ekranında gizlenir</string>
+    <string name="settings_dock_visible_home_title">Ana ekranda dock\'u göster</string>
+    <string name="settings_dock_visible_home_desc">Ana ekran açıkken dock\'u göster</string>
     <string name="settings_autohide_landscape_title">Yatay Modda Otomatik Gizle</string>
     <string name="settings_backup_button">Ayarları Yedekle</string>
     <string name="settings_backup_restore_title">Yedekleme &amp; Geri Yükleme</string>

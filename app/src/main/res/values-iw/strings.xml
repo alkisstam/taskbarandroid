@@ -66,6 +66,7 @@
     <string name="pill_grain_label">גרעיניות</string>
     <string name="pill_blur_label">טשטוש</string>
     <string name="pill_blur_tint_label">גוון מעל הטשטוש</string>
+    <string name="pill_blur_tint_alpha_label">עוצמת הגוון</string>
     <string name="pill_height_label">גובה</string>
     <string name="pill_icon_shape_circle">עיגול</string>
     <string name="pill_icon_shape_default">ברירת מחדל</string>
@@ -133,6 +134,10 @@
     <string name="settings_autohide_fullscreen_desc">הסתרת הדוק כשאפליקציה עוברת למסך מלא</string>
     <string name="settings_autohide_fullscreen_title">הסתרה אוטומטית במסך מלא</string>
     <string name="settings_autohide_landscape_desc">הסתרת הדוק כשהמכשיר במצב אופקי</string>
+    <string name="settings_dock_always_visible_title">הצג תמיד את הרציף</string>
+    <string name="settings_dock_always_visible_desc">השאר את הרציף על המסך; הוא מוסתר רק במסך מלא, לרוחב או במסך הנעילה כשאפשרויות אלה פעילות</string>
+    <string name="settings_dock_visible_home_title">הצג את הרציף במסך הבית</string>
+    <string name="settings_dock_visible_home_desc">הצג את הרציף בכל פעם שמסך הבית פתוח</string>
     <string name="settings_autohide_landscape_title">הסתרה אוטומטית במצב אופקי</string>
     <string name="settings_backup_button">גיבוי הגדרות</string>
     <string name="settings_backup_restore_title">גיבוי &amp; שחזור</string>

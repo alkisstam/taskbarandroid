@@ -66,6 +66,7 @@
     <string name="pill_grain_label">Korrel</string>
     <string name="pill_blur_label">Vervaging</string>
     <string name="pill_blur_tint_label">Tint over vervaging</string>
+    <string name="pill_blur_tint_alpha_label">Tintsterkte</string>
     <string name="pill_height_label">Hoogte</string>
     <string name="pill_icon_shape_circle">Cirkel</string>
     <string name="pill_icon_shape_default">Standaard</string>
@@ -133,6 +134,10 @@
     <string name="settings_autohide_fullscreen_desc">Verberg de dock wanneer een app volledig scherm gebruikt</string>
     <string name="settings_autohide_fullscreen_title">Automatisch verbergen in volledig scherm</string>
     <string name="settings_autohide_landscape_desc">Verberg de dock wanneer het apparaat liggend staat</string>
+    <string name="settings_dock_always_visible_title">Dock altijd tonen</string>
+    <string name="settings_dock_always_visible_desc">Houd het dock op het scherm; het verbergt alleen op volledig scherm, liggend of op het vergrendelscherm als die opties aan staan</string>
+    <string name="settings_dock_visible_home_title">Dock tonen op startscherm</string>
+    <string name="settings_dock_visible_home_desc">Toon het dock zodra het startscherm open is</string>
     <string name="settings_autohide_landscape_title">Automatisch verbergen in liggende stand</string>
     <string name="settings_backup_button">Instellingen back-uppen</string>
     <string name="settings_backup_restore_title">Back-up &amp; herstel</string>

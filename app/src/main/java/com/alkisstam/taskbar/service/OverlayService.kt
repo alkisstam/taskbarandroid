@@ -63,6 +63,7 @@ import com.alkisstam.taskbar.viewmodel.NotificationHistoryViewModel
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 import com.alkisstam.taskbar.ui.theme.GlassBlur
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.compose.ui.unit.IntRect
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -247,6 +248,9 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 ACTION_ACCESSIBILITY_CHANGED -> {
                     handler.post { refreshAllViews() }
                 }
+                ACTION_HOME_STATE -> {
+                    taskbarViewModel.setOnHomeScreen(intent.getBooleanExtra(EXTRA_ON_HOME, false))
+                }
                 ACTION_CLIPBOARD_PANEL_SHOW -> {
                     if (this@OverlayService::appMenuViewModel.isInitialized)
                         appMenuViewModel.toggleClipboardPanel()
@@ -339,6 +343,9 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         const val ACTION_DISMISS_ALL = "com.alkisstam.taskbar.DISMISS_ALL"
         const val ACTION_ACCESSIBILITY_CHANGED = "com.alkisstam.taskbar.ACCESSIBILITY_CHANGED"
         const val ACTION_CLIPBOARD_PANEL_SHOW = "com.alkisstam.taskbar.CLIPBOARD_PANEL_SHOW"
+        const val ACTION_HOME_STATE = "com.alkisstam.taskbar.HOME_STATE"
+        const val EXTRA_ON_HOME = "on_home"
+        private const val PINNED_TOUCH_MARGIN_DP = 16
 
         @Volatile var isTaskbarVisibleForBack = false
     }
@@ -390,6 +397,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             addAction(ACTION_DISMISS_ALL)
             addAction(ACTION_ACCESSIBILITY_CHANGED)
             addAction(ACTION_CLIPBOARD_PANEL_SHOW)
+            addAction(ACTION_HOME_STATE)
         }
         ContextCompat.registerReceiver(this, lockscreenReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
         registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
@@ -485,6 +493,11 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private var translucentModeEnabled: Boolean = false
     private var blurRadiusDp: Float = 24f
     private var taskbarInteractive: Boolean = true
+    private var dockTouchProxy: View? = null
+    // Window flag swaps mid-gesture can cancel it (e.g. swipe-up expand), so hold the latest
+    // dock window state until the finger lifts.
+    private var dockTouchActive = false
+    private var latestDockWindowState: DockWindowState? = null
 
     private fun setOverlayFlags(interactive: Boolean, focusable: Boolean) {
         val view = overlayView ?: return
@@ -545,19 +558,94 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     }
 
     private fun observeTaskbarInteractivity() {
+        val expanding = kotlinx.coroutines.flow.combine(
+            taskbarViewModel.isDockExpanded,
+            taskbarViewModel.dockExpandProgress
+        ) { expanded, progress -> expanded || progress > 0f }
+        // Pinned and at rest: the dock window lets every touch through and holds no key focus
+        // (else back and the keyboard stop reaching the app underneath); dockTouchProxy takes
+        // the touches over the dock itself.
+        val pinnedAtRest = kotlinx.coroutines.flow.combine(
+            taskbarViewModel.isTaskbarVisible,
+            appMenuViewModel.menuVisible,
+            taskbarViewModel.isDockPinned,
+            expanding
+        ) { visible, menuOpen, pinned, isExpanding -> pinned && visible && !menuOpen && !isExpanding }
+            .distinctUntilChanged()
         serviceScope.launch {
             kotlinx.coroutines.flow.combine(
                 taskbarViewModel.isTaskbarVisible,
-                appMenuViewModel.menuVisible
-            ) { taskbarVisible, menuOpen -> taskbarVisible to menuOpen }
-                .collect { (taskbarVisible, menuOpen) ->
-                    isTaskbarVisibleForBack = taskbarVisible
+                appMenuViewModel.menuVisible,
+                pinnedAtRest,
+                taskbarViewModel.dockBounds,
+                dockHostShown
+            ) { taskbarVisible, menuOpen, atRest, bounds, shown ->
+                DockWindowState(
+                    taskbarVisible = taskbarVisible,
+                    pinnedAtRest = atRest,
                     // The dock window must stop intercepting touches while the app menu is
                     // open, otherwise taps meant for the menu's dismiss-scrim (in overlayView,
                     // stacked above it) never reach it and the menu can only be closed via back.
-                    setTaskbarFlags(interactive = taskbarVisible && !menuOpen)
+                    interactive = taskbarVisible && !menuOpen && !atRest,
+                    proxyBounds = if (atRest && shown) bounds else null
+                )
+            }
+                .distinctUntilChanged()
+                .collect { state ->
+                    latestDockWindowState = state
+                    if (!dockTouchActive) applyDockWindowState(state)
                 }
         }
+    }
+
+    private fun applyDockWindowState(state: DockWindowState) {
+        isTaskbarVisibleForBack = state.taskbarVisible && !state.pinnedAtRest
+        if (state.interactive != taskbarInteractive) setTaskbarFlags(state.interactive)
+        val proxy = dockTouchProxy ?: return
+        val margin = (PINNED_TOUCH_MARGIN_DP * resources.displayMetrics.density).toInt()
+        val rect = state.proxyBounds?.let {
+            android.graphics.Rect(it.left - margin, it.top - margin, it.right + margin, it.bottom + margin)
+        }
+        try { windowManager.updateViewLayoutKeepingType(proxy, dockTouchProxyLayoutParams(rect)) }
+        catch (e: Exception) { Log.w(TAG, "Failed to update dock touch proxy", e) }
+    }
+
+    private fun trackDockTouch(ev: MotionEvent) {
+        when (ev.actionMasked) {
+            MotionEvent.ACTION_DOWN -> dockTouchActive = true
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                dockTouchActive = false
+                handler.post { if (!dockTouchActive) latestDockWindowState?.let { applyDockWindowState(it) } }
+            }
+        }
+    }
+
+    private fun addDockTouchProxy() {
+        dockTouchProxy?.let { removeViewFromAnyWM(it) }
+        dockTouchProxy = null
+        val proxy = object : View(this) {
+            private val hostOrigin = IntArray(2)
+            private val ownOrigin = IntArray(2)
+            override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+                val host = taskbarView ?: return false
+                trackDockTouch(ev)
+                host.getLocationOnScreen(hostOrigin)
+                getLocationOnScreen(ownOrigin)
+                val forwarded = MotionEvent.obtain(ev)
+                forwarded.offsetLocation((ownOrigin[0] - hostOrigin[0]).toFloat(), (ownOrigin[1] - hostOrigin[1]).toFloat())
+                host.dispatchTouchEvent(forwarded)
+                forwarded.recycle()
+                return true
+            }
+        }
+        try {
+            windowManager.addView(proxy, dockTouchProxyLayoutParams(null))
+            dockTouchProxy = proxy
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to add dock touch proxy", e)
+        }
+        dockTouchActive = false
+        latestDockWindowState?.let { applyDockWindowState(it) }
     }
 
     private fun observePillPosition() {
@@ -794,7 +882,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             publishNavBarInset()
             if (taskbarViewModel.autoHideInFullscreen.value) {
                 val isFullscreen = !insets.isVisible(WindowInsetsCompat.Type.statusBars())
-                if (isFullscreen) taskbarViewModel.hideTaskbar() else taskbarViewModel.showTaskbar()
+                if (isFullscreen) taskbarViewModel.hideTaskbar(force = true) else taskbarViewModel.showTaskbar()
             }
             if (!overlayHiddenForLockscreen) {
                 if (insets.isVisible(WindowInsetsCompat.Type.ime())) {
@@ -846,10 +934,12 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     if (taskbarView === this || taskbarView == null) dockHostShown.value = false
                 }
                 override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+                    if (taskbarViewModel.isDockPinned.value) trackDockTouch(ev)
                     val result = super.dispatchTouchEvent(ev)
                     if (!result && ev.action == MotionEvent.ACTION_DOWN
                         && taskbarViewModel.isTaskbarVisible.value
-                        && !appMenuViewModel.menuVisible.value) {
+                        && !appMenuViewModel.menuVisible.value
+                        && !taskbarViewModel.isDockPinned.value) {
                         taskbarViewModel.hideTaskbar()
                         // Apply non-interactive flags synchronously so any new window
                         // appearing after this touch is not blocked by our overlay.
@@ -871,9 +961,11 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             wrapper.addView(composeView)
             taskbarView = wrapper
             if (hiddenForLandscape) wrapper.visibility = View.GONE
-            val initialInteractive = taskbarViewModel.isTaskbarVisible.value && !appMenuViewModel.menuVisible.value
+            val initialInteractive = taskbarViewModel.isTaskbarVisible.value && !appMenuViewModel.menuVisible.value &&
+                !taskbarViewModel.isDockPinned.value
             taskbarInteractive = initialInteractive
             windowManager.addView(wrapper, taskbarLayoutParams(initialInteractive))
+            addDockTouchProxy()
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add taskbar view", e)
             taskbarView = null
@@ -1186,6 +1278,9 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             taskbarViewModel.blurTint.collect { GlassBlur.tintOverBlur = it }
         }
         serviceScope.launch {
+            taskbarViewModel.blurTintAlpha.collect { GlassBlur.tintAlpha = it }
+        }
+        serviceScope.launch {
             taskbarViewModel.blurRadiusDp.collect { dp ->
                 blurRadiusDp = dp
                 GlassBlur.radiusPx = (dp * resources.displayMetrics.density).toInt()
@@ -1446,6 +1541,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private fun removeOverlayView() {
         overlayView?.let { removeViewFromAnyWM(it) }; overlayView = null
         taskbarView?.let { removeViewFromAnyWM(it) }; taskbarView = null
+        dockTouchProxy?.let { removeViewFromAnyWM(it) }; dockTouchProxy = null
         pillView?.let { removeViewFromAnyWM(it) }; pillView = null
         removePillView2()
         searchView?.let { removeViewFromAnyWM(it) }; searchView = null
@@ -1560,3 +1656,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     override fun onBind(intent: Intent?): IBinder? = null
 }
+
+private data class DockWindowState(
+    val taskbarVisible: Boolean,
+    val pinnedAtRest: Boolean,
+    val interactive: Boolean,
+    val proxyBounds: IntRect?
+)

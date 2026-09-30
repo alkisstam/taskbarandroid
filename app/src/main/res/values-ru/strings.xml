@@ -66,6 +66,7 @@
     <string name="pill_grain_label">Зернистость</string>
     <string name="pill_blur_label">Размытие</string>
     <string name="pill_blur_tint_label">Оттенок поверх размытия</string>
+    <string name="pill_blur_tint_alpha_label">Сила оттенка</string>
     <string name="pill_height_label">Высота</string>
     <string name="pill_icon_shape_circle">Круг</string>
     <string name="pill_icon_shape_default">По умолчанию</string>
@@ -133,6 +134,10 @@
     <string name="settings_autohide_fullscreen_desc">Скрывать панель, когда приложение переходит в полноэкранный режим</string>
     <string name="settings_autohide_fullscreen_title">Автоскрытие в полноэкранном режиме</string>
     <string name="settings_autohide_landscape_desc">Скрывать панель, когда устройство в альбомной ориентации</string>
+    <string name="settings_dock_always_visible_title">Всегда показывать док</string>
+    <string name="settings_dock_always_visible_desc">Док остаётся на экране; скрывается только в полноэкранном режиме, в альбомной ориентации или на экране блокировки, если эти параметры включены</string>
+    <string name="settings_dock_visible_home_title">Показывать док на главном экране</string>
+    <string name="settings_dock_visible_home_desc">Показывать док, когда открыт главный экран</string>
     <string name="settings_autohide_landscape_title">Автоскрытие в альбомной ориентации</string>
     <string name="settings_backup_button">Резервное копирование настроек</string>
     <string name="settings_backup_restore_title">Резервное копирование &amp; восстановление</string>

@@ -66,6 +66,7 @@
     <string name="pill_grain_label">颗粒感</string>
     <string name="pill_blur_label">模糊</string>
     <string name="pill_blur_tint_label">模糊上叠加色调</string>
+    <string name="pill_blur_tint_alpha_label">着色强度</string>
     <string name="pill_height_label">高度</string>
     <string name="pill_icon_shape_circle">圆形</string>
     <string name="pill_icon_shape_default">默认</string>
@@ -133,6 +134,10 @@
     <string name="settings_autohide_fullscreen_desc">应用全屏时隐藏程序坞</string>
     <string name="settings_autohide_fullscreen_title">全屏时自动隐藏</string>
     <string name="settings_autohide_landscape_desc">设备横屏时隐藏程序坞</string>
+    <string name="settings_dock_always_visible_title">始终显示程序坞</string>
+    <string name="settings_dock_always_visible_desc">让程序坞保持在屏幕上；仅在启用相应选项时于全屏、横屏或锁屏界面隐藏</string>
+    <string name="settings_dock_visible_home_title">在主屏幕显示程序坞</string>
+    <string name="settings_dock_visible_home_desc">主屏幕打开时显示程序坞</string>
     <string name="settings_autohide_landscape_title">横屏时自动隐藏</string>
     <string name="settings_backup_button">备份设置</string>
     <string name="settings_backup_restore_title">备份与恢复</string>

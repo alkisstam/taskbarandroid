@@ -66,6 +66,7 @@
     <string name="pill_grain_label">Granulado</string>
     <string name="pill_blur_label">Desfoque</string>
     <string name="pill_blur_tint_label">Tonalidade sobre o desfoque</string>
+    <string name="pill_blur_tint_alpha_label">Intensidade da tonalidade</string>
     <string name="pill_height_label">Altura</string>
     <string name="pill_icon_shape_circle">Círculo</string>
     <string name="pill_icon_shape_default">Padrão</string>
@@ -133,6 +134,10 @@
     <string name="settings_autohide_fullscreen_desc">Oculta o dock quando um app entra em tela cheia</string>
     <string name="settings_autohide_fullscreen_title">Ocultar Automaticamente em Tela Cheia</string>
     <string name="settings_autohide_landscape_desc">Oculta o dock quando o dispositivo está na horizontal</string>
+    <string name="settings_dock_always_visible_title">Sempre mostrar o dock</string>
+    <string name="settings_dock_always_visible_desc">Manter o dock na tela; ele só é ocultado em tela cheia, paisagem ou na tela de bloqueio quando essas opções estão ativadas</string>
+    <string name="settings_dock_visible_home_title">Mostrar dock na tela inicial</string>
+    <string name="settings_dock_visible_home_desc">Mostrar o dock sempre que a tela inicial estiver aberta</string>
     <string name="settings_autohide_landscape_title">Ocultar Automaticamente na Horizontal</string>
     <string name="settings_backup_button">Fazer Backup das Configurações</string>
     <string name="settings_backup_restore_title">Backup &amp; Restauração</string>

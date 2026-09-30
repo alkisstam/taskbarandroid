@@ -91,6 +91,30 @@ class TaskbarViewModel @Inject constructor(
     val autoHideInLandscape: StateFlow<Boolean> = prefsRepository.autoHideInLandscape
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
+    val dockAlwaysVisible: StateFlow<Boolean> = prefsRepository.dockAlwaysVisible
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    val dockVisibleOnHome: StateFlow<Boolean> = prefsRepository.dockVisibleOnHome
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    private val _onHomeScreen = MutableStateFlow(false)
+
+    fun setOnHomeScreen(onHome: Boolean) { _onHomeScreen.value = onHome }
+
+    // Pinned: the dock stays shown and only its own bounds take touches.
+    val isDockPinned: StateFlow<Boolean> = combine(
+        dockAlwaysVisible, dockVisibleOnHome, _onHomeScreen
+    ) { always, onHomeEnabled, onHome -> always || (onHomeEnabled && onHome) }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    fun setDockAlwaysVisible(enabled: Boolean) {
+        viewModelScope.launch { prefsRepository.setDockAlwaysVisible(enabled) }
+    }
+
+    fun setDockVisibleOnHome(enabled: Boolean) {
+        viewModelScope.launch { prefsRepository.setDockVisibleOnHome(enabled) }
+    }
+
     val disableOnLockscreen: StateFlow<Boolean> = prefsRepository.disableOnLockscreen
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
@@ -200,6 +224,9 @@ class TaskbarViewModel @Inject constructor(
     val blurTint: StateFlow<Boolean> = prefsRepository.blurTint
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
+    val blurTintAlpha: StateFlow<Float> = prefsRepository.blurTintAlpha
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.80f)
+
     val appGridColumns: StateFlow<Int> = prefsRepository.appGridColumns
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 4)
 
@@ -237,6 +264,10 @@ class TaskbarViewModel @Inject constructor(
 
     fun setBlurTint(enabled: Boolean) {
         viewModelScope.launch { prefsRepository.setBlurTint(enabled) }
+    }
+
+    fun setBlurTintAlpha(value: Float) {
+        viewModelScope.launch { prefsRepository.setBlurTintAlpha(value) }
     }
 
     fun setAppGridColumns(value: Int) {
@@ -322,9 +353,11 @@ class TaskbarViewModel @Inject constructor(
         }
         viewModelScope.launch { prefsRepository.setTaskbarVisible(true) }
     }
-    fun hideTaskbar() {
+    // [force] hides a pinned dock too (fullscreen auto-hide, leaving the home screen).
+    fun hideTaskbar(force: Boolean = false) {
         _isDockExpanded.value = false
         _dockExpandProgress.value = 0f
+        if (isDockPinned.value && !force) return
         _isTaskbarVisible.value = false
         _dockRevealProgress.value = 0f
         viewModelScope.launch { prefsRepository.setTaskbarVisible(false) }
@@ -333,6 +366,11 @@ class TaskbarViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             _isTaskbarVisible.value = prefsRepository.taskbarVisible.first()
+            var wasPinned = false
+            isDockPinned.collect { pinned ->
+                if (pinned) showTaskbar() else if (wasPinned) hideTaskbar(force = true)
+                wasPinned = pinned
+            }
         }
         context.contentResolver.registerContentObserver(
             Settings.Secure.getUriFor(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES),

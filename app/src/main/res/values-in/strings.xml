@@ -66,6 +66,7 @@
     <string name="pill_grain_label">Butiran</string>
     <string name="pill_blur_label">Buram</string>
     <string name="pill_blur_tint_label">Warna di atas buram</string>
+    <string name="pill_blur_tint_alpha_label">Kekuatan warna</string>
     <string name="pill_height_label">Tinggi</string>
     <string name="pill_icon_shape_circle">Lingkaran</string>
     <string name="pill_icon_shape_default">Bawaan</string>
@@ -133,6 +134,10 @@
     <string name="settings_autohide_fullscreen_desc">Sembunyikan dock saat aplikasi masuk mode layar penuh</string>
     <string name="settings_autohide_fullscreen_title">Sembunyikan Otomatis saat Layar Penuh</string>
     <string name="settings_autohide_landscape_desc">Sembunyikan dock saat perangkat dalam posisi lanskap</string>
+    <string name="settings_dock_always_visible_title">Selalu tampilkan dock</string>
+    <string name="settings_dock_always_visible_desc">Biarkan dock tetap di layar; hanya disembunyikan di layar penuh, lanskap, atau layar kunci jika opsi tersebut aktif</string>
+    <string name="settings_dock_visible_home_title">Tampilkan dock di layar utama</string>
+    <string name="settings_dock_visible_home_desc">Tampilkan dock setiap kali layar utama terbuka</string>
     <string name="settings_autohide_landscape_title">Sembunyikan Otomatis saat Lanskap</string>
     <string name="settings_backup_button">Cadangkan Pengaturan</string>
     <string name="settings_backup_restore_title">Cadangkan &amp; Pulihkan</string>

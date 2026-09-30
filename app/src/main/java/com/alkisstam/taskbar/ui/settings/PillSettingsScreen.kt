@@ -128,6 +128,7 @@ fun PillSettingsScreen(
     val grainAlpha by viewModel.grainAlpha.collectAsState()
     val blurRadiusDp by viewModel.blurRadiusDp.collectAsState()
     val blurTint by viewModel.blurTint.collectAsState()
+    val blurTintAlpha by viewModel.blurTintAlpha.collectAsState()
     val configuration = LocalConfiguration.current
     val widthMax = configuration.screenWidthDp.toFloat()
     val heightMax = (configuration.screenHeightDp / 2).toFloat()
@@ -248,6 +249,19 @@ fun PillSettingsScreen(
                     Switch(
                         checked = blurTint,
                         onCheckedChange = { viewModel.setBlurTint(it) }
+                    )
+                }
+                if (blurTint) {
+                    SettingsSlider(
+                        label = stringResource(R.string.pill_blur_tint_alpha_label),
+                        value = blurTintAlpha,
+                        valueRange = 0f..1f,
+                        unit = "%",
+                        step = 0.01f,
+                        displayTransform = { "${(it * 100).toInt()}%" },
+                        editValueTransform = { (it * 100).roundToInt().toString() },
+                        parseEditValue = { it.toFloatOrNull()?.div(100f) },
+                        onValueChange = { viewModel.setBlurTintAlpha(it) }
                     )
                 }
             }

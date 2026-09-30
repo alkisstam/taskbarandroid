@@ -2,6 +2,7 @@ package com.alkisstam.taskbar.service
 
 import android.content.Context
 import android.graphics.PixelFormat
+import android.graphics.Rect
 import android.os.Build
 import android.view.Gravity
 import android.view.WindowManager
@@ -228,5 +229,27 @@ internal fun Context.musicPanelLayoutParams(yOffsetDp: Float, translucentMode: B
     ).apply {
         gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
         y = (yOffsetDp * density).toInt()
+    }
+}
+
+// Invisible window over a pinned dock that forwards its touches to the (then untouchable)
+// full-screen dock window. Only this window moves/resizes, and it draws nothing, so the
+// dock itself never flickers.
+internal fun Context.dockTouchProxyLayoutParams(bounds: Rect?): WindowManager.LayoutParams {
+    val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
+            (if (bounds == null) WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE else 0)
+    return WindowManager.LayoutParams(
+        bounds?.width() ?: 1,
+        bounds?.height() ?: 1,
+        overlayWindowType(),
+        flags,
+        PixelFormat.TRANSLUCENT
+    ).apply {
+        gravity = Gravity.TOP or Gravity.START
+        x = bounds?.left ?: 0
+        y = bounds?.top ?: 0
     }
 }

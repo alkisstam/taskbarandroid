@@ -66,6 +66,7 @@
     <string name="pill_grain_label">เกรน</string>
     <string name="pill_blur_label">ความเบลอ</string>
     <string name="pill_blur_tint_label">สีทับความเบลอ</string>
+    <string name="pill_blur_tint_alpha_label">ความเข้มของสี</string>
     <string name="pill_height_label">ความสูง</string>
     <string name="pill_icon_shape_circle">วงกลม</string>
     <string name="pill_icon_shape_default">ค่าเริ่มต้น</string>
@@ -133,6 +134,10 @@
     <string name="settings_autohide_fullscreen_desc">ซ่อนด็อกเมื่อแอปเข้าสู่โหมดเต็มจอ</string>
     <string name="settings_autohide_fullscreen_title">ซ่อนอัตโนมัติเมื่อเต็มจอ</string>
     <string name="settings_autohide_landscape_desc">ซ่อนด็อกเมื่ออุปกรณ์อยู่ในแนวนอน</string>
+    <string name="settings_dock_always_visible_title">แสดง Dock ตลอดเวลา</string>
+    <string name="settings_dock_always_visible_desc">ให้ Dock อยู่บนหน้าจอ จะซ่อนเฉพาะในโหมดเต็มหน้าจอ แนวนอน หรือหน้าจอล็อกเมื่อเปิดตัวเลือกเหล่านั้น</string>
+    <string name="settings_dock_visible_home_title">แสดง Dock บนหน้าจอหลัก</string>
+    <string name="settings_dock_visible_home_desc">แสดง Dock ทุกครั้งที่เปิดหน้าจอหลัก</string>
     <string name="settings_autohide_landscape_title">ซ่อนอัตโนมัติเมื่อแนวนอน</string>
     <string name="settings_backup_button">สำรองการตั้งค่า</string>
     <string name="settings_backup_restore_title">สำรอง &amp; กู้คืน</string>

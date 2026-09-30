@@ -193,6 +193,8 @@ class PreferencesRepository @Inject constructor(
         private val SURFACE_TINT_COLOR_KEY = stringPreferencesKey("surface_tint_color")
         private val AUTO_HIDE_FULLSCREEN_KEY = booleanPreferencesKey("auto_hide_fullscreen")
         private val AUTO_HIDE_LANDSCAPE_KEY = booleanPreferencesKey("auto_hide_landscape")
+        private val DOCK_ALWAYS_VISIBLE_KEY = booleanPreferencesKey("dock_always_visible")
+        private val DOCK_VISIBLE_ON_HOME_KEY = booleanPreferencesKey("dock_visible_on_home")
         private val DISABLE_ON_LOCKSCREEN_KEY = booleanPreferencesKey("disable_on_lockscreen")
         private val QUICK_CONTROLS_ENABLED_KEY = booleanPreferencesKey("quick_controls_enabled")
         private val QUICK_SETTINGS_PANEL_ENABLED_KEY = booleanPreferencesKey("quick_settings_panel_enabled")
@@ -215,6 +217,7 @@ class PreferencesRepository @Inject constructor(
         private val GRAIN_ALPHA_KEY = floatPreferencesKey("grain_alpha")
         private val BLUR_RADIUS_KEY = floatPreferencesKey("blur_radius_dp")
         private val BLUR_TINT_KEY = booleanPreferencesKey("blur_tint")
+        private val BLUR_TINT_ALPHA_KEY = floatPreferencesKey("blur_tint_alpha")
         private val FUZZY_SEARCH_ENABLED_KEY = booleanPreferencesKey("fuzzy_search_enabled")
         private val SHOW_RECENT_APPS_KEY = booleanPreferencesKey("show_recent_apps")
         private val SHOW_RECENT_APPS_ROW_KEY = booleanPreferencesKey("show_recent_apps_row")
@@ -395,6 +398,26 @@ class PreferencesRepository @Inject constructor(
     suspend fun setAutoHideInLandscape(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[AUTO_HIDE_LANDSCAPE_KEY] = enabled
+        }
+    }
+
+    val dockAlwaysVisible: Flow<Boolean> = safeData.map { prefs ->
+        prefs[DOCK_ALWAYS_VISIBLE_KEY] ?: false
+    }
+
+    suspend fun setDockAlwaysVisible(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[DOCK_ALWAYS_VISIBLE_KEY] = enabled
+        }
+    }
+
+    val dockVisibleOnHome: Flow<Boolean> = safeData.map { prefs ->
+        prefs[DOCK_VISIBLE_ON_HOME_KEY] ?: false
+    }
+
+    suspend fun setDockVisibleOnHome(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[DOCK_VISIBLE_ON_HOME_KEY] = enabled
         }
     }
 
@@ -744,6 +767,16 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
+    val blurTintAlpha: Flow<Float> = safeData.map { prefs ->
+        prefs[BLUR_TINT_ALPHA_KEY] ?: 0.80f
+    }
+
+    suspend fun setBlurTintAlpha(value: Float) {
+        context.dataStore.edit { prefs ->
+            prefs[BLUR_TINT_ALPHA_KEY] = value
+        }
+    }
+
     val appGridColumns: Flow<Int> = safeData.map { prefs ->
         prefs[APP_GRID_COLUMNS_KEY] ?: 4
     }
@@ -796,6 +829,8 @@ class PreferencesRepository @Inject constructor(
             prefs[SURFACE_TINT_COLOR_KEY]?.let { put("surface_tint_color", it) }
             prefs[AUTO_HIDE_FULLSCREEN_KEY]?.let { put("auto_hide_fullscreen", it) }
             prefs[AUTO_HIDE_LANDSCAPE_KEY]?.let { put("auto_hide_landscape", it) }
+            prefs[DOCK_ALWAYS_VISIBLE_KEY]?.let { put("dock_always_visible", it) }
+            prefs[DOCK_VISIBLE_ON_HOME_KEY]?.let { put("dock_visible_on_home", it) }
             prefs[DISABLE_ON_LOCKSCREEN_KEY]?.let { put("disable_on_lockscreen", it) }
             prefs[QUICK_CONTROLS_ENABLED_KEY]?.let { put("quick_controls_enabled", it) }
             prefs[QUICK_SETTINGS_PANEL_ENABLED_KEY]?.let { put("quick_settings_panel_enabled", it) }
@@ -817,6 +852,7 @@ class PreferencesRepository @Inject constructor(
             prefs[GRAIN_ALPHA_KEY]?.let { put("grain_alpha", it) }
             prefs[BLUR_RADIUS_KEY]?.let { put("blur_radius_dp", it) }
             prefs[BLUR_TINT_KEY]?.let { put("blur_tint", it) }
+            prefs[BLUR_TINT_ALPHA_KEY]?.let { put("blur_tint_alpha", it) }
             prefs[ICON_PACK_KEY]?.let { put("icon_pack_package", it) }
             prefs[APP_LANGUAGE_TAG_KEY]?.let { put("app_language_tag", it) }
             prefs[APP_SORT_ORDER_KEY]?.let { put("app_sort_order", it) }
@@ -855,6 +891,8 @@ class PreferencesRepository @Inject constructor(
             if (obj.has("surface_tint_color")) prefs[SURFACE_TINT_COLOR_KEY] = obj.getString("surface_tint_color")
             if (obj.has("auto_hide_fullscreen")) prefs[AUTO_HIDE_FULLSCREEN_KEY] = obj.getBoolean("auto_hide_fullscreen")
             if (obj.has("auto_hide_landscape")) prefs[AUTO_HIDE_LANDSCAPE_KEY] = obj.getBoolean("auto_hide_landscape")
+            if (obj.has("dock_always_visible")) prefs[DOCK_ALWAYS_VISIBLE_KEY] = obj.getBoolean("dock_always_visible")
+            if (obj.has("dock_visible_on_home")) prefs[DOCK_VISIBLE_ON_HOME_KEY] = obj.getBoolean("dock_visible_on_home")
             if (obj.has("disable_on_lockscreen")) prefs[DISABLE_ON_LOCKSCREEN_KEY] = obj.getBoolean("disable_on_lockscreen")
             if (obj.has("quick_controls_enabled")) prefs[QUICK_CONTROLS_ENABLED_KEY] = obj.getBoolean("quick_controls_enabled")
             if (obj.has("quick_settings_panel_enabled")) prefs[QUICK_SETTINGS_PANEL_ENABLED_KEY] = obj.getBoolean("quick_settings_panel_enabled")
@@ -876,6 +914,7 @@ class PreferencesRepository @Inject constructor(
             if (obj.has("grain_alpha")) prefs[GRAIN_ALPHA_KEY] = obj.getDouble("grain_alpha").toFloat()
             if (obj.has("blur_radius_dp")) prefs[BLUR_RADIUS_KEY] = obj.getDouble("blur_radius_dp").toFloat()
             if (obj.has("blur_tint")) prefs[BLUR_TINT_KEY] = obj.getBoolean("blur_tint")
+            if (obj.has("blur_tint_alpha")) prefs[BLUR_TINT_ALPHA_KEY] = obj.getDouble("blur_tint_alpha").toFloat()
             if (obj.has("icon_pack_package")) prefs[ICON_PACK_KEY] = obj.getString("icon_pack_package")
             if (obj.has("app_language_tag")) prefs[APP_LANGUAGE_TAG_KEY] = obj.getString("app_language_tag")
             if (obj.has("app_sort_order")) prefs[APP_SORT_ORDER_KEY] = obj.getString("app_sort_order")
