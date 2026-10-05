@@ -1,0 +1,3 @@
+Neu
+• Neue Kachel „Dock anheften“ ganz vorne in den Schnellzugriffen des Docks: antippen, um das Dock auf dem Bildschirm zu halten, erneut antippen zum Lösen; Zurück und Tastatur erreichen weiterhin die App darunter
+• Neuer Regler „Tönungsstärke“ unter „Tönung über Unschärfe“

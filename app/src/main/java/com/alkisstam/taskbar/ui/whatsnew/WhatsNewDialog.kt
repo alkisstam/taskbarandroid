@@ -263,6 +263,16 @@ val whatsNewReleases = listOf(
             "Fixed the outer screen staying black after folding or unfolding on foldable phones",
             "Fixed the blur staying on the lock screen after locking with a panel open"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.5.11",
+        versionCode = 64,
+        highlights = listOf(
+            "New Pin Dock tile, first in the dock's controls strip — tap to keep the dock on screen, tap again to unpin",
+            "Back and the keyboard still reach the app underneath a pinned dock",
+            "Turn the tile off in Settings → Controls → Enable Pin Dock",
+            "New Tint strength slider under Tint over blur"
+        )
     )
 )
 

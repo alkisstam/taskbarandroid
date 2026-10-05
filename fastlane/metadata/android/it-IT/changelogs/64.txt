@@ -1,0 +1,3 @@
+Novità
+• Nuovo riquadro «Fissa dock», primo nei controlli del dock: toccalo per tenere il dock sullo schermo, di nuovo per sbloccarlo; indietro e tastiera raggiungono comunque l'app sottostante
+• Nuovo cursore «Intensità della tinta» sotto «Tinta sopra la sfocatura»

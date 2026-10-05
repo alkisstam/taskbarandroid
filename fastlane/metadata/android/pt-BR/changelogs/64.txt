@@ -1,0 +1,3 @@
+Novidades
+• Novo bloco “Fixar dock”, o primeiro nos controles do dock: toque para manter o dock na tela e toque de novo para soltar; o voltar e o teclado continuam chegando ao app abaixo
+• Novo controle “Intensidade da tonalidade” abaixo de “Tonalidade sobre o desfoque”

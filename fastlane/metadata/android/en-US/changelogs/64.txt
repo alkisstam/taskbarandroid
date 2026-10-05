@@ -1,0 +1,3 @@
+Added
+• New “Pin Dock” tile, first in the dock's controls strip: tap to keep the dock on screen, tap again to unpin; back and the keyboard still reach the app underneath
+• New “Tint strength” slider under “Tint over blur”

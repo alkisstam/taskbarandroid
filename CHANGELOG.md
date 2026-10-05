@@ -4,6 +4,16 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.5.11] - 2026-10-05
+
+Pin the dock on screen from the controls strip, adjustable tint strength.
+
+### Added
+- **Pin Dock quick control** — new tile, always first in the dock's controls strip: tap it to keep the dock on screen, tap again to unpin. While pinned, only the dock itself takes touches, so back gestures and the keyboard still reach the app underneath. Fullscreen, landscape and lock-screen auto-hide still apply when those options are on. Turn the tile off with Settings → Controls → Quick Controls → Enable Pin Dock (on by default). Included in backup/restore.
+- **Tint strength slider** — Settings → Design, under Tint over blur (shown when it's on): sets how strongly the theme colour covers the glass (0–100%, default 80%). Included in backup/restore.
+
+---
+
 ## [1.5.10] - 2026-09-27
 
 Frosted glass behind the dock and every panel, adjustable blur, foldable screen fix.
