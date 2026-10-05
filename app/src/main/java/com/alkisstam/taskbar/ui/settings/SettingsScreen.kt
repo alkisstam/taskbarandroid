@@ -617,8 +617,6 @@ internal fun BehaviourCard(viewModel: TaskbarViewModel) {
     val autoHideInFullscreen by viewModel.autoHideInFullscreen.collectAsState()
     val autoHideInLandscape by viewModel.autoHideInLandscape.collectAsState()
     val disableOnLockscreen by viewModel.disableOnLockscreen.collectAsState()
-    val dockAlwaysVisible by viewModel.dockAlwaysVisible.collectAsState()
-    val dockVisibleOnHome by viewModel.dockVisibleOnHome.collectAsState()
     val hapticFeedbackEnabled by viewModel.hapticFeedbackEnabled.collectAsState()
 
     SettingsCard(title = stringResource(R.string.settings_behaviour_card_title)) {
@@ -656,43 +654,6 @@ internal fun BehaviourCard(viewModel: TaskbarViewModel) {
             Switch(
                 checked = autoHideInLandscape,
                 onCheckedChange = { viewModel.setAutoHideInLandscape(it) }
-            )
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(stringResource(R.string.settings_dock_always_visible_title), style = MaterialTheme.typography.bodyLarge)
-                Text(
-                    stringResource(R.string.settings_dock_always_visible_desc),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            Switch(
-                checked = dockAlwaysVisible,
-                onCheckedChange = { viewModel.setDockAlwaysVisible(it) }
-            )
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(stringResource(R.string.settings_dock_visible_home_title), style = MaterialTheme.typography.bodyLarge)
-                Text(
-                    stringResource(R.string.settings_dock_visible_home_desc),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            Switch(
-                checked = dockVisibleOnHome || dockAlwaysVisible,
-                enabled = !dockAlwaysVisible,
-                onCheckedChange = { viewModel.setDockVisibleOnHome(it) }
             )
         }
         Row(
@@ -1291,6 +1252,7 @@ internal fun QuickControlsToggleCard(viewModel: TaskbarViewModel) {
     val quickControlsEnabled by viewModel.quickControlsEnabled.collectAsState()
     val taskbarSettings by viewModel.taskbarSettings.collectAsState()
     val quickSettingsPanelEnabled by viewModel.quickSettingsPanelEnabled.collectAsState()
+    val pinDockControlEnabled by viewModel.pinDockControlEnabled.collectAsState()
 
     SettingsCard(title = stringResource(R.string.settings_quick_controls_title)) {
         Row(
@@ -1367,6 +1329,28 @@ internal fun QuickControlsToggleCard(viewModel: TaskbarViewModel) {
             Switch(
                 checked = quickSettingsPanelEnabled,
                 onCheckedChange = { viewModel.setQuickSettingsPanelEnabled(it) },
+                enabled = quickControlsEnabled
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .alpha(if (quickControlsEnabled) 1f else 0.38f),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
+                Text(stringResource(R.string.settings_enable_pin_dock_title), style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    stringResource(R.string.settings_enable_pin_dock_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(
+                checked = pinDockControlEnabled,
+                onCheckedChange = { viewModel.setPinDockControlEnabled(it) },
                 enabled = quickControlsEnabled
             )
         }

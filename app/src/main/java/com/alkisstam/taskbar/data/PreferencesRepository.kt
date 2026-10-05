@@ -193,8 +193,8 @@ class PreferencesRepository @Inject constructor(
         private val SURFACE_TINT_COLOR_KEY = stringPreferencesKey("surface_tint_color")
         private val AUTO_HIDE_FULLSCREEN_KEY = booleanPreferencesKey("auto_hide_fullscreen")
         private val AUTO_HIDE_LANDSCAPE_KEY = booleanPreferencesKey("auto_hide_landscape")
-        private val DOCK_ALWAYS_VISIBLE_KEY = booleanPreferencesKey("dock_always_visible")
-        private val DOCK_VISIBLE_ON_HOME_KEY = booleanPreferencesKey("dock_visible_on_home")
+        private val DOCK_PINNED_KEY = booleanPreferencesKey("dock_always_visible")
+        private val PIN_DOCK_CONTROL_ENABLED_KEY = booleanPreferencesKey("pin_dock_control_enabled")
         private val DISABLE_ON_LOCKSCREEN_KEY = booleanPreferencesKey("disable_on_lockscreen")
         private val QUICK_CONTROLS_ENABLED_KEY = booleanPreferencesKey("quick_controls_enabled")
         private val QUICK_SETTINGS_PANEL_ENABLED_KEY = booleanPreferencesKey("quick_settings_panel_enabled")
@@ -401,23 +401,23 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
-    val dockAlwaysVisible: Flow<Boolean> = safeData.map { prefs ->
-        prefs[DOCK_ALWAYS_VISIBLE_KEY] ?: false
+    val dockPinned: Flow<Boolean> = safeData.map { prefs ->
+        prefs[DOCK_PINNED_KEY] ?: false
     }
 
-    suspend fun setDockAlwaysVisible(enabled: Boolean) {
+    suspend fun setDockPinned(enabled: Boolean) {
         context.dataStore.edit { prefs ->
-            prefs[DOCK_ALWAYS_VISIBLE_KEY] = enabled
+            prefs[DOCK_PINNED_KEY] = enabled
         }
     }
 
-    val dockVisibleOnHome: Flow<Boolean> = safeData.map { prefs ->
-        prefs[DOCK_VISIBLE_ON_HOME_KEY] ?: false
+    val pinDockControlEnabled: Flow<Boolean> = safeData.map { prefs ->
+        prefs[PIN_DOCK_CONTROL_ENABLED_KEY] ?: true
     }
 
-    suspend fun setDockVisibleOnHome(enabled: Boolean) {
+    suspend fun setPinDockControlEnabled(enabled: Boolean) {
         context.dataStore.edit { prefs ->
-            prefs[DOCK_VISIBLE_ON_HOME_KEY] = enabled
+            prefs[PIN_DOCK_CONTROL_ENABLED_KEY] = enabled
         }
     }
 
@@ -829,8 +829,8 @@ class PreferencesRepository @Inject constructor(
             prefs[SURFACE_TINT_COLOR_KEY]?.let { put("surface_tint_color", it) }
             prefs[AUTO_HIDE_FULLSCREEN_KEY]?.let { put("auto_hide_fullscreen", it) }
             prefs[AUTO_HIDE_LANDSCAPE_KEY]?.let { put("auto_hide_landscape", it) }
-            prefs[DOCK_ALWAYS_VISIBLE_KEY]?.let { put("dock_always_visible", it) }
-            prefs[DOCK_VISIBLE_ON_HOME_KEY]?.let { put("dock_visible_on_home", it) }
+            prefs[DOCK_PINNED_KEY]?.let { put("dock_always_visible", it) }
+            prefs[PIN_DOCK_CONTROL_ENABLED_KEY]?.let { put("pin_dock_control_enabled", it) }
             prefs[DISABLE_ON_LOCKSCREEN_KEY]?.let { put("disable_on_lockscreen", it) }
             prefs[QUICK_CONTROLS_ENABLED_KEY]?.let { put("quick_controls_enabled", it) }
             prefs[QUICK_SETTINGS_PANEL_ENABLED_KEY]?.let { put("quick_settings_panel_enabled", it) }
@@ -891,8 +891,8 @@ class PreferencesRepository @Inject constructor(
             if (obj.has("surface_tint_color")) prefs[SURFACE_TINT_COLOR_KEY] = obj.getString("surface_tint_color")
             if (obj.has("auto_hide_fullscreen")) prefs[AUTO_HIDE_FULLSCREEN_KEY] = obj.getBoolean("auto_hide_fullscreen")
             if (obj.has("auto_hide_landscape")) prefs[AUTO_HIDE_LANDSCAPE_KEY] = obj.getBoolean("auto_hide_landscape")
-            if (obj.has("dock_always_visible")) prefs[DOCK_ALWAYS_VISIBLE_KEY] = obj.getBoolean("dock_always_visible")
-            if (obj.has("dock_visible_on_home")) prefs[DOCK_VISIBLE_ON_HOME_KEY] = obj.getBoolean("dock_visible_on_home")
+            if (obj.has("dock_always_visible")) prefs[DOCK_PINNED_KEY] = obj.getBoolean("dock_always_visible")
+            if (obj.has("pin_dock_control_enabled")) prefs[PIN_DOCK_CONTROL_ENABLED_KEY] = obj.getBoolean("pin_dock_control_enabled")
             if (obj.has("disable_on_lockscreen")) prefs[DISABLE_ON_LOCKSCREEN_KEY] = obj.getBoolean("disable_on_lockscreen")
             if (obj.has("quick_controls_enabled")) prefs[QUICK_CONTROLS_ENABLED_KEY] = obj.getBoolean("quick_controls_enabled")
             if (obj.has("quick_settings_panel_enabled")) prefs[QUICK_SETTINGS_PANEL_ENABLED_KEY] = obj.getBoolean("quick_settings_panel_enabled")

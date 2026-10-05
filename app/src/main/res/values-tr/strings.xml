@@ -134,10 +134,6 @@
     <string name="settings_autohide_fullscreen_desc">Bir uygulama tam ekrana geçtiğinde dock\'u gizle</string>
     <string name="settings_autohide_fullscreen_title">Tam Ekranda Otomatik Gizle</string>
     <string name="settings_autohide_landscape_desc">Cihaz yatay konumdayken dock\'u gizle</string>
-    <string name="settings_dock_always_visible_title">Dock\'u her zaman göster</string>
-    <string name="settings_dock_always_visible_desc">Dock ekranda kalır; yalnızca bu seçenekler açıksa tam ekranda, yatay modda veya kilit ekranında gizlenir</string>
-    <string name="settings_dock_visible_home_title">Ana ekranda dock\'u göster</string>
-    <string name="settings_dock_visible_home_desc">Ana ekran açıkken dock\'u göster</string>
     <string name="settings_autohide_landscape_title">Yatay Modda Otomatik Gizle</string>
     <string name="settings_backup_button">Ayarları Yedekle</string>
     <string name="settings_backup_restore_title">Yedekleme &amp; Geri Yükleme</string>
@@ -192,6 +188,8 @@
     <string name="settings_enable_quick_controls_title">Hızlı Kontrolleri Etkinleştir</string>
     <string name="settings_enable_quick_settings_panel_desc">Dock\'taki hızlı kontrollerde bir ayarlar simgesi gösterir ve Hızlı Ayarlar paneline erişim sağlar</string>
     <string name="settings_enable_quick_settings_panel_title">Hızlı Ayarları Etkinleştir</string>
+    <string name="settings_enable_pin_dock_desc">Dock\'u ekranda tutmak için dock\'taki Hızlı Kontrollerde ilk sırada bir sabitleme kontrolü gösterir</string>
+    <string name="settings_enable_pin_dock_title">Dock sabitlemeyi etkinleştir</string>
     <string name="settings_fuzzy_search_desc">Yazım hatası olsa veya isim eksik yazılsa bile uygulamaları eşleştirir</string>
     <string name="settings_fuzzy_search_title">Bulanık Arama</string>
     <string name="settings_grant_notification_access_button">Bildirim Erişimi Ver</string>
@@ -351,6 +349,7 @@
     <string name="quick_control_notif_history_label">Bildirim</string>
     <string name="quick_control_music_label">Müzik</string>
     <string name="quick_control_settings_label">Ayarlar</string>
+    <string name="quick_control_pin_dock_label">Dock\'u sabitle</string>
     <string name="calculator_error">Hata</string>
     <string name="calculator_clear_label">AC</string>
     <string name="calculator_backspace_description">Geri sil</string>

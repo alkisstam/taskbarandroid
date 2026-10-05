@@ -134,10 +134,6 @@
     <string name="settings_autohide_fullscreen_desc">Скрывать панель, когда приложение переходит в полноэкранный режим</string>
     <string name="settings_autohide_fullscreen_title">Автоскрытие в полноэкранном режиме</string>
     <string name="settings_autohide_landscape_desc">Скрывать панель, когда устройство в альбомной ориентации</string>
-    <string name="settings_dock_always_visible_title">Всегда показывать док</string>
-    <string name="settings_dock_always_visible_desc">Док остаётся на экране; скрывается только в полноэкранном режиме, в альбомной ориентации или на экране блокировки, если эти параметры включены</string>
-    <string name="settings_dock_visible_home_title">Показывать док на главном экране</string>
-    <string name="settings_dock_visible_home_desc">Показывать док, когда открыт главный экран</string>
     <string name="settings_autohide_landscape_title">Автоскрытие в альбомной ориентации</string>
     <string name="settings_backup_button">Резервное копирование настроек</string>
     <string name="settings_backup_restore_title">Резервное копирование &amp; восстановление</string>
@@ -192,6 +188,8 @@
     <string name="settings_enable_quick_controls_title">Включить быстрые кнопки</string>
     <string name="settings_enable_quick_settings_panel_desc">Показывает значок настроек в быстрых кнопках на панели и открывает доступ к панели быстрых настроек</string>
     <string name="settings_enable_quick_settings_panel_title">Включить быстрые настройки</string>
+    <string name="settings_enable_pin_dock_desc">Показывать кнопку закрепления первой в быстрых элементах управления дока, чтобы док оставался на экране</string>
+    <string name="settings_enable_pin_dock_title">Включить закрепление дока</string>
     <string name="settings_fuzzy_search_desc">Находить приложения даже при опечатках или неполном названии</string>
     <string name="settings_fuzzy_search_title">Нечёткий поиск</string>
     <string name="settings_grant_notification_access_button">Предоставить доступ к уведомлениям</string>
@@ -351,6 +349,7 @@
     <string name="quick_control_notif_history_label">Увед.</string>
     <string name="quick_control_music_label">Музыка</string>
     <string name="quick_control_settings_label">Настройки</string>
+    <string name="quick_control_pin_dock_label">Закрепить док</string>
     <string name="calculator_error">Ошибка</string>
     <string name="calculator_clear_label">AC</string>
     <string name="calculator_backspace_description">Стереть</string>

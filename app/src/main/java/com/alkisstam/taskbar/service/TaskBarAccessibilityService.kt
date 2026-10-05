@@ -2,7 +2,6 @@ package com.alkisstam.taskbar.service
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -99,7 +98,6 @@ class TaskBarAccessibilityService : AccessibilityService() {
     }
 
     private var lastForegroundPackage: String? = null
-    private var onHome = false
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
@@ -110,47 +108,13 @@ class TaskBarAccessibilityService : AccessibilityService() {
             // the home screen and the dock collapses itself right after showing.
             val enteredFromElsewhere = pkg != lastForegroundPackage
             lastForegroundPackage = pkg
-            val isLauncher = pkg in launcherPackages()
-            if (isLauncher && enteredFromElsewhere) {
+            if (pkg in launcherPackages() && enteredFromElsewhere) {
                 sendBroadcast(
                     Intent(OverlayService.ACTION_DISMISS_ALL).setPackage(packageName)
                 )
             }
-            // Only an activity coming to the front leaves the home screen. The shade, keyboard,
-            // our own overlays, widgets and launcher side pages (Discover, Samsung Free) all fire
-            // window events over the home screen without leaving it.
-            val home = if (isLauncher) true
-                else if (pkg == packageName || pkg == "com.android.systemui" || pkg == currentImePackage()) onHome
-                else if (!isActivity(pkg, event.className?.toString())) onHome
-                else false
-            if (home != onHome) {
-                onHome = home
-                sendBroadcast(
-                    Intent(OverlayService.ACTION_HOME_STATE).setPackage(packageName)
-                        .putExtra(OverlayService.EXTRA_ON_HOME, home)
-                )
-            }
         }
     }
-
-    private val activityClassCache = HashMap<String, Boolean>()
-
-    private fun isActivity(pkg: String, className: String?): Boolean {
-        if (className == null) return false
-        val key = "$pkg/$className"
-        return activityClassCache.getOrPut(key) {
-            try {
-                packageManager.getActivityInfo(ComponentName(pkg, className), 0)
-                true
-            } catch (e: PackageManager.NameNotFoundException) {
-                false
-            }
-        }
-    }
-
-    private fun currentImePackage(): String? =
-        android.provider.Settings.Secure.getString(contentResolver, android.provider.Settings.Secure.DEFAULT_INPUT_METHOD)
-            ?.substringBefore('/')
 
     override fun onKeyEvent(event: KeyEvent): Boolean {
         if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {

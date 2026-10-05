@@ -91,28 +91,23 @@ class TaskbarViewModel @Inject constructor(
     val autoHideInLandscape: StateFlow<Boolean> = prefsRepository.autoHideInLandscape
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    val dockAlwaysVisible: StateFlow<Boolean> = prefsRepository.dockAlwaysVisible
-        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+    val pinDockControlEnabled: StateFlow<Boolean> = prefsRepository.pinDockControlEnabled
+        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
-    val dockVisibleOnHome: StateFlow<Boolean> = prefsRepository.dockVisibleOnHome
-        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
-
-    private val _onHomeScreen = MutableStateFlow(false)
-
-    fun setOnHomeScreen(onHome: Boolean) { _onHomeScreen.value = onHome }
-
-    // Pinned: the dock stays shown and only its own bounds take touches.
-    val isDockPinned: StateFlow<Boolean> = combine(
-        dockAlwaysVisible, dockVisibleOnHome, _onHomeScreen
-    ) { always, onHomeEnabled, onHome -> always || (onHomeEnabled && onHome) }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
-
-    fun setDockAlwaysVisible(enabled: Boolean) {
-        viewModelScope.launch { prefsRepository.setDockAlwaysVisible(enabled) }
+    fun setPinDockControlEnabled(enabled: Boolean) {
+        viewModelScope.launch { prefsRepository.setPinDockControlEnabled(enabled) }
     }
 
-    fun setDockVisibleOnHome(enabled: Boolean) {
-        viewModelScope.launch { prefsRepository.setDockVisibleOnHome(enabled) }
+    // Pinned: the dock stays shown and only its own bounds take touches. Gated on the tile being
+    // available, else a pinned dock could never be unpinned.
+    val isDockPinned: StateFlow<Boolean> = combine(
+        prefsRepository.dockPinned, prefsRepository.quickControlsEnabled, pinDockControlEnabled
+    ) { pinned, controlsEnabled, tileEnabled -> pinned && controlsEnabled && tileEnabled }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    fun toggleDockPinned() {
+        val pinned = !isDockPinned.value
+        viewModelScope.launch { prefsRepository.setDockPinned(pinned) }
     }
 
     val disableOnLockscreen: StateFlow<Boolean> = prefsRepository.disableOnLockscreen
@@ -353,7 +348,7 @@ class TaskbarViewModel @Inject constructor(
         }
         viewModelScope.launch { prefsRepository.setTaskbarVisible(true) }
     }
-    // [force] hides a pinned dock too (fullscreen auto-hide, leaving the home screen).
+    // [force] hides a pinned dock too (fullscreen auto-hide).
     fun hideTaskbar(force: Boolean = false) {
         _isDockExpanded.value = false
         _dockExpandProgress.value = 0f
@@ -366,11 +361,7 @@ class TaskbarViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             _isTaskbarVisible.value = prefsRepository.taskbarVisible.first()
-            var wasPinned = false
-            isDockPinned.collect { pinned ->
-                if (pinned) showTaskbar() else if (wasPinned) hideTaskbar(force = true)
-                wasPinned = pinned
-            }
+            isDockPinned.collect { pinned -> if (pinned) showTaskbar() }
         }
         context.contentResolver.registerContentObserver(
             Settings.Secure.getUriFor(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES),

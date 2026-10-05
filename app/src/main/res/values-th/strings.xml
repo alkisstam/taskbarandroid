@@ -134,10 +134,6 @@
     <string name="settings_autohide_fullscreen_desc">ซ่อนด็อกเมื่อแอปเข้าสู่โหมดเต็มจอ</string>
     <string name="settings_autohide_fullscreen_title">ซ่อนอัตโนมัติเมื่อเต็มจอ</string>
     <string name="settings_autohide_landscape_desc">ซ่อนด็อกเมื่ออุปกรณ์อยู่ในแนวนอน</string>
-    <string name="settings_dock_always_visible_title">แสดง Dock ตลอดเวลา</string>
-    <string name="settings_dock_always_visible_desc">ให้ Dock อยู่บนหน้าจอ จะซ่อนเฉพาะในโหมดเต็มหน้าจอ แนวนอน หรือหน้าจอล็อกเมื่อเปิดตัวเลือกเหล่านั้น</string>
-    <string name="settings_dock_visible_home_title">แสดง Dock บนหน้าจอหลัก</string>
-    <string name="settings_dock_visible_home_desc">แสดง Dock ทุกครั้งที่เปิดหน้าจอหลัก</string>
     <string name="settings_autohide_landscape_title">ซ่อนอัตโนมัติเมื่อแนวนอน</string>
     <string name="settings_backup_button">สำรองการตั้งค่า</string>
     <string name="settings_backup_restore_title">สำรอง &amp; กู้คืน</string>
@@ -192,6 +188,8 @@
     <string name="settings_enable_quick_controls_title">เปิดใช้ควบคุมด่วน</string>
     <string name="settings_enable_quick_settings_panel_desc">แสดงไอคอนการตั้งค่าในควบคุมด่วนบนด็อก และเข้าถึงแผงการตั้งค่าด่วน</string>
     <string name="settings_enable_quick_settings_panel_title">เปิดใช้งานการตั้งค่าด่วน</string>
+    <string name="settings_enable_pin_dock_desc">แสดงปุ่มปักหมุดเป็นอันดับแรกในการควบคุมด่วนบน Dock เพื่อให้ Dock อยู่บนหน้าจอ</string>
+    <string name="settings_enable_pin_dock_title">เปิดใช้การปักหมุด Dock</string>
     <string name="settings_fuzzy_search_desc">ค้นหาแอปเจอแม้พิมพ์ผิดหรือใส่ชื่อไม่ครบ</string>
     <string name="settings_fuzzy_search_title">ค้นหาแบบยืดหยุ่น</string>
     <string name="settings_grant_notification_access_button">อนุญาตการเข้าถึงการแจ้งเตือน</string>
@@ -351,6 +349,7 @@
     <string name="quick_control_notif_history_label">แจ้งเตือน</string>
     <string name="quick_control_music_label">เพลง</string>
     <string name="quick_control_settings_label">การตั้งค่า</string>
+    <string name="quick_control_pin_dock_label">ปักหมุด Dock</string>
     <string name="calculator_error">ข้อผิดพลาด</string>
     <string name="calculator_clear_label">AC</string>
     <string name="calculator_backspace_description">ลบถอยหลัง</string>

@@ -134,10 +134,6 @@
     <string name="settings_autohide_fullscreen_desc">Das Dock ausblenden, wenn eine App in den Vollbildmodus wechselt</string>
     <string name="settings_autohide_fullscreen_title">Automatisch ausblenden im Vollbildmodus</string>
     <string name="settings_autohide_landscape_desc">Das Dock ausblenden, wenn sich das Gerät im Querformat befindet</string>
-    <string name="settings_dock_always_visible_title">Dock immer anzeigen</string>
-    <string name="settings_dock_always_visible_desc">Dock auf dem Bildschirm behalten; es wird nur im Vollbild, Querformat oder auf dem Sperrbildschirm ausgeblendet, wenn diese Optionen aktiv sind</string>
-    <string name="settings_dock_visible_home_title">Dock auf dem Startbildschirm anzeigen</string>
-    <string name="settings_dock_visible_home_desc">Dock anzeigen, sobald der Startbildschirm geöffnet ist</string>
     <string name="settings_autohide_landscape_title">Automatisch ausblenden im Querformat</string>
     <string name="settings_backup_button">Einstellungen sichern</string>
     <string name="settings_backup_restore_title">Sichern &amp; Wiederherstellen</string>
@@ -192,6 +188,8 @@
     <string name="settings_enable_quick_controls_title">Schnellzugriffe aktivieren</string>
     <string name="settings_enable_quick_settings_panel_desc">Zeigt ein Einstellungssymbol in den Schnellzugriffen im Dock und öffnet das Schnelleinstellungen-Panel</string>
     <string name="settings_enable_quick_settings_panel_title">Schnelleinstellungen aktivieren</string>
+    <string name="settings_enable_pin_dock_desc">Zeigt ein Anheften-Symbol als Erstes in den Schnellzugriffen im Dock, um das Dock auf dem Bildschirm zu halten</string>
+    <string name="settings_enable_pin_dock_title">Dock anheften aktivieren</string>
     <string name="settings_fuzzy_search_desc">Findet Apps auch bei Tippfehlern oder Teilnamen</string>
     <string name="settings_fuzzy_search_title">Unscharfe Suche</string>
     <string name="settings_grant_notification_access_button">Benachrichtigungszugriff gewähren</string>
@@ -351,6 +349,7 @@
     <string name="quick_control_notif_history_label">Meldungen</string>
     <string name="quick_control_music_label">Musik</string>
     <string name="quick_control_settings_label">Einstellungen</string>
+    <string name="quick_control_pin_dock_label">Dock anheften</string>
     <string name="calculator_error">Fehler</string>
     <string name="calculator_clear_label">AC</string>
     <string name="calculator_backspace_description">Rücktaste</string>

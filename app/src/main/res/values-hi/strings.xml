@@ -134,10 +134,6 @@
     <string name="settings_autohide_fullscreen_desc">जब कोई ऐप फुलस्क्रीन हो जाए तो डॉक को छिपाएं</string>
     <string name="settings_autohide_fullscreen_title">फुलस्क्रीन में ऑटो-हाइड</string>
     <string name="settings_autohide_landscape_desc">डिवाइस लैंडस्केप मोड में होने पर डॉक को छिपाएं</string>
-    <string name="settings_dock_always_visible_title">डॉक हमेशा दिखाएँ</string>
-    <string name="settings_dock_always_visible_desc">डॉक को स्क्रीन पर रखें; ये विकल्प चालू होने पर यह केवल फ़ुलस्क्रीन, लैंडस्केप या लॉक स्क्रीन पर छिपता है</string>
-    <string name="settings_dock_visible_home_title">होम स्क्रीन पर डॉक दिखाएँ</string>
-    <string name="settings_dock_visible_home_desc">होम स्क्रीन खुली होने पर डॉक दिखाएँ</string>
     <string name="settings_autohide_landscape_title">लैंडस्केप में ऑटो-हाइड</string>
     <string name="settings_backup_button">सेटिंग्स बैकअप करें</string>
     <string name="settings_backup_restore_title">बैकअप &amp; पुनर्स्थापन</string>
@@ -192,6 +188,8 @@
     <string name="settings_enable_quick_controls_title">क्विक कंट्रोल्स सक्षम करें</string>
     <string name="settings_enable_quick_settings_panel_desc">डॉक में क्विक कंट्रोल्स में सेटिंग्स आइकन दिखाएं और क्विक सेटिंग्स पैनल एक्सेस करें</string>
     <string name="settings_enable_quick_settings_panel_title">क्विक सेटिंग्स सक्षम करें</string>
+    <string name="settings_enable_pin_dock_desc">डॉक को स्क्रीन पर रखने के लिए डॉक के क्विक कंट्रोल्स में सबसे पहले पिन कंट्रोल दिखाएं</string>
+    <string name="settings_enable_pin_dock_title">डॉक पिन करना सक्षम करें</string>
     <string name="settings_fuzzy_search_desc">टाइपो या आंशिक नामों के साथ भी ऐप्स को मैच करें</string>
     <string name="settings_fuzzy_search_title">फजी सर्च</string>
     <string name="settings_grant_notification_access_button">सूचना एक्सेस की अनुमति दें</string>
@@ -351,6 +349,7 @@
     <string name="quick_control_notif_history_label">नोटिफ</string>
     <string name="quick_control_music_label">म्यूजिक</string>
     <string name="quick_control_settings_label">सेटिंग्स</string>
+    <string name="quick_control_pin_dock_label">डॉक पिन करें</string>
     <string name="calculator_error">त्रुटि</string>
     <string name="calculator_clear_label">AC</string>
     <string name="calculator_backspace_description">बैकस्पेस</string>

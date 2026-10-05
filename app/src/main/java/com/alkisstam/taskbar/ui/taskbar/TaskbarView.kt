@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.Battery5Bar
 import androidx.compose.material.icons.filled.BatteryChargingFull
 import androidx.compose.material.icons.filled.BatteryFull
 import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -94,6 +95,8 @@ fun TaskbarView(
     val musicPanelVisible by appMenuViewModel.musicPanelVisible.collectAsState()
     val quickSettingsPanelEnabled by taskbarViewModel.quickSettingsPanelEnabled.collectAsState()
     val quickSettingsPanelVisible by appMenuViewModel.quickSettingsPanelVisible.collectAsState()
+    val pinDockControlEnabled by taskbarViewModel.pinDockControlEnabled.collectAsState()
+    val isDockPinned by taskbarViewModel.isDockPinned.collectAsState()
     val quickControls by appMenuViewModel.quickControlsState.collectAsState()
     val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
     val dockExpandProgress by taskbarViewModel.dockExpandProgress.collectAsState()
@@ -254,6 +257,21 @@ fun TaskbarView(
                                         horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
+                                        if (pinDockControlEnabled) {
+                                            item {
+                                                QuickControlItem(
+                                                    item = QuickControlItemData(
+                                                        id = "pin_dock",
+                                                        label = stringResource(R.string.quick_control_pin_dock_label),
+                                                        active = isDockPinned,
+                                                        icon = Icons.Filled.PushPin
+                                                    ),
+                                                    onToggle = { taskbarViewModel.toggleDockPinned() },
+                                                    showLabel = taskbarSettings.showControlLabels,
+                                                    tileSize = taskbarSettings.quickControlSizeDp.dp
+                                                )
+                                            }
+                                        }
                                         if (musicPanelEnabled) {
                                             item {
                                                 val musicLabel = stringResource(R.string.taskbar_music_control_label)

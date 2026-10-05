@@ -134,10 +134,6 @@
     <string name="settings_autohide_fullscreen_desc">Oculta o dock quando um app entra em tela cheia</string>
     <string name="settings_autohide_fullscreen_title">Ocultar Automaticamente em Tela Cheia</string>
     <string name="settings_autohide_landscape_desc">Oculta o dock quando o dispositivo está na horizontal</string>
-    <string name="settings_dock_always_visible_title">Sempre mostrar o dock</string>
-    <string name="settings_dock_always_visible_desc">Manter o dock na tela; ele só é ocultado em tela cheia, paisagem ou na tela de bloqueio quando essas opções estão ativadas</string>
-    <string name="settings_dock_visible_home_title">Mostrar dock na tela inicial</string>
-    <string name="settings_dock_visible_home_desc">Mostrar o dock sempre que a tela inicial estiver aberta</string>
     <string name="settings_autohide_landscape_title">Ocultar Automaticamente na Horizontal</string>
     <string name="settings_backup_button">Fazer Backup das Configurações</string>
     <string name="settings_backup_restore_title">Backup &amp; Restauração</string>
@@ -192,6 +188,8 @@
     <string name="settings_enable_quick_controls_title">Ativar Controles Rápidos</string>
     <string name="settings_enable_quick_settings_panel_desc">Exibe um ícone de configurações nos controles rápidos do Dock e acessa o painel de Configurações rápidas</string>
     <string name="settings_enable_quick_settings_panel_title">Ativar Configurações rápidas</string>
+    <string name="settings_enable_pin_dock_desc">Mostra um controle de fixar primeiro nos controles rápidos do dock para manter o dock na tela</string>
+    <string name="settings_enable_pin_dock_title">Ativar Fixar dock</string>
     <string name="settings_fuzzy_search_desc">Encontra apps mesmo com erros de digitação ou nomes parciais</string>
     <string name="settings_fuzzy_search_title">Busca Aproximada</string>
     <string name="settings_grant_notification_access_button">Conceder Acesso a Notificações</string>
@@ -351,6 +349,7 @@
     <string name="quick_control_notif_history_label">Notifs</string>
     <string name="quick_control_music_label">Música</string>
     <string name="quick_control_settings_label">Configurações</string>
+    <string name="quick_control_pin_dock_label">Fixar dock</string>
     <string name="calculator_error">Erro</string>
     <string name="calculator_clear_label">AC</string>
     <string name="calculator_backspace_description">Apagar</string>

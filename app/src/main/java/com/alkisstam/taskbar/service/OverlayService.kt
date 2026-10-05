@@ -248,9 +248,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 ACTION_ACCESSIBILITY_CHANGED -> {
                     handler.post { refreshAllViews() }
                 }
-                ACTION_HOME_STATE -> {
-                    taskbarViewModel.setOnHomeScreen(intent.getBooleanExtra(EXTRA_ON_HOME, false))
-                }
                 ACTION_CLIPBOARD_PANEL_SHOW -> {
                     if (this@OverlayService::appMenuViewModel.isInitialized)
                         appMenuViewModel.toggleClipboardPanel()
@@ -343,8 +340,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         const val ACTION_DISMISS_ALL = "com.alkisstam.taskbar.DISMISS_ALL"
         const val ACTION_ACCESSIBILITY_CHANGED = "com.alkisstam.taskbar.ACCESSIBILITY_CHANGED"
         const val ACTION_CLIPBOARD_PANEL_SHOW = "com.alkisstam.taskbar.CLIPBOARD_PANEL_SHOW"
-        const val ACTION_HOME_STATE = "com.alkisstam.taskbar.HOME_STATE"
-        const val EXTRA_ON_HOME = "on_home"
         private const val PINNED_TOUCH_MARGIN_DP = 16
 
         @Volatile var isTaskbarVisibleForBack = false
@@ -397,7 +392,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             addAction(ACTION_DISMISS_ALL)
             addAction(ACTION_ACCESSIBILITY_CHANGED)
             addAction(ACTION_CLIPBOARD_PANEL_SHOW)
-            addAction(ACTION_HOME_STATE)
         }
         ContextCompat.registerReceiver(this, lockscreenReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
         registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
