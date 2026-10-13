@@ -5,7 +5,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
@@ -112,53 +114,10 @@ class AppRepository @Inject constructor(
                             // so also skip while availMem is within 1.25× of the threshold.
                             am.getMemoryInfo(memInfo)
                             memoryLow = memInfo.lowMemory || memInfo.availMem < memInfo.threshold * 5 / 4
-                            // Load the icon separately so a broken icon doesn't drop the whole app
-                            // from the list: MIUI's IconCustomizer inflates huge bitmaps and throws
-                            // OutOfMemoryError (an Error, hence Throwable) on some devices. Keep the
-                            // app with a null icon (UI renders a placeholder) instead of hiding it.
                             val icon = iconCache[activityInfo.packageName] ?: if (memoryLow) {
                                 iconsSkipped = true
                                 null
-                            } else try {
-                                // Load the icon resource directly instead of loadIcon(): on MIUI,
-                                // loadIcon() routes through IconCustomizer.composeIcon which draws
-                                // full-size themed bitmaps in-process and can abort() the whole
-                                // process on native allocation failure (uncatchable). Direct
-                                // Resources access bypasses that hook; DENSITY_XHIGH caps the
-                                // source bitmap near our 160px target.
-                                val packIcon = if (iconPack.isNotEmpty()) {
-                                    iconPackRepository.getIcon(iconPack, activityInfo.packageName, activityInfo.name)
-                                } else null
-                                val drawable = packIcon ?: try {
-                                    val res = pm.getResourcesForApplication(activityInfo.applicationInfo)
-                                    val resId = resolveInfo.iconResource
-                                    if (resId != 0) res.getDrawableForDensity(resId, DisplayMetrics.DENSITY_XHIGH, null) else null
-                                } catch (e: Exception) {
-                                    null
-                                } ?: resolveInfo.loadIcon(pm)
-                                // Rendered at a fixed size: intrinsic-size bitmaps for every installed
-                                // app add up to tens of MB (and themed OEM icons can be 1024px+).
-                                // 160px covers the largest dock icon setting on 1080p densities.
-                                // mutate() first: Resources caches drawable ConstantState, and a
-                                // VectorDrawable's native tree lives in that state — drawing a
-                                // shared tree from two threads crashes in hwui.
-                                val mutated = drawable.mutate()
-                                val bmp = mutated.toBitmap(ICON_SIZE_PX, ICON_SIZE_PX)
-                                // toBitmap() returns the drawable's own cached Bitmap without
-                                // copying when it's a BitmapDrawable already at the target size;
-                                // that shared bitmap can later be recycled by the OS. Copy only
-                                // in that case — unconditional copy doubled native allocations
-                                // per icon, which matters when this crashes the process under
-                                // memory pressure (scudo abort in allocateHeapBitmap).
-                                val result = if (bmp === (mutated as? BitmapDrawable)?.bitmap) {
-                                    bmp.copy(Bitmap.Config.ARGB_8888, false)
-                                } else bmp
-                                iconCache[activityInfo.packageName] = result
-                                result
-                            } catch (e: Throwable) {
-                                Log.w("AppRepository", "Icon load failed, keeping app without icon: ${activityInfo.packageName}", e)
-                                null
-                            }
+                            } else loadIcon(pm, resolveInfo, activityInfo, iconPack)
                             val installTime = try {
                                 pm.getPackageInfo(activityInfo.packageName, 0).firstInstallTime
                             } catch (e: Exception) {
@@ -195,6 +154,51 @@ class AppRepository @Inject constructor(
                 return@launch
             }
         }
+    }
+
+    // Load the icon separately so a broken icon doesn't drop the whole app
+    // from the list: MIUI's IconCustomizer inflates huge bitmaps and throws
+    // OutOfMemoryError (an Error, hence Throwable) on some devices. Keep the
+    // app with a null icon (UI renders a placeholder) instead of hiding it.
+    private fun loadIcon(pm: PackageManager, resolveInfo: ResolveInfo, activityInfo: ActivityInfo, iconPack: String): Bitmap? = try {
+        // Load the icon resource directly instead of loadIcon(): on MIUI,
+        // loadIcon() routes through IconCustomizer.composeIcon which draws
+        // full-size themed bitmaps in-process and can abort() the whole
+        // process on native allocation failure (uncatchable). Direct
+        // Resources access bypasses that hook; DENSITY_XHIGH caps the
+        // source bitmap near our 160px target.
+        val packIcon = if (iconPack.isNotEmpty()) {
+            iconPackRepository.getIcon(iconPack, activityInfo.packageName, activityInfo.name)
+        } else null
+        val drawable = packIcon ?: try {
+            val res = pm.getResourcesForApplication(activityInfo.applicationInfo)
+            val resId = resolveInfo.iconResource
+            if (resId != 0) res.getDrawableForDensity(resId, DisplayMetrics.DENSITY_XHIGH, null) else null
+        } catch (e: Exception) {
+            null
+        } ?: resolveInfo.loadIcon(pm)
+        // Rendered at a fixed size: intrinsic-size bitmaps for every installed
+        // app add up to tens of MB (and themed OEM icons can be 1024px+).
+        // 160px covers the largest dock icon setting on 1080p densities.
+        // mutate() first: Resources caches drawable ConstantState, and a
+        // VectorDrawable's native tree lives in that state — drawing a
+        // shared tree from two threads crashes in hwui.
+        val mutated = drawable.mutate()
+        val bmp = mutated.toBitmap(ICON_SIZE_PX, ICON_SIZE_PX)
+        // toBitmap() returns the drawable's own cached Bitmap without
+        // copying when it's a BitmapDrawable already at the target size;
+        // that shared bitmap can later be recycled by the OS. Copy only
+        // in that case — unconditional copy doubled native allocations
+        // per icon, which matters when this crashes the process under
+        // memory pressure (scudo abort in allocateHeapBitmap).
+        val result = if (bmp === (mutated as? BitmapDrawable)?.bitmap) {
+            bmp.copy(Bitmap.Config.ARGB_8888, false)
+        } else bmp
+        iconCache[activityInfo.packageName] = result
+        result
+    } catch (e: Throwable) {
+        Log.w("AppRepository", "Icon load failed, keeping app without icon: ${activityInfo.packageName}", e)
+        null
     }
 
     fun getLaunchIntent(packageName: String): Intent? =
