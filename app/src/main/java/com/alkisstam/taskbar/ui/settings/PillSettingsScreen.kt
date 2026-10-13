@@ -118,21 +118,6 @@ fun PillSettingsScreen(
     modifier: Modifier = Modifier,
     bottomPadding: Dp = 0.dp
 ) {
-    val pillSettings by viewModel.pillSettings.collectAsState()
-    val taskbarSettings by viewModel.taskbarSettings.collectAsState()
-    val themeMode by viewModel.themeMode.collectAsState()
-    val surfaceTintColor by viewModel.surfaceTintColor.collectAsState()
-    val panelOutlineEnabled by viewModel.panelOutlineEnabled.collectAsState()
-    val translucentMode by viewModel.translucentMode.collectAsState()
-    val translucentAlpha by viewModel.translucentAlpha.collectAsState()
-    val grainAlpha by viewModel.grainAlpha.collectAsState()
-    val blurRadiusDp by viewModel.blurRadiusDp.collectAsState()
-    val blurTint by viewModel.blurTint.collectAsState()
-    val blurTintAlpha by viewModel.blurTintAlpha.collectAsState()
-    val configuration = LocalConfiguration.current
-    val widthMax = configuration.screenWidthDp.toFloat()
-    val heightMax = (configuration.screenHeightDp / 2).toFloat()
-
     var pillExpanded by remember { mutableStateOf(false) }
     var dockExpanded by remember { mutableStateOf(false) }
     var themeExpanded by remember { mutableStateOf(false) }
@@ -149,122 +134,7 @@ fun PillSettingsScreen(
             expanded = themeExpanded,
             onToggle = { themeExpanded = !themeExpanded }
         ) {
-            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-                val themeEntries = listOf(
-                    Triple(ThemeMode.LIGHT, stringResource(R.string.pill_theme_light), Icons.Filled.LightMode),
-                    Triple(ThemeMode.DARK, stringResource(R.string.pill_theme_dark), Icons.Filled.DarkMode),
-                    Triple(ThemeMode.SYSTEM, stringResource(R.string.pill_theme_system), Icons.Filled.PhoneAndroid)
-                )
-                themeEntries.forEachIndexed { index, (mode, label, icon) ->
-                    SegmentedButton(
-                        selected = themeMode == mode,
-                        onClick = {
-                            viewModel.setThemeMode(mode)
-                            val incompatiblePresets = when (mode) {
-                                ThemeMode.LIGHT -> DARK_TINT_PRESETS
-                                ThemeMode.DARK -> LIGHT_TINT_PRESETS
-                                ThemeMode.SYSTEM -> LIGHT_TINT_PRESETS + DARK_TINT_PRESETS
-                            }
-                            if (surfaceTintColor != 0L && incompatiblePresets.any { it.second == surfaceTintColor }) {
-                                viewModel.setSurfaceTintColor(0L)
-                            }
-                        },
-                        shape = SegmentedButtonDefaults.itemShape(index = index, count = themeEntries.size),
-                        icon = { Icon(icon, contentDescription = null, modifier = Modifier.size(18.dp)) },
-                        label = { Text(label) }
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(12.dp))
-            SurfaceTintColorPicker(
-                currentColor = surfaceTintColor,
-                themeMode = themeMode,
-                onColorSelected = { viewModel.setSurfaceTintColor(it) }
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(stringResource(R.string.pill_theme_style_label), style = MaterialTheme.typography.bodyMedium)
-            Spacer(modifier = Modifier.height(8.dp))
-            val solidLabel = stringResource(R.string.pill_theme_style_solid)
-            val transparentLabel = stringResource(R.string.pill_theme_style_transparent)
-            GradientDropdownField(
-                icon = Icons.Filled.Palette,
-                selectedLabel = if (translucentMode) transparentLabel else solidLabel,
-                options = listOf(solidLabel to false, transparentLabel to true),
-                isSelected = { it == translucentMode },
-                onSelect = { viewModel.setTranslucentMode(it) }
-            )
-            if (!translucentMode) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(stringResource(R.string.pill_panel_outline_label), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
-                    Switch(
-                        checked = panelOutlineEnabled,
-                        onCheckedChange = { viewModel.setPanelOutlineEnabled(it) }
-                    )
-                }
-            } else {
-                Spacer(modifier = Modifier.height(8.dp))
-                SettingsSlider(
-                    label = stringResource(R.string.pill_theme_transparency_label),
-                    value = translucentAlpha,
-                    valueRange = 0.3f..1f,
-                    unit = "%",
-                    step = 0.01f,
-                    displayTransform = { "${(it * 100).toInt()}%" },
-                    editValueTransform = { (it * 100).roundToInt().toString() },
-                    parseEditValue = { it.toFloatOrNull()?.div(100f) },
-                    onValueChange = { viewModel.setTranslucentAlpha(it) }
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-                SettingsSlider(
-                    label = stringResource(R.string.pill_grain_label),
-                    value = grainAlpha,
-                    valueRange = 0f..0.3f,
-                    unit = "%",
-                    step = 0.01f,
-                    displayTransform = { "${(it * 100).toInt()}%" },
-                    editValueTransform = { (it * 100).roundToInt().toString() },
-                    parseEditValue = { it.toFloatOrNull()?.div(100f) },
-                    onValueChange = { viewModel.setGrainAlpha(it) }
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-                SettingsSlider(
-                    label = stringResource(R.string.pill_blur_label),
-                    value = blurRadiusDp,
-                    valueRange = 0f..48f,
-                    unit = "dp",
-                    step = 1f,
-                    onValueChange = { viewModel.setBlurRadiusDp(it) }
-                )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(stringResource(R.string.pill_blur_tint_label), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
-                    Switch(
-                        checked = blurTint,
-                        onCheckedChange = { viewModel.setBlurTint(it) }
-                    )
-                }
-                if (blurTint) {
-                    SettingsSlider(
-                        label = stringResource(R.string.pill_blur_tint_alpha_label),
-                        value = blurTintAlpha,
-                        valueRange = 0f..1f,
-                        unit = "%",
-                        step = 0.01f,
-                        displayTransform = { "${(it * 100).toInt()}%" },
-                        editValueTransform = { (it * 100).roundToInt().toString() },
-                        parseEditValue = { it.toFloatOrNull()?.div(100f) },
-                        onValueChange = { viewModel.setBlurTintAlpha(it) }
-                    )
-                }
-            }
+            ThemeSectionContent(viewModel)
         }
 
         ExpandableSection(
@@ -272,239 +142,7 @@ fun PillSettingsScreen(
             expanded = pillExpanded,
             onToggle = { pillExpanded = !pillExpanded }
         ) {
-            SettingsSlider(
-                label = stringResource(R.string.pill_width_label),
-                value = pillSettings.widthDp.coerceAtMost(widthMax),
-                valueRange = 2f..widthMax,
-                unit = "dp",
-                step = 1f,
-                onValueChange = { viewModel.savePillSettings(pillSettings.copy(widthDp = it)) }
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            SettingsSlider(
-                label = stringResource(R.string.pill_height_label),
-                value = pillSettings.heightDp.coerceAtMost(heightMax),
-                valueRange = 2f..heightMax,
-                unit = "dp",
-                step = 1f,
-                onValueChange = { viewModel.savePillSettings(pillSettings.copy(heightDp = it)) }
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            SettingsSlider(
-                label = stringResource(R.string.pill_alpha_transparency_label),
-                value = pillSettings.alpha,
-                valueRange = 0f..1f,
-                unit = "%",
-                step = 0.01f,
-                displayTransform = { "${(it * 100).toInt()}%" },
-                editValueTransform = { (it * 100).roundToInt().toString() },
-                parseEditValue = { it.toFloatOrNull()?.div(100f) },
-                onValueChange = { viewModel.savePillSettings(pillSettings.copy(alpha = it)) }
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            SettingsSlider(
-                label = stringResource(R.string.pill_trigger_area_label),
-                value = pillSettings.triggerAreaDp,
-                valueRange = 8f..40f,
-                unit = "dp",
-                step = 1f,
-                onValueChange = { viewModel.savePillSettings(pillSettings.copy(triggerAreaDp = it)) }
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(stringResource(R.string.pill_restrict_trigger_title), style = MaterialTheme.typography.bodyMedium)
-                    Text(
-                        stringResource(R.string.pill_restrict_trigger_desc),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                Switch(
-                    checked = pillSettings.restrictTriggerToPill,
-                    onCheckedChange = { viewModel.savePillSettings(pillSettings.copy(restrictTriggerToPill = it)) }
-                )
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(stringResource(R.string.pill_position_label), style = MaterialTheme.typography.bodyMedium)
-            Spacer(modifier = Modifier.height(4.dp))
-            val edgeBottomLabel = stringResource(R.string.pill_edge_bottom)
-            val edgeLeftLabel = stringResource(R.string.pill_edge_left)
-            val edgeRightLabel = stringResource(R.string.pill_edge_right)
-            val edgeBothLabel = stringResource(R.string.pill_edge_both)
-            GradientDropdownField(
-                icon = Icons.Filled.DragIndicator,
-                selectedLabel = when (pillSettings.edgePosition) {
-                    PillEdgePosition.BOTTOM -> edgeBottomLabel
-                    PillEdgePosition.LEFT   -> edgeLeftLabel
-                    PillEdgePosition.RIGHT  -> edgeRightLabel
-                    PillEdgePosition.BOTH   -> edgeBothLabel
-                },
-                options = listOf(
-                    edgeBottomLabel to PillEdgePosition.BOTTOM,
-                    edgeLeftLabel to PillEdgePosition.LEFT,
-                    edgeRightLabel to PillEdgePosition.RIGHT,
-                    edgeBothLabel to PillEdgePosition.BOTH
-                ),
-                isSelected = { it == pillSettings.edgePosition },
-                onSelect = { pos ->
-                    val (w, h) = if (pos == PillEdgePosition.BOTTOM) 140f to 12f else 4f to 90f
-                    val (swipeUp, swipeDown, doubleTap) = if (pos == PillEdgePosition.BOTTOM)
-                        Triple(GestureAction.DISABLED, GestureAction.DISABLED, GestureAction.SHOW_DOCK)
-                    else
-                        Triple(GestureAction.SHOW_DOCK, GestureAction.DISABLED, GestureAction.DISABLED)
-                    viewModel.savePillSettings(pillSettings.copy(
-                        edgePosition = pos, widthDp = w, heightDp = h,
-                        positionYDp = if (pos == PillEdgePosition.BOTTOM) 2f else pillSettings.positionYDp,
-                        swipeUpAction = swipeUp, swipeDownAction = swipeDown, doubleTapAction = doubleTap
-                    ))
-                }
-            )
-            if (pillSettings.edgePosition == PillEdgePosition.BOTTOM) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(stringResource(R.string.pill_select_gesture_label), style = MaterialTheme.typography.bodyMedium)
-                Spacer(modifier = Modifier.height(4.dp))
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    FilterChip(
-                        selected = pillSettings.doubleTapAction == GestureAction.SHOW_DOCK,
-                        onClick = { viewModel.savePillSettings(pillSettings.copy(
-                            doubleTapAction = GestureAction.SHOW_DOCK,
-                            swipeUpAction = GestureAction.DISABLED,
-                            swipeDownAction = GestureAction.DISABLED
-                        )) },
-                        label = { Text(stringResource(R.string.pill_gesture_double_tap), style = MaterialTheme.typography.labelMedium) }
-                    )
-                    FilterChip(
-                        selected = pillSettings.swipeUpAction == GestureAction.SHOW_DOCK,
-                        onClick = { viewModel.savePillSettings(pillSettings.copy(
-                            doubleTapAction = GestureAction.DISABLED,
-                            swipeUpAction = GestureAction.SHOW_DOCK,
-                            swipeDownAction = GestureAction.DISABLED
-                        )) },
-                        label = { Text(stringResource(R.string.pill_gesture_swipe_up), style = MaterialTheme.typography.labelMedium) }
-                    )
-                }
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = stringResource(R.string.pill_swipe_up_hint),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                SettingsSlider(
-                    label = stringResource(R.string.pill_position_from_bottom_label),
-                    value = pillSettings.positionYDp,
-                    valueRange = 0f..heightMax,
-                    unit = "dp",
-                    step = 1f,
-                    onValueChange = { viewModel.savePillSettings(pillSettings.copy(positionYDp = it)) }
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-                SettingsSlider(
-                    label = stringResource(R.string.pill_position_along_edge_label),
-                    value = pillSettings.positionXPct,
-                    valueRange = 0f..100f,
-                    unit = "%",
-                    step = 1f,
-                    displayTransform = { "${it.toInt()}%" },
-                    onValueChange = { viewModel.savePillSettings(pillSettings.copy(positionXPct = it)) }
-                )
-            }
-            if (pillSettings.edgePosition != PillEdgePosition.BOTTOM) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(stringResource(R.string.pill_swipe_down_action_label), style = MaterialTheme.typography.bodyMedium)
-                Spacer(modifier = Modifier.height(4.dp))
-                val swipeDownNotificationsLabel = stringResource(R.string.pill_swipe_down_action_notifications)
-                val swipeDownQuickSettingsLabel = stringResource(R.string.pill_swipe_down_action_quick_settings)
-                val swipeDownPowerMenuLabel = stringResource(R.string.pill_swipe_down_action_power_menu)
-                val swipeDownScreenshotLabel = stringResource(R.string.pill_swipe_down_action_screenshot)
-                val swipeDownFlashlightLabel = stringResource(R.string.pill_swipe_down_action_flashlight)
-                val swipeDownLockLabel = stringResource(R.string.pill_swipe_down_action_lock_screen)
-                val swipeDownDisabledLabel = stringResource(R.string.pill_swipe_down_action_disabled)
-                GradientDropdownField(
-                    icon = Icons.Filled.Notifications,
-                    selectedLabel = when (pillSettings.swipeDownAction) {
-                        GestureAction.SHOW_QUICK_SETTINGS -> swipeDownQuickSettingsLabel
-                        GestureAction.POWER_MENU          -> swipeDownPowerMenuLabel
-                        GestureAction.TAKE_SCREENSHOT     -> swipeDownScreenshotLabel
-                        GestureAction.TOGGLE_FLASHLIGHT   -> swipeDownFlashlightLabel
-                        GestureAction.LOCK_SCREEN         -> swipeDownLockLabel
-                        GestureAction.DISABLED            -> swipeDownDisabledLabel
-                        else                               -> swipeDownNotificationsLabel
-                    },
-                    options = listOf(
-                        swipeDownNotificationsLabel to GestureAction.SHOW_NOTIFICATIONS,
-                        swipeDownQuickSettingsLabel to GestureAction.SHOW_QUICK_SETTINGS,
-                        swipeDownPowerMenuLabel to GestureAction.POWER_MENU,
-                        swipeDownScreenshotLabel to GestureAction.TAKE_SCREENSHOT,
-                        swipeDownFlashlightLabel to GestureAction.TOGGLE_FLASHLIGHT,
-                        swipeDownLockLabel to GestureAction.LOCK_SCREEN,
-                        swipeDownDisabledLabel to GestureAction.DISABLED
-                    ),
-                    isSelected = { it == pillSettings.swipeDownAction },
-                    onSelect = { action ->
-                        viewModel.savePillSettings(pillSettings.copy(swipeDownAction = action))
-                    }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                SettingsSlider(
-                    label = stringResource(R.string.pill_position_along_edge_label),
-                    value = pillSettings.sidePositionPct,
-                    valueRange = 0f..100f,
-                    unit = "%",
-                    step = 1f,
-                    displayTransform = { "${it.toInt()}%" },
-                    onValueChange = { viewModel.savePillSettings(pillSettings.copy(sidePositionPct = it)) }
-                )
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(stringResource(R.string.pill_hold_drag_label), style = MaterialTheme.typography.bodyMedium)
-            Spacer(modifier = Modifier.height(4.dp))
-            val holdDragDisabledLabel = stringResource(R.string.pill_swipe_down_action_disabled)
-            val holdDragBrightnessLabel = stringResource(R.string.pill_hold_drag_brightness)
-            val holdDragVolumeLabel = stringResource(R.string.pill_hold_drag_volume)
-            GradientDropdownField(
-                icon = Icons.Filled.BrightnessMedium,
-                selectedLabel = when (pillSettings.holdDragAction) {
-                    PillHoldDragAction.BRIGHTNESS -> holdDragBrightnessLabel
-                    PillHoldDragAction.VOLUME     -> holdDragVolumeLabel
-                    PillHoldDragAction.DISABLED   -> holdDragDisabledLabel
-                },
-                options = listOf(
-                    holdDragDisabledLabel to PillHoldDragAction.DISABLED,
-                    holdDragBrightnessLabel to PillHoldDragAction.BRIGHTNESS,
-                    holdDragVolumeLabel to PillHoldDragAction.VOLUME
-                ),
-                isSelected = { it == pillSettings.holdDragAction },
-                onSelect = { action ->
-                    viewModel.savePillSettings(pillSettings.copy(holdDragAction = action))
-                }
-            )
-            Text(
-                text = stringResource(R.string.pill_hold_drag_hint),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            PillPositionPreview(pillSettings.edgePosition, pillSettings.widthDp, pillSettings.heightDp, pillSettings.alpha, pillSettings.sidePositionPct, pillSettings.restrictTriggerToPill, pillSettings.positionXPct)
-            Spacer(modifier = Modifier.height(8.dp))
-            if (pillSettings.edgePosition != PillEdgePosition.BOTTOM) {
-                Text(
-                    text = stringResource(R.string.pill_swipe_up_activate_hint),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
-            }
+            PillSectionContent(viewModel)
         }
 
         ExpandableSection(
@@ -512,143 +150,522 @@ fun PillSettingsScreen(
             expanded = dockExpanded,
             onToggle = { dockExpanded = !dockExpanded }
         ) {
-            SettingsSlider(
-                label = stringResource(R.string.dock_height_label),
-                value = taskbarSettings.heightDp,
-                valueRange = 40f..120f,
-                unit = "dp",
-                step = 1f,
-                onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(heightDp = it)) }
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            SettingsSlider(
-                label = stringResource(R.string.dock_pinned_icon_size_label),
-                value = taskbarSettings.pinnedIconSizeDp,
-                valueRange = 32f..60f,
-                unit = "dp",
-                step = 1f,
-                onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(pinnedIconSizeDp = it)) }
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            SettingsSlider(
-                label = stringResource(R.string.dock_pinned_icon_padding_label),
-                value = taskbarSettings.pinnedIconPaddingDp,
-                valueRange = 2f..12f,
-                unit = "dp",
-                step = 1f,
-                onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(pinnedIconPaddingDp = it)) }
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            SettingsSlider(
-                label = stringResource(R.string.dock_quick_controls_size_label),
-                value = taskbarSettings.quickControlSizeDp,
-                valueRange = 32f..60f,
-                unit = "dp",
-                step = 1f,
-                onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(quickControlSizeDp = it)) }
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            SettingsSlider(
-                label = stringResource(R.string.dock_corner_radius_label),
-                value = taskbarSettings.cornerRadiusDp,
-                valueRange = 0f..32f,
-                unit = "dp",
-                step = 1f,
-                onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(cornerRadiusDp = it)) }
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(stringResource(R.string.dock_edge_padding_label), style = MaterialTheme.typography.bodyMedium)
-            Text(
-                stringResource(R.string.dock_edge_padding_desc),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            val dockPaddingDefaultLabel = stringResource(R.string.dock_padding_default)
-            val dockPaddingSmallLabel = stringResource(R.string.dock_padding_small)
-            val dockPaddingLargeLabel = stringResource(R.string.dock_padding_large)
-            GradientDropdownField(
-                icon = Icons.Filled.Straighten,
-                selectedLabel = when (taskbarSettings.dockPadding) {
-                    DockPadding.DEFAULT -> dockPaddingDefaultLabel
-                    DockPadding.SMALL -> dockPaddingSmallLabel
-                    DockPadding.LARGE -> dockPaddingLargeLabel
+            DockSectionContent(viewModel, dockExpanded)
+        }
+    }
+}
+
+@Composable
+private fun ThemeSectionContent(viewModel: TaskbarViewModel) {
+    val themeMode by viewModel.themeMode.collectAsState()
+    val surfaceTintColor by viewModel.surfaceTintColor.collectAsState()
+    val panelOutlineEnabled by viewModel.panelOutlineEnabled.collectAsState()
+    val translucentMode by viewModel.translucentMode.collectAsState()
+    val translucentAlpha by viewModel.translucentAlpha.collectAsState()
+    val grainAlpha by viewModel.grainAlpha.collectAsState()
+    val blurRadiusDp by viewModel.blurRadiusDp.collectAsState()
+    val blurTint by viewModel.blurTint.collectAsState()
+    val blurTintAlpha by viewModel.blurTintAlpha.collectAsState()
+
+    SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+        val themeEntries = listOf(
+            Triple(ThemeMode.LIGHT, stringResource(R.string.pill_theme_light), Icons.Filled.LightMode),
+            Triple(ThemeMode.DARK, stringResource(R.string.pill_theme_dark), Icons.Filled.DarkMode),
+            Triple(ThemeMode.SYSTEM, stringResource(R.string.pill_theme_system), Icons.Filled.PhoneAndroid)
+        )
+        themeEntries.forEachIndexed { index, (mode, label, icon) ->
+            SegmentedButton(
+                selected = themeMode == mode,
+                onClick = {
+                    viewModel.setThemeMode(mode)
+                    val incompatiblePresets = when (mode) {
+                        ThemeMode.LIGHT -> DARK_TINT_PRESETS
+                        ThemeMode.DARK -> LIGHT_TINT_PRESETS
+                        ThemeMode.SYSTEM -> LIGHT_TINT_PRESETS + DARK_TINT_PRESETS
+                    }
+                    if (surfaceTintColor != 0L && incompatiblePresets.any { it.second == surfaceTintColor }) {
+                        viewModel.setSurfaceTintColor(0L)
+                    }
                 },
-                options = listOf(
-                    dockPaddingDefaultLabel to DockPadding.DEFAULT,
-                    dockPaddingSmallLabel to DockPadding.SMALL,
-                    dockPaddingLargeLabel to DockPadding.LARGE
-                ),
-                isSelected = { it == taskbarSettings.dockPadding },
-                onSelect = { viewModel.saveTaskbarSettings(taskbarSettings.copy(dockPadding = it)) }
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(stringResource(R.string.dock_all_apps_button_label), style = MaterialTheme.typography.bodyMedium)
-            Spacer(modifier = Modifier.height(4.dp))
-            val appMenuSideLeftLabel = stringResource(R.string.dock_app_menu_side_left)
-            val appMenuSideRightLabel = stringResource(R.string.dock_app_menu_side_right)
-            GradientDropdownField(
-                icon = Icons.Filled.SwapHoriz,
-                selectedLabel = when (taskbarSettings.appMenuButtonSide) {
-                    AppMenuButtonSide.LEFT -> appMenuSideLeftLabel
-                    AppMenuButtonSide.RIGHT -> appMenuSideRightLabel
-                },
-                options = listOf(
-                    appMenuSideLeftLabel to AppMenuButtonSide.LEFT,
-                    appMenuSideRightLabel to AppMenuButtonSide.RIGHT
-                ),
-                isSelected = { it == taskbarSettings.appMenuButtonSide },
-                onSelect = { viewModel.saveTaskbarSettings(taskbarSettings.copy(appMenuButtonSide = it)) }
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(stringResource(R.string.dock_icon_pack_label), style = MaterialTheme.typography.bodyMedium)
-            Text(
-                stringResource(R.string.dock_icon_pack_desc),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            val iconPackPackage by viewModel.iconPackPackage.collectAsState()
-            val availableIconPacks by viewModel.availableIconPacks.collectAsState()
-            LaunchedEffect(dockExpanded) {
-                if (dockExpanded) viewModel.loadIconPacks()
-            }
-            val iconPackSystemDefaultLabel = stringResource(R.string.dock_icon_pack_system_default)
-            GradientDropdownField(
-                icon = Icons.Filled.Palette,
-                selectedLabel = availableIconPacks.firstOrNull { it.packageName == iconPackPackage }?.label
-                    ?: iconPackSystemDefaultLabel,
-                options = listOf(iconPackSystemDefaultLabel to "") +
-                    availableIconPacks.map { it.label to it.packageName },
-                isSelected = { it == iconPackPackage },
-                onSelect = { viewModel.setIconPack(it) }
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(stringResource(R.string.dock_icon_shape_label), style = MaterialTheme.typography.bodyMedium)
-            Spacer(modifier = Modifier.height(4.dp))
-            val iconShapeDefaultLabel = stringResource(R.string.pill_icon_shape_default)
-            val iconShapeSquareLabel = stringResource(R.string.pill_icon_shape_square)
-            val iconShapeSquircleLabel = stringResource(R.string.pill_icon_shape_squircle)
-            val iconShapeCircleLabel = stringResource(R.string.pill_icon_shape_circle)
-            GradientDropdownField(
-                icon = Icons.Filled.CropSquare,
-                selectedLabel = when (taskbarSettings.iconShape) {
-                    IconShape.DEFAULT -> iconShapeDefaultLabel
-                    IconShape.SQUARE -> iconShapeSquareLabel
-                    IconShape.SQUIRCLE -> iconShapeSquircleLabel
-                    IconShape.CIRCLE -> iconShapeCircleLabel
-                },
-                options = listOf(
-                    iconShapeDefaultLabel to IconShape.DEFAULT,
-                    iconShapeSquareLabel to IconShape.SQUARE,
-                    iconShapeSquircleLabel to IconShape.SQUIRCLE,
-                    iconShapeCircleLabel to IconShape.CIRCLE
-                ),
-                isSelected = { it == taskbarSettings.iconShape },
-                onSelect = { viewModel.saveTaskbarSettings(taskbarSettings.copy(iconShape = it)) }
+                shape = SegmentedButtonDefaults.itemShape(index = index, count = themeEntries.size),
+                icon = { Icon(icon, contentDescription = null, modifier = Modifier.size(18.dp)) },
+                label = { Text(label) }
             )
         }
     }
+    Spacer(modifier = Modifier.height(12.dp))
+    SurfaceTintColorPicker(
+        currentColor = surfaceTintColor,
+        themeMode = themeMode,
+        onColorSelected = { viewModel.setSurfaceTintColor(it) }
+    )
+    Spacer(modifier = Modifier.height(16.dp))
+    Text(stringResource(R.string.pill_theme_style_label), style = MaterialTheme.typography.bodyMedium)
+    Spacer(modifier = Modifier.height(8.dp))
+    val solidLabel = stringResource(R.string.pill_theme_style_solid)
+    val transparentLabel = stringResource(R.string.pill_theme_style_transparent)
+    GradientDropdownField(
+        icon = Icons.Filled.Palette,
+        selectedLabel = if (translucentMode) transparentLabel else solidLabel,
+        options = listOf(solidLabel to false, transparentLabel to true),
+        isSelected = { it == translucentMode },
+        onSelect = { viewModel.setTranslucentMode(it) }
+    )
+    if (!translucentMode) {
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(stringResource(R.string.pill_panel_outline_label), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+            Switch(
+                checked = panelOutlineEnabled,
+                onCheckedChange = { viewModel.setPanelOutlineEnabled(it) }
+            )
+        }
+    } else {
+        Spacer(modifier = Modifier.height(8.dp))
+        SettingsSlider(
+            label = stringResource(R.string.pill_theme_transparency_label),
+            value = translucentAlpha,
+            valueRange = 0.3f..1f,
+            unit = "%",
+            step = 0.01f,
+            displayTransform = { "${(it * 100).toInt()}%" },
+            editValueTransform = { (it * 100).roundToInt().toString() },
+            parseEditValue = { it.toFloatOrNull()?.div(100f) },
+            onValueChange = { viewModel.setTranslucentAlpha(it) }
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        SettingsSlider(
+            label = stringResource(R.string.pill_grain_label),
+            value = grainAlpha,
+            valueRange = 0f..0.3f,
+            unit = "%",
+            step = 0.01f,
+            displayTransform = { "${(it * 100).toInt()}%" },
+            editValueTransform = { (it * 100).roundToInt().toString() },
+            parseEditValue = { it.toFloatOrNull()?.div(100f) },
+            onValueChange = { viewModel.setGrainAlpha(it) }
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        SettingsSlider(
+            label = stringResource(R.string.pill_blur_label),
+            value = blurRadiusDp,
+            valueRange = 0f..48f,
+            unit = "dp",
+            step = 1f,
+            onValueChange = { viewModel.setBlurRadiusDp(it) }
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(stringResource(R.string.pill_blur_tint_label), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+            Switch(
+                checked = blurTint,
+                onCheckedChange = { viewModel.setBlurTint(it) }
+            )
+        }
+        if (blurTint) {
+            SettingsSlider(
+                label = stringResource(R.string.pill_blur_tint_alpha_label),
+                value = blurTintAlpha,
+                valueRange = 0f..1f,
+                unit = "%",
+                step = 0.01f,
+                displayTransform = { "${(it * 100).toInt()}%" },
+                editValueTransform = { (it * 100).roundToInt().toString() },
+                parseEditValue = { it.toFloatOrNull()?.div(100f) },
+                onValueChange = { viewModel.setBlurTintAlpha(it) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun PillSectionContent(viewModel: TaskbarViewModel) {
+    val pillSettings by viewModel.pillSettings.collectAsState()
+    val configuration = LocalConfiguration.current
+    val widthMax = configuration.screenWidthDp.toFloat()
+    val heightMax = (configuration.screenHeightDp / 2).toFloat()
+
+    SettingsSlider(
+        label = stringResource(R.string.pill_width_label),
+        value = pillSettings.widthDp.coerceAtMost(widthMax),
+        valueRange = 2f..widthMax,
+        unit = "dp",
+        step = 1f,
+        onValueChange = { viewModel.savePillSettings(pillSettings.copy(widthDp = it)) }
+    )
+    Spacer(modifier = Modifier.height(10.dp))
+    SettingsSlider(
+        label = stringResource(R.string.pill_height_label),
+        value = pillSettings.heightDp.coerceAtMost(heightMax),
+        valueRange = 2f..heightMax,
+        unit = "dp",
+        step = 1f,
+        onValueChange = { viewModel.savePillSettings(pillSettings.copy(heightDp = it)) }
+    )
+    Spacer(modifier = Modifier.height(10.dp))
+    SettingsSlider(
+        label = stringResource(R.string.pill_alpha_transparency_label),
+        value = pillSettings.alpha,
+        valueRange = 0f..1f,
+        unit = "%",
+        step = 0.01f,
+        displayTransform = { "${(it * 100).toInt()}%" },
+        editValueTransform = { (it * 100).roundToInt().toString() },
+        parseEditValue = { it.toFloatOrNull()?.div(100f) },
+        onValueChange = { viewModel.savePillSettings(pillSettings.copy(alpha = it)) }
+    )
+    Spacer(modifier = Modifier.height(10.dp))
+    SettingsSlider(
+        label = stringResource(R.string.pill_trigger_area_label),
+        value = pillSettings.triggerAreaDp,
+        valueRange = 8f..40f,
+        unit = "dp",
+        step = 1f,
+        onValueChange = { viewModel.savePillSettings(pillSettings.copy(triggerAreaDp = it)) }
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(stringResource(R.string.pill_restrict_trigger_title), style = MaterialTheme.typography.bodyMedium)
+            Text(
+                stringResource(R.string.pill_restrict_trigger_desc),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        Switch(
+            checked = pillSettings.restrictTriggerToPill,
+            onCheckedChange = { viewModel.savePillSettings(pillSettings.copy(restrictTriggerToPill = it)) }
+        )
+    }
+    Spacer(modifier = Modifier.height(8.dp))
+    Text(stringResource(R.string.pill_position_label), style = MaterialTheme.typography.bodyMedium)
+    Spacer(modifier = Modifier.height(4.dp))
+    val edgeBottomLabel = stringResource(R.string.pill_edge_bottom)
+    val edgeLeftLabel = stringResource(R.string.pill_edge_left)
+    val edgeRightLabel = stringResource(R.string.pill_edge_right)
+    val edgeBothLabel = stringResource(R.string.pill_edge_both)
+    GradientDropdownField(
+        icon = Icons.Filled.DragIndicator,
+        selectedLabel = when (pillSettings.edgePosition) {
+            PillEdgePosition.BOTTOM -> edgeBottomLabel
+            PillEdgePosition.LEFT   -> edgeLeftLabel
+            PillEdgePosition.RIGHT  -> edgeRightLabel
+            PillEdgePosition.BOTH   -> edgeBothLabel
+        },
+        options = listOf(
+            edgeBottomLabel to PillEdgePosition.BOTTOM,
+            edgeLeftLabel to PillEdgePosition.LEFT,
+            edgeRightLabel to PillEdgePosition.RIGHT,
+            edgeBothLabel to PillEdgePosition.BOTH
+        ),
+        isSelected = { it == pillSettings.edgePosition },
+        onSelect = { pos ->
+            val (w, h) = if (pos == PillEdgePosition.BOTTOM) 140f to 12f else 4f to 90f
+            val (swipeUp, swipeDown, doubleTap) = if (pos == PillEdgePosition.BOTTOM)
+                Triple(GestureAction.DISABLED, GestureAction.DISABLED, GestureAction.SHOW_DOCK)
+            else
+                Triple(GestureAction.SHOW_DOCK, GestureAction.DISABLED, GestureAction.DISABLED)
+            viewModel.savePillSettings(pillSettings.copy(
+                edgePosition = pos, widthDp = w, heightDp = h,
+                positionYDp = if (pos == PillEdgePosition.BOTTOM) 2f else pillSettings.positionYDp,
+                swipeUpAction = swipeUp, swipeDownAction = swipeDown, doubleTapAction = doubleTap
+            ))
+        }
+    )
+    if (pillSettings.edgePosition == PillEdgePosition.BOTTOM) {
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(stringResource(R.string.pill_select_gesture_label), style = MaterialTheme.typography.bodyMedium)
+        Spacer(modifier = Modifier.height(4.dp))
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            FilterChip(
+                selected = pillSettings.doubleTapAction == GestureAction.SHOW_DOCK,
+                onClick = { viewModel.savePillSettings(pillSettings.copy(
+                    doubleTapAction = GestureAction.SHOW_DOCK,
+                    swipeUpAction = GestureAction.DISABLED,
+                    swipeDownAction = GestureAction.DISABLED
+                )) },
+                label = { Text(stringResource(R.string.pill_gesture_double_tap), style = MaterialTheme.typography.labelMedium) }
+            )
+            FilterChip(
+                selected = pillSettings.swipeUpAction == GestureAction.SHOW_DOCK,
+                onClick = { viewModel.savePillSettings(pillSettings.copy(
+                    doubleTapAction = GestureAction.DISABLED,
+                    swipeUpAction = GestureAction.SHOW_DOCK,
+                    swipeDownAction = GestureAction.DISABLED
+                )) },
+                label = { Text(stringResource(R.string.pill_gesture_swipe_up), style = MaterialTheme.typography.labelMedium) }
+            )
+        }
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = stringResource(R.string.pill_swipe_up_hint),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        SettingsSlider(
+            label = stringResource(R.string.pill_position_from_bottom_label),
+            value = pillSettings.positionYDp,
+            valueRange = 0f..heightMax,
+            unit = "dp",
+            step = 1f,
+            onValueChange = { viewModel.savePillSettings(pillSettings.copy(positionYDp = it)) }
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        SettingsSlider(
+            label = stringResource(R.string.pill_position_along_edge_label),
+            value = pillSettings.positionXPct,
+            valueRange = 0f..100f,
+            unit = "%",
+            step = 1f,
+            displayTransform = { "${it.toInt()}%" },
+            onValueChange = { viewModel.savePillSettings(pillSettings.copy(positionXPct = it)) }
+        )
+    }
+    if (pillSettings.edgePosition != PillEdgePosition.BOTTOM) {
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(stringResource(R.string.pill_swipe_down_action_label), style = MaterialTheme.typography.bodyMedium)
+        Spacer(modifier = Modifier.height(4.dp))
+        val swipeDownNotificationsLabel = stringResource(R.string.pill_swipe_down_action_notifications)
+        val swipeDownQuickSettingsLabel = stringResource(R.string.pill_swipe_down_action_quick_settings)
+        val swipeDownPowerMenuLabel = stringResource(R.string.pill_swipe_down_action_power_menu)
+        val swipeDownScreenshotLabel = stringResource(R.string.pill_swipe_down_action_screenshot)
+        val swipeDownFlashlightLabel = stringResource(R.string.pill_swipe_down_action_flashlight)
+        val swipeDownLockLabel = stringResource(R.string.pill_swipe_down_action_lock_screen)
+        val swipeDownDisabledLabel = stringResource(R.string.pill_swipe_down_action_disabled)
+        GradientDropdownField(
+            icon = Icons.Filled.Notifications,
+            selectedLabel = when (pillSettings.swipeDownAction) {
+                GestureAction.SHOW_QUICK_SETTINGS -> swipeDownQuickSettingsLabel
+                GestureAction.POWER_MENU          -> swipeDownPowerMenuLabel
+                GestureAction.TAKE_SCREENSHOT     -> swipeDownScreenshotLabel
+                GestureAction.TOGGLE_FLASHLIGHT   -> swipeDownFlashlightLabel
+                GestureAction.LOCK_SCREEN         -> swipeDownLockLabel
+                GestureAction.DISABLED            -> swipeDownDisabledLabel
+                else                               -> swipeDownNotificationsLabel
+            },
+            options = listOf(
+                swipeDownNotificationsLabel to GestureAction.SHOW_NOTIFICATIONS,
+                swipeDownQuickSettingsLabel to GestureAction.SHOW_QUICK_SETTINGS,
+                swipeDownPowerMenuLabel to GestureAction.POWER_MENU,
+                swipeDownScreenshotLabel to GestureAction.TAKE_SCREENSHOT,
+                swipeDownFlashlightLabel to GestureAction.TOGGLE_FLASHLIGHT,
+                swipeDownLockLabel to GestureAction.LOCK_SCREEN,
+                swipeDownDisabledLabel to GestureAction.DISABLED
+            ),
+            isSelected = { it == pillSettings.swipeDownAction },
+            onSelect = { action ->
+                viewModel.savePillSettings(pillSettings.copy(swipeDownAction = action))
+            }
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        SettingsSlider(
+            label = stringResource(R.string.pill_position_along_edge_label),
+            value = pillSettings.sidePositionPct,
+            valueRange = 0f..100f,
+            unit = "%",
+            step = 1f,
+            displayTransform = { "${it.toInt()}%" },
+            onValueChange = { viewModel.savePillSettings(pillSettings.copy(sidePositionPct = it)) }
+        )
+    }
+    Spacer(modifier = Modifier.height(8.dp))
+    Text(stringResource(R.string.pill_hold_drag_label), style = MaterialTheme.typography.bodyMedium)
+    Spacer(modifier = Modifier.height(4.dp))
+    val holdDragDisabledLabel = stringResource(R.string.pill_swipe_down_action_disabled)
+    val holdDragBrightnessLabel = stringResource(R.string.pill_hold_drag_brightness)
+    val holdDragVolumeLabel = stringResource(R.string.pill_hold_drag_volume)
+    GradientDropdownField(
+        icon = Icons.Filled.BrightnessMedium,
+        selectedLabel = when (pillSettings.holdDragAction) {
+            PillHoldDragAction.BRIGHTNESS -> holdDragBrightnessLabel
+            PillHoldDragAction.VOLUME     -> holdDragVolumeLabel
+            PillHoldDragAction.DISABLED   -> holdDragDisabledLabel
+        },
+        options = listOf(
+            holdDragDisabledLabel to PillHoldDragAction.DISABLED,
+            holdDragBrightnessLabel to PillHoldDragAction.BRIGHTNESS,
+            holdDragVolumeLabel to PillHoldDragAction.VOLUME
+        ),
+        isSelected = { it == pillSettings.holdDragAction },
+        onSelect = { action ->
+            viewModel.savePillSettings(pillSettings.copy(holdDragAction = action))
+        }
+    )
+    Text(
+        text = stringResource(R.string.pill_hold_drag_hint),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+    Spacer(modifier = Modifier.height(12.dp))
+    PillPositionPreview(pillSettings.edgePosition, pillSettings.widthDp, pillSettings.heightDp, pillSettings.alpha, pillSettings.sidePositionPct, pillSettings.restrictTriggerToPill, pillSettings.positionXPct)
+    Spacer(modifier = Modifier.height(8.dp))
+    if (pillSettings.edgePosition != PillEdgePosition.BOTTOM) {
+        Text(
+            text = stringResource(R.string.pill_swipe_up_activate_hint),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+private fun DockSectionContent(viewModel: TaskbarViewModel, expanded: Boolean) {
+    val taskbarSettings by viewModel.taskbarSettings.collectAsState()
+
+    SettingsSlider(
+        label = stringResource(R.string.dock_height_label),
+        value = taskbarSettings.heightDp,
+        valueRange = 40f..120f,
+        unit = "dp",
+        step = 1f,
+        onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(heightDp = it)) }
+    )
+    Spacer(modifier = Modifier.height(10.dp))
+    SettingsSlider(
+        label = stringResource(R.string.dock_pinned_icon_size_label),
+        value = taskbarSettings.pinnedIconSizeDp,
+        valueRange = 32f..60f,
+        unit = "dp",
+        step = 1f,
+        onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(pinnedIconSizeDp = it)) }
+    )
+    Spacer(modifier = Modifier.height(10.dp))
+    SettingsSlider(
+        label = stringResource(R.string.dock_pinned_icon_padding_label),
+        value = taskbarSettings.pinnedIconPaddingDp,
+        valueRange = 2f..12f,
+        unit = "dp",
+        step = 1f,
+        onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(pinnedIconPaddingDp = it)) }
+    )
+    Spacer(modifier = Modifier.height(10.dp))
+    SettingsSlider(
+        label = stringResource(R.string.dock_quick_controls_size_label),
+        value = taskbarSettings.quickControlSizeDp,
+        valueRange = 32f..60f,
+        unit = "dp",
+        step = 1f,
+        onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(quickControlSizeDp = it)) }
+    )
+    Spacer(modifier = Modifier.height(10.dp))
+    SettingsSlider(
+        label = stringResource(R.string.dock_corner_radius_label),
+        value = taskbarSettings.cornerRadiusDp,
+        valueRange = 0f..32f,
+        unit = "dp",
+        step = 1f,
+        onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(cornerRadiusDp = it)) }
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    Text(stringResource(R.string.dock_edge_padding_label), style = MaterialTheme.typography.bodyMedium)
+    Text(
+        stringResource(R.string.dock_edge_padding_desc),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+    Spacer(modifier = Modifier.height(4.dp))
+    val dockPaddingDefaultLabel = stringResource(R.string.dock_padding_default)
+    val dockPaddingSmallLabel = stringResource(R.string.dock_padding_small)
+    val dockPaddingLargeLabel = stringResource(R.string.dock_padding_large)
+    GradientDropdownField(
+        icon = Icons.Filled.Straighten,
+        selectedLabel = when (taskbarSettings.dockPadding) {
+            DockPadding.DEFAULT -> dockPaddingDefaultLabel
+            DockPadding.SMALL -> dockPaddingSmallLabel
+            DockPadding.LARGE -> dockPaddingLargeLabel
+        },
+        options = listOf(
+            dockPaddingDefaultLabel to DockPadding.DEFAULT,
+            dockPaddingSmallLabel to DockPadding.SMALL,
+            dockPaddingLargeLabel to DockPadding.LARGE
+        ),
+        isSelected = { it == taskbarSettings.dockPadding },
+        onSelect = { viewModel.saveTaskbarSettings(taskbarSettings.copy(dockPadding = it)) }
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    Text(stringResource(R.string.dock_all_apps_button_label), style = MaterialTheme.typography.bodyMedium)
+    Spacer(modifier = Modifier.height(4.dp))
+    val appMenuSideLeftLabel = stringResource(R.string.dock_app_menu_side_left)
+    val appMenuSideRightLabel = stringResource(R.string.dock_app_menu_side_right)
+    GradientDropdownField(
+        icon = Icons.Filled.SwapHoriz,
+        selectedLabel = when (taskbarSettings.appMenuButtonSide) {
+            AppMenuButtonSide.LEFT -> appMenuSideLeftLabel
+            AppMenuButtonSide.RIGHT -> appMenuSideRightLabel
+        },
+        options = listOf(
+            appMenuSideLeftLabel to AppMenuButtonSide.LEFT,
+            appMenuSideRightLabel to AppMenuButtonSide.RIGHT
+        ),
+        isSelected = { it == taskbarSettings.appMenuButtonSide },
+        onSelect = { viewModel.saveTaskbarSettings(taskbarSettings.copy(appMenuButtonSide = it)) }
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    Text(stringResource(R.string.dock_icon_pack_label), style = MaterialTheme.typography.bodyMedium)
+    Text(
+        stringResource(R.string.dock_icon_pack_desc),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+    Spacer(modifier = Modifier.height(4.dp))
+    val iconPackPackage by viewModel.iconPackPackage.collectAsState()
+    val availableIconPacks by viewModel.availableIconPacks.collectAsState()
+    LaunchedEffect(expanded) {
+        if (expanded) viewModel.loadIconPacks()
+    }
+    val iconPackSystemDefaultLabel = stringResource(R.string.dock_icon_pack_system_default)
+    GradientDropdownField(
+        icon = Icons.Filled.Palette,
+        selectedLabel = availableIconPacks.firstOrNull { it.packageName == iconPackPackage }?.label
+            ?: iconPackSystemDefaultLabel,
+        options = listOf(iconPackSystemDefaultLabel to "") +
+            availableIconPacks.map { it.label to it.packageName },
+        isSelected = { it == iconPackPackage },
+        onSelect = { viewModel.setIconPack(it) }
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    Text(stringResource(R.string.dock_icon_shape_label), style = MaterialTheme.typography.bodyMedium)
+    Spacer(modifier = Modifier.height(4.dp))
+    val iconShapeDefaultLabel = stringResource(R.string.pill_icon_shape_default)
+    val iconShapeSquareLabel = stringResource(R.string.pill_icon_shape_square)
+    val iconShapeSquircleLabel = stringResource(R.string.pill_icon_shape_squircle)
+    val iconShapeCircleLabel = stringResource(R.string.pill_icon_shape_circle)
+    GradientDropdownField(
+        icon = Icons.Filled.CropSquare,
+        selectedLabel = when (taskbarSettings.iconShape) {
+            IconShape.DEFAULT -> iconShapeDefaultLabel
+            IconShape.SQUARE -> iconShapeSquareLabel
+            IconShape.SQUIRCLE -> iconShapeSquircleLabel
+            IconShape.CIRCLE -> iconShapeCircleLabel
+        },
+        options = listOf(
+            iconShapeDefaultLabel to IconShape.DEFAULT,
+            iconShapeSquareLabel to IconShape.SQUARE,
+            iconShapeSquircleLabel to IconShape.SQUIRCLE,
+            iconShapeCircleLabel to IconShape.CIRCLE
+        ),
+        isSelected = { it == taskbarSettings.iconShape },
+        onSelect = { viewModel.saveTaskbarSettings(taskbarSettings.copy(iconShape = it)) }
+    )
 }
 
 @Composable
@@ -709,65 +726,36 @@ private fun PillPositionPreview(
                             .background(pillColor, RoundedCornerShape(percent = 50))
                     )
                 }
-                PillEdgePosition.LEFT, PillEdgePosition.BOTH -> {
-                    val triggerH = if (restrictTriggerToPill) pillH.coerceAtMost(frameH - 4.dp) else frameH
-                    // Trigger area: 6dp strip on left, or pill-only height when restricted
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.CenterStart)
-                            .width(6.dp)
-                            .height(triggerH)
-                            .offset(y = if (restrictTriggerToPill) (sideOffsetFraction * frameH.value).dp else 0.dp)
-                            .background(triggerColor, RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp))
-                    )
-                    // Pill indicator
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.CenterStart)
-                            .width(4.dp)
-                            .height(pillH.coerceAtMost(frameH - 4.dp))
-                            .offset(y = (sideOffsetFraction * frameH.value).dp)
-                            .background(pillColor, RoundedCornerShape(percent = 50))
-                    )
-                    if (edgePosition == PillEdgePosition.BOTH) {
+                else -> {
+                    val sidePillH = pillH.coerceAtMost(frameH - 4.dp)
+                    val sideOffset = (sideOffsetFraction * frameH.value).dp
+                    val startSide = Alignment.CenterStart to RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp)
+                    val endSide = Alignment.CenterEnd to RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp)
+                    val sides = when (edgePosition) {
+                        PillEdgePosition.LEFT -> listOf(startSide)
+                        PillEdgePosition.RIGHT -> listOf(endSide)
+                        else -> listOf(startSide, endSide)
+                    }
+                    sides.forEach { (alignment, triggerShape) ->
+                        // Trigger area: 6dp strip on the edge, or pill-only height when restricted
                         Box(
                             modifier = Modifier
-                                .align(Alignment.CenterEnd)
+                                .align(alignment)
                                 .width(6.dp)
-                                .height(triggerH)
-                                .offset(y = if (restrictTriggerToPill) (sideOffsetFraction * frameH.value).dp else 0.dp)
-                                .background(triggerColor, RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp))
+                                .height(if (restrictTriggerToPill) sidePillH else frameH)
+                                .offset(y = if (restrictTriggerToPill) sideOffset else 0.dp)
+                                .background(triggerColor, triggerShape)
                         )
+                        // Pill indicator
                         Box(
                             modifier = Modifier
-                                .align(Alignment.CenterEnd)
+                                .align(alignment)
                                 .width(4.dp)
-                                .height(pillH.coerceAtMost(frameH - 4.dp))
-                                .offset(y = (sideOffsetFraction * frameH.value).dp)
+                                .height(sidePillH)
+                                .offset(y = sideOffset)
                                 .background(pillColor, RoundedCornerShape(percent = 50))
                         )
                     }
-                }
-                PillEdgePosition.RIGHT -> {
-                    val triggerH = if (restrictTriggerToPill) pillH.coerceAtMost(frameH - 4.dp) else frameH
-                    // Trigger area: 6dp strip on right, or pill-only height when restricted
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .width(6.dp)
-                            .height(triggerH)
-                            .offset(y = if (restrictTriggerToPill) (sideOffsetFraction * frameH.value).dp else 0.dp)
-                            .background(triggerColor, RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp))
-                    )
-                    // Pill indicator
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .width(4.dp)
-                            .height(pillH.coerceAtMost(frameH - 4.dp))
-                            .offset(y = (sideOffsetFraction * frameH.value).dp)
-                            .background(pillColor, RoundedCornerShape(percent = 50))
-                    )
                 }
             }
         }
