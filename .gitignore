@@ -28,3 +28,4 @@ app/google-services.json
 
 # Repowise local index
 .repowise/
+.claude/CLAUDE.md
