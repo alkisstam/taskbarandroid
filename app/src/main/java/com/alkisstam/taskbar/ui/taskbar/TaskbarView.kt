@@ -242,6 +242,14 @@ fun TaskbarView(
 
                         if (expandAnim.value > 0.001f) {
                             val quickControlItems = quickControls.toItems(controlsOrder, controlsDisabledIds)
+                            val pinDockLabel = stringResource(R.string.quick_control_pin_dock_label)
+                            val musicLabel = stringResource(R.string.taskbar_music_control_label)
+                            val quickSettingsLabel = stringResource(R.string.quick_control_settings_label)
+                            val extraTiles = buildList<Pair<QuickControlItemData, () -> Unit>> {
+                                if (pinDockControlEnabled) add(QuickControlItemData(id = "pin_dock", label = pinDockLabel, active = isDockPinned, icon = Icons.Filled.PushPin) to { taskbarViewModel.toggleDockPinned() })
+                                if (musicPanelEnabled) add(QuickControlItemData(id = "music", label = musicLabel, active = musicPanelVisible, icon = Icons.Filled.MusicNote) to { appMenuViewModel.toggleMusicPanel() })
+                                if (quickSettingsPanelEnabled) add(QuickControlItemData(id = "quick_settings", label = quickSettingsLabel, active = quickSettingsPanelVisible, icon = Icons.Filled.Settings) to { appMenuViewModel.toggleQuickSettingsPanel() })
+                            }
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -257,52 +265,13 @@ fun TaskbarView(
                                         horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        if (pinDockControlEnabled) {
-                                            item {
-                                                QuickControlItem(
-                                                    item = QuickControlItemData(
-                                                        id = "pin_dock",
-                                                        label = stringResource(R.string.quick_control_pin_dock_label),
-                                                        active = isDockPinned,
-                                                        icon = Icons.Filled.PushPin
-                                                    ),
-                                                    onToggle = { taskbarViewModel.toggleDockPinned() },
-                                                    showLabel = taskbarSettings.showControlLabels,
-                                                    tileSize = taskbarSettings.quickControlSizeDp.dp
-                                                )
-                                            }
-                                        }
-                                        if (musicPanelEnabled) {
-                                            item {
-                                                val musicLabel = stringResource(R.string.taskbar_music_control_label)
-                                                QuickControlItem(
-                                                    item = QuickControlItemData(
-                                                        id = "music",
-                                                        label = musicLabel,
-                                                        active = musicPanelVisible,
-                                                        icon = Icons.Filled.MusicNote
-                                                    ),
-                                                    onToggle = { appMenuViewModel.toggleMusicPanel() },
-                                                    showLabel = taskbarSettings.showControlLabels,
-                                                    tileSize = taskbarSettings.quickControlSizeDp.dp
-                                                )
-                                            }
-                                        }
-                                        if (quickSettingsPanelEnabled) {
-                                            item {
-                                                val quickSettingsLabel = stringResource(R.string.quick_control_settings_label)
-                                                QuickControlItem(
-                                                    item = QuickControlItemData(
-                                                        id = "quick_settings",
-                                                        label = quickSettingsLabel,
-                                                        active = quickSettingsPanelVisible,
-                                                        icon = Icons.Filled.Settings
-                                                    ),
-                                                    onToggle = { appMenuViewModel.toggleQuickSettingsPanel() },
-                                                    showLabel = taskbarSettings.showControlLabels,
-                                                    tileSize = taskbarSettings.quickControlSizeDp.dp
-                                                )
-                                            }
+                                        items(extraTiles) { (data, onToggle) ->
+                                            QuickControlItem(
+                                                item = data,
+                                                onToggle = onToggle,
+                                                showLabel = taskbarSettings.showControlLabels,
+                                                tileSize = taskbarSettings.quickControlSizeDp.dp
+                                            )
                                         }
                                         items(quickControlItems) { item ->
                                             QuickControlItem(
