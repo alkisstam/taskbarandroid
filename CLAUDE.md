@@ -22,7 +22,7 @@ This applies to every task in this project. No exceptions for "just checking" or
 ./gradlew test
 
 # Run a single test class
-./gradlew test --tests "com.alkisstam.taskbar.viewmodel.TaskbarViewModelTest"
+./gradlew testDebugUnitTest --tests "com.alkisstam.taskbar.viewmodel.TaskbarViewModelTest"
 ```
 
 Release signing uses `keystore.properties` (not committed). The local signing key differs from the Play Store key — uninstall the Play Store build before sideloading.
