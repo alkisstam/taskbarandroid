@@ -69,7 +69,7 @@ Two ViewModels, both Hilt-injected and created via `OverlayViewModelFactory` ins
 
 - `ui/taskbar/` — `TaskbarView` (dock row), `TriggerPillView`, `PinnedAppItem`, `AppMenuButton`
 - `ui/appmenu/` — `AppMenuPanel`, `AppGrid`, `QuickControls`, `VolumePanel`, `MusicPanel`, `FloatingSearchBar`
-- `ui/settings/` — `SettingsScreen` (4-tab: General, Apps, Controls, Design), `PillSettingsScreen`, `PinnedAppsManager`
+- `ui/settings/` — `SettingsScreen` (4-tab: General, Apps, Controls, Design), `PillSettingsScreen`
 - `ui/onboarding/` — permission onboarding flow
 
 ### Key data structures
