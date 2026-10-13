@@ -2,6 +2,7 @@ package com.alkisstam.taskbar.data
 
 import android.content.Context
 import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
@@ -260,6 +261,85 @@ class PreferencesRepository @Inject constructor(
             } catch (e: JSONException) {
                 emptyMap()
             }
+
+        private val BACKUP_STRING_KEYS = listOf(
+            PINNED_APPS_KEY,
+            THEME_MODE_KEY,
+            PILL_SWIPE_UP_ACTION_KEY,
+            PILL_SWIPE_DOWN_ACTION_KEY,
+            PILL_DOUBLE_TAP_ACTION_KEY,
+            PILL_HOLD_DRAG_ACTION_KEY,
+            PILL_EDGE_POSITION_KEY,
+            TASKBAR_DOCK_PADDING_KEY,
+            TASKBAR_APP_MENU_SIDE_KEY,
+            TASKBAR_ICON_SHAPE_KEY,
+            HIDDEN_APPS_KEY,
+            SURFACE_TINT_COLOR_KEY,
+            CONTROLS_ORDER_KEY,
+            CONTROLS_DISABLED_KEY,
+            ICON_PACK_KEY,
+            APP_LANGUAGE_TAG_KEY,
+            APP_SORT_ORDER_KEY
+        )
+        private val BACKUP_BOOLEAN_KEYS = listOf(
+            OVERLAY_ENABLED_KEY,
+            TASKBAR_CONTROL_LABELS_KEY,
+            TASKBAR_KEEP_EXPANDED_KEY,
+            AUTO_HIDE_FULLSCREEN_KEY,
+            AUTO_HIDE_LANDSCAPE_KEY,
+            DOCK_PINNED_KEY,
+            PIN_DOCK_CONTROL_ENABLED_KEY,
+            DISABLE_ON_LOCKSCREEN_KEY,
+            QUICK_CONTROLS_ENABLED_KEY,
+            QUICK_SETTINGS_PANEL_ENABLED_KEY,
+            MUSIC_PANEL_ENABLED_KEY,
+            ALWAYS_SHOW_MUSIC_PANEL_KEY,
+            HAPTIC_FEEDBACK_KEY,
+            PANEL_OUTLINE_KEY,
+            PILL_RESTRICT_TRIGGER_KEY,
+            FUZZY_SEARCH_ENABLED_KEY,
+            SHOW_RECENT_APPS_KEY,
+            SHOW_RECENT_APPS_ROW_KEY,
+            TRANSLUCENT_MODE_KEY,
+            BLUR_TINT_KEY
+        )
+        private val BACKUP_FLOAT_KEYS = listOf(
+            PILL_WIDTH_KEY,
+            PILL_HEIGHT_KEY,
+            PILL_ALPHA_KEY,
+            PILL_POSITION_Y_KEY,
+            PILL_POSITION_X_PCT_KEY,
+            PILL_SIDE_POSITION_PCT_KEY,
+            TASKBAR_POSITION_Y_KEY,
+            TASKBAR_HEIGHT_KEY,
+            PINNED_ICON_SIZE_KEY,
+            PINNED_ICON_PADDING_KEY,
+            QUICK_CONTROL_SIZE_KEY,
+            TASKBAR_CORNER_RADIUS_KEY,
+            PILL_TRIGGER_AREA_KEY,
+            TRANSLUCENT_ALPHA_KEY,
+            GRAIN_ALPHA_KEY,
+            BLUR_RADIUS_KEY,
+            BLUR_TINT_ALPHA_KEY
+        )
+        private val BACKUP_INT_KEYS = listOf(
+            APP_GRID_COLUMNS_KEY,
+            APP_GRID_ROWS_KEY
+        )
+
+        internal fun exportPrefs(prefs: Preferences): JSONObject = JSONObject().apply {
+            BACKUP_STRING_KEYS.forEach { key -> prefs[key]?.let { put(key.name, it) } }
+            BACKUP_BOOLEAN_KEYS.forEach { key -> prefs[key]?.let { put(key.name, it) } }
+            BACKUP_FLOAT_KEYS.forEach { key -> prefs[key]?.let { put(key.name, it) } }
+            BACKUP_INT_KEYS.forEach { key -> prefs[key]?.let { put(key.name, it) } }
+        }
+
+        internal fun importPrefs(prefs: MutablePreferences, obj: JSONObject) {
+            BACKUP_STRING_KEYS.forEach { if (obj.has(it.name)) prefs[it] = obj.getString(it.name) }
+            BACKUP_BOOLEAN_KEYS.forEach { if (obj.has(it.name)) prefs[it] = obj.getBoolean(it.name) }
+            BACKUP_FLOAT_KEYS.forEach { if (obj.has(it.name)) prefs[it] = obj.getDouble(it.name).toFloat() }
+            BACKUP_INT_KEYS.forEach { if (obj.has(it.name)) prefs[it] = obj.getInt(it.name) }
+        }
     }
 
     val pinnedApps: Flow<List<String>> = safeData.map { prefs ->
@@ -797,128 +877,11 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
-    suspend fun exportToJson(): String {
-        val prefs = safeData.first()
-        return JSONObject().apply {
-            prefs[PINNED_APPS_KEY]?.let { put("pinned_apps", it) }
-            prefs[THEME_MODE_KEY]?.let { put("theme_mode", it) }
-            prefs[OVERLAY_ENABLED_KEY]?.let { put("overlay_enabled", it) }
-            prefs[PILL_SWIPE_UP_ACTION_KEY]?.let { put("pill_swipe_up_action", it) }
-            prefs[PILL_SWIPE_DOWN_ACTION_KEY]?.let { put("pill_swipe_down_action", it) }
-            prefs[PILL_DOUBLE_TAP_ACTION_KEY]?.let { put("pill_double_tap_action", it) }
-            prefs[PILL_HOLD_DRAG_ACTION_KEY]?.let { put("pill_hold_drag_action", it) }
-            prefs[PILL_WIDTH_KEY]?.let { put("pill_width", it) }
-            prefs[PILL_HEIGHT_KEY]?.let { put("pill_height", it) }
-            prefs[PILL_ALPHA_KEY]?.let { put("pill_alpha", it) }
-            prefs[PILL_POSITION_Y_KEY]?.let { put("pill_position_y", it) }
-            prefs[PILL_POSITION_X_PCT_KEY]?.let { put("pill_position_x_pct", it) }
-            prefs[PILL_EDGE_POSITION_KEY]?.let { put("pill_edge_position", it) }
-            prefs[PILL_SIDE_POSITION_PCT_KEY]?.let { put("pill_side_position_pct", it) }
-            prefs[TASKBAR_POSITION_Y_KEY]?.let { put("taskbar_position_y", it) }
-            prefs[TASKBAR_HEIGHT_KEY]?.let { put("taskbar_height_dp", it) }
-            prefs[TASKBAR_CONTROL_LABELS_KEY]?.let { put("taskbar_control_labels", it) }
-            prefs[TASKBAR_KEEP_EXPANDED_KEY]?.let { put("taskbar_keep_expanded", it) }
-            prefs[PINNED_ICON_SIZE_KEY]?.let { put("pinned_icon_size_dp", it) }
-            prefs[PINNED_ICON_PADDING_KEY]?.let { put("pinned_icon_padding_dp", it) }
-            prefs[QUICK_CONTROL_SIZE_KEY]?.let { put("quick_control_size_dp", it) }
-            prefs[TASKBAR_CORNER_RADIUS_KEY]?.let { put("taskbar_corner_radius_dp", it) }
-            prefs[TASKBAR_DOCK_PADDING_KEY]?.let { put("taskbar_dock_padding", it) }
-            prefs[TASKBAR_APP_MENU_SIDE_KEY]?.let { put("taskbar_app_menu_side", it) }
-            prefs[TASKBAR_ICON_SHAPE_KEY]?.let { put("taskbar_icon_shape", it) }
-            prefs[HIDDEN_APPS_KEY]?.let { put("hidden_apps", it) }
-            prefs[SURFACE_TINT_COLOR_KEY]?.let { put("surface_tint_color", it) }
-            prefs[AUTO_HIDE_FULLSCREEN_KEY]?.let { put("auto_hide_fullscreen", it) }
-            prefs[AUTO_HIDE_LANDSCAPE_KEY]?.let { put("auto_hide_landscape", it) }
-            prefs[DOCK_PINNED_KEY]?.let { put("dock_always_visible", it) }
-            prefs[PIN_DOCK_CONTROL_ENABLED_KEY]?.let { put("pin_dock_control_enabled", it) }
-            prefs[DISABLE_ON_LOCKSCREEN_KEY]?.let { put("disable_on_lockscreen", it) }
-            prefs[QUICK_CONTROLS_ENABLED_KEY]?.let { put("quick_controls_enabled", it) }
-            prefs[QUICK_SETTINGS_PANEL_ENABLED_KEY]?.let { put("quick_settings_panel_enabled", it) }
-            prefs[CONTROLS_ORDER_KEY]?.let { put("controls_order", it) }
-            prefs[CONTROLS_DISABLED_KEY]?.let { put("controls_disabled_ids", it) }
-            prefs[MUSIC_PANEL_ENABLED_KEY]?.let { put("music_panel_enabled", it) }
-            prefs[ALWAYS_SHOW_MUSIC_PANEL_KEY]?.let { put("always_show_music_panel", it) }
-            prefs[HAPTIC_FEEDBACK_KEY]?.let { put("haptic_feedback", it) }
-            prefs[PANEL_OUTLINE_KEY]?.let { put("panel_outline_enabled", it) }
-            prefs[APP_GRID_COLUMNS_KEY]?.let { put("app_grid_columns", it) }
-            prefs[APP_GRID_ROWS_KEY]?.let { put("app_grid_rows", it) }
-            prefs[PILL_TRIGGER_AREA_KEY]?.let { put("pill_trigger_area", it) }
-            prefs[PILL_RESTRICT_TRIGGER_KEY]?.let { put("pill_restrict_trigger", it) }
-            prefs[FUZZY_SEARCH_ENABLED_KEY]?.let { put("fuzzy_search_enabled", it) }
-            prefs[SHOW_RECENT_APPS_KEY]?.let { put("show_recent_apps", it) }
-            prefs[SHOW_RECENT_APPS_ROW_KEY]?.let { put("show_recent_apps_row", it) }
-            prefs[TRANSLUCENT_MODE_KEY]?.let { put("translucent_mode", it) }
-            prefs[TRANSLUCENT_ALPHA_KEY]?.let { put("translucent_alpha", it) }
-            prefs[GRAIN_ALPHA_KEY]?.let { put("grain_alpha", it) }
-            prefs[BLUR_RADIUS_KEY]?.let { put("blur_radius_dp", it) }
-            prefs[BLUR_TINT_KEY]?.let { put("blur_tint", it) }
-            prefs[BLUR_TINT_ALPHA_KEY]?.let { put("blur_tint_alpha", it) }
-            prefs[ICON_PACK_KEY]?.let { put("icon_pack_package", it) }
-            prefs[APP_LANGUAGE_TAG_KEY]?.let { put("app_language_tag", it) }
-            prefs[APP_SORT_ORDER_KEY]?.let { put("app_sort_order", it) }
-        }.toString()
-    }
+    suspend fun exportToJson(): String = exportPrefs(safeData.first()).toString()
 
     suspend fun importFromJson(json: String) {
         val obj = JSONObject(json)
-        context.dataStore.edit { prefs ->
-            if (obj.has("pinned_apps")) prefs[PINNED_APPS_KEY] = obj.getString("pinned_apps")
-            if (obj.has("theme_mode")) prefs[THEME_MODE_KEY] = obj.getString("theme_mode")
-            if (obj.has("overlay_enabled")) prefs[OVERLAY_ENABLED_KEY] = obj.getBoolean("overlay_enabled")
-            if (obj.has("pill_swipe_up_action")) prefs[PILL_SWIPE_UP_ACTION_KEY] = obj.getString("pill_swipe_up_action")
-            if (obj.has("pill_swipe_down_action")) prefs[PILL_SWIPE_DOWN_ACTION_KEY] = obj.getString("pill_swipe_down_action")
-            if (obj.has("pill_double_tap_action")) prefs[PILL_DOUBLE_TAP_ACTION_KEY] = obj.getString("pill_double_tap_action")
-            if (obj.has("pill_hold_drag_action")) prefs[PILL_HOLD_DRAG_ACTION_KEY] = obj.getString("pill_hold_drag_action")
-            if (obj.has("pill_width")) prefs[PILL_WIDTH_KEY] = obj.getDouble("pill_width").toFloat()
-            if (obj.has("pill_height")) prefs[PILL_HEIGHT_KEY] = obj.getDouble("pill_height").toFloat()
-            if (obj.has("pill_alpha")) prefs[PILL_ALPHA_KEY] = obj.getDouble("pill_alpha").toFloat()
-            if (obj.has("pill_position_y")) prefs[PILL_POSITION_Y_KEY] = obj.getDouble("pill_position_y").toFloat()
-            if (obj.has("pill_position_x_pct")) prefs[PILL_POSITION_X_PCT_KEY] = obj.getDouble("pill_position_x_pct").toFloat()
-            if (obj.has("pill_edge_position")) prefs[PILL_EDGE_POSITION_KEY] = obj.getString("pill_edge_position")
-            if (obj.has("pill_side_position_pct")) prefs[PILL_SIDE_POSITION_PCT_KEY] = obj.getDouble("pill_side_position_pct").toFloat()
-            if (obj.has("taskbar_position_y")) prefs[TASKBAR_POSITION_Y_KEY] = obj.getDouble("taskbar_position_y").toFloat()
-            if (obj.has("taskbar_height_dp")) prefs[TASKBAR_HEIGHT_KEY] = obj.getDouble("taskbar_height_dp").toFloat()
-            if (obj.has("taskbar_control_labels")) prefs[TASKBAR_CONTROL_LABELS_KEY] = obj.getBoolean("taskbar_control_labels")
-            if (obj.has("taskbar_keep_expanded")) prefs[TASKBAR_KEEP_EXPANDED_KEY] = obj.getBoolean("taskbar_keep_expanded")
-            if (obj.has("pinned_icon_size_dp")) prefs[PINNED_ICON_SIZE_KEY] = obj.getDouble("pinned_icon_size_dp").toFloat()
-            if (obj.has("pinned_icon_padding_dp")) prefs[PINNED_ICON_PADDING_KEY] = obj.getDouble("pinned_icon_padding_dp").toFloat()
-            if (obj.has("quick_control_size_dp")) prefs[QUICK_CONTROL_SIZE_KEY] = obj.getDouble("quick_control_size_dp").toFloat()
-            if (obj.has("taskbar_corner_radius_dp")) prefs[TASKBAR_CORNER_RADIUS_KEY] = obj.getDouble("taskbar_corner_radius_dp").toFloat()
-            if (obj.has("taskbar_dock_padding")) prefs[TASKBAR_DOCK_PADDING_KEY] = obj.getString("taskbar_dock_padding")
-            if (obj.has("taskbar_app_menu_side")) prefs[TASKBAR_APP_MENU_SIDE_KEY] = obj.getString("taskbar_app_menu_side")
-            if (obj.has("taskbar_icon_shape")) prefs[TASKBAR_ICON_SHAPE_KEY] = obj.getString("taskbar_icon_shape")
-            if (obj.has("hidden_apps")) prefs[HIDDEN_APPS_KEY] = obj.getString("hidden_apps")
-            if (obj.has("surface_tint_color")) prefs[SURFACE_TINT_COLOR_KEY] = obj.getString("surface_tint_color")
-            if (obj.has("auto_hide_fullscreen")) prefs[AUTO_HIDE_FULLSCREEN_KEY] = obj.getBoolean("auto_hide_fullscreen")
-            if (obj.has("auto_hide_landscape")) prefs[AUTO_HIDE_LANDSCAPE_KEY] = obj.getBoolean("auto_hide_landscape")
-            if (obj.has("dock_always_visible")) prefs[DOCK_PINNED_KEY] = obj.getBoolean("dock_always_visible")
-            if (obj.has("pin_dock_control_enabled")) prefs[PIN_DOCK_CONTROL_ENABLED_KEY] = obj.getBoolean("pin_dock_control_enabled")
-            if (obj.has("disable_on_lockscreen")) prefs[DISABLE_ON_LOCKSCREEN_KEY] = obj.getBoolean("disable_on_lockscreen")
-            if (obj.has("quick_controls_enabled")) prefs[QUICK_CONTROLS_ENABLED_KEY] = obj.getBoolean("quick_controls_enabled")
-            if (obj.has("quick_settings_panel_enabled")) prefs[QUICK_SETTINGS_PANEL_ENABLED_KEY] = obj.getBoolean("quick_settings_panel_enabled")
-            if (obj.has("controls_order")) prefs[CONTROLS_ORDER_KEY] = obj.getString("controls_order")
-            if (obj.has("controls_disabled_ids")) prefs[CONTROLS_DISABLED_KEY] = obj.getString("controls_disabled_ids")
-            if (obj.has("music_panel_enabled")) prefs[MUSIC_PANEL_ENABLED_KEY] = obj.getBoolean("music_panel_enabled")
-            if (obj.has("always_show_music_panel")) prefs[ALWAYS_SHOW_MUSIC_PANEL_KEY] = obj.getBoolean("always_show_music_panel")
-            if (obj.has("haptic_feedback")) prefs[HAPTIC_FEEDBACK_KEY] = obj.getBoolean("haptic_feedback")
-            if (obj.has("panel_outline_enabled")) prefs[PANEL_OUTLINE_KEY] = obj.getBoolean("panel_outline_enabled")
-            if (obj.has("app_grid_columns")) prefs[APP_GRID_COLUMNS_KEY] = obj.getInt("app_grid_columns")
-            if (obj.has("app_grid_rows")) prefs[APP_GRID_ROWS_KEY] = obj.getInt("app_grid_rows")
-            if (obj.has("pill_trigger_area")) prefs[PILL_TRIGGER_AREA_KEY] = obj.getDouble("pill_trigger_area").toFloat()
-            if (obj.has("pill_restrict_trigger")) prefs[PILL_RESTRICT_TRIGGER_KEY] = obj.getBoolean("pill_restrict_trigger")
-            if (obj.has("fuzzy_search_enabled")) prefs[FUZZY_SEARCH_ENABLED_KEY] = obj.getBoolean("fuzzy_search_enabled")
-            if (obj.has("show_recent_apps")) prefs[SHOW_RECENT_APPS_KEY] = obj.getBoolean("show_recent_apps")
-            if (obj.has("show_recent_apps_row")) prefs[SHOW_RECENT_APPS_ROW_KEY] = obj.getBoolean("show_recent_apps_row")
-            if (obj.has("translucent_mode")) prefs[TRANSLUCENT_MODE_KEY] = obj.getBoolean("translucent_mode")
-            if (obj.has("translucent_alpha")) prefs[TRANSLUCENT_ALPHA_KEY] = obj.getDouble("translucent_alpha").toFloat()
-            if (obj.has("grain_alpha")) prefs[GRAIN_ALPHA_KEY] = obj.getDouble("grain_alpha").toFloat()
-            if (obj.has("blur_radius_dp")) prefs[BLUR_RADIUS_KEY] = obj.getDouble("blur_radius_dp").toFloat()
-            if (obj.has("blur_tint")) prefs[BLUR_TINT_KEY] = obj.getBoolean("blur_tint")
-            if (obj.has("blur_tint_alpha")) prefs[BLUR_TINT_ALPHA_KEY] = obj.getDouble("blur_tint_alpha").toFloat()
-            if (obj.has("icon_pack_package")) prefs[ICON_PACK_KEY] = obj.getString("icon_pack_package")
-            if (obj.has("app_language_tag")) prefs[APP_LANGUAGE_TAG_KEY] = obj.getString("app_language_tag")
-            if (obj.has("app_sort_order")) prefs[APP_SORT_ORDER_KEY] = obj.getString("app_sort_order")
-        }
+        context.dataStore.edit { importPrefs(it, obj) }
         if (obj.has("app_language_tag")) applyLocale(obj.getString("app_language_tag"))
     }
 
