@@ -25,3 +25,6 @@ fastlane/report.xml
 
 # Firebase config (public repo)
 app/google-services.json
+
+# Repowise local index
+.repowise/
