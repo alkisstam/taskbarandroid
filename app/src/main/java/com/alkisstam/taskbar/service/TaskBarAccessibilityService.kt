@@ -2,6 +2,7 @@ package com.alkisstam.taskbar.service
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
+import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -98,10 +99,35 @@ class TaskBarAccessibilityService : AccessibilityService() {
     }
 
     private var lastForegroundPackage: String? = null
+    private var shadeOpen = false
+    private val keyguardManager by lazy { getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             val pkg = event.packageName?.toString() ?: return
+            val cls = event.className?.toString()
+            if (cls == "android.inputmethodservice.SoftInputWindow") {
+                sendBroadcast(Intent(OverlayService.ACTION_IME_SHOWN).setPackage(packageName))
+            }
+            // Without canRetrieveWindowContent the window list is off-limits. The shade arrives as a
+            // SystemUI FrameLayout (its other events, e.g. the back gesture, are bare Views); the same
+            // window reports PANE_DISAPPEARED as it closes, including the keyguard's after unlock.
+            // Cleared too by the next window from another app; our own overlay windows don't count.
+            val shade = when {
+                pkg == packageName -> shadeOpen
+                pkg == "com.android.systemui" && cls == "android.widget.FrameLayout" ->
+                    event.contentChangeTypes and AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_DISAPPEARED == 0 &&
+                        !keyguardManager.isKeyguardLocked
+                pkg == "com.android.systemui" -> shadeOpen
+                else -> false
+            }
+            if (shade != shadeOpen) {
+                shadeOpen = shade
+                sendBroadcast(
+                    Intent(OverlayService.ACTION_SHADE_CHANGED).setPackage(packageName)
+                        .putExtra(OverlayService.EXTRA_SHADE_OPEN, shade)
+                )
+            }
             // OneUI (and other launchers) refire WINDOW_STATE_CHANGED for the launcher package
             // while already in the foreground (icon layout/widget refresh etc). Only dismiss on
             // an actual transition into the launcher, or the pill triggers this while sitting on

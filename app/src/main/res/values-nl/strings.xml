@@ -113,6 +113,7 @@
     <string name="pill_tint_tab_dark">Donker</string>
     <string name="pill_tint_tab_light">Licht</string>
     <string name="pill_trigger_area_label">Triggergebied</string>
+    <string name="pill_trigger_area_desc">Hoe ver vanaf de schermrand een veeg het pilgebaar start. Staat los van de breedte van de pil.</string>
     <string name="pill_width_label">Breedte</string>
     <string name="pinned_apps_drag_reorder_content_description">Slepen om te herschikken</string>
     <string name="pinned_apps_unpin_content_description">Losmaken</string>
@@ -216,6 +217,9 @@
     <string name="settings_overlay_status_stopped">Dock is gestopt</string>
     <string name="settings_overlay_status_stopped_desc">Tik op start om in te schakelen</string>
     <string name="settings_overlay_status_title">Overlaystatus</string>
+    <string name="settings_a11y_notice_text">Toestemming voor de toegankelijkheidsservice is niet verleend. Het dock kan tikken op gevoelige schermen in andere apps blokkeren (bijv. bankieren, Play Store). Wil je deze niet verlenen, voeg dan de Floating Dock-tegel toe aan je snelle instellingen om het dock in dat geval snel uit en weer aan te zetten.</string>
+    <string name="settings_a11y_notice_understand">Begrepen</string>
+    <string name="settings_a11y_notice_dont_show">Niet meer tonen</string>
     <string name="settings_permission_accessibility_desc">Aanbevolen — weergeven boven de navigatiebalk en systeemacties; zonder deze dienst kunnen tikken op gevoelige schermen in andere apps worden geblokkeerd</string>
     <string name="settings_permission_accessibility_name">Toegankelijkheidsservice</string>
     <string name="settings_permission_battery_desc">Optioneel — houdt de dock actief op de achtergrond</string>

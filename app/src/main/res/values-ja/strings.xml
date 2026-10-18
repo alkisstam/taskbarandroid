@@ -113,6 +113,7 @@
     <string name="pill_tint_tab_dark">ダーク</string>
     <string name="pill_tint_tab_light">ライト</string>
     <string name="pill_trigger_area_label">トリガーエリア</string>
+    <string name="pill_trigger_area_desc">画面端からどの範囲のスワイプでピルのジェスチャーが反応するかを設定します。ピルの幅とは独立しています。</string>
     <string name="pill_width_label">幅</string>
     <string name="pinned_apps_drag_reorder_content_description">ドラッグして並べ替え</string>
     <string name="pinned_apps_unpin_content_description">ピン留めを解除</string>
@@ -216,6 +217,9 @@
     <string name="settings_overlay_status_stopped">ドックは停止しています</string>
     <string name="settings_overlay_status_stopped_desc">タップして開始</string>
     <string name="settings_overlay_status_title">オーバーレイの状態</string>
+    <string name="settings_a11y_notice_text">ユーザー補助サービスの権限が付与されていません。ドックが他のアプリのセキュリティ関連の画面（銀行アプリ、Play ストアなど）でタップをブロックすることがあります。権限を付与したくない場合は、Floating Dock タイルをクイック設定パネルに追加し、そのようなときにドックをすばやくオフ／オンできるようにしてください。</string>
+    <string name="settings_a11y_notice_understand">了解</string>
+    <string name="settings_a11y_notice_dont_show">今後表示しない</string>
     <string name="settings_permission_accessibility_desc">推奨 — ナビゲーションバーやシステム操作の上に表示します。無効の場合、他のアプリのセキュリティ関連の画面でタップがブロックされることがあります</string>
     <string name="settings_permission_accessibility_name">ユーザー補助サービス</string>
     <string name="settings_permission_battery_desc">任意 — ドックをバックグラウンドで動作し続けさせます</string>

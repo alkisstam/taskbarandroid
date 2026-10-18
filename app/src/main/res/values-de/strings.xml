@@ -113,6 +113,7 @@
     <string name="pill_tint_tab_dark">Dunkel</string>
     <string name="pill_tint_tab_light">Hell</string>
     <string name="pill_trigger_area_label">Auslösebereich</string>
+    <string name="pill_trigger_area_desc">Wie weit vom Bildschirmrand eine Wischgeste die Pillen-Geste auslöst. Unabhängig von der Pillenbreite.</string>
     <string name="pill_width_label">Breite</string>
     <string name="pinned_apps_drag_reorder_content_description">Zum Umsortieren ziehen</string>
     <string name="pinned_apps_unpin_content_description">Lösen</string>
@@ -216,6 +217,9 @@
     <string name="settings_overlay_status_stopped">Dock ist gestoppt</string>
     <string name="settings_overlay_status_stopped_desc">Zum Aktivieren auf Start tippen</string>
     <string name="settings_overlay_status_title">Overlay-Status</string>
+    <string name="settings_a11y_notice_text">Die Berechtigung für den Bedienungshilfendienst wurde nicht erteilt. Das Dock kann Tipps auf sicherheitsrelevanten Bildschirmen anderer Apps blockieren (z. B. Banking, Play Store). Wenn du sie nicht erteilen möchtest, füge die Kachel „Floating Dock“ zu deinen Schnelleinstellungen hinzu, um das Dock in solchen Fällen schnell aus- und wieder einzuschalten.</string>
+    <string name="settings_a11y_notice_understand">Verstanden</string>
+    <string name="settings_a11y_notice_dont_show">Nicht mehr anzeigen</string>
     <string name="settings_permission_accessibility_desc">Empfohlen — wird über der Navigationsleiste und Systemaktionen angezeigt; ohne diesen Dienst können Tipps auf sicherheitsrelevanten Bildschirmen anderer Apps blockiert werden</string>
     <string name="settings_permission_accessibility_name">Bedienungshilfen-Dienst</string>
     <string name="settings_permission_battery_desc">Optional — hält das Dock im Hintergrund am Laufen</string>

@@ -155,6 +155,13 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     @Volatile private var overlayHiddenForLockscreen = false
     @Volatile private var hiddenForLandscape = false
     @Volatile private var pillDisabledForLockscreen = false
+    @Volatile private var pillHiddenForSystemUi = false
+    @Volatile private var shadeOpen = false
+    private var lastImeVisible = false
+    private var imePolling = false
+    private var forceHiddenForSystemUi = false
+
+    private fun pillTouchable() = !pillDisabledForLockscreen && !pillHiddenForSystemUi
 
     // ACTION_USER_PRESENT is unreliable on some OEMs (ColorOS drops it) and
     // KeyguardLockedStateListener needs a privileged permission, so unlock detection polls.
@@ -228,8 +235,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     } else if (!overlayHiddenForLockscreen) {
                         if (appMenuViewModel.menuVisible.value) overlayView?.visibility = View.VISIBLE
                         taskbarView?.visibility = View.VISIBLE
-                        pillView?.visibility = View.VISIBLE
-                        pillView2?.visibility = View.VISIBLE
+                        if (!pillHiddenForSystemUi) {
+                            pillView?.visibility = View.VISIBLE
+                            pillView2?.visibility = View.VISIBLE
+                        }
                     }
                     // Recompute pill layout: side-pill y is a percentage of screen height, so a
                     // stale portrait offset lands off-screen in landscape. Post so resources have
@@ -251,6 +260,16 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 ACTION_CLIPBOARD_PANEL_SHOW -> {
                     if (this@OverlayService::appMenuViewModel.isInitialized)
                         appMenuViewModel.toggleClipboardPanel()
+                }
+                ACTION_SHADE_CHANGED -> {
+                    shadeOpen = intent.getBooleanExtra(EXTRA_SHADE_OPEN, false)
+                    if (this@OverlayService::taskbarViewModel.isInitialized) handler.post {
+                        updatePillForSystemUi()
+                        applySystemUiAutoHide()
+                    }
+                }
+                ACTION_IME_SHOWN -> {
+                    if (this@OverlayService::taskbarViewModel.isInitialized) handler.post { startImePoll() }
                 }
             }
         }
@@ -290,8 +309,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             musicPanelView?.visibility = View.VISIBLE
             if (!hiddenForLandscape) {
                 taskbarView?.visibility = View.VISIBLE
-                pillView?.visibility = View.VISIBLE
-                pillView2?.visibility = View.VISIBLE
+                if (!pillHiddenForSystemUi) {
+                    pillView?.visibility = View.VISIBLE
+                    pillView2?.visibility = View.VISIBLE
+                }
             }
         }
     }
@@ -340,6 +361,9 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         const val ACTION_DISMISS_ALL = "com.alkisstam.taskbar.DISMISS_ALL"
         const val ACTION_ACCESSIBILITY_CHANGED = "com.alkisstam.taskbar.ACCESSIBILITY_CHANGED"
         const val ACTION_CLIPBOARD_PANEL_SHOW = "com.alkisstam.taskbar.CLIPBOARD_PANEL_SHOW"
+        const val ACTION_SHADE_CHANGED = "com.alkisstam.taskbar.SHADE_CHANGED"
+        const val EXTRA_SHADE_OPEN = "shade_open"
+        const val ACTION_IME_SHOWN = "com.alkisstam.taskbar.IME_SHOWN"
         private const val PINNED_TOUCH_MARGIN_DP = 16
 
         @Volatile var isTaskbarVisibleForBack = false
@@ -392,6 +416,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             addAction(ACTION_DISMISS_ALL)
             addAction(ACTION_ACCESSIBILITY_CHANGED)
             addAction(ACTION_CLIPBOARD_PANEL_SHOW)
+            addAction(ACTION_SHADE_CHANGED)
+            addAction(ACTION_IME_SHOWN)
         }
         ContextCompat.registerReceiver(this, lockscreenReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
         registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
@@ -646,13 +672,13 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         serviceScope.launch {
             taskbarViewModel.pillSettings.collect { settings ->
                 val view = pillView ?: return@collect
-                try { windowManager.updateViewLayoutKeepingType(view, pillLayoutParams(settings, isRight = false, touchable = !pillDisabledForLockscreen)) }
+                try { windowManager.updateViewLayoutKeepingType(view, pillLayoutParams(settings, isRight = false, touchable = pillTouchable())) }
                 catch (e: Exception) { Log.w(TAG, "Failed to update pill position", e) }
 
                 if (settings.edgePosition == com.alkisstam.taskbar.data.PillEdgePosition.BOTH) {
                     ensurePillView2()
                     val v2 = pillView2 ?: return@collect
-                    try { windowManager.updateViewLayoutKeepingType(v2, pillLayoutParams(settings, isRight = true, touchable = !pillDisabledForLockscreen)) }
+                    try { windowManager.updateViewLayoutKeepingType(v2, pillLayoutParams(settings, isRight = true, touchable = pillTouchable())) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update pill2 position", e) }
                 } else {
                     removePillView2()
@@ -664,11 +690,11 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private fun updatePillLayoutForConfig() {
         val settings = taskbarViewModel.pillSettings.value
         pillView?.let {
-            try { windowManager.updateViewLayoutKeepingType(it, pillLayoutParams(settings, isRight = false, touchable = !pillDisabledForLockscreen)) }
+            try { windowManager.updateViewLayoutKeepingType(it, pillLayoutParams(settings, isRight = false, touchable = pillTouchable())) }
             catch (e: Exception) { Log.w(TAG, "Failed to update pill layout on config change", e) }
         }
         pillView2?.let {
-            try { windowManager.updateViewLayoutKeepingType(it, pillLayoutParams(settings, isRight = true, touchable = !pillDisabledForLockscreen)) }
+            try { windowManager.updateViewLayoutKeepingType(it, pillLayoutParams(settings, isRight = true, touchable = pillTouchable())) }
             catch (e: Exception) { Log.w(TAG, "Failed to update pill2 layout on config change", e) }
         }
     }
@@ -685,9 +711,9 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 setContent { TriggerPillContent(taskbarViewModel = taskbarViewModel, appMenuViewModel = appMenuViewModel) }
             }
             pillView2 = composeView
-            if (hiddenForLandscape) composeView.visibility = View.GONE
+            if (hiddenForLandscape || pillHiddenForSystemUi) composeView.visibility = View.GONE
             val settings = taskbarViewModel.pillSettings.value
-            windowManager.addView(composeView, pillLayoutParams(settings, isRight = true, touchable = !pillDisabledForLockscreen))
+            windowManager.addView(composeView, pillLayoutParams(settings, isRight = true, touchable = pillTouchable()))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add pill2 view", e)
             pillView2 = null
@@ -868,6 +894,47 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         taskbarViewModel.setNavBarInset(navBarInsetDp())
     }
 
+    // Pinned dock hides under the keyboard and notification shade. Acts only on transitions so an
+    // unpinned dock the user dismissed isn't re-shown.
+    private fun applySystemUiAutoHide() {
+        val forceHide = taskbarViewModel.isDockPinned.value && (lastImeVisible || shadeOpen)
+        if (forceHide == forceHiddenForSystemUi) return
+        forceHiddenForSystemUi = forceHide
+        if (forceHide) taskbarViewModel.hideTaskbar(force = true) else taskbarViewModel.showTaskbar()
+    }
+
+    // Insets dispatched to the overlay never report the IME and the a11y service gets no event when
+    // it closes, so once the keyboard shows, poll WindowManager's metrics until it's gone.
+    private fun startImePoll() {
+        if (imePolling || Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return
+        imePolling = true
+        handler.post(object : Runnable {
+            override fun run() {
+                val visible = windowManager.currentWindowMetrics.windowInsets
+                    .isVisible(android.view.WindowInsets.Type.ime())
+                setImeVisible(visible)
+                if (visible) handler.postDelayed(this, 250) else imePolling = false
+            }
+        })
+    }
+
+    private fun setImeVisible(visible: Boolean) {
+        if (visible == lastImeVisible) return
+        lastImeVisible = visible
+        updatePillForSystemUi()
+        applySystemUiAutoHide()
+    }
+
+    private fun updatePillForSystemUi() {
+        val hide = lastImeVisible || shadeOpen
+        if (hide == pillHiddenForSystemUi) return
+        pillHiddenForSystemUi = hide
+        val show = !hide && !hiddenForLandscape && !overlayHiddenForLockscreen
+        pillView?.visibility = if (show) View.VISIBLE else View.GONE
+        pillView2?.visibility = if (show) View.VISIBLE else View.GONE
+        updatePillLayoutForConfig()
+    }
+
     private fun attachInsetsListener(view: View) {
         // ViewCompat.setOnApplyWindowInsetsListener is dispatched from ViewRootImpl even when the
         // view is GONE, so the overlay can self-heal after the keyboard closes rather than staying
@@ -978,9 +1045,9 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 setContent { TriggerPillContent(taskbarViewModel = taskbarViewModel, appMenuViewModel = appMenuViewModel) }
             }
             pillView = composeView
-            if (hiddenForLandscape) composeView.visibility = View.GONE
+            if (hiddenForLandscape || pillHiddenForSystemUi) composeView.visibility = View.GONE
             val initial = taskbarViewModel.pillSettings.value
-            windowManager.addView(composeView, pillLayoutParams(initial, isRight = false, touchable = !pillDisabledForLockscreen))
+            windowManager.addView(composeView, pillLayoutParams(initial, isRight = false, touchable = pillTouchable()))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add pill view", e)
             pillView = null

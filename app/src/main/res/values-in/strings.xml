@@ -113,6 +113,7 @@
     <string name="pill_tint_tab_dark">Gelap</string>
     <string name="pill_tint_tab_light">Terang</string>
     <string name="pill_trigger_area_label">Area Pemicu</string>
+    <string name="pill_trigger_area_desc">Seberapa jauh dari tepi layar usapan memicu gestur pil. Tidak bergantung pada lebar pil.</string>
     <string name="pill_width_label">Lebar</string>
     <string name="pinned_apps_drag_reorder_content_description">Seret untuk mengurutkan ulang</string>
     <string name="pinned_apps_unpin_content_description">Lepas sematan</string>
@@ -216,6 +217,9 @@
     <string name="settings_overlay_status_stopped">Dock berhenti</string>
     <string name="settings_overlay_status_stopped_desc">Ketuk mulai untuk mengaktifkan</string>
     <string name="settings_overlay_status_title">Status Overlay</string>
+    <string name="settings_a11y_notice_text">Izin Layanan Aksesibilitas belum diberikan. Dock dapat memblokir ketukan pada layar sensitif di aplikasi lain (mis. perbankan, Play Store). Jika tidak ingin memberikannya, tambahkan kartu Floating Dock ke panel Setelan Cepat untuk mematikan dan menyalakan dock dengan cepat saat hal itu terjadi.</string>
+    <string name="settings_a11y_notice_understand">Saya mengerti</string>
+    <string name="settings_a11y_notice_dont_show">Jangan tampilkan lagi</string>
     <string name="settings_permission_accessibility_desc">Disarankan — tampil di atas bilah navigasi dan aksi sistem; tanpa ini, ketukan pada layar sensitif di aplikasi lain dapat terblokir</string>
     <string name="settings_permission_accessibility_name">Layanan Aksesibilitas</string>
     <string name="settings_permission_battery_desc">Opsional — menjaga dock tetap berjalan di latar belakang</string>

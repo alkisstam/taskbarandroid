@@ -113,6 +113,7 @@
     <string name="pill_tint_tab_dark">Escuro</string>
     <string name="pill_tint_tab_light">Claro</string>
     <string name="pill_trigger_area_label">Área de Acionamento</string>
+    <string name="pill_trigger_area_desc">Distância da borda da tela em que um deslize aciona o gesto da pílula. Independente da largura da pílula.</string>
     <string name="pill_width_label">Largura</string>
     <string name="pinned_apps_drag_reorder_content_description">Arraste para reordenar</string>
     <string name="pinned_apps_unpin_content_description">Desafixar</string>
@@ -216,6 +217,9 @@
     <string name="settings_overlay_status_stopped">O dock está parado</string>
     <string name="settings_overlay_status_stopped_desc">Toque em iniciar para ativar</string>
     <string name="settings_overlay_status_title">Status da Sobreposição</string>
+    <string name="settings_a11y_notice_text">A permissão do serviço de acessibilidade não foi concedida. O dock pode bloquear toques em telas sensíveis de outros apps (ex.: bancos, Play Store). Se preferir não conceder, adicione o bloco Floating Dock às configurações rápidas para desligar e ligar o dock rapidamente quando isso acontecer.</string>
+    <string name="settings_a11y_notice_understand">Entendi</string>
+    <string name="settings_a11y_notice_dont_show">Não mostrar novamente</string>
     <string name="settings_permission_accessibility_desc">Recomendado — exibe sobre a barra de navegação e ações do sistema; sem ele, toques em telas sensíveis de outros apps podem ser bloqueados</string>
     <string name="settings_permission_accessibility_name">Serviço de Acessibilidade</string>
     <string name="settings_permission_battery_desc">Opcional — mantém o dock em execução em segundo plano</string>

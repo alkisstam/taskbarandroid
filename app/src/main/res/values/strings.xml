@@ -113,6 +113,7 @@
     <string name="pill_tint_tab_dark">Dark</string>
     <string name="pill_tint_tab_light">Light</string>
     <string name="pill_trigger_area_label">Trigger Area</string>
+    <string name="pill_trigger_area_desc">How far from the screen edge a swipe starts the pill gesture. Independent of the pill\'s width setting.</string>
     <string name="pill_width_label">Width</string>
     <string name="pinned_apps_drag_reorder_content_description">Drag to reorder</string>
     <string name="pinned_apps_unpin_content_description">Unpin</string>
@@ -216,6 +217,9 @@
     <string name="settings_overlay_status_stopped">Dock is stopped</string>
     <string name="settings_overlay_status_stopped_desc">Tap start to enable</string>
     <string name="settings_overlay_status_title">Overlay Status</string>
+    <string name="settings_a11y_notice_text">Accessibility Service permission is not granted. The dock can block taps on sensitive screens in other apps (e.g. banking, Play Store). If you\'d rather not grant it, add the Floating Dock tile to your Quick Settings panel to quickly turn the dock off and on when that happens.</string>
+    <string name="settings_a11y_notice_understand">I understand</string>
+    <string name="settings_a11y_notice_dont_show">Don\'t show again</string>
     <string name="settings_permission_accessibility_desc">Recommended — draws over the navigation bar and system actions; without it, taps on sensitive screens in other apps can get blocked</string>
     <string name="settings_permission_accessibility_name">Accessibility Service</string>
     <string name="settings_permission_battery_desc">Optional — keeps the dock running in the background</string>

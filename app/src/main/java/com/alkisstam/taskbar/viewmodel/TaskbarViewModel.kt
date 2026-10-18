@@ -94,6 +94,19 @@ class TaskbarViewModel @Inject constructor(
     val pinDockControlEnabled: StateFlow<Boolean> = prefsRepository.pinDockControlEnabled
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
+    // Starts hidden so the notice doesn't flash before DataStore loads for users who opted out.
+    val a11yNoticeHidden: StateFlow<Boolean> = prefsRepository.a11yNoticeHidden
+        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
+    private val _a11yNoticeDismissed = MutableStateFlow(false)
+    val a11yNoticeDismissed: StateFlow<Boolean> = _a11yNoticeDismissed.asStateFlow()
+
+    fun dismissA11yNotice() { _a11yNoticeDismissed.value = true }
+
+    fun hideA11yNoticeForever() {
+        viewModelScope.launch { prefsRepository.setA11yNoticeHidden() }
+    }
+
     fun setPinDockControlEnabled(enabled: Boolean) {
         viewModelScope.launch { prefsRepository.setPinDockControlEnabled(enabled) }
     }
@@ -211,7 +224,7 @@ class TaskbarViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.80f)
 
     val grainAlpha: StateFlow<Float> = prefsRepository.grainAlpha
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.10f)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.02f)
 
     val blurRadiusDp: StateFlow<Float> = prefsRepository.blurRadiusDp
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 24f)

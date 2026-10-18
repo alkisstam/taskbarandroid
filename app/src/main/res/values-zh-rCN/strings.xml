@@ -113,6 +113,7 @@
     <string name="pill_tint_tab_dark">深色</string>
     <string name="pill_tint_tab_light">浅色</string>
     <string name="pill_trigger_area_label">触发区域</string>
+    <string name="pill_trigger_area_desc">从屏幕边缘多远的距离内滑动可触发药丸手势。与药丸宽度设置无关。</string>
     <string name="pill_width_label">宽度</string>
     <string name="pinned_apps_drag_reorder_content_description">拖动以重新排序</string>
     <string name="pinned_apps_unpin_content_description">取消固定</string>
@@ -216,6 +217,9 @@
     <string name="settings_overlay_status_stopped">程序坞已停止</string>
     <string name="settings_overlay_status_stopped_desc">点击启动</string>
     <string name="settings_overlay_status_title">悬浮层状态</string>
+    <string name="settings_a11y_notice_text">未授予无障碍服务权限。悬浮坞可能会阻止其他应用中敏感界面（如银行应用、Play 商店）的点击。如果您不想授予该权限，可将 Floating Dock 图块添加到快捷设置面板，以便在出现这种情况时快速关闭和开启悬浮坞。</string>
+    <string name="settings_a11y_notice_understand">我知道了</string>
+    <string name="settings_a11y_notice_dont_show">不再显示</string>
     <string name="settings_permission_accessibility_desc">推荐 — 在导航栏和系统操作上方显示；如果未启用，其他应用中敏感界面的点击可能会被阻止</string>
     <string name="settings_permission_accessibility_name">无障碍服务</string>
     <string name="settings_permission_battery_desc">可选 — 让程序坞在后台持续运行</string>

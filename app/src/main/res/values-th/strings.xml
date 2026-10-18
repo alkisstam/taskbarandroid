@@ -113,6 +113,7 @@
     <string name="pill_tint_tab_dark">มืด</string>
     <string name="pill_tint_tab_light">สว่าง</string>
     <string name="pill_trigger_area_label">พื้นที่สัมผัส</string>
+    <string name="pill_trigger_area_desc">ระยะจากขอบหน้าจอที่การปัดจะเริ่มท่าทางของแถบ ไม่ขึ้นกับความกว้างของแถบ</string>
     <string name="pill_width_label">ความกว้าง</string>
     <string name="pinned_apps_drag_reorder_content_description">ลากเพื่อจัดลำดับใหม่</string>
     <string name="pinned_apps_unpin_content_description">เลิกปักหมุด</string>
@@ -216,6 +217,9 @@
     <string name="settings_overlay_status_stopped">ด็อกหยุดทำงาน</string>
     <string name="settings_overlay_status_stopped_desc">แตะเริ่มเพื่อเปิดใช้งาน</string>
     <string name="settings_overlay_status_title">สถานะโอเวอร์เลย์</string>
+    <string name="settings_a11y_notice_text">ยังไม่ได้ให้สิทธิ์บริการการช่วยเหลือพิเศษ ด็อกอาจบล็อกการแตะบนหน้าจอที่มีความละเอียดอ่อนในแอปอื่น (เช่น แอปธนาคาร, Play Store) หากไม่ต้องการให้สิทธิ์ ให้เพิ่มไทล์ Floating Dock ลงในแผงการตั้งค่าด่วน เพื่อปิดและเปิดด็อกได้อย่างรวดเร็วเมื่อเกิดกรณีนี้</string>
+    <string name="settings_a11y_notice_understand">เข้าใจแล้ว</string>
+    <string name="settings_a11y_notice_dont_show">ไม่ต้องแสดงอีก</string>
     <string name="settings_permission_accessibility_desc">แนะนำ — แสดงทับแถบนำทางและการกระทำของระบบ; หากไม่เปิดใช้ การแตะบนหน้าจอที่มีความละเอียดอ่อนในแอปอื่นอาจถูกบล็อก</string>
     <string name="settings_permission_accessibility_name">บริการการเข้าถึงพิเศษ</string>
     <string name="settings_permission_battery_desc">ไม่บังคับ — ทำให้ด็อกทำงานต่อในพื้นหลัง</string>

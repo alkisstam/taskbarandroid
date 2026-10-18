@@ -330,6 +330,11 @@ private fun PillSectionContent(viewModel: TaskbarViewModel) {
         step = 1f,
         onValueChange = { viewModel.savePillSettings(pillSettings.copy(triggerAreaDp = it)) }
     )
+    Text(
+        stringResource(R.string.pill_trigger_area_desc),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
     Spacer(modifier = Modifier.height(8.dp))
     Row(
         modifier = Modifier.fillMaxWidth(),

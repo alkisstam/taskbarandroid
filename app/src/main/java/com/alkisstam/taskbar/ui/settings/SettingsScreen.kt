@@ -94,6 +94,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -300,6 +301,8 @@ private fun GeneralTab(
     bottomPadding: Dp = 0.dp
 ) {
     val overlayEnabled by viewModel.overlayEnabled.collectAsState()
+    val a11yNoticeHidden by viewModel.a11yNoticeHidden.collectAsState()
+    val a11yNoticeDismissed by viewModel.a11yNoticeDismissed.collectAsState()
     val context = LocalContext.current
     var batteryUsageExpanded by remember { mutableStateOf(false) }
     var permissionsExpanded by remember { mutableStateOf(false) }
@@ -370,6 +373,33 @@ private fun GeneralTab(
                             Icon(Icons.Filled.PowerSettingsNew, contentDescription = null)
                             Spacer(modifier = Modifier.padding(horizontal = 4.dp))
                             Text(stringResource(R.string.settings_start_button))
+                        }
+                    }
+                }
+                if (!hasAccessibilityPermission && !a11yNoticeHidden && !a11yNoticeDismissed) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Surface(
+                        color = MaterialTheme.colorScheme.tertiaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.padding(start = 12.dp, end = 12.dp, top = 12.dp, bottom = 4.dp)) {
+                            Text(
+                                text = stringResource(R.string.settings_a11y_notice_text),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                TextButton(onClick = viewModel::hideA11yNoticeForever) {
+                                    Text(stringResource(R.string.settings_a11y_notice_dont_show))
+                                }
+                                TextButton(onClick = viewModel::dismissA11yNotice) {
+                                    Text(stringResource(R.string.settings_a11y_notice_understand))
+                                }
+                            }
                         }
                     }
                 }

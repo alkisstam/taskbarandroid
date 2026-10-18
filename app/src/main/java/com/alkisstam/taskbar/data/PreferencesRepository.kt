@@ -141,13 +141,13 @@ data class PillSettings(
     val doubleTapAction: GestureAction = GestureAction.SHOW_DOCK,
     val holdDragAction: PillHoldDragAction = PillHoldDragAction.DISABLED,
     val widthDp: Float = 4f,
-    val heightDp: Float = 90f,
+    val heightDp: Float = 100f,
     val alpha: Float = 0.30f,
     val positionYDp: Float = 2f,
     val positionXPct: Float = 50f,
     val edgePosition: PillEdgePosition = PillEdgePosition.BOTTOM,
     val sidePositionPct: Float = 50f,
-    val triggerAreaDp: Float = 16f,
+    val triggerAreaDp: Float = 22f,
     val restrictTriggerToPill: Boolean = true
 )
 
@@ -194,6 +194,7 @@ class PreferencesRepository @Inject constructor(
         private val SURFACE_TINT_COLOR_KEY = stringPreferencesKey("surface_tint_color")
         private val AUTO_HIDE_FULLSCREEN_KEY = booleanPreferencesKey("auto_hide_fullscreen")
         private val AUTO_HIDE_LANDSCAPE_KEY = booleanPreferencesKey("auto_hide_landscape")
+        private val A11Y_NOTICE_HIDDEN_KEY = booleanPreferencesKey("a11y_notice_hidden")
         private val DOCK_PINNED_KEY = booleanPreferencesKey("dock_always_visible")
         private val PIN_DOCK_CONTROL_ENABLED_KEY = booleanPreferencesKey("pin_dock_control_enabled")
         private val DISABLE_ON_LOCKSCREEN_KEY = booleanPreferencesKey("disable_on_lockscreen")
@@ -450,13 +451,13 @@ class PreferencesRepository @Inject constructor(
             doubleTapAction  = prefs[PILL_DOUBLE_TAP_ACTION_KEY].toGestureAction(),
             holdDragAction   = prefs[PILL_HOLD_DRAG_ACTION_KEY].toPillHoldDragAction(),
             widthDp      = prefs[PILL_WIDTH_KEY]           ?: 4f,
-            heightDp     = prefs[PILL_HEIGHT_KEY]          ?: 90f,
+            heightDp     = prefs[PILL_HEIGHT_KEY]          ?: 100f,
             alpha        = prefs[PILL_ALPHA_KEY]            ?: 0.30f,
             positionYDp      = prefs[PILL_POSITION_Y_KEY]         ?: 2f,
             positionXPct     = prefs[PILL_POSITION_X_PCT_KEY]     ?: 50f,
             edgePosition     = prefs[PILL_EDGE_POSITION_KEY].toPillEdgePosition(),
             sidePositionPct  = prefs[PILL_SIDE_POSITION_PCT_KEY]  ?: 50f,
-            triggerAreaDp    = prefs[PILL_TRIGGER_AREA_KEY]       ?: 16f,
+            triggerAreaDp    = prefs[PILL_TRIGGER_AREA_KEY]       ?: 22f,
             restrictTriggerToPill = prefs[PILL_RESTRICT_TRIGGER_KEY] ?: true
         )
     }
@@ -468,6 +469,16 @@ class PreferencesRepository @Inject constructor(
     suspend fun setAutoHideInFullscreen(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[AUTO_HIDE_FULLSCREEN_KEY] = enabled
+        }
+    }
+
+    val a11yNoticeHidden: Flow<Boolean> = safeData.map { prefs ->
+        prefs[A11Y_NOTICE_HIDDEN_KEY] ?: false
+    }
+
+    suspend fun setA11yNoticeHidden() {
+        context.dataStore.edit { prefs ->
+            prefs[A11Y_NOTICE_HIDDEN_KEY] = true
         }
     }
 
@@ -818,7 +829,7 @@ class PreferencesRepository @Inject constructor(
     }
 
     val grainAlpha: Flow<Float> = safeData.map { prefs ->
-        prefs[GRAIN_ALPHA_KEY] ?: 0.08f
+        prefs[GRAIN_ALPHA_KEY] ?: 0.02f
     }
 
     suspend fun setGrainAlpha(value: Float) {

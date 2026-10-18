@@ -113,6 +113,7 @@
     <string name="pill_tint_tab_dark">Тёмная</string>
     <string name="pill_tint_tab_light">Светлая</string>
     <string name="pill_trigger_area_label">Область запуска</string>
+    <string name="pill_trigger_area_desc">На каком расстоянии от края экрана свайп запускает жест пилюли. Не зависит от ширины пилюли.</string>
     <string name="pill_width_label">Ширина</string>
     <string name="pinned_apps_drag_reorder_content_description">Перетащите, чтобы изменить порядок</string>
     <string name="pinned_apps_unpin_content_description">Открепить</string>
@@ -216,6 +217,9 @@
     <string name="settings_overlay_status_stopped">Панель остановлена</string>
     <string name="settings_overlay_status_stopped_desc">Нажмите «Запустить», чтобы включить</string>
     <string name="settings_overlay_status_title">Статус оверлея</string>
+    <string name="settings_a11y_notice_text">Разрешение на службу специальных возможностей не предоставлено. Док может блокировать нажатия на защищённых экранах других приложений (например, банковских, Play Маркета). Если не хотите его предоставлять, добавьте плитку Floating Dock в панель быстрых настроек, чтобы быстро выключать и включать док в таких случаях.</string>
+    <string name="settings_a11y_notice_understand">Понятно</string>
+    <string name="settings_a11y_notice_dont_show">Больше не показывать</string>
     <string name="settings_permission_accessibility_desc">Рекомендуется — отображение поверх панели навигации и системных действий; без этого нажатия на защищённых экранах других приложений могут блокироваться</string>
     <string name="settings_permission_accessibility_name">Специальные возможности</string>
     <string name="settings_permission_battery_desc">Необязательно — не даёт панели закрыться в фоне</string>

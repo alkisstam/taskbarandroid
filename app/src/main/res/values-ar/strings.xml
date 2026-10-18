@@ -113,6 +113,7 @@
     <string name="pill_tint_tab_dark">داكن</string>
     <string name="pill_tint_tab_light">فاتح</string>
     <string name="pill_trigger_area_label">منطقة التفعيل</string>
+    <string name="pill_trigger_area_desc">المسافة من حافة الشاشة التي يبدأ عندها السحب إيماءة الشريط. مستقلة عن عرض الشريط.</string>
     <string name="pill_width_label">العرض</string>
     <string name="pinned_apps_drag_reorder_content_description">اسحب لإعادة الترتيب</string>
     <string name="pinned_apps_unpin_content_description">إلغاء التثبيت</string>
@@ -216,6 +217,9 @@
     <string name="settings_overlay_status_stopped">الرصيف متوقف</string>
     <string name="settings_overlay_status_stopped_desc">اضغط على ابدأ للتفعيل</string>
     <string name="settings_overlay_status_title">حالة التراكب</string>
+    <string name="settings_a11y_notice_text">لم يتم منح إذن خدمة تسهيل الاستخدام. قد يحظر الشريط النقرات على الشاشات الحساسة في التطبيقات الأخرى (مثل التطبيقات المصرفية وPlay Store). إذا كنت لا تريد منحه، فأضف مربع Floating Dock إلى لوحة الإعدادات السريعة لإيقاف الشريط وتشغيله بسرعة عند حدوث ذلك.</string>
+    <string name="settings_a11y_notice_understand">فهمت</string>
+    <string name="settings_a11y_notice_dont_show">عدم الإظهار مرة أخرى</string>
     <string name="settings_permission_accessibility_desc">موصى به — الظهور فوق شريط التنقل وإجراءات النظام؛ بدونه، قد تُحظر النقرات على الشاشات الحساسة في تطبيقات أخرى</string>
     <string name="settings_permission_accessibility_name">خدمة إمكانية الوصول</string>
     <string name="settings_permission_battery_desc">اختياري — يبقي الرصيف يعمل في الخلفية</string>

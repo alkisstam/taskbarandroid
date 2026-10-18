@@ -113,6 +113,7 @@
     <string name="pill_tint_tab_dark">Koyu</string>
     <string name="pill_tint_tab_light">Açık</string>
     <string name="pill_trigger_area_label">Tetikleme Alanı</string>
+    <string name="pill_trigger_area_desc">Ekran kenarından ne kadar uzakta bir kaydırmanın hap hareketini başlatacağı. Hap genişliğinden bağımsızdır.</string>
     <string name="pill_width_label">Genişlik</string>
     <string name="pinned_apps_drag_reorder_content_description">Yeniden sıralamak için sürükleyin</string>
     <string name="pinned_apps_unpin_content_description">Sabitlemeyi kaldır</string>
@@ -216,6 +217,9 @@
     <string name="settings_overlay_status_stopped">Dock durduruldu</string>
     <string name="settings_overlay_status_stopped_desc">Etkinleştirmek için başlata dokunun</string>
     <string name="settings_overlay_status_title">Kaplama Durumu</string>
+    <string name="settings_a11y_notice_text">Erişilebilirlik Hizmeti izni verilmedi. Dock, diğer uygulamalardaki hassas ekranlarda dokunuşları engelleyebilir (ör. bankacılık, Play Store). Bu izni vermek istemiyorsanız, böyle bir durumda dock\'u hızlıca kapatıp açmak için Floating Dock kutucuğunu Hızlı Ayarlar panelinize ekleyin.</string>
+    <string name="settings_a11y_notice_understand">Anladım</string>
+    <string name="settings_a11y_notice_dont_show">Bir daha gösterme</string>
     <string name="settings_permission_accessibility_desc">Önerilir — gezinme çubuğu ve sistem eylemlerinin üzerinde gösterir; bu olmadan, diğer uygulamalardaki hassas ekranlarda dokunuşlar engellenebilir</string>
     <string name="settings_permission_accessibility_name">Erişilebilirlik Hizmeti</string>
     <string name="settings_permission_battery_desc">İsteğe bağlı — dock\'un arka planda çalışmaya devam etmesini sağlar</string>
