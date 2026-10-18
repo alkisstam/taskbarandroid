@@ -1,0 +1,5 @@
+Novedades
+• Nuevo botón «Fijar dock», el primero de los controles del dock: tócalo para mantener el dock en pantalla y otra vez para soltarlo; el gesto atrás y el teclado siguen llegando a la app de debajo
+• Nuevo control «Intensidad del tinte» bajo «Tinte sobre el desenfoque»
+• La píldora y el dock fijado se ocultan mientras el teclado o el panel de notificaciones están abiertos
+• Nuevo aviso en Ajustes si el servicio de accesibilidad está desactivado

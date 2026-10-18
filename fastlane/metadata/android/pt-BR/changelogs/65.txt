@@ -1,0 +1,5 @@
+Novidades
+• Novo bloco “Fixar dock”, o primeiro nos controles do dock: toque para manter o dock na tela e toque de novo para soltar; o voltar e o teclado continuam chegando ao app abaixo
+• Novo controle “Intensidade da tonalidade” abaixo de “Tonalidade sobre o desfoque”
+• A pílula e o dock fixado se ocultam enquanto o teclado ou o painel de notificações está aberto
+• Novo aviso nas configurações quando o serviço de acessibilidade está desativado

@@ -1,0 +1,5 @@
+Baru
+• Ubin baru “Sematkan Dock”, paling depan di deretan kontrol dock: ketuk untuk menjaga dock tetap di layar, ketuk lagi untuk melepas; kembali dan keyboard tetap menjangkau aplikasi di bawahnya
+• Penggeser baru “Kekuatan warna” di bawah “Warna di atas buram”
+• Pil dan dock yang disematkan kini tersembunyi saat keyboard atau panel notifikasi terbuka
+• Pemberitahuan baru di Setelan saat Layanan Aksesibilitas nonaktif

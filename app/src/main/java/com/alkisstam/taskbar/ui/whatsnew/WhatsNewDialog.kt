@@ -266,12 +266,14 @@ val whatsNewReleases = listOf(
     ),
     WhatsNewRelease(
         versionName = "1.5.11",
-        versionCode = 64,
+        versionCode = 65,
         highlights = listOf(
             "New Pin Dock tile, first in the dock's controls strip — tap to keep the dock on screen, tap again to unpin",
             "Back and the keyboard still reach the app underneath a pinned dock",
             "Turn the tile off in Settings → Controls → Enable Pin Dock",
-            "New Tint strength slider under Tint over blur"
+            "New Tint strength slider under Tint over blur",
+            "The pill and a pinned dock now hide while the keyboard or notification panel is open",
+            "New notice in Settings when the Accessibility Service is off"
         )
     )
 )

@@ -1,0 +1,5 @@
+Nouveautés
+• Nouvelle tuile « Épingler le dock », en tête des commandes du dock : touchez-la pour garder le dock à l'écran, puis à nouveau pour le libérer ; le retour et le clavier atteignent toujours l'appli en dessous
+• Nouveau curseur « Intensité de la teinte » sous « Teinte sur le flou »
+• La pilule et le dock épinglé se masquent tant que le clavier ou le volet des notifications est ouvert
+• Nouvel avis dans les paramètres si le service d'accessibilité est désactivé

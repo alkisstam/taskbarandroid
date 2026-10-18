@@ -1,0 +1,5 @@
+Added
+• New “Pin Dock” tile, first in the dock's controls strip: tap to keep the dock on screen, tap again to unpin; back and the keyboard still reach the app underneath
+• New “Tint strength” slider under “Tint over blur”
+• The pill and a pinned dock now hide while the keyboard or notification panel is open
+• New tip in Settings when the Accessibility Service is off

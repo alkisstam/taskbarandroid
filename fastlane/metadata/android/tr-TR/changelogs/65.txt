@@ -1,0 +1,5 @@
+Yenilikler
+• Dock kontrol şeridinin başında yeni “Dock'u sabitle” kutucuğu: dock'u ekranda tutmak için dokunun, kaldırmak için tekrar dokunun; geri hareketi ve klavye alttaki uygulamaya ulaşmaya devam eder
+• “Bulanıklık üzerine renk” altında yeni “Renk tonu yoğunluğu” kaydırıcısı
+• Klavye veya bildirim paneli açıkken hap ve sabitlenmiş dock gizlenir
+• Erişilebilirlik Hizmeti kapalıyken Ayarlar'da yeni bilgi notu

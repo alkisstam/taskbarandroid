@@ -4,15 +4,19 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
-## [1.5.11] - 2026-10-13
+## [1.5.11] - 2026-10-18
 
-Pin the dock on screen from the controls strip, adjustable tint strength.
+Pin the dock on screen from the controls strip, adjustable tint strength, dock and pill out of the way while typing.
 
 ### Added
 - **Pin Dock quick control** — new tile, always first in the dock's controls strip: tap it to keep the dock on screen, tap again to unpin. While pinned, only the dock itself takes touches, so back gestures and the keyboard still reach the app underneath. Fullscreen, landscape and lock-screen auto-hide still apply when those options are on. Turn the tile off with Settings → Controls → Quick Controls → Enable Pin Dock (on by default). Included in backup/restore.
 - **Tint strength slider** — Settings → Design, under Tint over blur (shown when it's on): sets how strongly the theme colour covers the glass (0–100%, default 80%). Included in backup/restore.
+- **Hide under keyboard and notification shade** — while the keyboard is open the trigger pill hides and can't be touched, so the dock can't be pulled up by accident; it also hides while the notification shade is down. A pinned dock hides in both cases and comes back when they close. Needs the accessibility service.
+- **Accessibility Service notice** — Settings → General → Overlay Status shows a highlighted notice when the accessibility service is off: the dock can block taps on sensitive screens in other apps, and the Floating Dock Quick Settings tile turns the dock off and on quickly when that happens. "I understand" hides it until the next launch, "Don't show again" hides it for good.
+- **Trigger Area description** — the Trigger Area slider now explains what it does and that it's independent of the pill's width.
 
 ### Changed
+- **New Design defaults** — Grain 2%, pill 4 × 100dp, Trigger Area 22dp. Only affects settings never changed (or after Reset).
 - **Internal cleanup** — settings screen, backup/restore and dock code reorganised with no change in behaviour. Backup/restore now has automated tests checking that every setting survives an export and import.
 
 ---
