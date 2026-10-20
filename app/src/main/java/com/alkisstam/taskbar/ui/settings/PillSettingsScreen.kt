@@ -51,7 +51,6 @@ import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Straighten
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -78,9 +77,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.compose.currentStateAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -1042,20 +1038,19 @@ private fun SurfaceTintColorPicker(
                 }
             }
         }
-    }
-
-    // Compose defers Dialog.show() a frame; if the activity is finishing or
-    // being recreated by then, addView hits a dead window token (BadTokenException).
-    val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
-    if (showCustomPicker && lifecycleState.isAtLeast(Lifecycle.State.RESUMED)) {
-        CustomColorPickerDialog(
-            initialColor = if (isCustomSelected) currentColor else 0xFF808080L,
-            onDismiss = { showCustomPicker = false },
-            onConfirm = { color ->
-                onColorSelected(color)
-                showCustomPicker = false
-            }
-        )
+        // Inline, not a Dialog: this screen also renders inside the overlay's
+        // QuickSettingsPanel, where a Dialog has no window token (BadTokenException).
+        if (showCustomPicker) {
+            Spacer(modifier = Modifier.height(4.dp))
+            CustomColorPicker(
+                initialColor = if (isCustomSelected) currentColor else 0xFF808080L,
+                onDismiss = { showCustomPicker = false },
+                onConfirm = { color ->
+                    onColorSelected(color)
+                    showCustomPicker = false
+                }
+            )
+        }
     }
 }
 
@@ -1214,7 +1209,7 @@ internal fun <T> GradientDropdownField(
 }
 
 @Composable
-private fun CustomColorPickerDialog(
+private fun CustomColorPicker(
     initialColor: Long,
     onDismiss: () -> Unit,
     onConfirm: (Long) -> Unit
@@ -1228,54 +1223,60 @@ private fun CustomColorPickerDialog(
         blue = b / 255f
     )
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.pill_custom_color_dialog_title)) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .background(previewColor, RoundedCornerShape(12.dp))
-                        .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
-                )
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(stringResource(R.string.pill_custom_color_r_label, r.toInt()), style = MaterialTheme.typography.labelMedium)
-                    Slider(
-                        value = r,
-                        onValueChange = { r = it },
-                        valueRange = 0f..255f,
-                        modifier = Modifier.fillMaxWidth(),
-                        track = { FilledPillSliderTrack(it) },
-                        thumb = {}
-                    )
-                }
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(stringResource(R.string.pill_custom_color_g_label, g.toInt()), style = MaterialTheme.typography.labelMedium)
-                    Slider(
-                        value = g,
-                        onValueChange = { g = it },
-                        valueRange = 0f..255f,
-                        modifier = Modifier.fillMaxWidth(),
-                        track = { FilledPillSliderTrack(it) },
-                        thumb = {}
-                    )
-                }
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(stringResource(R.string.pill_custom_color_b_label, b.toInt()), style = MaterialTheme.typography.labelMedium)
-                    Slider(
-                        value = b,
-                        onValueChange = { b = it },
-                        valueRange = 0f..255f,
-                        modifier = Modifier.fillMaxWidth(),
-                        track = { FilledPillSliderTrack(it) },
-                        thumb = {}
-                    )
-                }
-            }
-        },
-        confirmButton = {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text(stringResource(R.string.pill_custom_color_dialog_title), style = MaterialTheme.typography.titleSmall)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .background(previewColor, RoundedCornerShape(12.dp))
+                .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
+        )
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(stringResource(R.string.pill_custom_color_r_label, r.toInt()), style = MaterialTheme.typography.labelMedium)
+            Slider(
+                value = r,
+                onValueChange = { r = it },
+                valueRange = 0f..255f,
+                modifier = Modifier.fillMaxWidth(),
+                track = { FilledPillSliderTrack(it) },
+                thumb = {}
+            )
+        }
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(stringResource(R.string.pill_custom_color_g_label, g.toInt()), style = MaterialTheme.typography.labelMedium)
+            Slider(
+                value = g,
+                onValueChange = { g = it },
+                valueRange = 0f..255f,
+                modifier = Modifier.fillMaxWidth(),
+                track = { FilledPillSliderTrack(it) },
+                thumb = {}
+            )
+        }
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(stringResource(R.string.pill_custom_color_b_label, b.toInt()), style = MaterialTheme.typography.labelMedium)
+            Slider(
+                value = b,
+                onValueChange = { b = it },
+                valueRange = 0f..255f,
+                modifier = Modifier.fillMaxWidth(),
+                track = { FilledPillSliderTrack(it) },
+                thumb = {}
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.pill_custom_color_cancel_button)) }
             TextButton(onClick = {
                 val color = (0xFF000000L) or
                     (r.toLong().coerceIn(0, 255) shl 16) or
@@ -1283,9 +1284,6 @@ private fun CustomColorPickerDialog(
                     b.toLong().coerceIn(0, 255)
                 onConfirm(color)
             }) { Text(stringResource(R.string.pill_custom_color_apply_button)) }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.pill_custom_color_cancel_button)) }
         }
-    )
+    }
 }
