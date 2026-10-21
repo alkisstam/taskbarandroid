@@ -4,7 +4,7 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
-## [Unreleased]
+## [1.5.12] - 2026-10-21
 
 Swipe in on side pills without triggering Back, every pill gesture configurable, new App Menu and Search actions.
 
@@ -23,6 +23,7 @@ Swipe in on side pills without triggering Back, every pill gesture configurable,
 
 ### Fixed
 - **Crash opening the pill's custom tint picker from the dock's Quick Settings panel** — the picker now opens inline instead of as a dialog, which the overlay can't host.
+- **Dock and pill disappearing in Instagram, Camera, Maps and similar apps** — the camera, microphone or location indicator was mistaken for the notification shade, hiding the pill and the pinned dock until you switched apps.
 
 ---
 
