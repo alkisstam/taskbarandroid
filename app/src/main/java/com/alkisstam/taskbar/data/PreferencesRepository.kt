@@ -60,7 +60,7 @@ val DARK_TINT_PRESETS: List<Pair<String, Long>> = listOf(
 
 enum class GestureAction {
     SHOW_DOCK, SHOW_NOTIFICATIONS, SHOW_QUICK_SETTINGS, POWER_MENU, DISABLED,
-    TAKE_SCREENSHOT, TOGGLE_FLASHLIGHT, LOCK_SCREEN
+    TAKE_SCREENSHOT, TOGGLE_FLASHLIGHT, LOCK_SCREEN, SHOW_APP_MENU, SHOW_SEARCH
 }
 
 private fun String?.toGestureAction() = when (this) {
@@ -71,6 +71,8 @@ private fun String?.toGestureAction() = when (this) {
     "TAKE_SCREENSHOT"     -> GestureAction.TAKE_SCREENSHOT
     "TOGGLE_FLASHLIGHT"   -> GestureAction.TOGGLE_FLASHLIGHT
     "LOCK_SCREEN"         -> GestureAction.LOCK_SCREEN
+    "SHOW_APP_MENU"       -> GestureAction.SHOW_APP_MENU
+    "SHOW_SEARCH"         -> GestureAction.SHOW_SEARCH
     else                  -> GestureAction.SHOW_DOCK
 }
 
@@ -136,8 +138,9 @@ data class TaskbarSettings(
 )
 
 data class PillSettings(
-    val swipeUpAction: GestureAction = GestureAction.SHOW_DOCK,
+    val swipeUpAction: GestureAction = GestureAction.DISABLED,
     val swipeDownAction: GestureAction = GestureAction.SHOW_DOCK,
+    val swipeInAction: GestureAction = GestureAction.DISABLED,
     val doubleTapAction: GestureAction = GestureAction.SHOW_DOCK,
     val holdDragAction: PillHoldDragAction = PillHoldDragAction.DISABLED,
     val widthDp: Float = 4f,
@@ -147,8 +150,7 @@ data class PillSettings(
     val positionXPct: Float = 50f,
     val edgePosition: PillEdgePosition = PillEdgePosition.BOTTOM,
     val sidePositionPct: Float = 50f,
-    val triggerAreaDp: Float = 22f,
-    val restrictTriggerToPill: Boolean = true
+    val triggerAreaDp: Float = 22f
 )
 
 @Singleton
@@ -169,6 +171,7 @@ class PreferencesRepository @Inject constructor(
         private val OVERLAY_ENABLED_KEY = booleanPreferencesKey("overlay_enabled")
         private val PILL_SWIPE_UP_ACTION_KEY = stringPreferencesKey("pill_swipe_up_action")
         private val PILL_SWIPE_DOWN_ACTION_KEY = stringPreferencesKey("pill_swipe_down_action")
+        private val PILL_SWIPE_IN_ACTION_KEY = stringPreferencesKey("pill_swipe_in_action")
         private val PILL_DOUBLE_TAP_ACTION_KEY = stringPreferencesKey("pill_double_tap_action")
         private val PILL_HOLD_DRAG_ACTION_KEY = stringPreferencesKey("pill_hold_drag_action")
         private val PILL_WIDTH_KEY = floatPreferencesKey("pill_width")
@@ -213,7 +216,6 @@ class PreferencesRepository @Inject constructor(
         private val APP_GRID_COLUMNS_KEY = intPreferencesKey("app_grid_columns")
         private val APP_GRID_ROWS_KEY = intPreferencesKey("app_grid_rows")
         private val PILL_TRIGGER_AREA_KEY = floatPreferencesKey("pill_trigger_area")
-        private val PILL_RESTRICT_TRIGGER_KEY = booleanPreferencesKey("pill_restrict_trigger")
         private val TRANSLUCENT_MODE_KEY = booleanPreferencesKey("translucent_mode")
         private val TRANSLUCENT_ALPHA_KEY = floatPreferencesKey("translucent_alpha")
         private val GRAIN_ALPHA_KEY = floatPreferencesKey("grain_alpha")
@@ -268,6 +270,7 @@ class PreferencesRepository @Inject constructor(
             THEME_MODE_KEY,
             PILL_SWIPE_UP_ACTION_KEY,
             PILL_SWIPE_DOWN_ACTION_KEY,
+            PILL_SWIPE_IN_ACTION_KEY,
             PILL_DOUBLE_TAP_ACTION_KEY,
             PILL_HOLD_DRAG_ACTION_KEY,
             PILL_EDGE_POSITION_KEY,
@@ -297,7 +300,6 @@ class PreferencesRepository @Inject constructor(
             ALWAYS_SHOW_MUSIC_PANEL_KEY,
             HAPTIC_FEEDBACK_KEY,
             PANEL_OUTLINE_KEY,
-            PILL_RESTRICT_TRIGGER_KEY,
             FUZZY_SEARCH_ENABLED_KEY,
             SHOW_RECENT_APPS_KEY,
             SHOW_RECENT_APPS_ROW_KEY,
@@ -446,8 +448,9 @@ class PreferencesRepository @Inject constructor(
 
     val pillSettings: Flow<PillSettings> = safeData.map { prefs ->
         PillSettings(
-            swipeUpAction    = prefs[PILL_SWIPE_UP_ACTION_KEY].toGestureAction(),
+            swipeUpAction    = prefs[PILL_SWIPE_UP_ACTION_KEY]?.toGestureAction() ?: GestureAction.DISABLED,
             swipeDownAction  = prefs[PILL_SWIPE_DOWN_ACTION_KEY].toGestureAction(),
+            swipeInAction    = prefs[PILL_SWIPE_IN_ACTION_KEY]?.toGestureAction() ?: GestureAction.DISABLED,
             doubleTapAction  = prefs[PILL_DOUBLE_TAP_ACTION_KEY].toGestureAction(),
             holdDragAction   = prefs[PILL_HOLD_DRAG_ACTION_KEY].toPillHoldDragAction(),
             widthDp      = prefs[PILL_WIDTH_KEY]           ?: 4f,
@@ -457,9 +460,11 @@ class PreferencesRepository @Inject constructor(
             positionXPct     = prefs[PILL_POSITION_X_PCT_KEY]     ?: 50f,
             edgePosition     = prefs[PILL_EDGE_POSITION_KEY].toPillEdgePosition(),
             sidePositionPct  = prefs[PILL_SIDE_POSITION_PCT_KEY]  ?: 50f,
-            triggerAreaDp    = prefs[PILL_TRIGGER_AREA_KEY]       ?: 22f,
-            restrictTriggerToPill = prefs[PILL_RESTRICT_TRIGGER_KEY] ?: true
-        )
+            triggerAreaDp    = prefs[PILL_TRIGGER_AREA_KEY]       ?: 22f
+        ).let {
+            // Android honours at most 200dp of back-gesture exclusion per edge.
+            if (it.edgePosition != PillEdgePosition.BOTTOM && it.heightDp > 200f) it.copy(heightDp = 200f) else it
+        }
     }
 
     val autoHideInFullscreen: Flow<Boolean> = safeData.map { prefs ->
@@ -598,6 +603,7 @@ class PreferencesRepository @Inject constructor(
         context.dataStore.edit { prefs ->
             prefs[PILL_SWIPE_UP_ACTION_KEY]    = settings.swipeUpAction.name
             prefs[PILL_SWIPE_DOWN_ACTION_KEY]  = settings.swipeDownAction.name
+            prefs[PILL_SWIPE_IN_ACTION_KEY]    = settings.swipeInAction.name
             prefs[PILL_DOUBLE_TAP_ACTION_KEY]  = settings.doubleTapAction.name
             prefs[PILL_HOLD_DRAG_ACTION_KEY]   = settings.holdDragAction.name
             prefs[PILL_WIDTH_KEY]          = settings.widthDp
@@ -608,7 +614,6 @@ class PreferencesRepository @Inject constructor(
             prefs[PILL_EDGE_POSITION_KEY]      = settings.edgePosition.name
             prefs[PILL_SIDE_POSITION_PCT_KEY]  = settings.sidePositionPct
             prefs[PILL_TRIGGER_AREA_KEY]       = settings.triggerAreaDp
-            prefs[PILL_RESTRICT_TRIGGER_KEY]   = settings.restrictTriggerToPill
         }
     }
 

@@ -1,5 +1,7 @@
 package com.alkisstam.taskbar.ui.taskbar
 
+import android.content.Context
+import android.provider.Settings
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -7,12 +9,11 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -26,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.GestureAction
@@ -65,16 +67,23 @@ fun TriggerPillView(
         val haptic = LocalHapticFeedback.current
 
         val isBottom = pillSettings.edgePosition == PillEdgePosition.BOTTOM
+        val context = LocalContext.current
+        val holdDragEnabled = pillSettings.holdDragAction != PillHoldDragAction.DISABLED &&
+            !(isBottom && context.isGestureNavigation())
 
-        BoxWithConstraints(
+        Box(
+            contentAlignment = Alignment.Center,
             modifier = Modifier
                 .fillMaxSize()
+                .then(if (!isBottom) Modifier.systemGestureExclusion() else Modifier)
                 .pointerInput(pillSettings, dockRevealMaxDragPx) {
+                    var totalDragX = 0f
                     var totalDragY = 0f
                     var swipeFiredLocal = false
                     detectDragGestures(
                         onDragStart = {
                             holdActive = false
+                            totalDragX = 0f
                             totalDragY = 0f
                             swipeFiredLocal = false
                         },
@@ -87,6 +96,7 @@ fun TriggerPillView(
                                     if (progress >= 0.4f) onRevealCommit() else onRevealCancel()
                                 }
                             }
+                            totalDragX = 0f
                             totalDragY = 0f
                             swipeFiredLocal = false
                         },
@@ -95,15 +105,23 @@ fun TriggerPillView(
                             if (pillSettings.swipeUpAction == GestureAction.SHOW_DOCK && -totalDragY > 0) {
                                 onRevealCancel()
                             }
+                            totalDragX = 0f
                             totalDragY = 0f
                             swipeFiredLocal = false
                         }
                     ) { _, drag ->
                         if (holdActive) return@detectDragGestures
+                        totalDragX += drag.x
                         totalDragY += drag.y
                         val upward = -totalDragY
                         if (!swipeFiredLocal) {
                             when {
+                                // Side pills only: either direction counts, since swiping outward from an edge isn't physically possible.
+                                !isBottom && pillSettings.swipeInAction != GestureAction.DISABLED &&
+                                    abs(totalDragX) > Constants.SWIPE_TRIGGER_THRESHOLD_PX && abs(drag.x) > abs(drag.y) -> {
+                                    swipeFiredLocal = true
+                                    onAction(pillSettings.swipeInAction)
+                                }
                                 pillSettings.swipeUpAction == GestureAction.SHOW_DOCK && upward > 0 && abs(drag.y) > abs(drag.x) -> {
                                     onRevealProgress((upward / dockRevealMaxDragPx).coerceIn(0f, 1f))
                                 }
@@ -112,7 +130,7 @@ fun TriggerPillView(
                                     swipeFiredLocal = true
                                     onAction(pillSettings.swipeUpAction)
                                 }
-                                drag.y > Constants.SWIPE_TRIGGER_THRESHOLD_PX && abs(drag.y) > abs(drag.x) -> {
+                                !isBottom && drag.y > Constants.SWIPE_TRIGGER_THRESHOLD_PX && abs(drag.y) > abs(drag.x) -> {
                                     swipeFiredLocal = true
                                     onAction(pillSettings.swipeDownAction)
                                 }
@@ -142,8 +160,8 @@ fun TriggerPillView(
                         }
                     }
                 }
-                .pointerInput(pillSettings.holdDragAction) {
-                    if (pillSettings.holdDragAction == PillHoldDragAction.DISABLED) return@pointerInput
+                .pointerInput(holdDragEnabled) {
+                    if (!holdDragEnabled) return@pointerInput
                     var totalUp = 0f
                     detectDragGesturesAfterLongPress(
                         onDragStart = {
@@ -161,32 +179,14 @@ fun TriggerPillView(
                     }
                 }
         ) {
-            if (isBottom) {
-                val totalW = maxWidth
-                val pillW = pillSettings.widthDp.coerceAtLeast(2f).dp
-                val availableW = totalW - pillW
-                val xOffset = (pillSettings.positionXPct / 100f * availableW.value).dp
-                    .coerceIn(0.dp, availableW.coerceAtLeast(0.dp))
-                Box(modifier = Modifier.offset(x = xOffset).align(Alignment.CenterStart)) {
-                    PillShape(pillSettings = pillSettings)
-                }
-            } else if (pillSettings.restrictTriggerToPill) {
-                Box(modifier = Modifier.align(Alignment.Center)) {
-                    PillShape(pillSettings = pillSettings)
-                }
-            } else {
-                val totalH = maxHeight
-                val pillH = pillSettings.heightDp.coerceAtLeast(2f).dp
-                val availableH = totalH - pillH
-                val yOffset = (pillSettings.sidePositionPct / 100f * availableH.value).dp
-                    .coerceIn(0.dp, availableH.coerceAtLeast(0.dp))
-                Box(modifier = Modifier.offset(y = yOffset).align(Alignment.TopCenter)) {
-                    PillShape(pillSettings = pillSettings)
-                }
-            }
+            PillShape(pillSettings = pillSettings)
         }
     }
 }
+
+// navigation_mode is a hidden Settings.Secure key: 0 = 3-button, 1 = 2-button, 2 = gesture.
+internal fun Context.isGestureNavigation() =
+    Settings.Secure.getInt(contentResolver, "navigation_mode", 0) == 2
 
 @Composable
 private fun PillShape(

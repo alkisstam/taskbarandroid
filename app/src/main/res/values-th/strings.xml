@@ -61,8 +61,6 @@
     <string name="pill_edge_bottom">ด้านล่าง</string>
     <string name="pill_edge_left">ด้านซ้าย</string>
     <string name="pill_edge_right">ด้านขวา</string>
-    <string name="pill_gesture_double_tap">แตะสองครั้ง</string>
-    <string name="pill_gesture_swipe_up">ปัดขึ้น</string>
     <string name="pill_grain_label">เกรน</string>
     <string name="pill_blur_label">ความเบลอ</string>
     <string name="pill_blur_tint_label">สีทับความเบลอ</string>
@@ -72,6 +70,12 @@
     <string name="pill_icon_shape_default">ค่าเริ่มต้น</string>
     <string name="pill_icon_shape_square">สี่เหลี่ยม</string>
     <string name="pill_icon_shape_squircle">Squircle</string>
+    <string name="pill_swipe_in_action_label">การดำเนินการปัดเข้า</string>
+    <string name="pill_gesture_action_app_menu">แสดงเมนูแอป</string>
+    <string name="pill_gesture_action_search">ค้นหาแอป</string>
+    <string name="pill_gesture_action_show_dock">แสดงด็อก</string>
+    <string name="pill_swipe_up_action_label">การดำเนินการปัดขึ้น</string>
+    <string name="pill_double_tap_action_label">การดำเนินการแตะสองครั้ง</string>
     <string name="pill_swipe_down_action_label">การดำเนินการปัดลง</string>
     <string name="pill_swipe_down_action_notifications">แผงการแจ้งเตือน</string>
     <string name="pill_swipe_down_action_quick_settings">แผงการตั้งค่าด่วน</string>
@@ -89,11 +93,8 @@
     <string name="pill_position_along_edge_label">ตำแหน่งตามแนวขอบ</string>
     <string name="pill_position_from_bottom_label">ตำแหน่งจากด้านล่าง</string>
     <string name="pill_position_label">ตำแหน่ง</string>
-    <string name="pill_restrict_trigger_desc">เฉพาะบริเวณปุ่มลอยเท่านั้นที่ตอบสนองต่อท่าทาง ไม่ใช่ทั้งขอบจอ</string>
-    <string name="pill_restrict_trigger_title">จำกัดจุดสัมผัสไว้ที่ปุ่มลอย</string>
     <string name="pill_section_collapse_content_description">ย่อ</string>
     <string name="pill_section_expand_content_description">ขยาย</string>
-    <string name="pill_select_gesture_label">เลือกท่าทางปุ่มลอย</string>
     <string name="pill_size_appearance_section_title">ขนาด &amp; รูปลักษณ์ของปุ่มลอย</string>
     <string name="pill_slider_decrease_content_description">ลด %1$s</string>
     <string name="pill_slider_increase_content_description">เพิ่ม %1$s</string>

@@ -61,8 +61,6 @@
     <string name="pill_edge_bottom">In basso</string>
     <string name="pill_edge_left">Sinistra</string>
     <string name="pill_edge_right">Destra</string>
-    <string name="pill_gesture_double_tap">Doppio tocco</string>
-    <string name="pill_gesture_swipe_up">Scorri verso l\'alto</string>
     <string name="pill_grain_label">Grana</string>
     <string name="pill_blur_label">Sfocatura</string>
     <string name="pill_blur_tint_label">Tinta sopra la sfocatura</string>
@@ -72,6 +70,12 @@
     <string name="pill_icon_shape_default">Predefinita</string>
     <string name="pill_icon_shape_square">Quadrato</string>
     <string name="pill_icon_shape_squircle">Squircle</string>
+    <string name="pill_swipe_in_action_label">Azione di scorrimento verso l\'interno</string>
+    <string name="pill_gesture_action_app_menu">Mostra menu app</string>
+    <string name="pill_gesture_action_search">Cerca app</string>
+    <string name="pill_gesture_action_show_dock">Mostra dock</string>
+    <string name="pill_swipe_up_action_label">Azione di scorrimento verso l\'alto</string>
+    <string name="pill_double_tap_action_label">Azione doppio tocco</string>
     <string name="pill_swipe_down_action_label">Azione di scorrimento verso il basso</string>
     <string name="pill_swipe_down_action_notifications">Pannello notifiche</string>
     <string name="pill_swipe_down_action_quick_settings">Pannello impostazioni rapide</string>
@@ -89,11 +93,8 @@
     <string name="pill_position_along_edge_label">Posizione lungo il bordo</string>
     <string name="pill_position_from_bottom_label">Posizione dal basso</string>
     <string name="pill_position_label">Posizione</string>
-    <string name="pill_restrict_trigger_desc">Solo l\'area della pillola risponde ai gesti, non l\'intero bordo</string>
-    <string name="pill_restrict_trigger_title">Limita l\'attivazione alla pillola</string>
     <string name="pill_section_collapse_content_description">Comprimi</string>
     <string name="pill_section_expand_content_description">Espandi</string>
-    <string name="pill_select_gesture_label">Seleziona gesto della pillola</string>
     <string name="pill_size_appearance_section_title">Dimensione e aspetto della pillola</string>
     <string name="pill_slider_decrease_content_description">Diminuisci %1$s</string>
     <string name="pill_slider_increase_content_description">Aumenta %1$s</string>

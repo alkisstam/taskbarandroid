@@ -251,6 +251,14 @@ internal fun TriggerPillContent(taskbarViewModel: TaskbarViewModel, appMenuViewM
                         else Toast.makeText(context, context.getString(R.string.pill_action_requires_accessibility), Toast.LENGTH_SHORT).show()
                     }
                     GestureAction.TOGGLE_FLASHLIGHT -> appMenuViewModel.toggleTorch()
+                    GestureAction.SHOW_APP_MENU -> {
+                        taskbarViewModel.showTaskbar()
+                        if (!appMenuViewModel.menuVisible.value) appMenuViewModel.toggleMenu()
+                    }
+                    GestureAction.SHOW_SEARCH -> {
+                        taskbarViewModel.showTaskbar()
+                        appMenuViewModel.openSearch()
+                    }
                     GestureAction.DISABLED -> {}
                 }
             }

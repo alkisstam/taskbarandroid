@@ -61,8 +61,6 @@
     <string name="pill_edge_bottom">下</string>
     <string name="pill_edge_left">左</string>
     <string name="pill_edge_right">右</string>
-    <string name="pill_gesture_double_tap">ダブルタップ</string>
-    <string name="pill_gesture_swipe_up">上にスワイプ</string>
     <string name="pill_grain_label">グレイン</string>
     <string name="pill_blur_label">ぼかし</string>
     <string name="pill_blur_tint_label">ぼかしに色を重ねる</string>
@@ -72,6 +70,12 @@
     <string name="pill_icon_shape_default">デフォルト</string>
     <string name="pill_icon_shape_square">四角形</string>
     <string name="pill_icon_shape_squircle">スクイークル</string>
+    <string name="pill_swipe_in_action_label">内側スワイプアクション</string>
+    <string name="pill_gesture_action_app_menu">アプリメニューを表示</string>
+    <string name="pill_gesture_action_search">アプリを検索</string>
+    <string name="pill_gesture_action_show_dock">ドックを表示</string>
+    <string name="pill_swipe_up_action_label">上スワイプアクション</string>
+    <string name="pill_double_tap_action_label">ダブルタップアクション</string>
     <string name="pill_swipe_down_action_label">下スワイプアクション</string>
     <string name="pill_swipe_down_action_notifications">通知パネル</string>
     <string name="pill_swipe_down_action_quick_settings">クイック設定パネル</string>
@@ -89,11 +93,8 @@
     <string name="pill_position_along_edge_label">端に沿った位置</string>
     <string name="pill_position_from_bottom_label">下からの位置</string>
     <string name="pill_position_label">位置</string>
-    <string name="pill_restrict_trigger_desc">端全体ではなく、ピル部分のみがジェスチャーに反応します</string>
-    <string name="pill_restrict_trigger_title">ピルのみをトリガーにする</string>
     <string name="pill_section_collapse_content_description">折りたたむ</string>
     <string name="pill_section_expand_content_description">展開する</string>
-    <string name="pill_select_gesture_label">ピルのジェスチャーを選択</string>
     <string name="pill_size_appearance_section_title">ピルのサイズと外観</string>
     <string name="pill_slider_decrease_content_description">%1$sを減らす</string>
     <string name="pill_slider_increase_content_description">%1$sを増やす</string>

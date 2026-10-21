@@ -50,6 +50,8 @@ import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Straighten
 import androidx.compose.material.icons.filled.SwapHoriz
+import androidx.compose.material.icons.filled.SwipeUp
+import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -91,6 +93,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -104,6 +107,7 @@ import com.alkisstam.taskbar.data.PillHoldDragAction
 import com.alkisstam.taskbar.data.PillEdgePosition
 import com.alkisstam.taskbar.data.ThemeMode
 import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
+import com.alkisstam.taskbar.ui.taskbar.isGestureNavigation
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 import com.alkisstam.taskbar.R
 import kotlin.math.roundToInt
@@ -287,6 +291,8 @@ private fun PillSectionContent(viewModel: TaskbarViewModel) {
     val configuration = LocalConfiguration.current
     val widthMax = configuration.screenWidthDp.toFloat()
     val heightMax = (configuration.screenHeightDp / 2).toFloat()
+    // Android honours at most 200dp of back-gesture exclusion per edge.
+    val pillHeightMax = if (pillSettings.edgePosition == PillEdgePosition.BOTTOM) heightMax else minOf(heightMax, 200f)
 
     SettingsSlider(
         label = stringResource(R.string.pill_width_label),
@@ -299,8 +305,8 @@ private fun PillSectionContent(viewModel: TaskbarViewModel) {
     Spacer(modifier = Modifier.height(10.dp))
     SettingsSlider(
         label = stringResource(R.string.pill_height_label),
-        value = pillSettings.heightDp.coerceAtMost(heightMax),
-        valueRange = 2f..heightMax,
+        value = pillSettings.heightDp.coerceAtMost(pillHeightMax),
+        valueRange = 2f..pillHeightMax,
         unit = "dp",
         step = 1f,
         onValueChange = { viewModel.savePillSettings(pillSettings.copy(heightDp = it)) }
@@ -332,25 +338,6 @@ private fun PillSectionContent(viewModel: TaskbarViewModel) {
         color = MaterialTheme.colorScheme.onSurfaceVariant
     )
     Spacer(modifier = Modifier.height(8.dp))
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(stringResource(R.string.pill_restrict_trigger_title), style = MaterialTheme.typography.bodyMedium)
-            Text(
-                stringResource(R.string.pill_restrict_trigger_desc),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-        Switch(
-            checked = pillSettings.restrictTriggerToPill,
-            onCheckedChange = { viewModel.savePillSettings(pillSettings.copy(restrictTriggerToPill = it)) }
-        )
-    }
-    Spacer(modifier = Modifier.height(8.dp))
     Text(stringResource(R.string.pill_position_label), style = MaterialTheme.typography.bodyMedium)
     Spacer(modifier = Modifier.height(4.dp))
     val edgeBottomLabel = stringResource(R.string.pill_edge_bottom)
@@ -374,44 +361,18 @@ private fun PillSectionContent(viewModel: TaskbarViewModel) {
         isSelected = { it == pillSettings.edgePosition },
         onSelect = { pos ->
             val (w, h) = if (pos == PillEdgePosition.BOTTOM) 140f to 12f else 4f to 90f
-            val (swipeUp, swipeDown, doubleTap) = if (pos == PillEdgePosition.BOTTOM)
-                Triple(GestureAction.DISABLED, GestureAction.DISABLED, GestureAction.SHOW_DOCK)
-            else
-                Triple(GestureAction.SHOW_DOCK, GestureAction.DISABLED, GestureAction.DISABLED)
             viewModel.savePillSettings(pillSettings.copy(
                 edgePosition = pos, widthDp = w, heightDp = h,
-                positionYDp = if (pos == PillEdgePosition.BOTTOM) 2f else pillSettings.positionYDp,
-                swipeUpAction = swipeUp, swipeDownAction = swipeDown, doubleTapAction = doubleTap
+                positionYDp = if (pos == PillEdgePosition.BOTTOM) 2f else pillSettings.positionYDp
             ))
         }
     )
     if (pillSettings.edgePosition == PillEdgePosition.BOTTOM) {
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(stringResource(R.string.pill_select_gesture_label), style = MaterialTheme.typography.bodyMedium)
-        Spacer(modifier = Modifier.height(4.dp))
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            FilterChip(
-                selected = pillSettings.doubleTapAction == GestureAction.SHOW_DOCK,
-                onClick = { viewModel.savePillSettings(pillSettings.copy(
-                    doubleTapAction = GestureAction.SHOW_DOCK,
-                    swipeUpAction = GestureAction.DISABLED,
-                    swipeDownAction = GestureAction.DISABLED
-                )) },
-                label = { Text(stringResource(R.string.pill_gesture_double_tap), style = MaterialTheme.typography.labelMedium) }
-            )
-            FilterChip(
-                selected = pillSettings.swipeUpAction == GestureAction.SHOW_DOCK,
-                onClick = { viewModel.savePillSettings(pillSettings.copy(
-                    doubleTapAction = GestureAction.DISABLED,
-                    swipeUpAction = GestureAction.SHOW_DOCK,
-                    swipeDownAction = GestureAction.DISABLED
-                )) },
-                label = { Text(stringResource(R.string.pill_gesture_swipe_up), style = MaterialTheme.typography.labelMedium) }
-            )
+        GestureActionDropdown(stringResource(R.string.pill_double_tap_action_label), Icons.Filled.TouchApp, pillSettings.doubleTapAction) {
+            viewModel.savePillSettings(pillSettings.copy(doubleTapAction = it))
+        }
+        GestureActionDropdown(stringResource(R.string.pill_swipe_up_action_label), Icons.Filled.SwipeUp, pillSettings.swipeUpAction) {
+            viewModel.savePillSettings(pillSettings.copy(swipeUpAction = it))
         }
         Spacer(modifier = Modifier.height(4.dp))
         Text(
@@ -440,41 +401,18 @@ private fun PillSectionContent(viewModel: TaskbarViewModel) {
         )
     }
     if (pillSettings.edgePosition != PillEdgePosition.BOTTOM) {
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(stringResource(R.string.pill_swipe_down_action_label), style = MaterialTheme.typography.bodyMedium)
-        Spacer(modifier = Modifier.height(4.dp))
-        val swipeDownNotificationsLabel = stringResource(R.string.pill_swipe_down_action_notifications)
-        val swipeDownQuickSettingsLabel = stringResource(R.string.pill_swipe_down_action_quick_settings)
-        val swipeDownPowerMenuLabel = stringResource(R.string.pill_swipe_down_action_power_menu)
-        val swipeDownScreenshotLabel = stringResource(R.string.pill_swipe_down_action_screenshot)
-        val swipeDownFlashlightLabel = stringResource(R.string.pill_swipe_down_action_flashlight)
-        val swipeDownLockLabel = stringResource(R.string.pill_swipe_down_action_lock_screen)
-        val swipeDownDisabledLabel = stringResource(R.string.pill_swipe_down_action_disabled)
-        GradientDropdownField(
-            icon = Icons.Filled.Notifications,
-            selectedLabel = when (pillSettings.swipeDownAction) {
-                GestureAction.SHOW_QUICK_SETTINGS -> swipeDownQuickSettingsLabel
-                GestureAction.POWER_MENU          -> swipeDownPowerMenuLabel
-                GestureAction.TAKE_SCREENSHOT     -> swipeDownScreenshotLabel
-                GestureAction.TOGGLE_FLASHLIGHT   -> swipeDownFlashlightLabel
-                GestureAction.LOCK_SCREEN         -> swipeDownLockLabel
-                GestureAction.DISABLED            -> swipeDownDisabledLabel
-                else                               -> swipeDownNotificationsLabel
-            },
-            options = listOf(
-                swipeDownNotificationsLabel to GestureAction.SHOW_NOTIFICATIONS,
-                swipeDownQuickSettingsLabel to GestureAction.SHOW_QUICK_SETTINGS,
-                swipeDownPowerMenuLabel to GestureAction.POWER_MENU,
-                swipeDownScreenshotLabel to GestureAction.TAKE_SCREENSHOT,
-                swipeDownFlashlightLabel to GestureAction.TOGGLE_FLASHLIGHT,
-                swipeDownLockLabel to GestureAction.LOCK_SCREEN,
-                swipeDownDisabledLabel to GestureAction.DISABLED
-            ),
-            isSelected = { it == pillSettings.swipeDownAction },
-            onSelect = { action ->
-                viewModel.savePillSettings(pillSettings.copy(swipeDownAction = action))
-            }
-        )
+        GestureActionDropdown(stringResource(R.string.pill_swipe_in_action_label), Icons.Filled.SwapHoriz, pillSettings.swipeInAction) {
+            viewModel.savePillSettings(pillSettings.copy(swipeInAction = it))
+        }
+        GestureActionDropdown(stringResource(R.string.pill_swipe_up_action_label), Icons.Filled.SwipeUp, pillSettings.swipeUpAction) {
+            viewModel.savePillSettings(pillSettings.copy(swipeUpAction = it))
+        }
+        GestureActionDropdown(stringResource(R.string.pill_swipe_down_action_label), Icons.Filled.Notifications, pillSettings.swipeDownAction) {
+            viewModel.savePillSettings(pillSettings.copy(swipeDownAction = it))
+        }
+        GestureActionDropdown(stringResource(R.string.pill_double_tap_action_label), Icons.Filled.TouchApp, pillSettings.doubleTapAction) {
+            viewModel.savePillSettings(pillSettings.copy(doubleTapAction = it))
+        }
         Spacer(modifier = Modifier.height(8.dp))
         SettingsSlider(
             label = stringResource(R.string.pill_position_along_edge_label),
@@ -486,38 +424,42 @@ private fun PillSectionContent(viewModel: TaskbarViewModel) {
             onValueChange = { viewModel.savePillSettings(pillSettings.copy(sidePositionPct = it)) }
         )
     }
-    Spacer(modifier = Modifier.height(8.dp))
-    Text(stringResource(R.string.pill_hold_drag_label), style = MaterialTheme.typography.bodyMedium)
-    Spacer(modifier = Modifier.height(4.dp))
-    val holdDragDisabledLabel = stringResource(R.string.pill_swipe_down_action_disabled)
-    val holdDragBrightnessLabel = stringResource(R.string.pill_hold_drag_brightness)
-    val holdDragVolumeLabel = stringResource(R.string.pill_hold_drag_volume)
-    GradientDropdownField(
-        icon = Icons.Filled.BrightnessMedium,
-        selectedLabel = when (pillSettings.holdDragAction) {
-            PillHoldDragAction.BRIGHTNESS -> holdDragBrightnessLabel
-            PillHoldDragAction.VOLUME     -> holdDragVolumeLabel
-            PillHoldDragAction.DISABLED   -> holdDragDisabledLabel
-        },
-        options = listOf(
-            holdDragDisabledLabel to PillHoldDragAction.DISABLED,
-            holdDragBrightnessLabel to PillHoldDragAction.BRIGHTNESS,
-            holdDragVolumeLabel to PillHoldDragAction.VOLUME
-        ),
-        isSelected = { it == pillSettings.holdDragAction },
-        onSelect = { action ->
-            viewModel.savePillSettings(pillSettings.copy(holdDragAction = action))
-        }
-    )
-    Text(
-        text = stringResource(R.string.pill_hold_drag_hint),
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant
-    )
+    // Hold-and-drag on a bottom pill collides with the system home/recents gesture.
+    val context = LocalContext.current
+    if (!(pillSettings.edgePosition == PillEdgePosition.BOTTOM && context.isGestureNavigation())) {
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(stringResource(R.string.pill_hold_drag_label), style = MaterialTheme.typography.bodyMedium)
+        Spacer(modifier = Modifier.height(4.dp))
+        val holdDragDisabledLabel = stringResource(R.string.pill_swipe_down_action_disabled)
+        val holdDragBrightnessLabel = stringResource(R.string.pill_hold_drag_brightness)
+        val holdDragVolumeLabel = stringResource(R.string.pill_hold_drag_volume)
+        GradientDropdownField(
+            icon = Icons.Filled.BrightnessMedium,
+            selectedLabel = when (pillSettings.holdDragAction) {
+                PillHoldDragAction.BRIGHTNESS -> holdDragBrightnessLabel
+                PillHoldDragAction.VOLUME     -> holdDragVolumeLabel
+                PillHoldDragAction.DISABLED   -> holdDragDisabledLabel
+            },
+            options = listOf(
+                holdDragDisabledLabel to PillHoldDragAction.DISABLED,
+                holdDragBrightnessLabel to PillHoldDragAction.BRIGHTNESS,
+                holdDragVolumeLabel to PillHoldDragAction.VOLUME
+            ),
+            isSelected = { it == pillSettings.holdDragAction },
+            onSelect = { action ->
+                viewModel.savePillSettings(pillSettings.copy(holdDragAction = action))
+            }
+        )
+        Text(
+            text = stringResource(R.string.pill_hold_drag_hint),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
     Spacer(modifier = Modifier.height(12.dp))
-    PillPositionPreview(pillSettings.edgePosition, pillSettings.widthDp, pillSettings.heightDp, pillSettings.alpha, pillSettings.sidePositionPct, pillSettings.restrictTriggerToPill, pillSettings.positionXPct)
+    PillPositionPreview(pillSettings.edgePosition, pillSettings.widthDp, pillSettings.heightDp, pillSettings.alpha, pillSettings.sidePositionPct, pillSettings.positionXPct)
     Spacer(modifier = Modifier.height(8.dp))
-    if (pillSettings.edgePosition != PillEdgePosition.BOTTOM) {
+    if (pillSettings.edgePosition != PillEdgePosition.BOTTOM && pillSettings.swipeUpAction == GestureAction.SHOW_DOCK) {
         Text(
             text = stringResource(R.string.pill_swipe_up_activate_hint),
             style = MaterialTheme.typography.bodySmall,
@@ -670,13 +612,43 @@ private fun DockSectionContent(viewModel: TaskbarViewModel, expanded: Boolean) {
 }
 
 @Composable
+private fun GestureActionDropdown(
+    label: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    selected: GestureAction,
+    onSelect: (GestureAction) -> Unit
+) {
+    val options = listOf(
+        stringResource(R.string.pill_gesture_action_show_dock) to GestureAction.SHOW_DOCK,
+        stringResource(R.string.pill_gesture_action_app_menu) to GestureAction.SHOW_APP_MENU,
+        stringResource(R.string.pill_gesture_action_search) to GestureAction.SHOW_SEARCH,
+        stringResource(R.string.pill_swipe_down_action_notifications) to GestureAction.SHOW_NOTIFICATIONS,
+        stringResource(R.string.pill_swipe_down_action_quick_settings) to GestureAction.SHOW_QUICK_SETTINGS,
+        stringResource(R.string.pill_swipe_down_action_power_menu) to GestureAction.POWER_MENU,
+        stringResource(R.string.pill_swipe_down_action_screenshot) to GestureAction.TAKE_SCREENSHOT,
+        stringResource(R.string.pill_swipe_down_action_flashlight) to GestureAction.TOGGLE_FLASHLIGHT,
+        stringResource(R.string.pill_swipe_down_action_lock_screen) to GestureAction.LOCK_SCREEN,
+        stringResource(R.string.pill_swipe_down_action_disabled) to GestureAction.DISABLED
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    Text(label, style = MaterialTheme.typography.bodyMedium)
+    Spacer(modifier = Modifier.height(4.dp))
+    GradientDropdownField(
+        icon = icon,
+        selectedLabel = options.first { it.second == selected }.first,
+        options = options,
+        isSelected = { it == selected },
+        onSelect = onSelect
+    )
+}
+
+@Composable
 private fun PillPositionPreview(
     edgePosition: PillEdgePosition,
     widthDp: Float,
     heightDp: Float,
     alpha: Float,
     sidePositionPct: Float = 50f,
-    restrictTriggerToPill: Boolean = false,
     positionXPct: Float = 50f
 ) {
     val pillColor = MaterialTheme.colorScheme.primary.copy(alpha = alpha)
@@ -701,21 +673,12 @@ private fun PillPositionPreview(
         ) {
             when (edgePosition) {
                 PillEdgePosition.BOTTOM -> {
-                    // Trigger area: full-width 18dp strip at bottom, or pill-only when restricted
                     Box(
-                        modifier = if (restrictTriggerToPill) {
-                            Modifier
-                                .align(Alignment.BottomCenter)
-                                .width(28.dp)
-                                .height(10.dp)
-                                .background(triggerColor, RoundedCornerShape(8.dp))
-                        } else {
-                            Modifier
-                                .align(Alignment.BottomCenter)
-                                .fillMaxWidth()
-                                .height(10.dp)
-                                .background(triggerColor, RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp))
-                        }
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .width(28.dp)
+                            .height(10.dp)
+                            .background(triggerColor, RoundedCornerShape(8.dp))
                     )
                     // Pill indicator
                     Box(
@@ -738,13 +701,12 @@ private fun PillPositionPreview(
                         else -> listOf(startSide, endSide)
                     }
                     sides.forEach { (alignment, triggerShape) ->
-                        // Trigger area: 6dp strip on the edge, or pill-only height when restricted
                         Box(
                             modifier = Modifier
                                 .align(alignment)
                                 .width(6.dp)
-                                .height(if (restrictTriggerToPill) sidePillH else frameH)
-                                .offset(y = if (restrictTriggerToPill) sideOffset else 0.dp)
+                                .height(sidePillH)
+                                .offset(y = sideOffset)
                                 .background(triggerColor, triggerShape)
                         )
                         // Pill indicator
