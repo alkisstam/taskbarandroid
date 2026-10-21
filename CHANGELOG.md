@@ -4,6 +4,28 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [Unreleased]
+
+Swipe in on side pills without triggering Back, every pill gesture configurable, new App Menu and Search actions.
+
+### Added
+- **Swipe In Action** — Settings → Design → Pill Size & Appearance, for Left, Right and Both pills: swipe in from the pill to run an action. Off by default. Included in backup/restore.
+- **Side pills block the Back gesture** — on gesture navigation, swiping in over a side pill no longer goes back; Back still works above and below the pill. Bottom pills keep the system home gesture as before.
+- **Action dropdowns for every gesture** — side pills get Swipe In, Swipe Up, Swipe Down and Double-Tap dropdowns; bottom pills get Double-Tap and Swipe Up dropdowns in place of the old chips. Every dropdown offers the same actions.
+- **Show App Menu and Search Apps actions** — new choices in every pill gesture dropdown: open the app menu or app search directly from the pill.
+
+### Changed
+- **Only the pill responds to gestures** — Restrict Trigger to Pill is removed; the trigger area is now always the pill itself.
+- **Side pill height capped at 200dp** — the most Android lets an app block from the Back gesture. Taller side pills are shortened to 200dp.
+- **Actions kept when changing position** — switching the pill between bottom and sides no longer resets its gesture actions.
+- **Swipe Up off by default** — Double-Tap shows the dock by default; Swipe Up starts disabled. Only affects settings never changed.
+- **Hold and Drag hidden on bottom pill with gesture navigation** — it clashes with the system home and recents gesture, so it's hidden and turned off there. Still available on side pills and with button navigation.
+
+### Fixed
+- **Crash opening the pill's custom tint picker from the dock's Quick Settings panel** — the picker now opens inline instead of as a dialog, which the overlay can't host.
+
+---
+
 ## [1.5.11] - 2026-10-18
 
 Pin the dock on screen from the controls strip, adjustable tint strength, dock and pill out of the way while typing.
