@@ -113,9 +113,11 @@ class TaskBarAccessibilityService : AccessibilityService() {
             // SystemUI FrameLayout (its other events, e.g. the back gesture, are bare Views); the same
             // window reports PANE_DISAPPEARED as it closes, including the keyguard's after unlock.
             // Cleared too by the next window from another app; our own overlay windows don't count.
+            // Privacy-indicator windows (camera/mic/location dot) are also FrameLayouts but carry no
+            // text, whereas the shade always reports its title.
             val shade = when {
                 pkg == packageName -> shadeOpen
-                pkg == "com.android.systemui" && cls == "android.widget.FrameLayout" ->
+                pkg == "com.android.systemui" && cls == "android.widget.FrameLayout" && event.text.isNotEmpty() ->
                     event.contentChangeTypes and AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_DISAPPEARED == 0 &&
                         !keyguardManager.isKeyguardLocked
                 pkg == "com.android.systemui" -> shadeOpen
