@@ -7,8 +7,8 @@ All notable changes to Floating Dock are documented here.
 ## [Unreleased]
 
 ### Changed
-- **Quick Controls moved to their own panel** — the dock no longer grows when you swipe up. With Quick Controls enabled, a round button sits above the dock on the same side as the All Apps button; tap it and a panel styled like the dock (same width, height, corners, tint and glass) slides in from that side. Swipe the panel down or tap outside to close it. Auto expand controls now opens this panel when the dock appears.
-- **Music panel sits beside the Quick Controls button** — with Quick Controls enabled, the music panel shrinks to make room for the button and lines up with it just above the dock, instead of covering it. It returns to full width above the open Quick Controls panel.
+- **Quick Controls moved to their own panel** — the dock no longer grows when you swipe up. With Quick Controls enabled, a pill sits above the dock on the same side as the All Apps button, holding the Quick Controls and Music buttons; tap Quick Controls and a panel styled like the dock (same width, height, corners, tint and glass) slides in from that side. Swipe the panel down or tap outside to close it. Auto expand controls now opens this panel when the dock appears.
+- **Music panel sits beside the Quick Controls pill** — with Quick Controls enabled, the Music button moves from the controls into the pill, and the music panel shrinks to make room for the pill and lines up with it just above the dock, instead of covering it. It returns to full width above the open Quick Controls panel.
 - **Dock handle removed** — the strip with the drag handle at the top of the dock is gone, making the dock shorter.
 
 ---

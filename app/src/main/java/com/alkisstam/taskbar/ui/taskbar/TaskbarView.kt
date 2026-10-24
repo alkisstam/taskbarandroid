@@ -11,7 +11,6 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,7 +20,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
@@ -92,8 +90,7 @@ import com.alkisstam.taskbar.viewmodel.QuickControlItemData
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 
 
-internal val QuickControlsButtonSize = 36.dp
-internal val QuickControlsButtonGap = 8.dp
+internal val QuickControlsButtonGap = 4.dp
 
 @Composable
 fun TaskbarView(
@@ -107,6 +104,8 @@ fun TaskbarView(
     val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
     val quickControlsEnabled by taskbarViewModel.quickControlsEnabled.collectAsState()
     val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
+    val musicPanelEnabled by taskbarViewModel.musicPanelEnabled.collectAsState()
+    val musicPanelVisible by appMenuViewModel.musicPanelVisible.collectAsState()
     val batteryLevel by taskbarViewModel.batteryLevel.collectAsState()
     val isCharging by taskbarViewModel.isCharging.collectAsState()
 
@@ -167,25 +166,41 @@ fun TaskbarView(
                     DisposableEffect(Unit) {
                         onDispose { taskbarViewModel.setQuickControlsButtonBounds(null) }
                     }
+                    val pillHeight = taskbarSettings.heightDp.dp
+                    val tileSize = taskbarSettings.quickControlSizeDp.dp
+                    val controlsTile = QuickControlItemData(
+                        id = "quick_controls", label = stringResource(R.string.quick_controls),
+                        active = false, icon = Icons.Filled.Tune
+                    ) to { taskbarViewModel.toggleDockExpanded() }
+                    val musicTile = QuickControlItemData(
+                        id = "music", label = stringResource(R.string.taskbar_music_control_label),
+                        active = musicPanelVisible, icon = Icons.Filled.MusicNote
+                    ) to { appMenuViewModel.toggleMusicPanel() }
+                    val tiles = buildList {
+                        add(controlsTile)
+                        if (musicPanelEnabled) add(musicTile)
+                    }.let { if (buttonOnLeft) it else it.reversed() }
                     DockSurface(
                         taskbarViewModel = taskbarViewModel,
                         surfaceColor = surfaceColor,
                         shape = CircleShape,
-                        cornerRadius = QuickControlsButtonSize / 2,
+                        cornerRadius = pillHeight / 2,
                         modifier = Modifier
-                            .size(QuickControlsButtonSize)
+                            .height(pillHeight)
                             .onGloballyPositioned { coords ->
                                 taskbarViewModel.setQuickControlsButtonBounds(coords.boundsOnScreen(hostView))
                             }
-                            .clickable { taskbarViewModel.toggleDockExpanded() }
                     ) {
-                        Box(modifier = Modifier.size(QuickControlsButtonSize), contentAlignment = Alignment.Center) {
-                            Icon(
-                                imageVector = Icons.Filled.Tune,
-                                contentDescription = stringResource(R.string.quick_controls),
-                                tint = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier.size(20.dp)
-                            )
+                        Row(
+                            modifier = Modifier
+                                .height(pillHeight)
+                                .padding(horizontal = ((pillHeight - tileSize) / 2).coerceAtLeast(8.dp)),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            tiles.forEach { (data, onToggle) ->
+                                QuickControlItem(item = data, onToggle = onToggle, showLabel = false, tileSize = tileSize)
+                            }
                         }
                     }
                 }
@@ -317,8 +332,6 @@ private fun QuickControlsPanel(
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
     val controlsOrder by taskbarViewModel.controlsOrder.collectAsState()
     val controlsDisabledIds by taskbarViewModel.controlsDisabledIds.collectAsState()
-    val musicPanelEnabled by taskbarViewModel.musicPanelEnabled.collectAsState()
-    val musicPanelVisible by appMenuViewModel.musicPanelVisible.collectAsState()
     val quickSettingsPanelEnabled by taskbarViewModel.quickSettingsPanelEnabled.collectAsState()
     val quickSettingsPanelVisible by appMenuViewModel.quickSettingsPanelVisible.collectAsState()
     val pinDockControlEnabled by taskbarViewModel.pinDockControlEnabled.collectAsState()
@@ -328,11 +341,9 @@ private fun QuickControlsPanel(
 
     val quickControlItems = quickControls.toItems(controlsOrder, controlsDisabledIds)
     val pinDockLabel = stringResource(R.string.quick_control_pin_dock_label)
-    val musicLabel = stringResource(R.string.taskbar_music_control_label)
     val quickSettingsLabel = stringResource(R.string.quick_control_settings_label)
     val extraTiles = buildList<Pair<QuickControlItemData, () -> Unit>> {
         if (pinDockControlEnabled) add(QuickControlItemData(id = "pin_dock", label = pinDockLabel, active = isDockPinned, icon = Icons.Filled.PushPin) to { taskbarViewModel.toggleDockPinned() })
-        if (musicPanelEnabled) add(QuickControlItemData(id = "music", label = musicLabel, active = musicPanelVisible, icon = Icons.Filled.MusicNote) to { appMenuViewModel.toggleMusicPanel() })
         if (quickSettingsPanelEnabled) add(QuickControlItemData(id = "quick_settings", label = quickSettingsLabel, active = quickSettingsPanelVisible, icon = Icons.Filled.Settings) to { appMenuViewModel.toggleQuickSettingsPanel() })
     }
 

@@ -765,7 +765,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 )
             ) { settings, menuOpen, expandProgress, navInset, (quickControlsEnabled, dockHeightPx) ->
                 val bottomGap = maxOf(settings.dockPadding.bottomGapDp, navInset)
-                val baseY = bottomGap + settings.heightDp + 16f + 24f + expandProgress * (settings.heightDp + 8f)
+                val baseY = bottomGap + settings.heightDp + 16f + 24f + expandProgress * (settings.heightDp + 4f)
                 volumePanelYOffsetDp = baseY
                 // Beside the quick controls button: share its row, just above the dock.
                 val y = if (quickControlsEnabled && expandProgress == 0f && dockHeightPx != null)
@@ -830,7 +830,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             }.collect { (volumeVisible, brightnessVisible, calculatorVisible) ->
                 val settings = taskbarViewModel.taskbarSettings.value
                 val dockExpanded = taskbarViewModel.isDockExpanded.value
-                val yOffset = maxOf(settings.dockPadding.bottomGapDp, navBarInsetDp()) + settings.heightDp + 16f + (if (dockExpanded) settings.heightDp + 32f else 24f)
+                val yOffset = maxOf(settings.dockPadding.bottomGapDp, navBarInsetDp()) + settings.heightDp + 16f + (if (dockExpanded) settings.heightDp + 28f else 24f)
 
                 val scrimActive = volumeVisible || brightnessVisible || calculatorVisible
                 setVolumeScrimActive(scrimActive)

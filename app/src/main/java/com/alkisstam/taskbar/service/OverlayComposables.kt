@@ -63,7 +63,6 @@ import com.alkisstam.taskbar.ui.clipboard.NotesPanel
 import com.alkisstam.taskbar.ui.notifications.NotificationHistoryPanel
 import com.alkisstam.taskbar.ui.settings.QuickSettingsPanel
 import com.alkisstam.taskbar.ui.taskbar.QuickControlsButtonGap
-import com.alkisstam.taskbar.ui.taskbar.QuickControlsButtonSize
 import com.alkisstam.taskbar.ui.taskbar.TaskbarView
 import com.alkisstam.taskbar.ui.taskbar.TriggerPillView
 import com.alkisstam.taskbar.ui.theme.TaskBarTheme
@@ -75,7 +74,7 @@ import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 import kotlin.math.roundToInt
 
 private fun dockAwarePanelBottomPadding(isTaskbarVisible: Boolean, heightDp: Float, expandedRows: Int, bottomGapDp: Float) =
-    if (isTaskbarVisible) (bottomGapDp + heightDp * (1 + expandedRows) + 8f * expandedRows + 16f + 28f).dp else 0.dp
+    if (isTaskbarVisible) (bottomGapDp + heightDp * (1 + expandedRows) + 4f * expandedRows + 16f + 28f).dp else 0.dp
 
 @Composable
 internal fun OverlayContent(
@@ -614,8 +613,10 @@ internal fun MusicPanelContent(
     // Sits beside the quick controls button instead of covering it; OverlayService lowers
     // the window to the button's row in the same state.
     val besideButton = quickControlsEnabled && !isDockExpanded
+    val buttonBounds by taskbarViewModel.quickControlsButtonBounds.collectAsState()
+    val buttonWidth = with(LocalDensity.current) { (buttonBounds?.width ?: 0).toDp() }
     val buttonInset by animateDpAsState(
-        if (besideButton) QuickControlsButtonSize + QuickControlsButtonGap else 0.dp,
+        if (besideButton && buttonWidth > 0.dp) buttonWidth + QuickControlsButtonGap else 0.dp,
         label = "musicButtonInset"
     )
     val buttonOnLeft = taskbarSettings.appMenuButtonSide == AppMenuButtonSide.LEFT
