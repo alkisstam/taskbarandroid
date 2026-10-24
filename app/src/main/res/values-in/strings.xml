@@ -269,6 +269,12 @@
     <string name="settings_top_bar_title">Pengaturan Dock</string>
     <string name="settings_unhide_content_description">Batalkan sembunyikan</string>
     <string name="settings_vibrate_feedback_desc">Umpan balik getar saat tekan lama dan seret</string>
+    <string name="settings_floating_windows_card_title">Jendela Mengambang</string>
+    <string name="settings_floating_windows_title">Jendela mengambang</string>
+    <string name="settings_floating_windows_desc">Tambahkan opsi di menu tekan lama untuk membuka aplikasi di jendela mengambang</string>
+    <string name="settings_floating_on_tap_title">Buka aplikasi mengambang saat diketuk</string>
+    <string name="settings_floating_on_tap_desc">Ketuk membuka aplikasi di jendela mengambang; tekan lama menawarkan layar penuh</string>
+    <string name="settings_floating_windows_notice">Perangkat tanpa dukungan jendela mengambang bawaan memerlukan Shizuku yang terpasang dan berjalan.</string>
     <string name="settings_vibrate_feedback_title">Umpan Balik Getar</string>
 
     <string name="onboarding_language_title">Pilih bahasa Anda</string>
@@ -325,6 +331,8 @@
     <string name="app_action_pin_to_dock">Sematkan ke Dock</string>
     <string name="app_action_unpin_from_dock">Lepas dari Dock</string>
     <string name="app_action_hide_app">Sembunyikan Aplikasi</string>
+    <string name="app_action_open_floating">Buka di jendela mengambang</string>
+    <string name="app_action_open_fullscreen">Buka layar penuh</string>
     <string name="app_sort_order_name">Berdasarkan nama</string>
     <string name="app_sort_order_install_time">Berdasarkan waktu instalasi</string>
     <string name="app_sort_order_usage">Berdasarkan penggunaan</string>

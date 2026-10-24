@@ -60,6 +60,13 @@ fun AppMenuPanel(
     val menuVisible by viewModel.menuVisible.collectAsState()
     val apps by viewModel.filteredApps.collectAsState()
     val pinnedPackages by viewModel.pinnedPackages.collectAsState()
+    val floatingWindowsEnabled by viewModel.floatingWindowsEnabled.collectAsState()
+    val floatingWindowsOnTap by viewModel.floatingWindowsOnTap.collectAsState()
+    val altLaunchLabel = when {
+        !floatingWindowsEnabled -> null
+        floatingWindowsOnTap -> stringResource(R.string.app_action_open_fullscreen)
+        else -> stringResource(R.string.app_action_open_floating)
+    }
     val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
     val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
     val translucentMode by taskbarViewModel.translucentMode.collectAsState()
@@ -168,7 +175,7 @@ fun AppMenuPanel(
                                         RecentAppIcon(
                                             app = app,
                                             iconShape = taskbarSettings.iconShape,
-                                            onLaunch = { viewModel.launchApp(app.packageName); onHideTaskbar() }
+                                            onLaunch = { viewModel.launchAppTap(app.packageName); onHideTaskbar() }
                                         )
                                     }
                                 }
@@ -184,7 +191,9 @@ fun AppMenuPanel(
                     AppGrid(
                         apps = apps,
                         pinnedPackages = pinnedPackages,
-                        onLaunchApp = { pkg -> viewModel.launchApp(pkg); onHideTaskbar() },
+                        onLaunchApp = { pkg -> viewModel.launchAppTap(pkg); onHideTaskbar() },
+                        altLaunchLabel = altLaunchLabel,
+                        onAltLaunchApp = { pkg -> viewModel.launchAppAlternate(pkg); onHideTaskbar() },
                         onPinApp = viewModel::pinApp,
                         onUnpinApp = viewModel::unpinApp,
                         onHideApp = viewModel::hideApp,

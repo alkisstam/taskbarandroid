@@ -269,6 +269,12 @@
     <string name="settings_top_bar_title">Configurações do Dock</string>
     <string name="settings_unhide_content_description">Reexibir</string>
     <string name="settings_vibrate_feedback_desc">Feedback tátil ao pressionar e segurar ou arrastar</string>
+    <string name="settings_floating_windows_card_title">Janelas flutuantes</string>
+    <string name="settings_floating_windows_title">Janelas flutuantes</string>
+    <string name="settings_floating_windows_desc">Adiciona uma opção ao menu de toque longo para abrir apps em uma janela flutuante</string>
+    <string name="settings_floating_on_tap_title">Abrir apps flutuantes ao tocar</string>
+    <string name="settings_floating_on_tap_desc">Tocar abre apps em uma janela flutuante; o toque longo oferece tela cheia</string>
+    <string name="settings_floating_windows_notice">Dispositivos sem suporte nativo a janelas flutuantes precisam do Shizuku instalado e em execução.</string>
     <string name="settings_vibrate_feedback_title">Feedback de Vibração</string>
 
     <string name="onboarding_language_title">Escolha seu idioma</string>
@@ -325,6 +331,8 @@
     <string name="app_action_pin_to_dock">Fixar no Dock</string>
     <string name="app_action_unpin_from_dock">Desafixar do Dock</string>
     <string name="app_action_hide_app">Ocultar App</string>
+    <string name="app_action_open_floating">Abrir em janela flutuante</string>
+    <string name="app_action_open_fullscreen">Abrir em tela cheia</string>
     <string name="app_sort_order_name">Por nome</string>
     <string name="app_sort_order_install_time">Por data de instalação</string>
     <string name="app_sort_order_usage">Por uso</string>

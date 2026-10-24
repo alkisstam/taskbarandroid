@@ -115,6 +115,12 @@ class AppMenuViewModel @Inject constructor(
     val appLaunchCounts: StateFlow<Map<String, Int>> = prefsRepository.appLaunchCounts
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
+    val floatingWindowsEnabled: StateFlow<Boolean> = prefsRepository.floatingWindowsEnabled
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    val floatingWindowsOnTap: StateFlow<Boolean> = prefsRepository.floatingWindowsOnTap
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     fun setAppSortOrder(order: AppSortOrder) {
         viewModelScope.launch { prefsRepository.setAppSortOrder(order) }
     }
@@ -544,6 +550,22 @@ class AppMenuViewModel @Inject constructor(
 
     fun launchApp(packageName: String) {
         appRepository.launchApp(packageName)
+        recordLaunchAndClose(packageName)
+    }
+
+    fun launchAppTap(packageName: String) {
+        if (floatingWindowsEnabled.value && floatingWindowsOnTap.value) appRepository.launchAppFloating(packageName)
+        else appRepository.launchApp(packageName)
+        recordLaunchAndClose(packageName)
+    }
+
+    fun launchAppAlternate(packageName: String) {
+        if (floatingWindowsOnTap.value) appRepository.launchApp(packageName)
+        else appRepository.launchAppFloating(packageName)
+        recordLaunchAndClose(packageName)
+    }
+
+    private fun recordLaunchAndClose(packageName: String) {
         viewModelScope.launch {
             prefsRepository.addRecentOpenedApp(packageName)
             prefsRepository.incrementLaunchCount(packageName)

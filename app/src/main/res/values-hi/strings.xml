@@ -269,6 +269,12 @@
     <string name="settings_top_bar_title">डॉक सेटिंग्स</string>
     <string name="settings_unhide_content_description">अनहाइड करें</string>
     <string name="settings_vibrate_feedback_desc">लॉन्ग प्रेस और ड्रैग पर हैप्टिक फीडबैक</string>
+    <string name="settings_floating_windows_card_title">फ़्लोटिंग विंडो</string>
+    <string name="settings_floating_windows_title">फ़्लोटिंग विंडो</string>
+    <string name="settings_floating_windows_desc">ऐप्स को फ़्लोटिंग विंडो में खोलने के लिए लॉन्ग-प्रेस मेनू में विकल्प जोड़ें</string>
+    <string name="settings_floating_on_tap_title">टैप पर ऐप्स फ़्लोटिंग खोलें</string>
+    <string name="settings_floating_on_tap_desc">टैप करने पर ऐप्स फ़्लोटिंग विंडो में खुलते हैं; लॉन्ग-प्रेस पर फ़ुलस्क्रीन विकल्प</string>
+    <string name="settings_floating_windows_notice">जिन डिवाइस में फ़्लोटिंग विंडो का अंतर्निहित समर्थन नहीं है, उनमें Shizuku इंस्टॉल और चालू होना चाहिए।</string>
     <string name="settings_vibrate_feedback_title">वाइब्रेट फीडबैक</string>
 
     <string name="onboarding_language_title">अपनी भाषा चुनें</string>
@@ -325,6 +331,8 @@
     <string name="app_action_pin_to_dock">डॉक पर पिन करें</string>
     <string name="app_action_unpin_from_dock">डॉक से अनपिन करें</string>
     <string name="app_action_hide_app">ऐप छिपाएं</string>
+    <string name="app_action_open_floating">फ़्लोटिंग विंडो में खोलें</string>
+    <string name="app_action_open_fullscreen">फ़ुलस्क्रीन में खोलें</string>
     <string name="app_sort_order_name">नाम से</string>
     <string name="app_sort_order_install_time">इंस्टॉल समय से</string>
     <string name="app_sort_order_usage">उपयोग से</string>

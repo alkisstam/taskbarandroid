@@ -420,6 +420,8 @@ private fun GeneralTab(
 
         BehaviourCard(viewModel = viewModel)
 
+        FloatingWindowsCard(viewModel = viewModel)
+
         MusicPanelSettingsCard(
             viewModel = viewModel,
             context = context,
@@ -722,6 +724,57 @@ internal fun BehaviourCard(viewModel: TaskbarViewModel) {
                 onCheckedChange = { viewModel.setHapticFeedbackEnabled(it) }
             )
         }
+    }
+}
+
+@Composable
+internal fun FloatingWindowsCard(viewModel: TaskbarViewModel) {
+    val floatingWindowsEnabled by viewModel.floatingWindowsEnabled.collectAsState()
+    val floatingWindowsOnTap by viewModel.floatingWindowsOnTap.collectAsState()
+
+    SettingsCard(title = stringResource(R.string.settings_floating_windows_card_title)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(stringResource(R.string.settings_floating_windows_title), style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    stringResource(R.string.settings_floating_windows_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(
+                checked = floatingWindowsEnabled,
+                onCheckedChange = { viewModel.setFloatingWindowsEnabled(it) }
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(stringResource(R.string.settings_floating_on_tap_title), style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    stringResource(R.string.settings_floating_on_tap_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(
+                checked = floatingWindowsOnTap,
+                enabled = floatingWindowsEnabled,
+                onCheckedChange = { viewModel.setFloatingWindowsOnTap(it) }
+            )
+        }
+        Text(
+            stringResource(R.string.settings_floating_windows_notice),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 

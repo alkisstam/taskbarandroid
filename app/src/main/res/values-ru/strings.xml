@@ -269,6 +269,12 @@
     <string name="settings_top_bar_title">Настройки панели</string>
     <string name="settings_unhide_content_description">Показать</string>
     <string name="settings_vibrate_feedback_desc">Вибрация при долгом нажатии и перетаскивании</string>
+    <string name="settings_floating_windows_card_title">Плавающие окна</string>
+    <string name="settings_floating_windows_title">Плавающие окна</string>
+    <string name="settings_floating_windows_desc">Добавляет в меню долгого нажатия пункт для открытия приложений в плавающем окне</string>
+    <string name="settings_floating_on_tap_title">Открывать приложения в плавающем окне по нажатию</string>
+    <string name="settings_floating_on_tap_desc">Нажатие открывает приложение в плавающем окне; долгое нажатие предлагает полный экран</string>
+    <string name="settings_floating_windows_notice">Устройствам без встроенной поддержки плавающих окон нужен установленный и запущенный Shizuku.</string>
     <string name="settings_vibrate_feedback_title">Вибрация</string>
 
     <string name="onboarding_language_title">Выберите язык</string>
@@ -325,6 +331,8 @@
     <string name="app_action_pin_to_dock">Закрепить на панели</string>
     <string name="app_action_unpin_from_dock">Открепить от панели</string>
     <string name="app_action_hide_app">Скрыть приложение</string>
+    <string name="app_action_open_floating">Открыть в плавающем окне</string>
+    <string name="app_action_open_fullscreen">Открыть во весь экран</string>
     <string name="app_sort_order_name">По имени</string>
     <string name="app_sort_order_install_time">По времени установки</string>
     <string name="app_sort_order_usage">По использованию</string>

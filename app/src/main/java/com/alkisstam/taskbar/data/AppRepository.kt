@@ -1,6 +1,7 @@
 package com.alkisstam.taskbar.data
 
 import android.app.ActivityManager
+import android.app.ActivityOptions
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -9,8 +10,10 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
+import android.graphics.Rect
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
+import android.provider.Settings
 import android.util.DisplayMetrics
 import android.util.Log
 import androidx.core.graphics.drawable.toBitmap
@@ -22,16 +25,20 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import rikka.shizuku.Shizuku
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 
 private const val ICON_SIZE_PX = 160
+private const val SHIZUKU_PERMISSION_CODE = 1001
 
 @Singleton
 class AppRepository @Inject constructor(
@@ -45,6 +52,10 @@ class AppRepository @Inject constructor(
     val apps: StateFlow<List<AppInfo>> = _apps.asStateFlow()
 
     private var loadJob: Job? = null
+
+    private val savedFloatingBounds: StateFlow<Map<String, String>> = preferencesRepository.floatingWindowBounds
+        .stateIn(scope, SharingStarted.Eagerly, emptyMap())
+    private val boundsTrackers = ConcurrentHashMap<String, Job>()
 
     // Decoded icons keyed by packageName, so a package-changed broadcast or an
     // icon-skip retry doesn't re-decode apps that already succeeded. Bounded by
@@ -212,6 +223,135 @@ class AppRepository @Inject constructor(
         } catch (e: Exception) {
             Log.w("AppRepository", "Failed to launch $packageName", e)
         }
+    }
+
+    fun launchAppFloating(packageName: String) {
+        val intent = getLaunchIntent(packageName) ?: return
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        val savedBounds = savedFloatingBounds.value[packageName]?.let { Rect.unflattenFromString(it) }
+        val shizukuState = try {
+            if (!Shizuku.pingBinder()) null else Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
+        } catch (e: Exception) { null }
+        // Shizuku also remembers window sizes on devices with native freeform, so ask for it there too,
+        // unless the user already chose "deny" in Shizuku's dialog.
+        if (shizukuState == false) runCatching {
+            if (!Shizuku.shouldShowRequestPermissionRationale()) Shizuku.requestPermission(SHIZUKU_PERMISSION_CODE)
+        }
+        val component = intent.component?.flattenToString()
+        if (!freeformSupported() && shizukuState == true && component != null) {
+            scope.launch { shizukuFreeformLaunch(packageName, component, savedBounds) }
+            return
+        }
+        val opts = ActivityOptions.makeBasic()
+        if (savedBounds != null) opts.setLaunchBounds(savedBounds)
+        // Hidden API; WINDOWING_MODE_FREEFORM = 5. Without saved bounds we let the system pick the size.
+        runCatching {
+            ActivityOptions::class.java.getMethod("setLaunchWindowingMode", Int::class.javaPrimitiveType)
+                .invoke(opts, 5)
+        }.onFailure {
+            Log.w("AppRepository", "setLaunchWindowingMode unavailable", it)
+            if (savedBounds == null) opts.setLaunchBounds(floatingBounds())
+        }
+        try {
+            context.startActivity(intent, opts.toBundle())
+        } catch (e: Exception) {
+            Log.w("AppRepository", "Failed to launch $packageName floating", e)
+            return
+        }
+        if (shizukuState == true) trackFloatingBounds(packageName, savedBounds)
+    }
+
+    private fun freeformSupported(): Boolean =
+        context.packageManager.hasSystemFeature(PackageManager.FEATURE_FREEFORM_WINDOW_MANAGEMENT) ||
+            Settings.Global.getInt(context.contentResolver, "enable_freeform_support", 0) == 1
+
+    private fun floatingBounds(): Rect {
+        val dm = context.resources.displayMetrics
+        val w = dm.widthPixels * 7 / 10
+        val h = dm.heightPixels * 6 / 10
+        val left = (dm.widthPixels - w) / 2
+        val top = (dm.heightPixels - h) / 2
+        return Rect(left, top, left + w, top + h)
+    }
+
+    @Suppress("DEPRECATION")
+    private fun shell(vararg cmd: String): Pair<Int, String> {
+        val proc = Shizuku.newProcess(arrayOf(*cmd), null, null)
+        val out = proc.inputStream.bufferedReader().readText().trim()
+        return proc.waitFor() to out
+    }
+
+    private suspend fun shizukuFreeformLaunch(packageName: String, component: String, savedBounds: Rect?) {
+        val keys = listOf("enable_freeform_support", "force_resizable_activities")
+        val saved = try {
+            val saved = keys.associateWith { shell("settings", "get", "global", it).second }
+            saved.forEach { (key, value) -> if (value != "1") shell("settings", "put", "global", key, "1") }
+            if (shell("am", "start", "--windowingMode", "5", "-n", component).first == 0) {
+                trackFloatingBounds(packageName, savedBounds)
+            } else {
+                launchApp(packageName)
+            }
+            saved
+        } catch (e: Exception) {
+            Log.w("AppRepository", "Shizuku freeform launch failed for $packageName", e)
+            launchApp(packageName)
+            return
+        }
+        // Put the device-wide flags back once the window exists, so nothing else on the device changes.
+        delay(3000)
+        saved.forEach { (key, value) ->
+            runCatching {
+                when (value) {
+                    "1" -> Unit
+                    "null" -> shell("settings", "delete", "global", key)
+                    else -> shell("settings", "put", "global", key, value)
+                }
+            }
+        }
+    }
+
+    // Polls the app's freeform task via Shizuku while its window is open and saves the bounds, so the
+    // next floating launch reopens it where the user left it. Stops once the task is gone or hidden.
+    private fun trackFloatingBounds(packageName: String, restore: Rect?) {
+        boundsTrackers.remove(packageName)?.cancel()
+        boundsTrackers[packageName] = scope.launch {
+            delay(1000)
+            var pendingRestore = restore
+            var misses = 0
+            while (misses < 3) {
+                val task = try { findFreeformTask(packageName) } catch (e: Exception) { null }
+                if (task == null) {
+                    misses++
+                } else {
+                    misses = 0
+                    val (taskId, bounds) = task
+                    val target = pendingRestore
+                    pendingRestore = null
+                    // setLaunchBounds isn't honoured everywhere; resize once if the window opened elsewhere.
+                    if (target != null && target != bounds) {
+                        runCatching {
+                            shell("am", "task", "resize", "$taskId",
+                                "${target.left}", "${target.top}", "${target.right}", "${target.bottom}")
+                        }
+                    } else if (bounds.flattenToString() != savedFloatingBounds.value[packageName]) {
+                        preferencesRepository.setFloatingWindowBounds(packageName, bounds.flattenToString())
+                    }
+                }
+                delay(2000)
+            }
+            boundsTrackers.remove(packageName, coroutineContext[Job])
+        }
+    }
+
+    private fun findFreeformTask(packageName: String): Pair<Int, Rect>? {
+        val taskLine = Regex("""taskId=(\d+): ${Regex.escape(packageName)}/\S* bounds=\[(-?\d+),(-?\d+)]\[(-?\d+),(-?\d+)].*visible=true""")
+        for (block in shell("am", "stack", "list").second.split(Regex("(?=RootTask id=)"))) {
+            if (!block.contains("mWindowingMode=freeform")) continue
+            val m = taskLine.find(block) ?: continue
+            val (id, l, t, r, b) = m.destructured
+            return id.toInt() to Rect(l.toInt(), t.toInt(), r.toInt(), b.toInt())
+        }
+        return null
     }
 
 }

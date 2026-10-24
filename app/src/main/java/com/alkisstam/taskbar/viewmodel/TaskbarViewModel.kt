@@ -247,6 +247,20 @@ class TaskbarViewModel @Inject constructor(
         }
     }
 
+    val floatingWindowsEnabled: StateFlow<Boolean> = prefsRepository.floatingWindowsEnabled
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    val floatingWindowsOnTap: StateFlow<Boolean> = prefsRepository.floatingWindowsOnTap
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    fun setFloatingWindowsEnabled(enabled: Boolean) {
+        viewModelScope.launch { prefsRepository.setFloatingWindowsEnabled(enabled) }
+    }
+
+    fun setFloatingWindowsOnTap(enabled: Boolean) {
+        viewModelScope.launch { prefsRepository.setFloatingWindowsOnTap(enabled) }
+    }
+
     fun setPanelOutlineEnabled(enabled: Boolean) {
         viewModelScope.launch { prefsRepository.setPanelOutlineEnabled(enabled) }
     }
@@ -401,6 +415,16 @@ class TaskbarViewModel @Inject constructor(
 
     fun launchApp(packageName: String) {
         appRepository.launchApp(packageName)
+    }
+
+    fun launchAppTap(packageName: String) {
+        if (floatingWindowsEnabled.value && floatingWindowsOnTap.value) appRepository.launchAppFloating(packageName)
+        else appRepository.launchApp(packageName)
+    }
+
+    fun launchAppAlternate(packageName: String) {
+        if (floatingWindowsOnTap.value) appRepository.launchApp(packageName)
+        else appRepository.launchAppFloating(packageName)
     }
 
     fun pinApp(packageName: String) {

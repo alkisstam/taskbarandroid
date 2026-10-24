@@ -269,6 +269,12 @@
     <string name="settings_top_bar_title">Dockinstellingen</string>
     <string name="settings_unhide_content_description">Zichtbaar maken</string>
     <string name="settings_vibrate_feedback_desc">Trilfeedback bij lang indrukken en slepen</string>
+    <string name="settings_floating_windows_card_title">Zwevende vensters</string>
+    <string name="settings_floating_windows_title">Zwevende vensters</string>
+    <string name="settings_floating_windows_desc">Voegt een optie toe aan het lang-drukken-menu om apps in een zwevend venster te openen</string>
+    <string name="settings_floating_on_tap_title">Apps zwevend openen bij tikken</string>
+    <string name="settings_floating_on_tap_desc">Tikken opent apps in een zwevend venster; lang drukken biedt volledig scherm</string>
+    <string name="settings_floating_windows_notice">Apparaten zonder ingebouwde ondersteuning voor zwevende vensters hebben Shizuku nodig, geïnstalleerd en actief.</string>
     <string name="settings_vibrate_feedback_title">Trilfeedback</string>
 
     <string name="onboarding_language_title">Kies je taal</string>
@@ -325,6 +331,8 @@
     <string name="app_action_pin_to_dock">Vastzetten op dock</string>
     <string name="app_action_unpin_from_dock">Losmaken van dock</string>
     <string name="app_action_hide_app">App verbergen</string>
+    <string name="app_action_open_floating">Openen in zwevend venster</string>
+    <string name="app_action_open_fullscreen">Openen op volledig scherm</string>
     <string name="app_sort_order_name">Op naam</string>
     <string name="app_sort_order_install_time">Op installatiedatum</string>
     <string name="app_sort_order_usage">Op gebruik</string>

@@ -269,6 +269,12 @@
     <string name="settings_top_bar_title">Dock Settings</string>
     <string name="settings_unhide_content_description">Unhide</string>
     <string name="settings_vibrate_feedback_desc">Haptic feedback on long press and drag</string>
+    <string name="settings_floating_windows_card_title">Floating Windows</string>
+    <string name="settings_floating_windows_title">Floating windows</string>
+    <string name="settings_floating_windows_desc">Add an option to the app long-press menu to open apps in a floating window</string>
+    <string name="settings_floating_on_tap_title">Open apps floating on tap</string>
+    <string name="settings_floating_on_tap_desc">Tap opens apps in a floating window; long-press offers fullscreen</string>
+    <string name="settings_floating_windows_notice">Devices without built-in floating window support need Shizuku installed and running.</string>
     <string name="settings_vibrate_feedback_title">Vibrate Feedback</string>
 
     <string name="onboarding_language_title">Choose your language</string>
@@ -325,6 +331,8 @@
     <string name="app_action_pin_to_dock">Pin to Dock</string>
     <string name="app_action_unpin_from_dock">Unpin from Dock</string>
     <string name="app_action_hide_app">Hide App</string>
+    <string name="app_action_open_floating">Open in floating window</string>
+    <string name="app_action_open_fullscreen">Open in fullscreen</string>
     <string name="app_sort_order_name">By name</string>
     <string name="app_sort_order_install_time">By install time</string>
     <string name="app_sort_order_usage">By usage</string>

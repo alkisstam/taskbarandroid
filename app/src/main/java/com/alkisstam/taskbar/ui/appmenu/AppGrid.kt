@@ -50,6 +50,8 @@ fun AppGrid(
     apps: List<AppInfo>,
     pinnedPackages: List<String>,
     onLaunchApp: (String) -> Unit,
+    altLaunchLabel: String?,
+    onAltLaunchApp: (String) -> Unit,
     onPinApp: (String) -> Unit,
     onUnpinApp: (String) -> Unit,
     onHideApp: (String) -> Unit,
@@ -71,6 +73,8 @@ fun AppGrid(
                 isPinned = isPinned,
                 iconShape = iconShape,
                 onLaunch = { onLaunchApp(app.packageName) },
+                altLaunchLabel = altLaunchLabel,
+                onAltLaunch = { onAltLaunchApp(app.packageName) },
                 onPin = {
                     if (isPinned) onUnpinApp(app.packageName)
                     else onPinApp(app.packageName)
@@ -88,6 +92,8 @@ private fun AppGridItem(
     isPinned: Boolean,
     iconShape: IconShape,
     onLaunch: () -> Unit,
+    altLaunchLabel: String?,
+    onAltLaunch: () -> Unit,
     onPin: () -> Unit,
     onHide: () -> Unit,
     modifier: Modifier = Modifier
@@ -157,6 +163,7 @@ private fun AppGridItem(
                     // Popups inherit the panel's glass state, so the menu frosts like the panel it opens from.
                     GlassBackdrop(enabled = LocalGlassSurface.current, cornerRadius = 12.dp, tint = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)) {
                         Column {
+                            altLaunchLabel?.let { AppGridMenuAction(it) { onAltLaunch(); showMenu = false } }
                             AppGridMenuAction(
                                 if (isPinned) stringResource(R.string.app_action_unpin_from_dock) else stringResource(R.string.app_action_pin_to_dock)
                             ) { onPin(); showMenu = false }

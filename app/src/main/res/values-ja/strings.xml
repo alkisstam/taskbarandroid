@@ -269,6 +269,12 @@
     <string name="settings_top_bar_title">ドック設定</string>
     <string name="settings_unhide_content_description">表示に戻す</string>
     <string name="settings_vibrate_feedback_desc">長押しとドラッグ時にバイブレーションでフィードバック</string>
+    <string name="settings_floating_windows_card_title">フローティングウィンドウ</string>
+    <string name="settings_floating_windows_title">フローティングウィンドウ</string>
+    <string name="settings_floating_windows_desc">長押しメニューにアプリをフローティングウィンドウで開くオプションを追加</string>
+    <string name="settings_floating_on_tap_title">タップでフローティング表示</string>
+    <string name="settings_floating_on_tap_desc">タップでアプリをフローティングウィンドウで開き、長押しで全画面を選択</string>
+    <string name="settings_floating_windows_notice">フローティングウィンドウに標準対応していない端末では、Shizuku のインストールと起動が必要です。</string>
     <string name="settings_vibrate_feedback_title">バイブレーションフィードバック</string>
 
     <string name="onboarding_language_title">言語を選択してください</string>
@@ -325,6 +331,8 @@
     <string name="app_action_pin_to_dock">ドックにピン留め</string>
     <string name="app_action_unpin_from_dock">ドックからピン留めを解除</string>
     <string name="app_action_hide_app">アプリを非表示</string>
+    <string name="app_action_open_floating">フローティングウィンドウで開く</string>
+    <string name="app_action_open_fullscreen">全画面で開く</string>
     <string name="app_sort_order_name">名前順</string>
     <string name="app_sort_order_install_time">インストール日時順</string>
     <string name="app_sort_order_usage">使用頻度順</string>

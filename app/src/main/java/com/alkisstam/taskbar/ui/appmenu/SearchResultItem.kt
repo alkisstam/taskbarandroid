@@ -48,6 +48,8 @@ fun SearchResultItem(
     isHighlighted: Boolean = false,
     iconShape: IconShape = IconShape.DEFAULT,
     onLaunch: () -> Unit,
+    altLaunchLabel: String?,
+    onAltLaunch: () -> Unit,
     onPin: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -103,6 +105,12 @@ fun SearchResultItem(
                 tint = MaterialTheme.colorScheme.surfaceContainer.copy(alpha = 0.8f)
             ) {
                 Column {
+                    if (altLaunchLabel != null) {
+                        DropdownMenuItem(
+                            text = { Text(altLaunchLabel) },
+                            onClick = { onAltLaunch(); showMenu = false }
+                        )
+                    }
                     DropdownMenuItem(
                         text = { Text(if (isPinned) stringResource(R.string.app_action_unpin_from_dock) else stringResource(R.string.app_action_pin_to_dock)) },
                         onClick = { onPin(); showMenu = false }

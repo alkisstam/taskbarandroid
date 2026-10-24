@@ -269,6 +269,12 @@
     <string name="settings_top_bar_title">Dock Ayarları</string>
     <string name="settings_unhide_content_description">Gizlemeyi kaldır</string>
     <string name="settings_vibrate_feedback_desc">Uzun basma ve sürüklemede titreşimli geri bildirim</string>
+    <string name="settings_floating_windows_card_title">Kayan Pencereler</string>
+    <string name="settings_floating_windows_title">Kayan pencereler</string>
+    <string name="settings_floating_windows_desc">Uygulamaları kayan pencerede açmak için uzun basma menüsüne seçenek ekler</string>
+    <string name="settings_floating_on_tap_title">Dokununca uygulamaları kayan pencerede aç</string>
+    <string name="settings_floating_on_tap_desc">Dokunma uygulamaları kayan pencerede açar; uzun basma tam ekran sunar</string>
+    <string name="settings_floating_windows_notice">Yerleşik kayan pencere desteği olmayan cihazlarda Shizuku kurulu ve çalışıyor olmalıdır.</string>
     <string name="settings_vibrate_feedback_title">Titreşimli Geri Bildirim</string>
 
     <string name="onboarding_language_title">Dilinizi seçin</string>
@@ -325,6 +331,8 @@
     <string name="app_action_pin_to_dock">Dock\'a Sabitle</string>
     <string name="app_action_unpin_from_dock">Dock\'tan Kaldır</string>
     <string name="app_action_hide_app">Uygulamayı Gizle</string>
+    <string name="app_action_open_floating">Kayan pencerede aç</string>
+    <string name="app_action_open_fullscreen">Tam ekranda aç</string>
     <string name="app_sort_order_name">Ada göre</string>
     <string name="app_sort_order_install_time">Yükleme zamanına göre</string>
     <string name="app_sort_order_usage">Kullanıma göre</string>

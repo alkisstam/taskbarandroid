@@ -269,6 +269,12 @@
     <string name="settings_top_bar_title">הגדרות הדוק</string>
     <string name="settings_unhide_content_description">ביטול הסתרה</string>
     <string name="settings_vibrate_feedback_desc">משוב הפטי בלחיצה ארוכה וגרירה</string>
+    <string name="settings_floating_windows_card_title">חלונות צפים</string>
+    <string name="settings_floating_windows_title">חלונות צפים</string>
+    <string name="settings_floating_windows_desc">הוספת אפשרות לתפריט הלחיצה הארוכה לפתיחת אפליקציות בחלון צף</string>
+    <string name="settings_floating_on_tap_title">פתיחת אפליקציות בחלון צף בהקשה</string>
+    <string name="settings_floating_on_tap_desc">הקשה פותחת אפליקציות בחלון צף; לחיצה ארוכה מציעה מסך מלא</string>
+    <string name="settings_floating_windows_notice">מכשירים ללא תמיכה מובנית בחלונות צפים צריכים את Shizuku מותקן ופועל.</string>
     <string name="settings_vibrate_feedback_title">משוב רטט</string>
 
     <string name="onboarding_language_title">בחר את השפה שלך</string>
@@ -325,6 +331,8 @@
     <string name="app_action_pin_to_dock">נעיצה לדוק</string>
     <string name="app_action_unpin_from_dock">ביטול נעיצה מהדוק</string>
     <string name="app_action_hide_app">הסתרת אפליקציה</string>
+    <string name="app_action_open_floating">פתיחה בחלון צף</string>
+    <string name="app_action_open_fullscreen">פתיחה במסך מלא</string>
     <string name="app_sort_order_name">לפי שם</string>
     <string name="app_sort_order_install_time">לפי זמן התקנה</string>
     <string name="app_sort_order_usage">לפי שימוש</string>

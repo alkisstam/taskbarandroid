@@ -62,6 +62,13 @@ fun FloatingSearchBar(
     val searchQuery by viewModel.searchQuery.collectAsState()
     val filteredApps by viewModel.filteredApps.collectAsState()
     val pinnedPackages by viewModel.pinnedPackages.collectAsState()
+    val floatingWindowsEnabled by viewModel.floatingWindowsEnabled.collectAsState()
+    val floatingWindowsOnTap by viewModel.floatingWindowsOnTap.collectAsState()
+    val altLaunchLabel = when {
+        !floatingWindowsEnabled -> null
+        floatingWindowsOnTap -> stringResource(R.string.app_action_open_fullscreen)
+        else -> stringResource(R.string.app_action_open_floating)
+    }
     val isSearching by viewModel.isSearching.collectAsState()
     val showRecentApps by viewModel.showRecentApps.collectAsState()
     val recentApps by viewModel.recentApps.collectAsState()
@@ -131,7 +138,7 @@ fun FloatingSearchBar(
                                 // Launch the top search result if any
                                 val apps = filteredApps
                                 if (apps.isNotEmpty()) {
-                                    viewModel.launchApp(apps.first().packageName)
+                                    viewModel.launchAppTap(apps.first().packageName)
                                     onHideTaskbar()
                                 }
                             }
@@ -165,7 +172,9 @@ fun FloatingSearchBar(
                                     isPinned = pinnedPackages.contains(app.packageName),
                                     isHighlighted = index == 0,
                                     iconShape = iconShape,
-                                    onLaunch = { viewModel.launchApp(app.packageName); onHideTaskbar() },
+                                    onLaunch = { viewModel.launchAppTap(app.packageName); onHideTaskbar() },
+                                    altLaunchLabel = altLaunchLabel,
+                                    onAltLaunch = { viewModel.launchAppAlternate(app.packageName); onHideTaskbar() },
                                     onPin = {
                                         if (pinnedPackages.contains(app.packageName))
                                             viewModel.unpinApp(app.packageName)
@@ -198,7 +207,9 @@ fun FloatingSearchBar(
                                     app = app,
                                     isPinned = pinnedPackages.contains(app.packageName),
                                     iconShape = iconShape,
-                                    onLaunch = { viewModel.launchApp(app.packageName); onHideTaskbar() },
+                                    onLaunch = { viewModel.launchAppTap(app.packageName); onHideTaskbar() },
+                                    altLaunchLabel = altLaunchLabel,
+                                    onAltLaunch = { viewModel.launchAppAlternate(app.packageName); onHideTaskbar() },
                                     onPin = {
                                         if (pinnedPackages.contains(app.packageName))
                                             viewModel.unpinApp(app.packageName)

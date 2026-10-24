@@ -269,6 +269,12 @@
     <string name="settings_top_bar_title">Paramètres du dock</string>
     <string name="settings_unhide_content_description">Réafficher</string>
     <string name="settings_vibrate_feedback_desc">Retour haptique lors d\'un appui long et d\'un glissement</string>
+    <string name="settings_floating_windows_card_title">Fenêtres flottantes</string>
+    <string name="settings_floating_windows_title">Fenêtres flottantes</string>
+    <string name="settings_floating_windows_desc">Ajoute une option au menu d\'appui long pour ouvrir les applis dans une fenêtre flottante</string>
+    <string name="settings_floating_on_tap_title">Ouvrir les applis en fenêtre flottante au toucher</string>
+    <string name="settings_floating_on_tap_desc">Un appui ouvre les applis en fenêtre flottante ; l\'appui long propose le plein écran</string>
+    <string name="settings_floating_windows_notice">Les appareils sans prise en charge native des fenêtres flottantes nécessitent Shizuku installé et actif.</string>
     <string name="settings_vibrate_feedback_title">Retour vibrant</string>
 
     <string name="onboarding_language_title">Choisissez votre langue</string>
@@ -325,6 +331,8 @@
     <string name="app_action_pin_to_dock">Épingler au dock</string>
     <string name="app_action_unpin_from_dock">Détacher du dock</string>
     <string name="app_action_hide_app">Masquer l\'application</string>
+    <string name="app_action_open_floating">Ouvrir dans une fenêtre flottante</string>
+    <string name="app_action_open_fullscreen">Ouvrir en plein écran</string>
     <string name="app_sort_order_name">Par nom</string>
     <string name="app_sort_order_install_time">Par date d\'installation</string>
     <string name="app_sort_order_usage">Par utilisation</string>

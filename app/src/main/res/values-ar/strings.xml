@@ -269,6 +269,12 @@
     <string name="settings_top_bar_title">إعدادات الرصيف</string>
     <string name="settings_unhide_content_description">إظهار</string>
     <string name="settings_vibrate_feedback_desc">استجابة اهتزازية عند الضغط المطول والسحب</string>
+    <string name="settings_floating_windows_card_title">النوافذ العائمة</string>
+    <string name="settings_floating_windows_title">النوافذ العائمة</string>
+    <string name="settings_floating_windows_desc">إضافة خيار في قائمة الضغط المطوّل لفتح التطبيقات في نافذة عائمة</string>
+    <string name="settings_floating_on_tap_title">فتح التطبيقات عائمة عند النقر</string>
+    <string name="settings_floating_on_tap_desc">النقر يفتح التطبيقات في نافذة عائمة؛ والضغط المطوّل يوفر ملء الشاشة</string>
+    <string name="settings_floating_windows_notice">الأجهزة التي لا تدعم النوافذ العائمة تحتاج إلى تثبيت Shizuku وتشغيله.</string>
     <string name="settings_vibrate_feedback_title">استجابة الاهتزاز</string>
 
     <string name="onboarding_language_title">اختر لغتك</string>
@@ -325,6 +331,8 @@
     <string name="app_action_pin_to_dock">تثبيت في الرصيف</string>
     <string name="app_action_unpin_from_dock">إلغاء التثبيت من الرصيف</string>
     <string name="app_action_hide_app">إخفاء التطبيق</string>
+    <string name="app_action_open_floating">فتح في نافذة عائمة</string>
+    <string name="app_action_open_fullscreen">فتح بملء الشاشة</string>
     <string name="app_sort_order_name">حسب الاسم</string>
     <string name="app_sort_order_install_time">حسب وقت التثبيت</string>
     <string name="app_sort_order_usage">حسب الاستخدام</string>

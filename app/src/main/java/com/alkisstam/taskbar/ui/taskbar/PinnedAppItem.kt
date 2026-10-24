@@ -46,6 +46,8 @@ fun PinnedAppItem(
     showLabel: Boolean = false,
     iconShape: IconShape = IconShape.DEFAULT,
     onLaunch: () -> Unit,
+    altLaunchLabel: String?,
+    onAltLaunch: () -> Unit,
     onUnpin: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -103,6 +105,7 @@ fun PinnedAppItem(
                     GlassBackdrop(enabled = LocalGlassSurface.current, cornerRadius = 12.dp, tint = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)) {
                         Column {
                             AppMenuAction(stringResource(R.string.pinned_app_menu_open)) { onLaunch(); showMenu = false }
+                            altLaunchLabel?.let { AppMenuAction(it) { onAltLaunch(); showMenu = false } }
                             AppMenuAction(stringResource(R.string.pinned_app_menu_unpin)) { onUnpin(); showMenu = false }
                         }
                     }

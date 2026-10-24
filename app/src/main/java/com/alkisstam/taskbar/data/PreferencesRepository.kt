@@ -212,6 +212,8 @@ class PreferencesRepository @Inject constructor(
         private val MUSIC_PANEL_OPEN_KEY = booleanPreferencesKey("music_panel_open")
         private val ALWAYS_SHOW_MUSIC_PANEL_KEY = booleanPreferencesKey("always_show_music_panel")
         private val HAPTIC_FEEDBACK_KEY = booleanPreferencesKey("haptic_feedback")
+        private val FLOATING_WINDOWS_KEY = booleanPreferencesKey("floating_windows_enabled")
+        private val FLOATING_ON_TAP_KEY = booleanPreferencesKey("floating_windows_on_tap")
         private val PANEL_OUTLINE_KEY = booleanPreferencesKey("panel_outline_enabled")
         private val APP_GRID_COLUMNS_KEY = intPreferencesKey("app_grid_columns")
         private val APP_GRID_ROWS_KEY = intPreferencesKey("app_grid_rows")
@@ -233,6 +235,7 @@ class PreferencesRepository @Inject constructor(
         private val APP_LANGUAGE_TAG_KEY = stringPreferencesKey("app_language_tag")
         private val APP_SORT_ORDER_KEY = stringPreferencesKey("app_sort_order")
         private val APP_LAUNCH_COUNTS_KEY = stringPreferencesKey("app_launch_counts")
+        private val FLOATING_WINDOW_BOUNDS_KEY = stringPreferencesKey("floating_window_bounds")
 
         val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen", "caffeine", "clipboard", "calculator", "wifi", "bluetooth", "share", "notif_history", "notes")
 
@@ -299,6 +302,8 @@ class PreferencesRepository @Inject constructor(
             MUSIC_PANEL_ENABLED_KEY,
             ALWAYS_SHOW_MUSIC_PANEL_KEY,
             HAPTIC_FEEDBACK_KEY,
+            FLOATING_WINDOWS_KEY,
+            FLOATING_ON_TAP_KEY,
             PANEL_OUTLINE_KEY,
             FUZZY_SEARCH_ENABLED_KEY,
             SHOW_RECENT_APPS_KEY,
@@ -534,6 +539,26 @@ class PreferencesRepository @Inject constructor(
     suspend fun setHapticFeedbackEnabled(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[HAPTIC_FEEDBACK_KEY] = enabled
+        }
+    }
+
+    val floatingWindowsEnabled: Flow<Boolean> = safeData.map { prefs ->
+        prefs[FLOATING_WINDOWS_KEY] ?: false
+    }
+
+    suspend fun setFloatingWindowsEnabled(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[FLOATING_WINDOWS_KEY] = enabled
+        }
+    }
+
+    val floatingWindowsOnTap: Flow<Boolean> = safeData.map { prefs ->
+        prefs[FLOATING_ON_TAP_KEY] ?: false
+    }
+
+    suspend fun setFloatingWindowsOnTap(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[FLOATING_ON_TAP_KEY] = enabled
         }
     }
 
@@ -787,6 +812,25 @@ class PreferencesRepository @Inject constructor(
             val current = prefs[APP_LAUNCH_COUNTS_KEY]?.let { deserializeLaunchCounts(it) } ?: emptyMap()
             val updated = current + (packageName to ((current[packageName] ?: 0) + 1))
             prefs[APP_LAUNCH_COUNTS_KEY] = serializeLaunchCounts(updated)
+        }
+    }
+
+    // Package -> Rect.flattenToString() of the app's last floating window. Device-specific, so not backed up.
+    val floatingWindowBounds: Flow<Map<String, String>> = safeData.map { prefs ->
+        prefs[FLOATING_WINDOW_BOUNDS_KEY]?.let { stored ->
+            try {
+                val obj = JSONObject(stored)
+                obj.keys().asSequence().associateWith { obj.getString(it) }
+            } catch (e: JSONException) { emptyMap() }
+        } ?: emptyMap()
+    }
+
+    suspend fun setFloatingWindowBounds(packageName: String, bounds: String) {
+        context.dataStore.edit { prefs ->
+            val obj = prefs[FLOATING_WINDOW_BOUNDS_KEY]?.let {
+                try { JSONObject(it) } catch (e: JSONException) { null }
+            } ?: JSONObject()
+            prefs[FLOATING_WINDOW_BOUNDS_KEY] = obj.put(packageName, bounds).toString()
         }
     }
 

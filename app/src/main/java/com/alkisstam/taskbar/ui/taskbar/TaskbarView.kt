@@ -101,6 +101,13 @@ fun TaskbarView(
     val pinnedApps by taskbarViewModel.pinnedApps.collectAsState()
     val menuVisible by appMenuViewModel.menuVisible.collectAsState()
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
+    val floatingWindowsEnabled by taskbarViewModel.floatingWindowsEnabled.collectAsState()
+    val floatingWindowsOnTap by taskbarViewModel.floatingWindowsOnTap.collectAsState()
+    val altLaunchLabel = when {
+        !floatingWindowsEnabled -> null
+        floatingWindowsOnTap -> stringResource(R.string.app_action_open_fullscreen)
+        else -> stringResource(R.string.app_action_open_floating)
+    }
     val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
     val quickControlsEnabled by taskbarViewModel.quickControlsEnabled.collectAsState()
     val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
@@ -253,7 +260,12 @@ fun TaskbarView(
                                     showLabel = false,
                                     iconShape = taskbarSettings.iconShape,
                                     onLaunch = {
-                                        taskbarViewModel.launchApp(app.packageName)
+                                        taskbarViewModel.launchAppTap(app.packageName)
+                                        taskbarViewModel.hideTaskbar()
+                                    },
+                                    altLaunchLabel = altLaunchLabel,
+                                    onAltLaunch = {
+                                        taskbarViewModel.launchAppAlternate(app.packageName)
                                         taskbarViewModel.hideTaskbar()
                                     },
                                     onUnpin = { taskbarViewModel.unpinApp(app.packageName) }

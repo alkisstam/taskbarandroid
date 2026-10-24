@@ -120,6 +120,7 @@ fun QuickSettingsPanel(
                                     verticalArrangement = Arrangement.spacedBy(16.dp)
                                 ) {
                                     BehaviourCard(viewModel = taskbarViewModel)
+                                    FloatingWindowsCard(viewModel = taskbarViewModel)
                                     MusicPanelSettingsCard(
                                         viewModel = taskbarViewModel,
                                         context = context,
