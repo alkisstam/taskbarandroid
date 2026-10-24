@@ -1,0 +1,9 @@
+Added
+• Quick Controls now open in their own panel: tap the new pill above the dock, which also holds the Music button
+• Swipe In action for side pills, which no longer trigger Back
+• Show App Menu and Search Apps actions for every pill gesture
+Changed
+• Dock handle removed; panels sit closer to the dock
+Fixed
+• Dock and pill disappearing in Instagram, Camera, Maps and similar apps
+• Crash opening the pill's custom tint picker

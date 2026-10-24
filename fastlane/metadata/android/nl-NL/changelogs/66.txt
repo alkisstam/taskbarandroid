@@ -1,0 +1,9 @@
+Nieuw
+• Snelle bediening opent nu in een eigen paneel: tik op de nieuwe pil boven de dock, die ook de muziekknop bevat
+• Actie Inswipen voor zijpillen, die geen Terug meer activeren
+• Acties App-menu tonen en Apps zoeken voor elk pilgebaar
+Gewijzigd
+• Dockgreep verwijderd; panelen zitten dichter bij de dock
+Opgelost
+• Dock en pil verdwenen in Instagram, Camera, Maps en vergelijkbare apps
+• Crash bij openen van de eigen tintkiezer van de pil

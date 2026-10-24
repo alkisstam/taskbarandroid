@@ -1,0 +1,9 @@
+Yenilikler
+• Hızlı kontroller artık kendi panelinde açılıyor: Dock'un üstündeki yeni hapa dokunun; müzik düğmesi de orada
+• Yan haplar için İçeri Kaydır eylemi; artık Geri'yi tetiklemiyorlar
+• Her hap hareketi için Uygulama Menüsünü Göster ve Uygulama Ara eylemleri
+Değişiklikler
+• Dock tutamacı kaldırıldı; paneller Dock'a daha yakın
+Düzeltmeler
+• Instagram, Kamera, Haritalar ve benzeri uygulamalarda Dock ve hapın kaybolması
+• Hapın özel renk seçicisini açarken çökme

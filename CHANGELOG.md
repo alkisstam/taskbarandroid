@@ -4,18 +4,9 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
-## [Unreleased]
-
-### Changed
-- **Quick Controls moved to their own panel** — the dock no longer grows when you swipe up. With Quick Controls enabled, a pill sits above the dock on the same side as the All Apps button, holding the Quick Controls and Music buttons; tap Quick Controls and a panel styled like the dock (same width, height, corners, tint and glass) slides in from that side. Swipe the panel down or tap outside to close it. Auto expand controls now opens this panel when the dock appears.
-- **Music panel sits beside the Quick Controls pill** — with Quick Controls enabled, the Music button moves from the controls into the pill, and the music panel shrinks to make room for the pill and lines up with it just above the dock, instead of covering it. It returns to full width above the open Quick Controls panel.
-- **Dock handle removed** — the strip with the drag handle at the top of the dock is gone, making the dock shorter.
-
----
-
 ## [1.5.12] - 2026-10-21
 
-Swipe in on side pills without triggering Back, every pill gesture configurable, new App Menu and Search actions.
+Quick Controls in their own panel, swipe in on side pills without triggering Back, every pill gesture configurable, new App Menu and Search actions.
 
 ### Added
 - **Swipe In Action** — Settings → Design → Pill Size & Appearance, for Left, Right and Both pills: swipe in from the pill to run an action. Off by default. Included in backup/restore.
@@ -24,6 +15,10 @@ Swipe in on side pills without triggering Back, every pill gesture configurable,
 - **Show App Menu and Search Apps actions** — new choices in every pill gesture dropdown: open the app menu or app search directly from the pill.
 
 ### Changed
+- **Quick Controls moved to their own panel** — the dock no longer grows when you swipe up. With Quick Controls enabled, a pill sits above the dock on the same side as the All Apps button, holding the Quick Controls and Music buttons; tap Quick Controls and a panel styled like the dock (same width, height, corners, tint and glass) slides in from that side. Swipe the panel down or tap outside to close it. Auto expand controls now opens this panel when the dock appears.
+- **Music panel sits beside the Quick Controls pill** — with Quick Controls enabled, the Music button moves from the controls into the pill, and the music panel shrinks to make room for the pill and lines up with it just above the dock, instead of covering it. It returns to full width above the open Quick Controls panel.
+- **Dock handle removed** — the strip with the drag handle at the top of the dock is gone, making the dock shorter.
+- **Smaller gap between the dock and panels** — the App Menu, notes, clipboard, notifications, volume, brightness, calculator and music panels sit about half as far above the dock.
 - **Only the pill responds to gestures** — Restrict Trigger to Pill is removed; the trigger area is now always the pill itself.
 - **Side pill height capped at 200dp** — the most Android lets an app block from the Back gesture. Taller side pills are shortened to 200dp.
 - **Actions kept when changing position** — switching the pill between bottom and sides no longer resets its gesture actions.
