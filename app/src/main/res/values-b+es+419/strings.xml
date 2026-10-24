@@ -186,7 +186,7 @@
     <string name="settings_disable_lockscreen_desc">Evita que la píldora de activación abra el dock en la pantalla de bloqueo</string>
     <string name="settings_disable_lockscreen_title">Desactivar en la pantalla de bloqueo</string>
     <string name="settings_enable_accessibility_button">Activar servicio de accesibilidad</string>
-    <string name="settings_enable_quick_controls_desc">Muestra los controles rápidos en el dock. Desliza hacia arriba para mostrarlos y hacia abajo para ocultarlos.</string>
+    <string name="settings_enable_quick_controls_desc">Muestra un botón sobre el dock que abre el panel de controles rápidos. Desliza el panel hacia abajo o toca fuera para cerrarlo.</string>
     <string name="settings_enable_quick_controls_title">Activar controles rápidos</string>
     <string name="settings_enable_quick_settings_panel_desc">Muestra un ícono de configuración en los controles rápidos del dock y accede al panel de Configuración rápida</string>
     <string name="settings_enable_quick_settings_panel_title">Activar Configuración rápida</string>

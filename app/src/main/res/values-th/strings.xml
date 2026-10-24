@@ -186,7 +186,7 @@
     <string name="settings_disable_lockscreen_desc">ป้องกันไม่ให้ปุ่มลอยเปิดด็อกขณะอยู่ที่หน้าจอล็อก</string>
     <string name="settings_disable_lockscreen_title">ปิดใช้งานที่หน้าจอล็อก</string>
     <string name="settings_enable_accessibility_button">เปิดใช้บริการการเข้าถึงพิเศษ</string>
-    <string name="settings_enable_quick_controls_desc">แสดงควบคุมด่วนในด็อก ปัดขึ้นเพื่อแสดงควบคุมด่วน ปัดลงเพื่อซ่อน</string>
+    <string name="settings_enable_quick_controls_desc">แสดงปุ่มเหนือด็อกเพื่อเปิดแผงควบคุมด่วน ปัดแผงลงหรือแตะด้านนอกเพื่อปิด</string>
     <string name="settings_enable_quick_controls_title">เปิดใช้ควบคุมด่วน</string>
     <string name="settings_enable_quick_settings_panel_desc">แสดงไอคอนการตั้งค่าในควบคุมด่วนบนด็อก และเข้าถึงแผงการตั้งค่าด่วน</string>
     <string name="settings_enable_quick_settings_panel_title">เปิดใช้งานการตั้งค่าด่วน</string>

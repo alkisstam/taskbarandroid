@@ -186,7 +186,7 @@
     <string name="settings_disable_lockscreen_desc">阻止触发药丸在锁屏界面打开程序坞</string>
     <string name="settings_disable_lockscreen_title">锁屏时禁用</string>
     <string name="settings_enable_accessibility_button">启用无障碍服务</string>
-    <string name="settings_enable_quick_controls_desc">在程序坞中显示快捷控制。向上滑动显示，向下滑动隐藏。</string>
+    <string name="settings_enable_quick_controls_desc">在程序坞上方显示一个按钮，用于打开快捷控制面板。向下滑动面板或点击外部即可关闭。</string>
     <string name="settings_enable_quick_controls_title">启用快捷控制</string>
     <string name="settings_enable_quick_settings_panel_desc">在程序坞的快捷控制中显示设置图标，并访问快速设置面板</string>
     <string name="settings_enable_quick_settings_panel_title">启用快速设置</string>

@@ -186,7 +186,7 @@
     <string name="settings_disable_lockscreen_desc">Empêche la pastille de déclenchement d\'ouvrir le dock sur l\'écran de verrouillage</string>
     <string name="settings_disable_lockscreen_title">Désactiver sur l\'écran de verrouillage</string>
     <string name="settings_enable_accessibility_button">Activer le service d\'accessibilité</string>
-    <string name="settings_enable_quick_controls_desc">Affiche les contrôles rapides dans le dock. Glissez vers le haut pour les afficher, vers le bas pour les masquer.</string>
+    <string name="settings_enable_quick_controls_desc">Affiche un bouton au-dessus du dock qui ouvre le panneau des contrôles rapides. Glissez le panneau vers le bas ou touchez à l\'extérieur pour le fermer.</string>
     <string name="settings_enable_quick_controls_title">Activer les contrôles rapides</string>
     <string name="settings_enable_quick_settings_panel_desc">Affiche une icône de paramètres dans les contrôles rapides du dock et permet d\'accéder au panneau Paramètres rapides</string>
     <string name="settings_enable_quick_settings_panel_title">Activer les Paramètres rapides</string>

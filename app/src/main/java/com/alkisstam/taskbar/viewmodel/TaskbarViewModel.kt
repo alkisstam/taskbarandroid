@@ -322,10 +322,6 @@ class TaskbarViewModel @Inject constructor(
     private val _dockExpandProgress = MutableStateFlow(0f)
     val dockExpandProgress: StateFlow<Float> = _dockExpandProgress.asStateFlow()
 
-    fun setExpandProgress(p: Float) { _dockExpandProgress.value = p.coerceIn(0f, 1f) }
-    fun cancelExpandReveal() { _dockExpandProgress.value = 0f }
-    fun cancelCollapseReveal() { _dockExpandProgress.value = 1f }
-
     private val _dockRevealProgress = MutableStateFlow(0f)
     val dockRevealProgress: StateFlow<Float> = _dockRevealProgress.asStateFlow()
 
@@ -338,6 +334,12 @@ class TaskbarViewModel @Inject constructor(
     val dockBounds: StateFlow<IntRect?> = _dockBounds.asStateFlow()
 
     fun setDockBounds(bounds: IntRect?) { _dockBounds.value = bounds }
+
+    // Pinned dock: the touch proxy needs this too, the button sits outside the dock bounds.
+    private val _quickControlsButtonBounds = MutableStateFlow<IntRect?>(null)
+    val quickControlsButtonBounds: StateFlow<IntRect?> = _quickControlsButtonBounds.asStateFlow()
+
+    fun setQuickControlsButtonBounds(bounds: IntRect?) { _quickControlsButtonBounds.value = bounds }
 
     private val _isSettingsOpen = MutableStateFlow(false)
     val isSettingsOpen: StateFlow<Boolean> = _isSettingsOpen.asStateFlow()

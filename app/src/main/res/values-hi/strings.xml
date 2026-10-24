@@ -186,7 +186,7 @@
     <string name="settings_disable_lockscreen_desc">लॉक स्क्रीन पर ट्रिगर पिल को डॉक खोलने से रोकें</string>
     <string name="settings_disable_lockscreen_title">लॉक स्क्रीन पर बंद करें</string>
     <string name="settings_enable_accessibility_button">एक्सेसिबिलिटी सेवा सक्षम करें</string>
-    <string name="settings_enable_quick_controls_desc">डॉक में क्विक कंट्रोल्स दिखाएं। क्विक कंट्रोल्स दिखाने के लिए ऊपर स्वाइप करें। छिपाने के लिए नीचे स्वाइप करें।</string>
+    <string name="settings_enable_quick_controls_desc">डॉक के ऊपर एक बटन दिखाएं जो क्विक कंट्रोल्स पैनल खोलता है। बंद करने के लिए पैनल को नीचे स्वाइप करें या बाहर टैप करें।</string>
     <string name="settings_enable_quick_controls_title">क्विक कंट्रोल्स सक्षम करें</string>
     <string name="settings_enable_quick_settings_panel_desc">डॉक में क्विक कंट्रोल्स में सेटिंग्स आइकन दिखाएं और क्विक सेटिंग्स पैनल एक्सेस करें</string>
     <string name="settings_enable_quick_settings_panel_title">क्विक सेटिंग्स सक्षम करें</string>

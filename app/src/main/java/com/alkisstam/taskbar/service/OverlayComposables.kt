@@ -4,6 +4,7 @@ import android.media.AudioManager
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
@@ -46,6 +47,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.R
+import com.alkisstam.taskbar.data.AppMenuButtonSide
 import com.alkisstam.taskbar.data.bottomGapDp
 import com.alkisstam.taskbar.data.widthFraction
 import com.alkisstam.taskbar.data.GestureAction
@@ -60,6 +62,8 @@ import com.alkisstam.taskbar.ui.clipboard.ClipboardPanel
 import com.alkisstam.taskbar.ui.clipboard.NotesPanel
 import com.alkisstam.taskbar.ui.notifications.NotificationHistoryPanel
 import com.alkisstam.taskbar.ui.settings.QuickSettingsPanel
+import com.alkisstam.taskbar.ui.taskbar.QuickControlsButtonGap
+import com.alkisstam.taskbar.ui.taskbar.QuickControlsButtonSize
 import com.alkisstam.taskbar.ui.taskbar.TaskbarView
 import com.alkisstam.taskbar.ui.taskbar.TriggerPillView
 import com.alkisstam.taskbar.ui.theme.TaskBarTheme
@@ -71,7 +75,7 @@ import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 import kotlin.math.roundToInt
 
 private fun dockAwarePanelBottomPadding(isTaskbarVisible: Boolean, heightDp: Float, expandedRows: Int, bottomGapDp: Float) =
-    if (isTaskbarVisible) (bottomGapDp + heightDp * (1 + expandedRows) + 16f + 28f).dp else 0.dp
+    if (isTaskbarVisible) (bottomGapDp + heightDp * (1 + expandedRows) + 8f * expandedRows + 16f + 28f).dp else 0.dp
 
 @Composable
 internal fun OverlayContent(
@@ -126,6 +130,7 @@ internal fun TaskbarContent(
     val dockRevealProgress by taskbarViewModel.dockRevealProgress.collectAsState()
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
     val navBarInsetDp by taskbarViewModel.navBarInsetDp.collectAsState()
+    val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
     val dockBottomGap = maxOf(taskbarSettings.dockPadding.bottomGapDp, navBarInsetDp).dp
 
     val revealAnim = remember { Animatable(0f) }
@@ -145,6 +150,17 @@ internal fun TaskbarContent(
     TaskBarTheme(themeMode = themeMode) {
         Box(modifier = Modifier.fillMaxSize()) {
             if (revealAnim.value > 0.001f) {
+                // Consumes the tap so the wrapper doesn't also hide the dock.
+                if (isDockExpanded) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
+                            ) { taskbarViewModel.collapseDock() }
+                    )
+                }
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
@@ -593,6 +609,16 @@ internal fun MusicPanelContent(
     val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
     val grainAlpha by taskbarViewModel.grainAlpha.collectAsState()
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
+    val quickControlsEnabled by taskbarViewModel.quickControlsEnabled.collectAsState()
+    val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
+    // Sits beside the quick controls button instead of covering it; OverlayService lowers
+    // the window to the button's row in the same state.
+    val besideButton = quickControlsEnabled && !isDockExpanded
+    val buttonInset by animateDpAsState(
+        if (besideButton) QuickControlsButtonSize + QuickControlsButtonGap else 0.dp,
+        label = "musicButtonInset"
+    )
+    val buttonOnLeft = taskbarSettings.appMenuButtonSide == AppMenuButtonSide.LEFT
 
     TaskBarTheme(themeMode = themeMode) {
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -607,7 +633,7 @@ internal fun MusicPanelContent(
                     translucentAlpha = translucentAlpha,
                     grainAlpha = grainAlpha,
                     cornerRadiusDp = taskbarSettings.cornerRadiusDp,
-                    dockWidthFraction = taskbarSettings.dockPadding.widthFraction,
+                    dockWidthFraction = 1f,
                     onArtworkClick = {
                         if (mediaState.packageName.isNotEmpty()) {
                             appMenuViewModel.launchApp(mediaState.packageName)
@@ -616,6 +642,8 @@ internal fun MusicPanelContent(
                         }
                     },
                     modifier = Modifier
+                        .fillMaxWidth(taskbarSettings.dockPadding.widthFraction)
+                        .padding(start = if (buttonOnLeft) buttonInset else 0.dp, end = if (buttonOnLeft) 0.dp else buttonInset)
                         .onGloballyPositioned { panelHeightPx = it.size.height.toFloat() }
                         .graphicsLayer {
                             translationY = panelHeightPx * (1f - revealAnim.value)

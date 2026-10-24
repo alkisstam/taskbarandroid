@@ -186,7 +186,7 @@
     <string name="settings_disable_lockscreen_desc">Не позволяет капсуле открывать панель на экране блокировки</string>
     <string name="settings_disable_lockscreen_title">Отключить на экране блокировки</string>
     <string name="settings_enable_accessibility_button">Включить специальные возможности</string>
-    <string name="settings_enable_quick_controls_desc">Показывать быстрые кнопки на панели. Проведите вверх, чтобы показать их, и вниз, чтобы скрыть.</string>
+    <string name="settings_enable_quick_controls_desc">Показывать над панелью кнопку, открывающую панель быстрых кнопок. Проведите по ней вниз или нажмите снаружи, чтобы закрыть.</string>
     <string name="settings_enable_quick_controls_title">Включить быстрые кнопки</string>
     <string name="settings_enable_quick_settings_panel_desc">Показывает значок настроек в быстрых кнопках на панели и открывает доступ к панели быстрых настроек</string>
     <string name="settings_enable_quick_settings_panel_title">Включить быстрые настройки</string>

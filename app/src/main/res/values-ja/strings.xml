@@ -186,7 +186,7 @@
     <string name="settings_disable_lockscreen_desc">ロック画面でトリガーピルからドックを開けないようにします</string>
     <string name="settings_disable_lockscreen_title">ロック画面で無効にする</string>
     <string name="settings_enable_accessibility_button">ユーザー補助サービスを有効にする</string>
-    <string name="settings_enable_quick_controls_desc">ドックにクイックコントロールを表示します。上にスワイプで表示、下にスワイプで非表示にします。</string>
+    <string name="settings_enable_quick_controls_desc">ドックの上にクイックコントロールパネルを開くボタンを表示します。パネルを下にスワイプするか外側をタップすると閉じます。</string>
     <string name="settings_enable_quick_controls_title">クイックコントロールを有効にする</string>
     <string name="settings_enable_quick_settings_panel_desc">ドックのクイックコントロールに設定アイコンを表示し、クイック設定パネルにアクセスします</string>
     <string name="settings_enable_quick_settings_panel_title">クイック設定を有効にする</string>

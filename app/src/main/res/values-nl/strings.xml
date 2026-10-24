@@ -186,7 +186,7 @@
     <string name="settings_disable_lockscreen_desc">Voorkomt dat de trigger-pil de dock opent op het vergrendelscherm</string>
     <string name="settings_disable_lockscreen_title">Uitschakelen op vergrendelscherm</string>
     <string name="settings_enable_accessibility_button">Toegankelijkheidsservice inschakelen</string>
-    <string name="settings_enable_quick_controls_desc">Toon snelle bediening in de dock. Veeg omhoog om ze te tonen. Veeg omlaag om ze te verbergen.</string>
+    <string name="settings_enable_quick_controls_desc">Toon een knop boven de dock die het paneel met snelle bediening opent. Veeg het paneel omlaag of tik erbuiten om het te sluiten.</string>
     <string name="settings_enable_quick_controls_title">Snelle bediening inschakelen</string>
     <string name="settings_enable_quick_settings_panel_desc">Toon een instellingenpictogram in de snelle bediening in de dock en open het Snelle instellingen-paneel</string>
     <string name="settings_enable_quick_settings_panel_title">Snelle instellingen inschakelen</string>

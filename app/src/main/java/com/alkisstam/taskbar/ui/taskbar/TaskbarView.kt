@@ -1,26 +1,34 @@
 package com.alkisstam.taskbar.ui.taskbar
 
 import android.widget.Toast
+import android.view.View
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Battery0Bar
 import androidx.compose.material.icons.filled.Battery2Bar
@@ -31,37 +39,43 @@ import androidx.compose.material.icons.filled.BatteryFull
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.PushPin
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntRect
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.AppMenuButtonSide
 import com.alkisstam.taskbar.data.bottomGapDp
 import com.alkisstam.taskbar.data.widthFraction
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -76,7 +90,10 @@ import com.alkisstam.taskbar.util.Constants
 import com.alkisstam.taskbar.viewmodel.AppMenuViewModel
 import com.alkisstam.taskbar.viewmodel.QuickControlItemData
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
-import kotlin.math.abs
+
+
+internal val QuickControlsButtonSize = 36.dp
+internal val QuickControlsButtonGap = 8.dp
 
 @Composable
 fun TaskbarView(
@@ -89,20 +106,9 @@ fun TaskbarView(
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
     val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
     val quickControlsEnabled by taskbarViewModel.quickControlsEnabled.collectAsState()
-    val controlsOrder by taskbarViewModel.controlsOrder.collectAsState()
-    val controlsDisabledIds by taskbarViewModel.controlsDisabledIds.collectAsState()
-    val musicPanelEnabled by taskbarViewModel.musicPanelEnabled.collectAsState()
-    val musicPanelVisible by appMenuViewModel.musicPanelVisible.collectAsState()
-    val quickSettingsPanelEnabled by taskbarViewModel.quickSettingsPanelEnabled.collectAsState()
-    val quickSettingsPanelVisible by appMenuViewModel.quickSettingsPanelVisible.collectAsState()
-    val pinDockControlEnabled by taskbarViewModel.pinDockControlEnabled.collectAsState()
-    val isDockPinned by taskbarViewModel.isDockPinned.collectAsState()
-    val quickControls by appMenuViewModel.quickControlsState.collectAsState()
     val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
-    val dockExpandProgress by taskbarViewModel.dockExpandProgress.collectAsState()
     val batteryLevel by taskbarViewModel.batteryLevel.collectAsState()
     val isCharging by taskbarViewModel.isCharging.collectAsState()
-    val density = LocalDensity.current
 
     val noMediaMessage by appMenuViewModel.noMediaMessage.collectAsState()
     val context = LocalContext.current
@@ -125,233 +131,266 @@ fun TaskbarView(
     val iconSize = taskbarSettings.pinnedIconSizeDp.dp
     val dockCornerShape = RoundedCornerShape(taskbarSettings.cornerRadiusDp.dp)
     val dockWidthFraction = taskbarSettings.dockPadding.widthFraction
-    val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
-    val translucentMode by taskbarViewModel.translucentMode.collectAsState()
-    val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
-    val grainAlpha by taskbarViewModel.grainAlpha.collectAsState()
 
     val hostView = LocalView.current
+    val buttonOnLeft = taskbarSettings.appMenuButtonSide == AppMenuButtonSide.LEFT
+    // Slides in from the button's side and back out towards it.
+    val slideFrom: (Int) -> Int = { width -> if (buttonOnLeft) -width else width }
 
-    Box(
+    Column(
         modifier = modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Surface(
+        if (quickControlsEnabled) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(dockWidthFraction)
+                    .padding(bottom = QuickControlsButtonGap)
+            ) {
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = isDockExpanded,
+                    enter = slideInHorizontally(initialOffsetX = slideFrom) + fadeIn(),
+                    exit = slideOutHorizontally(targetOffsetX = slideFrom) + fadeOut()
+                ) {
+                    QuickControlsPanel(
+                        taskbarViewModel = taskbarViewModel,
+                        appMenuViewModel = appMenuViewModel,
+                        surfaceColor = surfaceColor
+                    )
+                }
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = !isDockExpanded && !menuVisible,
+                    modifier = Modifier.align(if (buttonOnLeft) Alignment.BottomStart else Alignment.BottomEnd),
+                    enter = fadeIn() + scaleIn(),
+                    exit = fadeOut() + scaleOut()
+                ) {
+                    DisposableEffect(Unit) {
+                        onDispose { taskbarViewModel.setQuickControlsButtonBounds(null) }
+                    }
+                    DockSurface(
+                        taskbarViewModel = taskbarViewModel,
+                        surfaceColor = surfaceColor,
+                        shape = CircleShape,
+                        cornerRadius = QuickControlsButtonSize / 2,
+                        modifier = Modifier
+                            .size(QuickControlsButtonSize)
+                            .onGloballyPositioned { coords ->
+                                taskbarViewModel.setQuickControlsButtonBounds(coords.boundsOnScreen(hostView))
+                            }
+                            .clickable { taskbarViewModel.toggleDockExpanded() }
+                    ) {
+                        Box(modifier = Modifier.size(QuickControlsButtonSize), contentAlignment = Alignment.Center) {
+                            Icon(
+                                imageVector = Icons.Filled.Tune,
+                                contentDescription = stringResource(R.string.quick_controls),
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        DockSurface(
+            taskbarViewModel = taskbarViewModel,
+            surfaceColor = surfaceColor,
+            shape = dockCornerShape,
+            cornerRadius = taskbarSettings.cornerRadiusDp.dp,
             modifier = Modifier
                 .fillMaxWidth(dockWidthFraction)
                 .wrapContentHeight()
                 .onGloballyPositioned { coords ->
                     // boundsInWindow includes the parent's reveal translation, so the blur
                     // window sees the dock moving and waits for it to settle.
-                    val b = coords.boundsInWindow()
-                    val origin = IntArray(2).also { hostView.getLocationOnScreen(it) }
-                    taskbarViewModel.setDockBounds(
-                        if (b.isEmpty) null
-                        else IntRect(
-                            origin[0] + b.left.toInt(), origin[1] + b.top.toInt(),
-                            origin[0] + b.right.toInt(), origin[1] + b.bottom.toInt()
-                        )
-                    )
+                    taskbarViewModel.setDockBounds(coords.boundsOnScreen(hostView))
                 }
-                .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, dockCornerShape) else Modifier)
-                .clip(dockCornerShape)
-                .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
-                .glassSheen(enabled = translucentMode && !panelOutlineEnabled, shape = dockCornerShape)
-                .pointerInput(isDockExpanded, taskbarSettings.heightDp) {
-                    val maxDragPx = with(density) { taskbarSettings.heightDp.dp.toPx() }
-                    var totalDragY = 0f
-                    detectDragGestures(
-                        onDragStart = { totalDragY = 0f },
-                        onDragEnd = {
-                            val upward = -totalDragY
-                            val downward = totalDragY
-                            when {
-                                !isDockExpanded && quickControlsEnabled && upward > 0 -> {
-                                    if ((upward / maxDragPx).coerceIn(0f, 1f) >= 0.4f)
-                                        taskbarViewModel.toggleDockExpanded()
-                                    else
-                                        taskbarViewModel.cancelExpandReveal()
-                                }
-                                isDockExpanded && downward > 0 -> {
-                                    if ((downward / maxDragPx).coerceIn(0f, 1f) >= 0.4f)
-                                        taskbarViewModel.toggleDockExpanded()
-                                    else
-                                        taskbarViewModel.cancelCollapseReveal()
-                                }
-                            }
-                            totalDragY = 0f
-                        },
-                        onDragCancel = {
-                            if (!isDockExpanded) taskbarViewModel.cancelExpandReveal()
-                            else taskbarViewModel.cancelCollapseReveal()
-                            totalDragY = 0f
-                        }
-                    ) { _, drag ->
-                        totalDragY += drag.y
-                        if (abs(drag.y) > abs(drag.x)) {
-                            val upward = -totalDragY
-                            val downward = totalDragY
-                            when {
-                                !isDockExpanded && quickControlsEnabled && upward > 0 ->
-                                    taskbarViewModel.setExpandProgress((upward / maxDragPx).coerceIn(0f, 1f))
-                                isDockExpanded && downward > 0 ->
-                                    taskbarViewModel.setExpandProgress(1f - (downward / maxDragPx).coerceIn(0f, 1f))
-                            }
-                        }
-                    }
-                },
-            shape = dockCornerShape,
-            color = if (translucentMode) surfaceColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha)) else surfaceColor,
-            tonalElevation = if (translucentMode) 0.dp else 3.dp,
-            shadowElevation = if (translucentMode) 0.dp else 8.dp
         ) {
-            // In-window, so it tracks the dock every frame (reveal, expand) instead of
-            // waiting for a separate blur window to catch up.
-            GlassBackdrop(
-                enabled = translucentMode,
-                cornerRadius = taskbarSettings.cornerRadiusDp.dp,
-                tint = surfaceColor.copy(alpha = translucentAlpha)
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Box(
-                        modifier = Modifier
-                            .width(36.dp)
-                            .height(4.dp)
-                            .background(
-                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
-                                RoundedCornerShape(2.dp)
-                            )
-                    )
-                    Spacer(modifier = Modifier.height(6.dp))
-
-                    if (quickControlsEnabled) {
-                        val expandAnim = remember { Animatable(if (isDockExpanded) 1f else 0f) }
-                        val maxControlsHeight = taskbarSettings.heightDp.dp + 1.dp
-
-                        LaunchedEffect(isDockExpanded, dockExpandProgress) {
-                            when {
-                                isDockExpanded && dockExpandProgress >= 1f ->
-                                    expandAnim.animateTo(1f, tween(220))
-                                !isDockExpanded && dockExpandProgress == 0f ->
-                                    expandAnim.animateTo(0f, tween(180))
-                                else ->
-                                    expandAnim.snapTo(dockExpandProgress)
-                            }
-                        }
-
-                        if (expandAnim.value > 0.001f) {
-                            val quickControlItems = quickControls.toItems(controlsOrder, controlsDisabledIds)
-                            val pinDockLabel = stringResource(R.string.quick_control_pin_dock_label)
-                            val musicLabel = stringResource(R.string.taskbar_music_control_label)
-                            val quickSettingsLabel = stringResource(R.string.quick_control_settings_label)
-                            val extraTiles = buildList<Pair<QuickControlItemData, () -> Unit>> {
-                                if (pinDockControlEnabled) add(QuickControlItemData(id = "pin_dock", label = pinDockLabel, active = isDockPinned, icon = Icons.Filled.PushPin) to { taskbarViewModel.toggleDockPinned() })
-                                if (musicPanelEnabled) add(QuickControlItemData(id = "music", label = musicLabel, active = musicPanelVisible, icon = Icons.Filled.MusicNote) to { appMenuViewModel.toggleMusicPanel() })
-                                if (quickSettingsPanelEnabled) add(QuickControlItemData(id = "quick_settings", label = quickSettingsLabel, active = quickSettingsPanelVisible, icon = Icons.Filled.Settings) to { appMenuViewModel.toggleQuickSettingsPanel() })
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(maxControlsHeight * expandAnim.value)
-                                    .clipToBounds()
-                            ) {
-                                Column {
-                                    LazyRow(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(taskbarSettings.heightDp.dp),
-                                        contentPadding = PaddingValues(horizontal = 12.dp),
-                                        horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        items(extraTiles) { (data, onToggle) ->
-                                            QuickControlItem(
-                                                item = data,
-                                                onToggle = onToggle,
-                                                showLabel = taskbarSettings.showControlLabels,
-                                                tileSize = taskbarSettings.quickControlSizeDp.dp
-                                            )
-                                        }
-                                        items(quickControlItems) { item ->
-                                            QuickControlItem(
-                                                item = item,
-                                                onToggle = {
-                                                    appMenuViewModel.handleQuickControlAction(item.id)
-                                                    if (item.id in listOf("qr", "power", "screenshot", "lockscreen", "wifi", "bluetooth", "share"))
-                                                        taskbarViewModel.hideTaskbar()
-                                                    if (item.id in listOf("wifi", "bluetooth", "share")) {
-                                                        appMenuViewModel.dismissMusicPanel()
-                                                        appMenuViewModel.dismissCalculatorPanel()
-                                                    }
-                                                },
-                                                showLabel = taskbarSettings.showControlLabels,
-                                                tileSize = taskbarSettings.quickControlSizeDp.dp
-                                            )
-                                        }
-                                    }
-                                    HorizontalDivider(
-                                        modifier = Modifier.padding(horizontal = 12.dp),
-                                        thickness = 1.dp,
-                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
-                                    )
-                                }
-                            }
-                        }
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(taskbarSettings.heightDp.dp)
+                        .padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    if (buttonOnLeft) {
+                        AppMenuButton(
+                            menuOpen = menuVisible,
+                            onClick = { appMenuViewModel.toggleMenu() },
+                            size = iconSize,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
                     }
 
-                    val buttonOnLeft = taskbarSettings.appMenuButtonSide == AppMenuButtonSide.LEFT
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(taskbarSettings.heightDp.dp)
-                            .padding(vertical = 8.dp),
+                    LazyRow(
+                        state = pinnedListState,
+                        modifier = Modifier.weight(1f),
+                        horizontalArrangement = Arrangement.spacedBy(taskbarSettings.pinnedIconPaddingDp.dp, Alignment.CenterHorizontally),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start
+                        contentPadding = PaddingValues(horizontal = 4.dp)
                     ) {
-                        if (buttonOnLeft) {
-                            AppMenuButton(
-                                menuOpen = menuVisible,
-                                onClick = { appMenuViewModel.toggleMenu() },
-                                size = iconSize,
-                                modifier = Modifier.padding(start = 8.dp)
-                            )
-                        }
-
-                        LazyRow(
-                            state = pinnedListState,
-                            modifier = Modifier.weight(1f),
-                            horizontalArrangement = Arrangement.spacedBy(taskbarSettings.pinnedIconPaddingDp.dp, Alignment.CenterHorizontally),
-                            verticalAlignment = Alignment.CenterVertically,
-                            contentPadding = PaddingValues(horizontal = 4.dp)
-                        ) {
-                                items(pinnedApps, key = { it.packageName }) { app ->
-                                    PinnedAppItem(
-                                        app = app,
-                                        iconSize = iconSize,
-                                        showLabel = false,
-                                        iconShape = taskbarSettings.iconShape,
-                                        onLaunch = {
-                                            taskbarViewModel.launchApp(app.packageName)
-                                            taskbarViewModel.hideTaskbar()
-                                        },
-                                        onUnpin = { taskbarViewModel.unpinApp(app.packageName) }
-                                    )
-                                }
+                            items(pinnedApps, key = { it.packageName }) { app ->
+                                PinnedAppItem(
+                                    app = app,
+                                    iconSize = iconSize,
+                                    showLabel = false,
+                                    iconShape = taskbarSettings.iconShape,
+                                    onLaunch = {
+                                        taskbarViewModel.launchApp(app.packageName)
+                                        taskbarViewModel.hideTaskbar()
+                                    },
+                                    onUnpin = { taskbarViewModel.unpinApp(app.packageName) }
+                                )
                             }
-
-                        if (!buttonOnLeft) {
-                            AppMenuButton(
-                                menuOpen = menuVisible,
-                                onClick = { appMenuViewModel.toggleMenu() },
-                                size = iconSize,
-                                modifier = Modifier.padding(end = 8.dp)
-                            )
                         }
-                    }
 
-                    StatusBarRow(batteryLevel = batteryLevel, isCharging = isCharging)
+                    if (!buttonOnLeft) {
+                        AppMenuButton(
+                            menuOpen = menuVisible,
+                            onClick = { appMenuViewModel.toggleMenu() },
+                            size = iconSize,
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                    }
                 }
+
+                StatusBarRow(batteryLevel = batteryLevel, isCharging = isCharging)
+            }
+        }
+    }
+}
+
+private fun LayoutCoordinates.boundsOnScreen(hostView: View): IntRect? {
+    val b = boundsInWindow()
+    if (b.isEmpty) return null
+    val origin = IntArray(2).also { hostView.getLocationOnScreen(it) }
+    return IntRect(
+        origin[0] + b.left.toInt(), origin[1] + b.top.toInt(),
+        origin[0] + b.right.toInt(), origin[1] + b.bottom.toInt()
+    )
+}
+
+@Composable
+private fun DockSurface(
+    taskbarViewModel: TaskbarViewModel,
+    surfaceColor: Color,
+    shape: Shape,
+    cornerRadius: Dp,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    val panelOutlineEnabled by taskbarViewModel.panelOutlineEnabled.collectAsState()
+    val translucentMode by taskbarViewModel.translucentMode.collectAsState()
+    val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
+    val grainAlpha by taskbarViewModel.grainAlpha.collectAsState()
+
+    Surface(
+        modifier = modifier
+            .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, shape) else Modifier)
+            .clip(shape)
+            .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
+            .glassSheen(enabled = translucentMode && !panelOutlineEnabled, shape = shape),
+        shape = shape,
+        color = if (translucentMode) surfaceColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha)) else surfaceColor,
+        tonalElevation = if (translucentMode) 0.dp else 3.dp,
+        shadowElevation = if (translucentMode) 0.dp else 8.dp
+    ) {
+        // In-window, so it tracks the surface every frame (reveal, panel open) instead of
+        // waiting for a separate blur window to catch up.
+        GlassBackdrop(
+            enabled = translucentMode,
+            cornerRadius = cornerRadius,
+            tint = surfaceColor.copy(alpha = translucentAlpha),
+            content = content
+        )
+    }
+}
+
+@Composable
+private fun QuickControlsPanel(
+    taskbarViewModel: TaskbarViewModel,
+    appMenuViewModel: AppMenuViewModel,
+    surfaceColor: Color
+) {
+    val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
+    val controlsOrder by taskbarViewModel.controlsOrder.collectAsState()
+    val controlsDisabledIds by taskbarViewModel.controlsDisabledIds.collectAsState()
+    val musicPanelEnabled by taskbarViewModel.musicPanelEnabled.collectAsState()
+    val musicPanelVisible by appMenuViewModel.musicPanelVisible.collectAsState()
+    val quickSettingsPanelEnabled by taskbarViewModel.quickSettingsPanelEnabled.collectAsState()
+    val quickSettingsPanelVisible by appMenuViewModel.quickSettingsPanelVisible.collectAsState()
+    val pinDockControlEnabled by taskbarViewModel.pinDockControlEnabled.collectAsState()
+    val isDockPinned by taskbarViewModel.isDockPinned.collectAsState()
+    val quickControls by appMenuViewModel.quickControlsState.collectAsState()
+    val density = LocalDensity.current
+
+    val quickControlItems = quickControls.toItems(controlsOrder, controlsDisabledIds)
+    val pinDockLabel = stringResource(R.string.quick_control_pin_dock_label)
+    val musicLabel = stringResource(R.string.taskbar_music_control_label)
+    val quickSettingsLabel = stringResource(R.string.quick_control_settings_label)
+    val extraTiles = buildList<Pair<QuickControlItemData, () -> Unit>> {
+        if (pinDockControlEnabled) add(QuickControlItemData(id = "pin_dock", label = pinDockLabel, active = isDockPinned, icon = Icons.Filled.PushPin) to { taskbarViewModel.toggleDockPinned() })
+        if (musicPanelEnabled) add(QuickControlItemData(id = "music", label = musicLabel, active = musicPanelVisible, icon = Icons.Filled.MusicNote) to { appMenuViewModel.toggleMusicPanel() })
+        if (quickSettingsPanelEnabled) add(QuickControlItemData(id = "quick_settings", label = quickSettingsLabel, active = quickSettingsPanelVisible, icon = Icons.Filled.Settings) to { appMenuViewModel.toggleQuickSettingsPanel() })
+    }
+
+    val dragOffset = remember { Animatable(0f) }
+    val scope = rememberCoroutineScope()
+
+    DockSurface(
+        taskbarViewModel = taskbarViewModel,
+        surfaceColor = surfaceColor,
+        shape = RoundedCornerShape(taskbarSettings.cornerRadiusDp.dp),
+        cornerRadius = taskbarSettings.cornerRadiusDp.dp,
+        modifier = Modifier
+            .fillMaxWidth()
+            .graphicsLayer { translationY = dragOffset.value }
+            .pointerInput(taskbarSettings.heightDp) {
+                val closeThresholdPx = with(density) { taskbarSettings.heightDp.dp.toPx() } * 0.4f
+                detectVerticalDragGestures(
+                    onDragEnd = {
+                        if (dragOffset.value >= closeThresholdPx) taskbarViewModel.collapseDock()
+                        scope.launch { dragOffset.animateTo(0f, tween(180)) }
+                    },
+                    onDragCancel = { scope.launch { dragOffset.animateTo(0f, tween(180)) } }
+                ) { _, dy ->
+                    scope.launch { dragOffset.snapTo((dragOffset.value + dy).coerceAtLeast(0f)) }
+                }
+            }
+    ) {
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(taskbarSettings.heightDp.dp),
+            contentPadding = PaddingValues(horizontal = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            items(extraTiles) { (data, onToggle) ->
+                QuickControlItem(
+                    item = data,
+                    onToggle = onToggle,
+                    showLabel = taskbarSettings.showControlLabels,
+                    tileSize = taskbarSettings.quickControlSizeDp.dp
+                )
+            }
+            items(quickControlItems) { item ->
+                QuickControlItem(
+                    item = item,
+                    onToggle = {
+                        appMenuViewModel.handleQuickControlAction(item.id)
+                        if (item.id in listOf("qr", "power", "screenshot", "lockscreen", "wifi", "bluetooth", "share"))
+                            taskbarViewModel.hideTaskbar()
+                        if (item.id in listOf("wifi", "bluetooth", "share")) {
+                            appMenuViewModel.dismissMusicPanel()
+                            appMenuViewModel.dismissCalculatorPanel()
+                        }
+                    },
+                    showLabel = taskbarSettings.showControlLabels,
+                    tileSize = taskbarSettings.quickControlSizeDp.dp
+                )
             }
         }
     }

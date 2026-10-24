@@ -186,7 +186,7 @@
     <string name="settings_disable_lockscreen_desc">Verhindert, dass die Auslöse-Pill das Dock auf dem Sperrbildschirm öffnet</string>
     <string name="settings_disable_lockscreen_title">Auf Sperrbildschirm deaktivieren</string>
     <string name="settings_enable_accessibility_button">Bedienungshilfen-Dienst aktivieren</string>
-    <string name="settings_enable_quick_controls_desc">Schnellzugriffe im Dock anzeigen. Nach oben wischen, um sie einzublenden. Nach unten wischen, um sie auszublenden.</string>
+    <string name="settings_enable_quick_controls_desc">Zeigt über dem Dock eine Schaltfläche, die das Schnellzugriff-Panel öffnet. Panel nach unten wischen oder außerhalb tippen, um es zu schließen.</string>
     <string name="settings_enable_quick_controls_title">Schnellzugriffe aktivieren</string>
     <string name="settings_enable_quick_settings_panel_desc">Zeigt ein Einstellungssymbol in den Schnellzugriffen im Dock und öffnet das Schnelleinstellungen-Panel</string>
     <string name="settings_enable_quick_settings_panel_title">Schnelleinstellungen aktivieren</string>

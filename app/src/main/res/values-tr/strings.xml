@@ -186,7 +186,7 @@
     <string name="settings_disable_lockscreen_desc">Tetikleme hapının kilit ekranında dock\'u açmasını engeller</string>
     <string name="settings_disable_lockscreen_title">Kilit Ekranında Devre Dışı Bırak</string>
     <string name="settings_enable_accessibility_button">Erişilebilirlik Hizmetini Etkinleştir</string>
-    <string name="settings_enable_quick_controls_desc">Dock\'ta hızlı kontrolleri göster. Hızlı kontrolleri göstermek için yukarı kaydırın. Gizlemek için aşağı kaydırın.</string>
+    <string name="settings_enable_quick_controls_desc">Dock\'un üzerinde hızlı kontroller panelini açan bir düğme göster. Kapatmak için paneli aşağı kaydırın veya dışına dokunun.</string>
     <string name="settings_enable_quick_controls_title">Hızlı Kontrolleri Etkinleştir</string>
     <string name="settings_enable_quick_settings_panel_desc">Dock\'taki hızlı kontrollerde bir ayarlar simgesi gösterir ve Hızlı Ayarlar paneline erişim sağlar</string>
     <string name="settings_enable_quick_settings_panel_title">Hızlı Ayarları Etkinleştir</string>

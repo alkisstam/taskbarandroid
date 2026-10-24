@@ -186,7 +186,7 @@
     <string name="settings_disable_lockscreen_desc">Prevent the trigger pill from opening the dock on the lock screen</string>
     <string name="settings_disable_lockscreen_title">Disable on Lock Screen</string>
     <string name="settings_enable_accessibility_button">Enable Accessibility Service</string>
-    <string name="settings_enable_quick_controls_desc">Show quick controls in the Dock. Swipe up to show the quick controls. Swipe down to hide them.</string>
+    <string name="settings_enable_quick_controls_desc">Show a button above the Dock that opens the quick controls panel. Swipe down on the panel or tap outside to close it.</string>
     <string name="settings_enable_quick_controls_title">Enable Quick Controls</string>
     <string name="settings_enable_quick_settings_panel_desc">Show a settings icon in Quick Controls in Dock and access the Quick Settings panel</string>
     <string name="settings_enable_quick_settings_panel_title">Enable Quick Settings</string>

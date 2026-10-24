@@ -186,7 +186,7 @@
     <string name="settings_disable_lockscreen_desc">מניעת פתיחת הדוק על ידי הידית במסך הנעילה</string>
     <string name="settings_disable_lockscreen_title">השבתה במסך הנעילה</string>
     <string name="settings_enable_accessibility_button">הפעלת שירות הנגישות</string>
-    <string name="settings_enable_quick_controls_desc">הצגת פקדים מהירים בדוק. החלקה למעלה מציגה אותם, למטה מסתירה אותם.</string>
+    <string name="settings_enable_quick_controls_desc">הצגת כפתור מעל הדוק שפותח את חלונית הפקדים המהירים. החלקה של החלונית למטה או הקשה מחוץ לה סוגרת אותה.</string>
     <string name="settings_enable_quick_controls_title">הפעלת פקדים מהירים</string>
     <string name="settings_enable_quick_settings_panel_desc">הצגת סמל הגדרות בפקדים המהירים בדוק וגישה ללוח ההגדרות המהירות</string>
     <string name="settings_enable_quick_settings_panel_title">הפעלת הגדרות מהירות</string>

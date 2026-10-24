@@ -186,7 +186,7 @@
     <string name="settings_disable_lockscreen_desc">Mencegah pil pemicu membuka dock di layar kunci</string>
     <string name="settings_disable_lockscreen_title">Nonaktifkan di Layar Kunci</string>
     <string name="settings_enable_accessibility_button">Aktifkan Layanan Aksesibilitas</string>
-    <string name="settings_enable_quick_controls_desc">Tampilkan kontrol cepat di Dock. Geser ke atas untuk menampilkan kontrol cepat. Geser ke bawah untuk menyembunyikannya.</string>
+    <string name="settings_enable_quick_controls_desc">Tampilkan tombol di atas Dock yang membuka panel kontrol cepat. Geser panel ke bawah atau ketuk di luar untuk menutupnya.</string>
     <string name="settings_enable_quick_controls_title">Aktifkan Kontrol Cepat</string>
     <string name="settings_enable_quick_settings_panel_desc">Menampilkan ikon pengaturan di Kontrol Cepat pada Dock dan mengakses panel Pengaturan Cepat</string>
     <string name="settings_enable_quick_settings_panel_title">Aktifkan Pengaturan Cepat</string>

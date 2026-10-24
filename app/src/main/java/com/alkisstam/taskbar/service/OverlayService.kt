@@ -73,6 +73,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import com.alkisstam.taskbar.ui.taskbar.QuickControlsButtonGap
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -514,6 +516,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private var blurRadiusDp: Float = 24f
     private var taskbarInteractive: Boolean = true
     private var dockTouchProxy: View? = null
+    private var quickControlsButtonTouchProxy: View? = null
     // Window flag swaps mid-gesture can cancel it (e.g. swipe-up expand), so hold the latest
     // dock window state until the finger lifts.
     private var dockTouchActive = false
@@ -597,9 +600,9 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 taskbarViewModel.isTaskbarVisible,
                 appMenuViewModel.menuVisible,
                 pinnedAtRest,
-                taskbarViewModel.dockBounds,
+                combine(taskbarViewModel.dockBounds, taskbarViewModel.quickControlsButtonBounds, ::Pair),
                 dockHostShown
-            ) { taskbarVisible, menuOpen, atRest, bounds, shown ->
+            ) { taskbarVisible, menuOpen, atRest, (bounds, buttonBounds), shown ->
                 DockWindowState(
                     taskbarVisible = taskbarVisible,
                     pinnedAtRest = atRest,
@@ -607,7 +610,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     // open, otherwise taps meant for the menu's dismiss-scrim (in overlayView,
                     // stacked above it) never reach it and the menu can only be closed via back.
                     interactive = taskbarVisible && !menuOpen && !atRest,
-                    proxyBounds = if (atRest && shown) bounds else null
+                    proxyBounds = if (atRest && shown) bounds else null,
+                    buttonProxyBounds = if (atRest && shown) buttonBounds else null
                 )
             }
                 .distinctUntilChanged()
@@ -621,13 +625,16 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private fun applyDockWindowState(state: DockWindowState) {
         isTaskbarVisibleForBack = state.taskbarVisible && !state.pinnedAtRest
         if (state.interactive != taskbarInteractive) setTaskbarFlags(state.interactive)
-        val proxy = dockTouchProxy ?: return
         val margin = (PINNED_TOUCH_MARGIN_DP * resources.displayMetrics.density).toInt()
-        val rect = state.proxyBounds?.let {
-            android.graphics.Rect(it.left - margin, it.top - margin, it.right + margin, it.bottom + margin)
-        }
-        try { windowManager.updateViewLayoutKeepingType(proxy, dockTouchProxyLayoutParams(rect)) }
-        catch (e: Exception) { Log.w(TAG, "Failed to update dock touch proxy", e) }
+        listOf(dockTouchProxy to state.proxyBounds, quickControlsButtonTouchProxy to state.buttonProxyBounds)
+            .forEach { (proxy, bounds) ->
+                proxy ?: return@forEach
+                val rect = bounds?.let {
+                    android.graphics.Rect(it.left - margin, it.top - margin, it.right + margin, it.bottom + margin)
+                }
+                try { windowManager.updateViewLayoutKeepingType(proxy, dockTouchProxyLayoutParams(rect)) }
+                catch (e: Exception) { Log.w(TAG, "Failed to update dock touch proxy", e) }
+            }
     }
 
     private fun trackDockTouch(ev: MotionEvent) {
@@ -643,29 +650,39 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private fun addDockTouchProxy() {
         dockTouchProxy?.let { removeViewFromAnyWM(it) }
         dockTouchProxy = null
-        val proxy = object : View(this) {
-            private val hostOrigin = IntArray(2)
-            private val ownOrigin = IntArray(2)
-            override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-                val host = taskbarView ?: return false
-                trackDockTouch(ev)
-                host.getLocationOnScreen(hostOrigin)
-                getLocationOnScreen(ownOrigin)
-                val forwarded = MotionEvent.obtain(ev)
-                forwarded.offsetLocation((ownOrigin[0] - hostOrigin[0]).toFloat(), (ownOrigin[1] - hostOrigin[1]).toFloat())
-                host.dispatchTouchEvent(forwarded)
-                forwarded.recycle()
-                return true
-            }
-        }
-        try {
-            windowManager.addView(proxy, dockTouchProxyLayoutParams(null))
-            dockTouchProxy = proxy
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to add dock touch proxy", e)
-        }
+        quickControlsButtonTouchProxy?.let { removeViewFromAnyWM(it) }
+        quickControlsButtonTouchProxy = null
+        dockTouchProxy = newDockTouchProxy()
+        quickControlsButtonTouchProxy = newDockTouchProxy()
         dockTouchActive = false
         latestDockWindowState?.let { applyDockWindowState(it) }
+    }
+
+    private fun forwardTouchToDock(from: View, ev: MotionEvent): Boolean {
+        val host = taskbarView ?: return false
+        val hostOrigin = IntArray(2).also { host.getLocationOnScreen(it) }
+        val ownOrigin = IntArray(2).also { from.getLocationOnScreen(it) }
+        val forwarded = MotionEvent.obtain(ev)
+        forwarded.offsetLocation((ownOrigin[0] - hostOrigin[0]).toFloat(), (ownOrigin[1] - hostOrigin[1]).toFloat())
+        host.dispatchTouchEvent(forwarded)
+        forwarded.recycle()
+        return true
+    }
+
+    private fun newDockTouchProxy(): View? {
+        val proxy = object : View(this) {
+            override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+                trackDockTouch(ev)
+                return forwardTouchToDock(this, ev)
+            }
+        }
+        return try {
+            windowManager.addView(proxy, dockTouchProxyLayoutParams(null))
+            proxy
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to add dock touch proxy", e)
+            null
+        }
     }
 
     private fun observePillPosition() {
@@ -740,12 +757,22 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 taskbarViewModel.taskbarSettings,
                 appMenuViewModel.menuVisible,
                 taskbarViewModel.dockExpandProgress,
-                taskbarViewModel.navBarInsetDp
-            ) { settings, menuOpen, expandProgress, navInset ->
-                val baseY = maxOf(settings.dockPadding.bottomGapDp, navInset) + settings.heightDp + 16f + 24f + expandProgress * (settings.heightDp + 1f)
+                taskbarViewModel.navBarInsetDp,
+                combine(
+                    taskbarViewModel.quickControlsEnabled,
+                    taskbarViewModel.dockBounds.map { it?.height }.distinctUntilChanged(),
+                    ::Pair
+                )
+            ) { settings, menuOpen, expandProgress, navInset, (quickControlsEnabled, dockHeightPx) ->
+                val bottomGap = maxOf(settings.dockPadding.bottomGapDp, navInset)
+                val baseY = bottomGap + settings.heightDp + 16f + 24f + expandProgress * (settings.heightDp + 8f)
                 volumePanelYOffsetDp = baseY
-                if (menuOpen) baseY + 400f else baseY
-            }.collect { yOffset ->
+                // Beside the quick controls button: share its row, just above the dock.
+                val y = if (quickControlsEnabled && expandProgress == 0f && dockHeightPx != null)
+                    bottomGap + dockHeightPx / resources.displayMetrics.density + QuickControlsButtonGap.value
+                else baseY
+                if (menuOpen) y + 400f else y
+            }.distinctUntilChanged().collect { yOffset ->
                 musicPanelYOffsetDp = yOffset
                 val view = musicPanelView ?: return@collect
                 try { windowManager.updateViewLayoutKeepingType(view, musicPanelLayoutParams(musicPanelYOffsetDp, translucentModeEnabled)) }
@@ -803,7 +830,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             }.collect { (volumeVisible, brightnessVisible, calculatorVisible) ->
                 val settings = taskbarViewModel.taskbarSettings.value
                 val dockExpanded = taskbarViewModel.isDockExpanded.value
-                val yOffset = maxOf(settings.dockPadding.bottomGapDp, navBarInsetDp()) + settings.heightDp + 16f + (if (dockExpanded) settings.heightDp + 25f else 24f)
+                val yOffset = maxOf(settings.dockPadding.bottomGapDp, navBarInsetDp()) + settings.heightDp + 16f + (if (dockExpanded) settings.heightDp + 32f else 24f)
 
                 val scrimActive = volumeVisible || brightnessVisible || calculatorVisible
                 setVolumeScrimActive(scrimActive)
@@ -1221,9 +1248,25 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     )
                 }
             }
-            composeView.visibility = View.VISIBLE
-            musicPanelView = composeView
-            windowManager.addView(composeView, musicPanelLayoutParams(musicPanelYOffsetDp, translucentModeEnabled))
+            // The window spans the screen width, so it covers the quick controls button the
+            // panel sits beside; hand touches that start on the button to the dock.
+            val wrapper = object : FrameLayout(this) {
+                private var forwarding = false
+                override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+                    if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
+                        val b = taskbarViewModel.quickControlsButtonBounds.value
+                        forwarding = b != null && ev.rawX >= b.left && ev.rawX < b.right && ev.rawY >= b.top && ev.rawY < b.bottom
+                    }
+                    return if (forwarding) forwardTouchToDock(this, ev) else super.dispatchTouchEvent(ev)
+                }
+            }
+            wrapper.setViewTreeLifecycleOwner(this@OverlayService)
+            wrapper.setViewTreeViewModelStoreOwner(this@OverlayService)
+            wrapper.setViewTreeSavedStateRegistryOwner(this@OverlayService)
+            wrapper.addView(composeView)
+            wrapper.visibility = View.VISIBLE
+            musicPanelView = wrapper
+            windowManager.addView(wrapper, musicPanelLayoutParams(musicPanelYOffsetDp, translucentModeEnabled))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add music panel view", e)
             musicPanelView = null
@@ -1603,6 +1646,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         overlayView?.let { removeViewFromAnyWM(it) }; overlayView = null
         taskbarView?.let { removeViewFromAnyWM(it) }; taskbarView = null
         dockTouchProxy?.let { removeViewFromAnyWM(it) }; dockTouchProxy = null
+        quickControlsButtonTouchProxy?.let { removeViewFromAnyWM(it) }; quickControlsButtonTouchProxy = null
         pillView?.let { removeViewFromAnyWM(it) }; pillView = null
         removePillView2()
         searchView?.let { removeViewFromAnyWM(it) }; searchView = null
@@ -1722,5 +1766,6 @@ private data class DockWindowState(
     val taskbarVisible: Boolean,
     val pinnedAtRest: Boolean,
     val interactive: Boolean,
-    val proxyBounds: IntRect?
+    val proxyBounds: IntRect?,
+    val buttonProxyBounds: IntRect?
 )

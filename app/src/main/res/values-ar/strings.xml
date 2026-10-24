@@ -186,7 +186,7 @@
     <string name="settings_disable_lockscreen_desc">منع مقبض التفعيل من فتح الرصيف على شاشة القفل</string>
     <string name="settings_disable_lockscreen_title">تعطيل على شاشة القفل</string>
     <string name="settings_enable_accessibility_button">تفعيل خدمة إمكانية الوصول</string>
-    <string name="settings_enable_quick_controls_desc">إظهار عناصر التحكم السريع في الرصيف. مرر لأعلى لإظهارها ولأسفل لإخفائها.</string>
+    <string name="settings_enable_quick_controls_desc">إظهار زر فوق الرصيف يفتح لوحة عناصر التحكم السريع. مرر اللوحة لأسفل أو انقر خارجها لإغلاقها.</string>
     <string name="settings_enable_quick_controls_title">تفعيل عناصر التحكم السريع</string>
     <string name="settings_enable_quick_settings_panel_desc">إظهار أيقونة الإعدادات في عناصر التحكم السريع في الرصيف والوصول إلى لوحة الإعدادات السريعة</string>
     <string name="settings_enable_quick_settings_panel_title">تفعيل الإعدادات السريعة</string>
