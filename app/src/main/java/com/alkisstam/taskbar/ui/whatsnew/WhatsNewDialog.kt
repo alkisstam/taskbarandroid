@@ -275,6 +275,18 @@ val whatsNewReleases = listOf(
             "The pill and a pinned dock now hide while the keyboard or notification panel is open",
             "New notice in Settings when the Accessibility Service is off"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.5.12",
+        versionCode = 66,
+        highlights = listOf(
+            "Floating windows — turn on in Settings → General, then long-press any app and choose Open in floating window. Devices without built-in support need Shizuku",
+            "Quick Controls now open in their own panel from a new pill above the dock, which also holds the Music button",
+            "New Swipe In action for side pills, which no longer trigger Back",
+            "Every pill gesture gets an action dropdown, with new Show App Menu and Search Apps actions",
+            "Dock handle removed; panels sit closer to the dock",
+            "Fixed the dock and pill disappearing in Instagram, Camera, Maps and similar apps"
+        )
     )
 )
 
