@@ -226,6 +226,7 @@ fun TaskbarView(
                     // boundsInWindow includes the parent's reveal translation, so the blur
                     // window sees the dock moving and waits for it to settle.
                     taskbarViewModel.setDockBounds(coords.boundsOnScreen(hostView))
+                    taskbarViewModel.setDockHeightPx(coords.size.height)
                 }
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {

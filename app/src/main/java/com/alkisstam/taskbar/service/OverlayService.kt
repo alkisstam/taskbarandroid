@@ -512,6 +512,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private var volumePanelYOffsetDp: Float = 0f
     private var musicPanelYOffsetDp: Float = 0f
+    private var musicPanelActive = false
     private var translucentModeEnabled: Boolean = false
     private var blurRadiusDp: Float = 24f
     private var taskbarInteractive: Boolean = true
@@ -760,7 +761,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 taskbarViewModel.navBarInsetDp,
                 combine(
                     taskbarViewModel.quickControlsEnabled,
-                    taskbarViewModel.dockBounds.map { it?.height }.distinctUntilChanged(),
+                    taskbarViewModel.dockHeightPx,
                     ::Pair
                 )
             ) { settings, menuOpen, expandProgress, navInset, (quickControlsEnabled, dockHeightPx) ->
@@ -775,14 +776,36 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             }.distinctUntilChanged().collect { yOffset ->
                 musicPanelYOffsetDp = yOffset
                 val view = musicPanelView ?: return@collect
-                try { windowManager.updateViewLayoutKeepingType(view, musicPanelLayoutParams(musicPanelYOffsetDp, translucentModeEnabled)) }
+                try { windowManager.updateViewLayoutKeepingType(view, musicPanelLayoutParams(musicPanelYOffsetDp, translucentModeEnabled, musicPanelActive)) }
                 catch (e: Exception) { Log.w(TAG, "Failed to update music panel position", e) }
             }
         }
     }
 
+    // The window keeps the panel's height even while it is hidden (a wrap-content window
+    // visibly grows into place when the panel opens), so it must not take touches then.
     private fun observeMusicPanelVisibility() {
         musicPanelView?.visibility = View.VISIBLE
+        serviceScope.launch {
+            combine(
+                combine(
+                    taskbarViewModel.musicPanelEnabled,
+                    appMenuViewModel.musicPanelVisible,
+                    appMenuViewModel.alwaysShowMusicPanel,
+                    appMenuViewModel.mediaState.map { it.hasSession }
+                ) { enabled, visible, always, hasSession -> enabled && visible && (hasSession || always) },
+                appMenuViewModel.isSearching,
+                appMenuViewModel.menuVisible,
+                taskbarViewModel.isTaskbarVisible
+            ) { show, searching, menuOpen, dockVisible -> show && !searching && !menuOpen && dockVisible }
+                .distinctUntilChanged()
+                .collect { active ->
+                    musicPanelActive = active
+                    val view = musicPanelView ?: return@collect
+                    try { windowManager.updateViewLayoutKeepingType(view, musicPanelLayoutParams(musicPanelYOffsetDp, translucentModeEnabled, active)) }
+                    catch (e: Exception) { Log.w(TAG, "Failed to update music panel touchability", e) }
+                }
+        }
     }
 
     private fun observeTranslucentMode() {
@@ -799,7 +822,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     catch (e: Exception) { Log.w(TAG, "Failed to update brightness panel blur", e) }
                 }
                 musicPanelView?.let { view ->
-                    try { windowManager.updateViewLayoutKeepingType(view, musicPanelLayoutParams(musicPanelYOffsetDp, translucentModeEnabled)) }
+                    try { windowManager.updateViewLayoutKeepingType(view, musicPanelLayoutParams(musicPanelYOffsetDp, translucentModeEnabled, musicPanelActive)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update music panel blur", e) }
                 }
                 calculatorPanelView?.let { view ->
@@ -1266,7 +1289,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             wrapper.addView(composeView)
             wrapper.visibility = View.VISIBLE
             musicPanelView = wrapper
-            windowManager.addView(wrapper, musicPanelLayoutParams(musicPanelYOffsetDp, translucentModeEnabled))
+            windowManager.addView(wrapper, musicPanelLayoutParams(musicPanelYOffsetDp, translucentModeEnabled, musicPanelActive))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add music panel view", e)
             musicPanelView = null

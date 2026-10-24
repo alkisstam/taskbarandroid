@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -35,6 +36,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.MediaState
@@ -55,13 +57,15 @@ fun MusicPanel(
     translucentMode: Boolean = false,
     translucentAlpha: Float = 0.80f,
     grainAlpha: Float = 0.10f,
-    cornerRadiusDp: Float = 16f,
+    heightDp: Float = 60f,
     dockWidthFraction: Float = 0.98f,
     onArtworkClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val surfaceColor = MaterialTheme.colorScheme.surface
-    val cornerShape = RoundedCornerShape(cornerRadiusDp.dp)
+    val cornerShape = RoundedCornerShape(percent = 50)
+    val height = heightDp.dp
+    val artSize = (height - 16.dp).coerceAtMost(44.dp)
     Surface(
         shape = cornerShape,
         color = if (translucentMode) surfaceColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha)) else surfaceColor,
@@ -75,12 +79,14 @@ fun MusicPanel(
             .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
             .glassSheen(enabled = translucentMode && !panelOutlineEnabled, shape = cornerShape)
     ) {
-        GlassBackdrop(enabled = translucentMode, cornerRadius = cornerRadiusDp.dp, tint = surfaceColor.copy(alpha = translucentAlpha), windowBlur = true) {
+        GlassBackdrop(enabled = translucentMode, cornerRadius = height / 2, tint = surfaceColor.copy(alpha = translucentAlpha), windowBlur = true) {
             Row(
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+                modifier = Modifier
+                    .height(height)
+                    .padding(horizontal = ((height - artSize) / 2).coerceAtLeast(8.dp)),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                AlbumArt(bitmap = mediaState.albumArt, onClick = onArtworkClick)
+                AlbumArt(bitmap = mediaState.albumArt, size = artSize, onClick = onArtworkClick)
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
@@ -140,10 +146,10 @@ fun MusicPanel(
 }
 
 @Composable
-private fun AlbumArt(bitmap: Bitmap?, onClick: (() -> Unit)? = null) {
+private fun AlbumArt(bitmap: Bitmap?, size: Dp, onClick: (() -> Unit)? = null) {
     Box(
         modifier = Modifier
-            .size(44.dp)
+            .size(size)
             .clip(CircleShape)
             .background(MaterialTheme.colorScheme.surfaceVariant.glass())
             .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier),
@@ -154,7 +160,7 @@ private fun AlbumArt(bitmap: Bitmap?, onClick: (() -> Unit)? = null) {
                 bitmap = bitmap.asImageBitmap(),
                 contentDescription = stringResource(R.string.music_panel_album_art_description),
                 modifier = Modifier
-                    .size(44.dp)
+                    .size(size)
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop
             )

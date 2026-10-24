@@ -349,6 +349,12 @@ class TaskbarViewModel @Inject constructor(
 
     fun setDockBounds(bounds: IntRect?) { _dockBounds.value = bounds }
 
+    // Unclipped layout height; dockBounds shrinks while the dock slides in from off-screen.
+    private val _dockHeightPx = MutableStateFlow<Int?>(null)
+    val dockHeightPx: StateFlow<Int?> = _dockHeightPx.asStateFlow()
+
+    fun setDockHeightPx(height: Int) { _dockHeightPx.value = height }
+
     // Pinned dock: the touch proxy needs this too, the button sits outside the dock bounds.
     private val _quickControlsButtonBounds = MutableStateFlow<IntRect?>(null)
     val quickControlsButtonBounds: StateFlow<IntRect?> = _quickControlsButtonBounds.asStateFlow()

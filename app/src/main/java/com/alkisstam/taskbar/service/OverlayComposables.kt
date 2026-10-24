@@ -28,6 +28,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
@@ -36,6 +37,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.snapshotFlow
+import kotlinx.coroutines.flow.first
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -590,16 +593,31 @@ internal fun MusicPanelContent(
     val panelShouldShow = musicPanelEnabled && (mediaState.hasSession || alwaysShowMusicPanel) && musicPanelVisible && !isSearching && !menuVisible
 
     val revealAnim = remember { Animatable(0f) }
-    var panelHeightPx by remember { mutableFloatStateOf(0f) }
+    var panelWidthPx by remember { mutableFloatStateOf(0f) }
 
-    LaunchedEffect(panelShouldShow, isTaskbarVisible, dockRevealProgress) {
+    // Mirrors the dock's reveal spring in OverlayContent, so the panel can wait for the quick
+    // controls button to rise into place before sliding out from behind it.
+    val dockAnim = remember { Animatable(0f) }
+    LaunchedEffect(isTaskbarVisible, dockRevealProgress) {
         when {
-            panelShouldShow && isTaskbarVisible ->
-                revealAnim.animateTo(1f, spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium))
-            !panelShouldShow || dockRevealProgress == 0f ->
-                revealAnim.animateTo(0f, tween(220))
-            panelShouldShow ->
-                revealAnim.snapTo(dockRevealProgress)
+            isTaskbarVisible ->
+                dockAnim.animateTo(1f, spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium))
+            dockRevealProgress == 0f ->
+                dockAnim.animateTo(0f, tween(220))
+            else ->
+                dockAnim.snapTo(dockRevealProgress)
+        }
+    }
+
+    LaunchedEffect(panelShouldShow, isTaskbarVisible) {
+        if (panelShouldShow && isTaskbarVisible) {
+            snapshotFlow { dockAnim.value }.first { it >= 0.98f }
+            revealAnim.animateTo(1f, spring(stiffness = Spring.StiffnessMediumLow))
+        } else if (!isTaskbarVisible) {
+            // Its window can't follow the button down, so don't leave it floating there.
+            revealAnim.snapTo(0f)
+        } else {
+            revealAnim.animateTo(0f, tween(220))
         }
     }
 
@@ -614,7 +632,10 @@ internal fun MusicPanelContent(
     // the window to the button's row in the same state.
     val besideButton = quickControlsEnabled && !isDockExpanded
     val buttonBounds by taskbarViewModel.quickControlsButtonBounds.collectAsState()
-    val buttonWidth = with(LocalDensity.current) { (buttonBounds?.width ?: 0).toDp() }
+    // Bounds clear while the dock is hidden; keep the last width so the inset doesn't grow from 0 on reveal.
+    var lastButtonWidthPx by remember { mutableIntStateOf(0) }
+    buttonBounds?.let { lastButtonWidthPx = it.width }
+    val buttonWidth = with(LocalDensity.current) { lastButtonWidthPx.toDp() }
     val buttonInset by animateDpAsState(
         if (besideButton && buttonWidth > 0.dp) buttonWidth + QuickControlsButtonGap else 0.dp,
         label = "musicButtonInset"
@@ -622,7 +643,8 @@ internal fun MusicPanelContent(
     val buttonOnLeft = taskbarSettings.appMenuButtonSide == AppMenuButtonSide.LEFT
 
     TaskBarTheme(themeMode = themeMode) {
-        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+        // Fixed height: OverlayService keeps the window touch-transparent while the panel is hidden.
+        Box(modifier = Modifier.fillMaxWidth().height(taskbarSettings.heightDp.dp), contentAlignment = Alignment.Center) {
             if (revealAnim.value > 0.001f) {
                 MusicPanel(
                     mediaState = mediaState,
@@ -633,7 +655,7 @@ internal fun MusicPanelContent(
                     translucentMode = translucentMode,
                     translucentAlpha = translucentAlpha,
                     grainAlpha = grainAlpha,
-                    cornerRadiusDp = taskbarSettings.cornerRadiusDp,
+                    heightDp = taskbarSettings.heightDp,
                     dockWidthFraction = 1f,
                     onArtworkClick = {
                         if (mediaState.packageName.isNotEmpty()) {
@@ -645,9 +667,10 @@ internal fun MusicPanelContent(
                     modifier = Modifier
                         .fillMaxWidth(taskbarSettings.dockPadding.widthFraction)
                         .padding(start = if (buttonOnLeft) buttonInset else 0.dp, end = if (buttonOnLeft) 0.dp else buttonInset)
-                        .onGloballyPositioned { panelHeightPx = it.size.height.toFloat() }
+                        .onGloballyPositioned { panelWidthPx = it.size.width.toFloat() }
                         .graphicsLayer {
-                            translationY = panelHeightPx * (1f - revealAnim.value)
+                            // Slides from the quick controls button's side, like the quick controls panel.
+                            translationX = panelWidthPx * (1f - revealAnim.value) * (if (buttonOnLeft) -1f else 1f)
                             alpha = revealAnim.value
                         }
                 )
