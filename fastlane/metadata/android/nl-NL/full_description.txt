@@ -1,0 +1,55 @@
+Floating Dock voegt een taakbalk zoals op een computer toe aan elke Android-telefoon of -tablet. Je vastgezette apps, een app-menu, snelle bediening en handige panelen zweven boven elke app, één gebaar verwijderd.
+
+DOCK
+- Vastgezette apps in een zwevende dock met tijd, datum en batterijniveau
+- Zet de dock vast zodat hij in beeld blijft, of laat hem verborgen tot je hem nodig hebt
+- Hoogte, icoongrootte en -afstand, hoekradius en randafstand instelbaar
+- Verbergt zich automatisch in apps op volledig scherm, in liggende stand, onder het toetsenbord en het meldingenpaneel, en kan zich verbergen op het vergrendelscherm
+
+PIL
+- Een kleine pil onderaan of aan de linker-, rechter- of beide schermranden
+- Kies een actie voor Dubbeltikken, Omhoog swipen, Omlaag swipen en Inswipen: dock, app-menu, apps zoeken, meldingen, snelle instellingen, aan/uit-menu, screenshot, zaklamp of scherm vergrendelen
+- Houd vast en sleep op de pil om helderheid of volume te wijzigen
+- Zijpillen activeren het Terug-gebaar niet
+- Grootte, dekking, positie en kleur instelbaar
+
+APP-MENU & ZOEKEN
+- App-menu boven de dock met een rij recente apps
+- Sorteer op naam, installatiedatum of meest gebruikt; verberg apps die je niet nodig hebt
+- Snel zoeken dat tikfouten vergeeft
+- Druk lang op een app om hem vast te zetten, te verbergen of in een zwevend venster te openen
+
+ZWEVENDE VENSTERS
+- Open apps in zwevende vensters van aanpasbaar formaat via het lang-drukken-menu, of bij elke tik
+- Onthoudt per app de grootte en positie van het venster
+- Werkt op apparaten met ingebouwde ondersteuning voor zwevende vensters; andere apparaten hebben de gratis app Shizuku nodig
+
+SNELLE BEDIENING
+- Een paneel met bediening dat opent vanaf de pil boven de dock
+- Zaklamp, belmodus, automatisch draaien, helderheid, volume, Niet storen, wifi, Bluetooth, screenshot, scherm vergrendelen, aan/uit-menu, QR-scanner, cafeïne (scherm aan houden), delen, rekenmachine, klembord, notities en meldingsgeschiedenis
+- Wijzig de volgorde of zet uit wat je niet gebruikt
+
+PANELEN
+- Muziek: albumhoes en afspeelknoppen voor wat er speelt
+- Klembord: bewaar tekst, links, afbeeldingen en bestanden via het deelmenu en markeer favorieten
+- Notities & to-do's: snelle notities en checklists
+- Meldingsgeschiedenis: recente meldingen gegroepeerd per app
+- Rekenmachine, volume (per stream) en helderheid
+
+ONTWERP
+- Dynamische kleuren van Material You, thema Licht / Donker / Systeem
+- Glasmodus met echte achtergrondvervaging (ook Samsung matglas), transparantie, tint en korrel
+- Kleurtintvoorinstellingen voor de dock en panelen
+- Icoonpakketten en icoonvormen (vierkant, squircle, cirkel)
+
+MEER
+- Back-up en herstel van al je instellingen
+- Start automatisch na opnieuw opstarten
+- Haptische feedback
+- Beschikbaar in 17 talen
+
+TOEGANKELIJKHEIDSSERVICE
+De toegankelijkheidsservice is optioneel. Ingeschakeld laat hij de dock boven de navigatiebalk verschijnen, herkent hij wanneer je naar het startscherm gaat en voert hij acties uit zoals scherm vergrendelen, screenshots, meldingen en snelle instellingen. Niets van wat hij op het scherm ziet of wat je typt wordt verzameld of verstuurd.
+
+PRIVACY
+Floating Dock verzamelt, bewaart en deelt geen persoonsgegevens. Je klembord, notities en instellingen blijven op je apparaat. Alleen anonieme crashrapporten worden verstuurd om bugs op te lossen. Rechten worden alleen gebruikt om de dock te laten werken.

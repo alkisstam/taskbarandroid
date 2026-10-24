@@ -1,0 +1,55 @@
+Floating Dock añade una barra de tareas de escritorio a cualquier teléfono o tablet Android. Tus apps fijadas, un menú de apps, controles rápidos y paneles útiles flotan sobre cualquier app, a un gesto de distancia.
+
+DOCK
+- Apps fijadas en un dock flotante con la hora, la fecha y el nivel de batería
+- Fija el dock para que siga en pantalla, o déjalo oculto hasta que lo necesites
+- Altura, tamaño y separación de iconos, radio de esquinas y margen ajustables
+- Se oculta automáticamente en apps a pantalla completa, en horizontal, bajo el teclado y el panel de notificaciones, y puede ocultarse en la pantalla de bloqueo
+
+PÍLDORA
+- Una pequeña píldora abajo o en el borde izquierdo, derecho o en ambos
+- Elige una acción para Doble toque, Deslizar hacia arriba, Deslizar hacia abajo y Deslizar hacia dentro: mostrar el dock, el menú de apps, la búsqueda, las notificaciones, los ajustes rápidos, el menú de apagado, captura de pantalla, linterna o bloqueo de pantalla
+- Mantén y arrastra sobre la píldora para cambiar el brillo o el volumen
+- Las píldoras laterales no activan el gesto Atrás
+- Tamaño, opacidad, posición y color ajustables
+
+MENÚ DE APPS Y BÚSQUEDA
+- Menú de apps sobre el dock con una fila de apps recientes
+- Ordena por nombre, fecha de instalación o más usadas; oculta las apps que no necesitas
+- Búsqueda rápida que tolera errores de escritura
+- Mantén presionada una app para fijarla, ocultarla o abrirla en una ventana flotante
+
+VENTANAS FLOTANTES
+- Abre apps en ventanas flotantes redimensionables desde el menú de presión prolongada, o haz que cada toque abra una
+- Recuerda el tamaño y la posición de la ventana de cada app
+- Funciona en dispositivos con soporte integrado para ventanas flotantes; los demás necesitan la app gratuita Shizuku
+
+CONTROLES RÁPIDOS
+- Un panel de controles que se abre desde la píldora sobre el dock
+- Linterna, modo de sonido, rotación automática, brillo, volumen, No molestar, Wi-Fi, Bluetooth, captura de pantalla, bloqueo de pantalla, menú de apagado, lector de QR, cafeína (mantener la pantalla encendida), compartir, calculadora, portapapeles, notas e historial de notificaciones
+- Reordénalos o desactiva los que no uses
+
+PANELES
+- Música: carátula y controles de reproducción de lo que esté sonando
+- Portapapeles: guarda textos, enlaces, imágenes y archivos desde el menú Compartir y marca favoritos
+- Notas y tareas: notas rápidas y listas de tareas
+- Historial de notificaciones: notificaciones recientes agrupadas por app
+- Paneles de calculadora, volumen (por canal) y brillo
+
+DISEÑO
+- Colores dinámicos de Material You, tema Claro / Oscuro / Sistema
+- Modo cristal con desenfoque real del fondo (incluido el cristal esmerilado de Samsung), transparencia, tono y grano
+- Tonos de color predefinidos para el dock y los paneles
+- Paquetes de iconos y formas de icono (cuadrado, squircle, círculo)
+
+MÁS
+- Copia de seguridad y restauración de todos los ajustes
+- Se inicia automáticamente tras reiniciar
+- Respuesta háptica
+- Disponible en 17 idiomas
+
+SERVICIO DE ACCESIBILIDAD
+El servicio de accesibilidad es opcional. Si lo activas, el dock puede mostrarse sobre la barra de navegación, detectar cuándo vas a la pantalla de inicio y ejecutar acciones como bloquear la pantalla, hacer capturas, abrir las notificaciones y los ajustes rápidos. Nada de lo que ve en pantalla ni de lo que escribes se recopila ni se envía a ningún sitio.
+
+PRIVACIDAD
+Floating Dock no recopila, almacena ni comparte tus datos personales. Tu portapapeles, tus notas y tus ajustes se quedan en tu dispositivo. Solo se envían informes de errores anónimos para corregir fallos. Los permisos solo se usan para que el dock funcione.

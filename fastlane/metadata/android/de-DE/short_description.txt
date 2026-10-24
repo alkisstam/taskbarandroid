@@ -1,0 +1,1 @@
+Schwebende Taskleiste mit angehefteten Apps, Schnellzugriffen und Fenstern

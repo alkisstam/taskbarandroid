@@ -1,0 +1,1 @@
+Barra de tarefas flutuante com apps fixados, controles rápidos e janelas

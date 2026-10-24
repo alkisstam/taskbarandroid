@@ -1,0 +1,55 @@
+O Floating Dock adiciona uma barra de tarefas no estilo desktop a qualquer celular ou tablet Android. Seus apps fixados, um menu de apps, controles rápidos e painéis úteis flutuam sobre qualquer app, a um gesto de distância.
+
+DOCK
+- Apps fixados em um Dock flutuante com hora, data e nível da bateria
+- Fixe o Dock para mantê-lo na tela, ou deixe-o escondido até precisar
+- Altura, tamanho e espaçamento dos ícones, cantos arredondados e margens ajustáveis
+- Se esconde automaticamente em apps em tela cheia, no modo paisagem, sob o teclado e a aba de notificações, e pode se esconder na tela de bloqueio
+
+PÍLULA
+- Uma pequena pílula embaixo ou na borda esquerda, direita ou nas duas
+- Escolha uma ação para Toque duplo, Deslizar para cima, Deslizar para baixo e Deslizar para dentro: mostrar o Dock, o menu de apps, a pesquisa, as notificações, as configurações rápidas, o menu de energia, captura de tela, lanterna ou bloqueio de tela
+- Segure e arraste na pílula para ajustar o brilho ou o volume
+- As pílulas laterais não acionam o gesto Voltar
+- Tamanho, opacidade, posição e cor ajustáveis
+
+MENU DE APPS E PESQUISA
+- Menu de apps acima do Dock com uma fileira de apps recentes
+- Ordene por nome, data de instalação ou mais usados; oculte os apps de que não precisa
+- Pesquisa rápida que tolera erros de digitação
+- Toque e segure um app para fixá-lo, ocultá-lo ou abri-lo em uma janela flutuante
+
+JANELAS FLUTUANTES
+- Abra apps em janelas flutuantes redimensionáveis pelo menu de toque longo, ou faça cada toque abrir uma
+- Lembra o tamanho e a posição da janela de cada app
+- Funciona em dispositivos com suporte nativo a janelas flutuantes; os demais precisam do app gratuito Shizuku
+
+CONTROLES RÁPIDOS
+- Um painel de controles que abre pela pílula acima do Dock
+- Lanterna, modo de toque, rotação automática, brilho, volume, Não perturbe, Wi-Fi, Bluetooth, captura de tela, bloqueio de tela, menu de energia, leitor de QR, cafeína (tela sempre ligada), compartilhar, calculadora, área de transferência, notas e histórico de notificações
+- Reorganize-os ou desative os que não usa
+
+PAINÉIS
+- Música: capa do álbum e controles do que estiver tocando
+- Área de transferência: salve textos, links, imagens e arquivos pelo menu Compartilhar e marque favoritos
+- Notas e tarefas: notas rápidas e listas de tarefas
+- Histórico de notificações: notificações recentes agrupadas por app
+- Painéis de calculadora, volume (por canal) e brilho
+
+DESIGN
+- Cores dinâmicas do Material You, tema Claro / Escuro / Sistema
+- Modo vidro com desfoque real do fundo (incluindo o vidro fosco da Samsung), transparência, tonalidade e granulado
+- Tonalidades predefinidas para o Dock e os painéis
+- Pacotes de ícones e formatos de ícone (quadrado, squircle, círculo)
+
+MAIS
+- Backup e restauração de todas as configurações
+- Inicia automaticamente após reiniciar
+- Feedback tátil
+- Disponível em 17 idiomas
+
+SERVIÇO DE ACESSIBILIDADE
+O serviço de acessibilidade é opcional. Quando ativado, permite que o Dock apareça sobre a barra de navegação, detecte quando você volta à tela inicial e execute ações como bloquear a tela, capturar a tela, abrir notificações e configurações rápidas. Nada do que ele vê na tela ou do que você digita é coletado ou enviado.
+
+PRIVACIDADE
+O Floating Dock não coleta, armazena nem compartilha seus dados pessoais. Sua área de transferência, notas e configurações ficam no seu dispositivo. Apenas relatórios de falhas anônimos são enviados para corrigir erros. As permissões são usadas só para o Dock funcionar.

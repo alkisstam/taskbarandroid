@@ -1,0 +1,55 @@
+Floating Dock adds a desktop-style taskbar to any Android phone or tablet. Your pinned apps, an app drawer, quick controls and handy panels float above every app, one gesture away.
+
+DOCK
+- Pinned apps in a floating dock with the time, date and battery level
+- Pin Dock keeps it on screen, or let it hide until you call it
+- Adjustable height, icon size and spacing, corner radius and edge padding
+- Hides automatically in fullscreen apps, in landscape, under the keyboard and the notification shade, and can hide on the lock screen
+
+TRIGGER PILL
+- A small pill at the bottom or on the left, right or both edges of the screen
+- Choose an action for Double-Tap, Swipe Up, Swipe Down and Swipe In: show the dock, App Menu, app search, notifications, quick settings, power menu, screenshot, flashlight or lock screen
+- Hold and Drag on the pill to change brightness or volume
+- Side pills don't trigger the Back gesture
+- Adjustable size, opacity, position and color
+
+APP MENU & SEARCH
+- App drawer above the dock with a row of recent apps
+- Sort by name, install date or most used; hide apps you don't need
+- Fast search with typo-tolerant matching
+- Long-press any app to pin it, hide it or open it in a floating window
+
+FLOATING WINDOWS
+- Open apps in resizable floating windows from the long-press menu, or make every tap open one
+- Remembers each app's window size and position
+- Works on devices with built-in floating window support; other devices need the free Shizuku app
+
+QUICK CONTROLS
+- A panel of controls that opens from the pill above the dock
+- Flashlight, ringer mode, auto-rotate, brightness, volume, Do Not Disturb, Wi-Fi, Bluetooth, screenshot, lock screen, power menu, QR scanner, caffeine (keep screen on), share, calculator, clipboard, notes and notification history
+- Reorder them or turn off the ones you don't use
+
+PANELS
+- Music: album art and playback controls for whatever is playing
+- Clipboard: save text, links, images and files from the share sheet, and mark favorites
+- Notes & To-dos: quick notes and checklists
+- Notification History: recent notifications grouped by app
+- Calculator, Volume (per stream) and Brightness panels
+
+DESIGN
+- Material You dynamic colors, Light / Dark / System theme
+- Glass mode with real background blur (including Samsung frosted glass), transparency, tint and grain
+- Color tint presets for the dock and panels
+- Icon packs and icon shapes (square, squircle, circle)
+
+MORE
+- Backup and restore all your settings
+- Starts automatically after reboot
+- Haptic feedback
+- Available in 17 languages
+
+ACCESSIBILITY SERVICE
+The Accessibility Service is optional. When enabled, it lets the dock draw over the navigation bar, detect when you go home, and run actions such as lock screen, screenshot, notifications and quick settings. Nothing it sees on screen or that you type is collected or sent anywhere.
+
+PRIVACY
+Floating Dock does not collect, store or share your personal data. Your clipboard, notes and settings stay on your device. Only anonymous crash reports are sent to help fix bugs. Permissions are only used to make the dock work.

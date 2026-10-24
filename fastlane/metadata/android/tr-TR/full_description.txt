@@ -1,0 +1,55 @@
+Floating Dock, her Android telefona ve tablete masaüstü tarzı bir görev çubuğu ekler. Sabitlenmiş uygulamalarınız, uygulama menüsü, hızlı kontroller ve kullanışlı paneller her uygulamanın üzerinde, tek bir hareketle elinizin altında.
+
+DOCK
+- Saat, tarih ve pil seviyesiyle kayan bir Dock'ta sabitlenmiş uygulamalar
+- Dock'u sabitleyerek ekranda tutun veya ihtiyaç duyana kadar gizli kalsın
+- Yükseklik, simge boyutu ve aralığı, köşe yuvarlaklığı ve kenar boşluğu ayarlanabilir
+- Tam ekran uygulamalarda, yatay modda, klavyenin ve bildirim panelinin altında otomatik gizlenir; kilit ekranında da gizlenebilir
+
+HAP
+- Ekranın altında veya sol, sağ ya da her iki kenarında küçük bir hap
+- Çift Dokunma, Yukarı Kaydırma, Aşağı Kaydırma ve İçeri Kaydırma için eylem seçin: Dock'u, uygulama menüsünü, uygulama aramayı, bildirimleri, hızlı ayarları, güç menüsünü göster, ekran görüntüsü al, feneri aç veya ekranı kilitle
+- Parlaklığı veya ses seviyesini değiştirmek için hapı basılı tutup sürükleyin
+- Yan haplar Geri hareketini tetiklemez
+- Boyut, opaklık, konum ve renk ayarlanabilir
+
+UYGULAMA MENÜSÜ VE ARAMA
+- Dock'un üstünde, son kullanılan uygulamalar satırıyla uygulama menüsü
+- Ada, yükleme tarihine veya kullanım sıklığına göre sıralayın; gerekmeyen uygulamaları gizleyin
+- Yazım hatalarını tolere eden hızlı arama
+- Bir uygulamaya uzun basarak sabitleyin, gizleyin veya kayan pencerede açın
+
+KAYAN PENCERELER
+- Uygulamaları uzun basma menüsünden yeniden boyutlandırılabilir kayan pencerelerde açın veya her dokunuşta böyle açılsın
+- Her uygulamanın pencere boyutunu ve konumunu hatırlar
+- Yerleşik kayan pencere desteği olan cihazlarda çalışır; diğer cihazlar ücretsiz Shizuku uygulamasına ihtiyaç duyar
+
+HIZLI KONTROLLER
+- Dock'un üstündeki haptan açılan bir kontrol paneli
+- Fener, zil modu, otomatik döndürme, parlaklık, ses, Rahatsız Etmeyin, Wi-Fi, Bluetooth, ekran görüntüsü, ekran kilidi, güç menüsü, QR tarayıcı, kafein (ekranı açık tut), paylaş, hesap makinesi, pano, notlar ve bildirim geçmişi
+- Yeniden sıralayın veya kullanmadıklarınızı kapatın
+
+PANELLER
+- Müzik: çalan içerik için albüm kapağı ve oynatma kontrolleri
+- Pano: paylaşım menüsünden metin, bağlantı, resim ve dosya kaydedin, favorilere ekleyin
+- Notlar ve Yapılacaklar: hızlı notlar ve kontrol listeleri
+- Bildirim Geçmişi: uygulamaya göre gruplanmış son bildirimler
+- Hesap makinesi, ses (kanal başına) ve parlaklık panelleri
+
+TASARIM
+- Material You dinamik renkler, Açık / Koyu / Sistem teması
+- Gerçek arka plan bulanıklığıyla cam modu (Samsung buzlu cam dahil), şeffaflık, renk tonu ve gren
+- Dock ve paneller için renk tonu ön ayarları
+- Simge paketleri ve simge şekilleri (kare, squircle, daire)
+
+DAHA FAZLASI
+- Tüm ayarları yedekleme ve geri yükleme
+- Yeniden başlatmadan sonra otomatik başlar
+- Dokunsal geri bildirim
+- 17 dilde kullanılabilir
+
+ERİŞİLEBİLİRLİK HİZMETİ
+Erişilebilirlik Hizmeti isteğe bağlıdır. Etkinleştirildiğinde Dock'un gezinme çubuğunun üzerinde görünmesini, ana ekrana geçtiğinizi algılamasını ve ekran kilidi, ekran görüntüsü, bildirimler ve hızlı ayarlar gibi eylemleri çalıştırmasını sağlar. Ekranda gördüğü veya yazdığınız hiçbir şey toplanmaz ya da bir yere gönderilmez.
+
+GİZLİLİK
+Floating Dock kişisel verilerinizi toplamaz, saklamaz veya paylaşmaz. Panonuz, notlarınız ve ayarlarınız cihazınızda kalır. Hataları düzeltmek için yalnızca anonim çökme raporları gönderilir. İzinler yalnızca Dock'un çalışması için kullanılır.

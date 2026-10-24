@@ -1,0 +1,55 @@
+Floating Dock aggiunge una barra delle applicazioni in stile desktop a qualsiasi telefono o tablet Android. App fissate, menu delle app, controlli rapidi e pannelli utili fluttuano sopra ogni app, a un gesto di distanza.
+
+DOCK
+- App fissate in un dock mobile con ora, data e livello della batteria
+- Fissa il dock per tenerlo sempre visibile, oppure lascialo nascosto finché non ti serve
+- Altezza, dimensione e spaziatura delle icone, raggio degli angoli e margini regolabili
+- Si nasconde automaticamente nelle app a schermo intero, in orizzontale, sotto la tastiera e la tendina delle notifiche, e può nascondersi sulla schermata di blocco
+
+PILLOLA
+- Una piccola pillola in basso o sul bordo sinistro, destro o su entrambi
+- Scegli un'azione per Doppio tocco, Scorri in su, Scorri in giù e Scorri verso l'interno: mostra il dock, il menu delle app, la ricerca, le notifiche, le impostazioni rapide, il menu di spegnimento, uno screenshot, la torcia o il blocco schermo
+- Tieni premuto e trascina sulla pillola per regolare luminosità o volume
+- Le pillole laterali non attivano il gesto Indietro
+- Dimensioni, opacità, posizione e colore regolabili
+
+MENU DELLE APP E RICERCA
+- Menu delle app sopra il dock con una riga di app recenti
+- Ordina per nome, data di installazione o utilizzo; nascondi le app che non ti servono
+- Ricerca veloce che tollera gli errori di battitura
+- Tieni premuta un'app per fissarla, nasconderla o aprirla in una finestra mobile
+
+FINESTRE MOBILI
+- Apri le app in finestre mobili ridimensionabili dal menu a pressione prolungata, oppure a ogni tocco
+- Ricorda dimensione e posizione della finestra di ogni app
+- Funziona sui dispositivi con supporto integrato per le finestre mobili; gli altri richiedono l'app gratuita Shizuku
+
+CONTROLLI RAPIDI
+- Un pannello di controlli che si apre dalla pillola sopra il dock
+- Torcia, modalità suoneria, rotazione automatica, luminosità, volume, Non disturbare, Wi-Fi, Bluetooth, screenshot, blocco schermo, menu di spegnimento, lettore QR, caffeina (schermo sempre acceso), condivisione, calcolatrice, appunti, note e cronologia notifiche
+- Riordinali o disattiva quelli che non usi
+
+PANNELLI
+- Musica: copertina e controlli di riproduzione di ciò che è in ascolto
+- Appunti: salva testi, link, immagini e file dal menu Condividi e segna i preferiti
+- Note e attività: note veloci ed elenchi di cose da fare
+- Cronologia notifiche: notifiche recenti raggruppate per app
+- Pannelli calcolatrice, volume (per flusso) e luminosità
+
+DESIGN
+- Colori dinamici Material You, tema Chiaro / Scuro / Sistema
+- Modalità vetro con vera sfocatura dello sfondo (incluso il vetro smerigliato Samsung), trasparenza, tinta e grana
+- Tinte predefinite per dock e pannelli
+- Pacchetti di icone e forme delle icone (quadrato, squircle, cerchio)
+
+ALTRO
+- Backup e ripristino di tutte le impostazioni
+- Avvio automatico dopo il riavvio
+- Feedback aptico
+- Disponibile in 17 lingue
+
+SERVIZIO DI ACCESSIBILITÀ
+Il servizio di accessibilità è facoltativo. Se attivo, permette al dock di comparire sopra la barra di navigazione, di rilevare quando torni alla schermata Home e di eseguire azioni come blocco schermo, screenshot, notifiche e impostazioni rapide. Nulla di ciò che vede sullo schermo o che digiti viene raccolto o inviato.
+
+PRIVACY
+Floating Dock non raccoglie, conserva né condivide i tuoi dati personali. Appunti, note e impostazioni restano sul tuo dispositivo. Vengono inviati solo rapporti anonimi sugli arresti anomali per correggere i bug. Le autorizzazioni servono solo a far funzionare il dock.

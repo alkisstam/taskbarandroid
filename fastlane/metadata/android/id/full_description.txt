@@ -1,0 +1,55 @@
+Floating Dock menambahkan taskbar ala desktop ke ponsel atau tablet Android apa pun. Aplikasi tersemat, menu aplikasi, kontrol cepat, dan panel praktis melayang di atas semua aplikasi, cukup satu gestur.
+
+DOCK
+- Aplikasi tersemat di Dock mengambang dengan jam, tanggal, dan level baterai
+- Sematkan Dock agar tetap tampil, atau biarkan tersembunyi sampai dibutuhkan
+- Tinggi, ukuran dan jarak ikon, sudut membulat, serta jarak tepi bisa diatur
+- Otomatis tersembunyi di aplikasi layar penuh, mode lanskap, di bawah keyboard dan panel notifikasi, serta bisa tersembunyi di layar kunci
+
+PIL
+- Pil kecil di bawah atau di tepi kiri, kanan, atau keduanya
+- Pilih aksi untuk Ketuk Dua Kali, Geser ke Atas, Geser ke Bawah, dan Geser Masuk: tampilkan Dock, menu aplikasi, cari aplikasi, notifikasi, setelan cepat, menu daya, tangkapan layar, senter, atau kunci layar
+- Tahan dan seret pil untuk mengubah kecerahan atau volume
+- Pil samping tidak memicu gestur Kembali
+- Ukuran, opasitas, posisi, dan warna bisa diatur
+
+MENU APLIKASI & PENCARIAN
+- Menu aplikasi di atas Dock dengan baris aplikasi terbaru
+- Urutkan menurut nama, tanggal instal, atau paling sering dipakai; sembunyikan aplikasi yang tidak perlu
+- Pencarian cepat yang toleran terhadap salah ketik
+- Tekan lama aplikasi untuk menyematkan, menyembunyikan, atau membukanya di jendela mengambang
+
+JENDELA MENGAMBANG
+- Buka aplikasi di jendela mengambang yang ukurannya bisa diubah dari menu tekan lama, atau buat setiap ketukan membukanya
+- Mengingat ukuran dan posisi jendela tiap aplikasi
+- Berfungsi di perangkat yang mendukung jendela mengambang bawaan; perangkat lain memerlukan aplikasi gratis Shizuku
+
+KONTROL CEPAT
+- Panel kontrol yang terbuka dari pil di atas Dock
+- Senter, mode dering, putar otomatis, kecerahan, volume, Jangan Ganggu, Wi-Fi, Bluetooth, tangkapan layar, kunci layar, menu daya, pemindai QR, kafein (layar tetap menyala), bagikan, kalkulator, papan klip, catatan, dan riwayat notifikasi
+- Atur ulang urutannya atau matikan yang tidak dipakai
+
+PANEL
+- Musik: sampul album dan kontrol pemutaran untuk yang sedang diputar
+- Papan klip: simpan teks, tautan, gambar, dan file dari menu bagikan, lalu tandai favorit
+- Catatan & Tugas: catatan cepat dan daftar periksa
+- Riwayat Notifikasi: notifikasi terbaru dikelompokkan per aplikasi
+- Panel kalkulator, volume (per aliran), dan kecerahan
+
+DESAIN
+- Warna dinamis Material You, tema Terang / Gelap / Sistem
+- Mode kaca dengan blur latar asli (termasuk kaca buram Samsung), transparansi, tint, dan grain
+- Preset warna tint untuk Dock dan panel
+- Paket ikon dan bentuk ikon (persegi, squircle, lingkaran)
+
+LAINNYA
+- Cadangkan dan pulihkan semua setelan
+- Mulai otomatis setelah perangkat dinyalakan ulang
+- Umpan balik haptik
+- Tersedia dalam 17 bahasa
+
+LAYANAN AKSESIBILITAS
+Layanan Aksesibilitas bersifat opsional. Jika diaktifkan, Dock bisa tampil di atas bilah navigasi, mendeteksi saat Anda ke layar utama, dan menjalankan aksi seperti kunci layar, tangkapan layar, notifikasi, dan setelan cepat. Apa pun yang dilihatnya di layar atau yang Anda ketik tidak dikumpulkan atau dikirim ke mana pun.
+
+PRIVASI
+Floating Dock tidak mengumpulkan, menyimpan, atau membagikan data pribadi Anda. Papan klip, catatan, dan setelan tetap di perangkat Anda. Hanya laporan error anonim yang dikirim untuk memperbaiki bug. Izin hanya digunakan agar Dock berfungsi.

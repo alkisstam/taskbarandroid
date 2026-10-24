@@ -1,0 +1,55 @@
+Floating Dock bringt eine Taskleiste wie am Desktop auf jedes Android-Smartphone und -Tablet. Angeheftete Apps, App-Menü, Schnellzugriffe und praktische Panels schweben über jeder App, nur eine Geste entfernt.
+
+DOCK
+- Angeheftete Apps in einem schwebenden Dock mit Uhrzeit, Datum und Akkustand
+- Dock anheften, damit es sichtbar bleibt, oder ausblenden, bis du es brauchst
+- Höhe, Symbolgröße und -abstand, Eckenradius und Randabstand anpassbar
+- Blendet sich in Vollbild-Apps, im Querformat, unter der Tastatur und der Benachrichtigungsleiste automatisch aus und kann sich auf dem Sperrbildschirm ausblenden
+
+PILLE
+- Eine kleine Pille unten oder am linken, rechten oder an beiden Bildschirmrändern
+- Wähle eine Aktion für Doppeltippen, Nach oben wischen, Nach unten wischen und Hineinwischen: Dock, App-Menü, App-Suche, Benachrichtigungen, Schnelleinstellungen, Ein/Aus-Menü, Screenshot, Taschenlampe oder Bildschirmsperre
+- Halten und Ziehen auf der Pille ändert Helligkeit oder Lautstärke
+- Seitliche Pillen lösen die Zurück-Geste nicht aus
+- Größe, Deckkraft, Position und Farbe anpassbar
+
+APP-MENÜ & SUCHE
+- App-Menü über dem Dock mit einer Reihe zuletzt genutzter Apps
+- Sortieren nach Name, Installationsdatum oder Nutzung; nicht benötigte Apps ausblenden
+- Schnelle Suche, die Tippfehler verzeiht
+- Lange auf eine App drücken, um sie anzuheften, auszublenden oder in einem schwebenden Fenster zu öffnen
+
+SCHWEBENDE FENSTER
+- Apps in schwebenden Fenstern mit anpassbarer Größe öffnen, über das Langdruck-Menü oder bei jedem Tippen
+- Merkt sich Größe und Position des Fensters jeder App
+- Funktioniert auf Geräten mit integrierter Unterstützung für schwebende Fenster; andere Geräte brauchen die kostenlose App Shizuku
+
+SCHNELLZUGRIFFE
+- Ein Panel mit Schnellzugriffen, das sich über die Pille über dem Dock öffnet
+- Taschenlampe, Klingelmodus, automatisches Drehen, Helligkeit, Lautstärke, Nicht stören, WLAN, Bluetooth, Screenshot, Bildschirmsperre, Ein/Aus-Menü, QR-Scanner, Koffein (Bildschirm anlassen), Teilen, Rechner, Zwischenablage, Notizen und Benachrichtigungsverlauf
+- Neu anordnen oder nicht genutzte ausschalten
+
+PANELS
+- Musik: Albumcover und Wiedergabesteuerung für alles, was gerade läuft
+- Zwischenablage: Texte, Links, Bilder und Dateien über das Teilen-Menü speichern und als Favoriten markieren
+- Notizen & To-dos: schnelle Notizen und Checklisten
+- Benachrichtigungsverlauf: letzte Benachrichtigungen nach App gruppiert
+- Rechner, Lautstärke (je Kanal) und Helligkeit
+
+DESIGN
+- Material You mit dynamischen Farben, Hell / Dunkel / System
+- Glasmodus mit echter Hintergrundunschärfe (auch Samsung-Milchglas), Transparenz, Tönung und Körnung
+- Farbvorlagen für Dock und Panels
+- Symbolpakete und Symbolformen (quadratisch, Squircle, rund)
+
+MEHR
+- Alle Einstellungen sichern und wiederherstellen
+- Startet nach einem Neustart automatisch
+- Haptisches Feedback
+- In 17 Sprachen verfügbar
+
+BEDIENUNGSHILFEN-DIENST
+Der Bedienungshilfen-Dienst ist optional. Wenn er aktiviert ist, kann das Dock über der Navigationsleiste erscheinen, erkennen, wann du zum Startbildschirm gehst, und Aktionen wie Bildschirmsperre, Screenshot, Benachrichtigungen und Schnelleinstellungen ausführen. Nichts, was er auf dem Bildschirm sieht oder was du tippst, wird gesammelt oder irgendwohin gesendet.
+
+DATENSCHUTZ
+Floating Dock sammelt, speichert und teilt keine personenbezogenen Daten. Zwischenablage, Notizen und Einstellungen bleiben auf deinem Gerät. Nur anonyme Absturzberichte werden gesendet, um Fehler zu beheben. Berechtigungen werden nur genutzt, damit das Dock funktioniert.
