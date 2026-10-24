@@ -6,9 +6,10 @@ All notable changes to Floating Dock are documented here.
 
 ## [1.5.12] - 2026-10-21
 
-Quick Controls in their own panel, swipe in on side pills without triggering Back, every pill gesture configurable, new App Menu and Search actions.
+Open apps in floating windows, Quick Controls in their own panel, swipe in on side pills without triggering Back, every pill gesture configurable, new App Menu and Search actions.
 
 ### Added
+- **Floating windows** — Settings → General → Floating Windows. Off by default. Adds "Open in floating window" to the long-press menu of pinned apps, the app grid and search results. **Open apps floating on tap** (also off by default) makes a tap open the floating window, and the long-press menu offers "Open in fullscreen" instead. Works on devices with built-in floating window support; other devices need Shizuku installed and running. With Shizuku granted, each app's floating window size and position are remembered for the next launch. Both settings are included in backup/restore.
 - **Swipe In Action** — Settings → Design → Pill Size & Appearance, for Left, Right and Both pills: swipe in from the pill to run an action. Off by default. Included in backup/restore.
 - **Side pills block the Back gesture** — on gesture navigation, swiping in over a side pill no longer goes back; Back still works above and below the pill. Bottom pills keep the system home gesture as before.
 - **Action dropdowns for every gesture** — side pills get Swipe In, Swipe Up, Swipe Down and Double-Tap dropdowns; bottom pills get Double-Tap and Swipe Up dropdowns in place of the old chips. Every dropdown offers the same actions.

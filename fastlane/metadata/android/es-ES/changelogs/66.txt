@@ -1,9 +1,9 @@
 Novedades
+• Abrir apps en ventanas flotantes (requiere soporte o Shizuku)
 • Controles rápidos en su propio panel: toca la nueva píldora sobre el dock, que incluye el botón de música
 • Acción Deslizar hacia dentro para píldoras laterales, que ya no activan Atrás
 • Acciones Mostrar menú de apps y Buscar apps para cada gesto de la píldora
 Cambios
 • Asa del dock eliminada; los paneles quedan más cerca del dock
 Corregido
-• El dock y la píldora desaparecían en Instagram, Cámara, Maps y apps similares
-• Cierre al abrir el selector de tono de la píldora
+• El dock y la píldora desaparecían en Instagram, Cámara, Maps…

@@ -1,4 +1,5 @@
 Novidades
+• Abrir apps em janelas flutuantes (requer suporte do aparelho ou Shizuku)
 • Controles rápidos em um painel próprio: toque na nova pílula acima do Dock, que tem o botão de música
 • Ação Deslizar para dentro nas pílulas laterais, que não acionam mais Voltar
 • Ações Mostrar menu de apps e Pesquisar apps para cada gesto da pílula
@@ -6,4 +7,3 @@ Alterações
 • Alça do Dock removida; os painéis ficam mais perto do Dock
 Correções
 • Dock e pílula sumiam no Instagram, Câmera, Maps e apps parecidos
-• Falha ao abrir o seletor de tonalidade personalizada da pílula

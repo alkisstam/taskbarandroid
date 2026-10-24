@@ -1,9 +1,9 @@
 Nouveautés
-• Contrôles rapides dans leur propre panneau : touchez la nouvelle pilule au-dessus du dock, avec le bouton Musique
+• Fenêtres flottantes pour les apps (appareil compatible ou Shizuku)
+• Contrôles rapides dans leur propre panneau : touchez la pilule au-dessus du dock, avec Musique
 • Action Glisser vers l'intérieur pour les pilules latérales, sans déclencher Retour
 • Actions Menu des apps et Rechercher des apps pour chaque geste de la pilule
 Modifications
 • Poignée du dock supprimée ; panneaux plus proches du dock
 Corrections
 • Dock et pilule disparaissant dans Instagram, Appareil photo, Maps…
-• Plantage du sélecteur de teinte de la pilule

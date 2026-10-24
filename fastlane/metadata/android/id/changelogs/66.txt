@@ -1,4 +1,5 @@
 Baru
+• Buka aplikasi di jendela mengambang (perlu dukungan perangkat atau Shizuku)
 • Kontrol Cepat kini terbuka di panel tersendiri: ketuk pil baru di atas Dock, yang juga berisi tombol Musik
 • Aksi Geser Masuk untuk pil samping, yang tak lagi memicu Kembali
 • Aksi Tampilkan Menu Aplikasi dan Cari Aplikasi untuk setiap gestur pil
@@ -6,4 +7,3 @@ Perubahan
 • Pegangan Dock dihapus; panel kini lebih dekat ke Dock
 Perbaikan
 • Dock dan pil menghilang di Instagram, Kamera, Maps, dan aplikasi serupa
-• Crash saat membuka pemilih warna kustom pil

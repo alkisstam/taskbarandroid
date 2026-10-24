@@ -1,4 +1,5 @@
 Novità
+• Apri le app in finestre mobili (serve supporto o Shizuku)
 • Controlli rapidi in un pannello dedicato: tocca la nuova pillola sopra il dock, con il pulsante Musica
 • Azione Scorri verso l'interno per le pillole laterali, che non attivano più Indietro
 • Azioni Mostra menu app e Cerca app per ogni gesto della pillola
@@ -6,4 +7,3 @@ Modifiche
 • Maniglia del dock rimossa; i pannelli sono più vicini al dock
 Correzioni
 • Dock e pillola che sparivano in Instagram, Fotocamera, Maps e app simili
-• Arresto anomalo aprendo il selettore di tinta della pillola

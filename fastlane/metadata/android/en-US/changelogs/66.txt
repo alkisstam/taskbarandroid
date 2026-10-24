@@ -1,4 +1,5 @@
 Added
+• Open apps in floating windows (needs device support or Shizuku)
 • Quick Controls now open in their own panel: tap the new pill above the dock, which also holds the Music button
 • Swipe In action for side pills, which no longer trigger Back
 • Show App Menu and Search Apps actions for every pill gesture

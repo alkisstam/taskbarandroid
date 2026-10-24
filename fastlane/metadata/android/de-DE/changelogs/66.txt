@@ -1,4 +1,5 @@
 Neu
+• Apps in schwebenden Fenstern öffnen (Gerätesupport oder Shizuku nötig)
 • Schnellzugriffe öffnen sich in einem eigenen Panel: neue Pille über dem Dock antippen, die auch die Musik-Taste enthält
 • Aktion „Hineinwischen“ für seitliche Pillen, die kein Zurück mehr auslösen
 • Aktionen „App-Menü anzeigen“ und „Apps suchen“ für jede Pillen-Geste
@@ -6,4 +7,3 @@ Geändert
 • Dock-Griff entfernt; Panels sitzen näher am Dock
 Behoben
 • Dock und Pille verschwanden in Instagram, Kamera, Maps und ähnlichen Apps
-• Absturz beim Öffnen der eigenen Tönungsauswahl der Pille
