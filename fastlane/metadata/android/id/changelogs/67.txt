@@ -1,0 +1,5 @@
+Perubahan
+• Panel musik kini serasi dengan pil Kontrol Cepat dan bergeser masuk dari sisinya
+Perbaikan
+• Panel musik melompat ke posisinya saat dibuka
+• Kilatan putih saat menutup menu Semua Aplikasi dengan tema transparan

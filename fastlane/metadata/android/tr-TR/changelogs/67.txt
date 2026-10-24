@@ -1,0 +1,5 @@
+Değişiklikler
+• Müzik paneli artık Hızlı Kontroller hapıyla uyumlu ve onun yanından kayarak açılıyor
+Düzeltmeler
+• Müzik panelinin açılırken yerine zıplaması
+• Şeffaf temada Tüm Uygulamalar menüsü kapanırken beyaz parlama

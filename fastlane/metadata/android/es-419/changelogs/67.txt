@@ -1,0 +1,5 @@
+Cambios
+• El panel de música ahora coincide con la píldora de controles rápidos y se desliza desde su lado
+Correcciones
+• El panel de música saltaba a su lugar al abrirse
+• Destello blanco al cerrar el menú de todas las apps con el tema transparente

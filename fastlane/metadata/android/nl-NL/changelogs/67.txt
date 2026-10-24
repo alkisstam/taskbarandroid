@@ -1,0 +1,5 @@
+Gewijzigd
+• Muziekpaneel past nu bij de snelle-bediening-pil en schuift vanaf die kant in beeld
+Opgelost
+• Muziekpaneel dat bij openen op zijn plek sprong
+• Witte flits bij het sluiten van het Alle apps-menu met het transparante thema

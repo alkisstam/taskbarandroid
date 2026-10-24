@@ -1,0 +1,5 @@
+Alterações
+• O painel de música agora combina com a pílula de controles rápidos e desliza do lado dela
+Correções
+• Painel de música pulando para o lugar ao abrir
+• Flash branco ao fechar o menu Todos os apps com o tema transparente

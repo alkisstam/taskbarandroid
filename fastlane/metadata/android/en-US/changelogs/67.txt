@@ -1,0 +1,5 @@
+Changed
+• Music panel now matches the Quick Controls pill and slides in from its side
+Fixed
+• Music panel jumping into place when opened
+• White flash when closing the All Apps menu with the transparent theme

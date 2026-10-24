@@ -1,0 +1,5 @@
+Modifiche
+• Il pannello musica ora riprende la pillola dei controlli rapidi e scorre dal suo lato
+Correzioni
+• Il pannello musica saltava in posizione all'apertura
+• Lampo bianco alla chiusura del menu Tutte le app con il tema trasparente

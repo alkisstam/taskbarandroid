@@ -287,6 +287,15 @@ val whatsNewReleases = listOf(
             "Dock handle removed; panels sit closer to the dock",
             "Fixed the dock and pill disappearing in Instagram, Camera, Maps and similar apps"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.5.13",
+        versionCode = 67,
+        highlights = listOf(
+            "Music panel now matches the Quick Controls pill and slides in from its side",
+            "Fixed the music panel jumping into place when opened",
+            "Fixed a white flash when closing the All Apps menu with the transparent theme"
+        )
     )
 )
 
