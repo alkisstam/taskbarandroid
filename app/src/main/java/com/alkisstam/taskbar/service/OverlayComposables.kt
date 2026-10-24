@@ -74,7 +74,7 @@ import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 import kotlin.math.roundToInt
 
 private fun dockAwarePanelBottomPadding(isTaskbarVisible: Boolean, heightDp: Float, expandedRows: Int, bottomGapDp: Float) =
-    if (isTaskbarVisible) (bottomGapDp + heightDp * (1 + expandedRows) + 4f * expandedRows + 16f + 28f).dp else 0.dp
+    if (isTaskbarVisible) (bottomGapDp + heightDp * (1 + expandedRows) + 4f * expandedRows + 16f + 18f).dp else 0.dp
 
 @Composable
 internal fun OverlayContent(
