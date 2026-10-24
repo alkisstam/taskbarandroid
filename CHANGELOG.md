@@ -4,6 +4,19 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.5.13] - 2026-10-24
+
+Music panel reshaped to match the Quick Controls pill, cleaner All Apps menu close.
+
+### Changed
+- **Music panel matches the Quick Controls pill** — same height as the dock and fully rounded ends, lined up with the pill beside it. It now slides in and out sideways from the pill's side, like the Quick Controls panel, instead of up and down.
+
+### Fixed
+- **Music panel jumping on open** — it no longer appears at the dock's row and drifts up into place, or moves while the dock slides in. When the dock appears it waits for the dock to settle before sliding out, and it hides straight away when the dock hides.
+- **White flash when closing the All Apps menu** — with the transparent theme, the menu briefly showed a white background as it slid away. It now fades out cleanly.
+
+---
+
 ## [1.5.12] - 2026-10-21
 
 Open apps in floating windows, Quick Controls in their own panel, swipe in on side pills without triggering Back, every pill gesture configurable, new App Menu and Search actions.

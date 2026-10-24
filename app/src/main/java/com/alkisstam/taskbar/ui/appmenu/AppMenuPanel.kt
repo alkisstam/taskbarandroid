@@ -5,7 +5,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -87,10 +87,7 @@ fun AppMenuPanel(
             animationSpec = spring(),
             initialOffsetY = { it / 4 }
         ) + fadeIn(),
-        exit = slideOutVertically(
-            animationSpec = spring(),
-            targetOffsetY = { it / 4 }
-        ) + fadeOut(),
+        exit = fadeOut(tween(150)),
         modifier = modifier.clipToBounds()
     ) {
             Box(
@@ -108,7 +105,12 @@ fun AppMenuPanel(
                     .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
                     .glassSheen(enabled = translucentMode && !panelOutlineEnabled, shape = RoundedCornerShape(20.dp)),
                 shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 20.dp, bottomEnd = 20.dp),
-                color = if (translucentMode) panelColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha)) else panelColor,
+                // Without the blur behind it the surface tint shows as a white flash while closing.
+                color = when {
+                    !translucentMode -> panelColor
+                    !menuVisible -> Color.Transparent
+                    else -> panelColor.copy(alpha = GlassBlur.surfaceAlpha(translucentAlpha))
+                },
                 contentColor = MaterialTheme.colorScheme.onSurface,
                 tonalElevation = if (translucentMode || surfaceTintColor != 0L) 0.dp else 4.dp,
                 shadowElevation = if (translucentMode) 0.dp else 8.dp
