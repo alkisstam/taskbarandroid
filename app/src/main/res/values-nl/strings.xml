@@ -451,4 +451,6 @@
     <string name="app_group_delete">Paneel verwijderen</string>
     <string name="app_group_empty_hint">Nog geen apps. Voeg ze toe via Instellingen › Apps.</string>
     <string name="app_group_remove_app">Uit paneel verwijderen</string>
+    <string name="settings_pill_auto_hide_title">Pictogrampil automatisch verbergen</string>
+    <string name="settings_pill_auto_hide_desc">Verbergt de pictogrampil boven het Dock tot je omhoog veegt op het Dock. Veeg omlaag om hem weer te verbergen.</string>
 </resources>

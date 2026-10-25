@@ -451,4 +451,6 @@
     <string name="app_group_delete">パネルを削除</string>
     <string name="app_group_empty_hint">アプリがまだありません。設定 › アプリ で追加してください。</string>
     <string name="app_group_remove_app">パネルから削除</string>
+    <string name="settings_pill_auto_hide_title">アイコンピルを自動で隠す</string>
+    <string name="settings_pill_auto_hide_desc">ドックを上にスワイプするまで、ドック上のアイコンピルを隠します。下にスワイプすると再び隠れます。</string>
 </resources>

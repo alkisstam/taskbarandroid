@@ -451,4 +451,6 @@
     <string name="app_group_delete">Delete panel</string>
     <string name="app_group_empty_hint">No apps yet. Add some in Settings › Apps.</string>
     <string name="app_group_remove_app">Remove from panel</string>
+    <string name="settings_pill_auto_hide_title">Auto-hide Icons Pill</string>
+    <string name="settings_pill_auto_hide_desc">Hide the icons pill above the Dock until you swipe up on the Dock. Swipe down to hide it again.</string>
 </resources>

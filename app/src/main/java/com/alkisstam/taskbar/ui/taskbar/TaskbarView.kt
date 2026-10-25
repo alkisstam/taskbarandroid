@@ -119,6 +119,9 @@ fun TaskbarView(
     val pinDockControlEnabled by taskbarViewModel.pinDockControlEnabled.collectAsState()
     val isDockPinned by taskbarViewModel.isDockPinned.collectAsState()
     val pillIconCount by taskbarViewModel.pillIconCount.collectAsState()
+    val pillVisible by taskbarViewModel.pillVisible.collectAsState()
+    val iconsPillAutoHide by taskbarViewModel.iconsPillAutoHide.collectAsState()
+    val density = LocalDensity.current
     val musicPanelEnabled by taskbarViewModel.musicPanelEnabled.collectAsState()
     val musicPanelVisible by appMenuViewModel.musicPanelVisible.collectAsState()
     val batteryLevel by taskbarViewModel.batteryLevel.collectAsState()
@@ -188,7 +191,7 @@ fun TaskbarView(
                     }
                 }
                 androidx.compose.animation.AnimatedVisibility(
-                    visible = !isDockExpanded && !menuVisible,
+                    visible = pillVisible && !isDockExpanded && !menuVisible,
                     modifier = Modifier.align(if (buttonOnLeft) Alignment.BottomStart else Alignment.BottomEnd),
                     enter = fadeIn() + scaleIn(),
                     exit = fadeOut() + scaleOut()
@@ -255,6 +258,19 @@ fun TaskbarView(
             modifier = Modifier
                 .fillMaxWidth(dockWidthFraction)
                 .wrapContentHeight()
+                .then(
+                    if (iconsPillAutoHide) Modifier.pointerInput(Unit) {
+                        val thresholdPx = with(density) { 24.dp.toPx() }
+                        var dragY = 0f
+                        detectVerticalDragGestures(
+                            onDragStart = { dragY = 0f },
+                            onDragEnd = {
+                                if (dragY < -thresholdPx) taskbarViewModel.setPillRevealed(true)
+                                else if (dragY > thresholdPx) taskbarViewModel.setPillRevealed(false)
+                            }
+                        ) { _, dy -> dragY += dy }
+                    } else Modifier
+                )
                 .onGloballyPositioned { coords ->
                     // boundsInWindow includes the parent's reveal translation, so the blur
                     // window sees the dock moving and waits for it to settle.

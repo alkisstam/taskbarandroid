@@ -625,7 +625,8 @@ internal fun MusicPanelContent(
     val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
     // Sits beside a short (1-2 icon) pill instead of covering it; OverlayService lowers
     // the window to the pill's row in the same state. A longer pill leaves no room, so it goes above.
-    val besideButton = pillIconCount in 1..2 && !isDockExpanded
+    val pillVisible by taskbarViewModel.pillVisible.collectAsState()
+    val besideButton = pillVisible && pillIconCount in 1..2 && !isDockExpanded
     val buttonBounds by taskbarViewModel.quickControlsButtonBounds.collectAsState()
     // Bounds clear while the dock is hidden; keep the last width so the inset doesn't grow from 0 on reveal.
     var lastButtonWidthPx by remember { mutableIntStateOf(0) }

@@ -451,4 +451,6 @@
     <string name="app_group_delete">Hapus panel</string>
     <string name="app_group_empty_hint">Belum ada aplikasi. Tambahkan di Setelan › Aplikasi.</string>
     <string name="app_group_remove_app">Hapus dari panel</string>
+    <string name="settings_pill_auto_hide_title">Sembunyikan Otomatis Pil Ikon</string>
+    <string name="settings_pill_auto_hide_desc">Menyembunyikan pil ikon di atas Dock sampai Anda menggeser ke atas pada Dock. Geser ke bawah untuk menyembunyikannya lagi.</string>
 </resources>

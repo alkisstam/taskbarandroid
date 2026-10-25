@@ -451,4 +451,6 @@
     <string name="app_group_delete">Paneli sil</string>
     <string name="app_group_empty_hint">Henüz uygulama yok. Ayarlar › Uygulamalar bölümünden ekleyin.</string>
     <string name="app_group_remove_app">Panelden kaldır</string>
+    <string name="settings_pill_auto_hide_title">Simge Hapını Otomatik Gizle</string>
+    <string name="settings_pill_auto_hide_desc">Dock üzerinde yukarı kaydırana kadar Dock üzerindeki simge hapını gizler. Tekrar gizlemek için aşağı kaydırın.</string>
 </resources>

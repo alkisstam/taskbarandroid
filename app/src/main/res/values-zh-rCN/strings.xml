@@ -451,4 +451,6 @@
     <string name="app_group_delete">删除面板</string>
     <string name="app_group_empty_hint">还没有应用。请在 设置 › 应用 中添加。</string>
     <string name="app_group_remove_app">从面板移除</string>
+    <string name="settings_pill_auto_hide_title">自动隐藏图标胶囊</string>
+    <string name="settings_pill_auto_hide_desc">隐藏 Dock 上方的图标胶囊，直到你在 Dock 上向上滑动。向下滑动可再次隐藏。</string>
 </resources>

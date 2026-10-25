@@ -451,4 +451,6 @@
     <string name="app_group_delete">حذف اللوحة</string>
     <string name="app_group_empty_hint">لا توجد تطبيقات بعد. أضفها من الإعدادات › التطبيقات.</string>
     <string name="app_group_remove_app">إزالة من اللوحة</string>
+    <string name="settings_pill_auto_hide_title">إخفاء كبسولة الأيقونات تلقائيًا</string>
+    <string name="settings_pill_auto_hide_desc">يخفي كبسولة الأيقونات فوق الشريط حتى تسحب لأعلى على الشريط. اسحب لأسفل لإخفائها مجددًا.</string>
 </resources>

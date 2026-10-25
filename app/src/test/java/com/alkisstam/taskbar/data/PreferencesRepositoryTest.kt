@@ -95,6 +95,7 @@ class PreferencesRepositoryTest {
         put("grain_alpha", 0.125)
         put("blur_radius_dp", 24.5)
         put("blur_tint", true)
+        put("icons_pill_auto_hide", true)
         put("blur_tint_alpha", 0.25)
         put("icon_pack_package", "com.iconpack")
         put("app_language_tag", "el")

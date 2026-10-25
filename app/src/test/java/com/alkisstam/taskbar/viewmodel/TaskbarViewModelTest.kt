@@ -64,6 +64,7 @@ class TaskbarViewModelTest {
             every { appSortOrder } returns flowOf(AppSortOrder.NAME)
             every { appGroups } returns flowOf(emptyList())
             every { pinDockControlEnabled } returns flowOf(false)
+            every { iconsPillAutoHide } returns flowOf(false)
         }
         iconPackRepo = mockk<IconPackRepository>(relaxed = true)
     }
@@ -195,5 +196,26 @@ class TaskbarViewModelTest {
         val vm = createViewModel()
         advanceUntilIdle()
         assertEquals(1, vm.pillIconCount.value)
+    }
+
+    @Test
+    fun `pill visible when auto-hide off`() = runTest(mainDispatcherRule.dispatcher) {
+        val vm = createViewModel()
+        advanceUntilIdle()
+        assertTrue(vm.pillVisible.value)
+    }
+
+    @Test
+    fun `auto-hide pill shows after reveal and resets when dock hides`() = runTest(mainDispatcherRule.dispatcher) {
+        every { prefsRepo.iconsPillAutoHide } returns flowOf(true)
+        val vm = createViewModel()
+        advanceUntilIdle()
+        assertFalse(vm.pillVisible.value)
+        vm.setPillRevealed(true)
+        advanceUntilIdle()
+        assertTrue(vm.pillVisible.value)
+        vm.hideTaskbar()
+        advanceUntilIdle()
+        assertFalse(vm.pillVisible.value)
     }
 }

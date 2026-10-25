@@ -451,4 +451,6 @@
     <string name="app_group_delete">Excluir painel</string>
     <string name="app_group_empty_hint">Nenhum app ainda. Adicione em Configurações › Apps.</string>
     <string name="app_group_remove_app">Remover do painel</string>
+    <string name="settings_pill_auto_hide_title">Ocultar pílula de ícones</string>
+    <string name="settings_pill_auto_hide_desc">Oculta a pílula de ícones acima do Dock até você deslizar para cima no Dock. Deslize para baixo para ocultá-la novamente.</string>
 </resources>

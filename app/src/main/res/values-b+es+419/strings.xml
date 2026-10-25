@@ -451,4 +451,6 @@
     <string name="app_group_delete">Eliminar panel</string>
     <string name="app_group_empty_hint">Aún no hay apps. Agrega algunas en Configuración › Apps.</string>
     <string name="app_group_remove_app">Quitar del panel</string>
+    <string name="settings_pill_auto_hide_title">Ocultar píldora de íconos</string>
+    <string name="settings_pill_auto_hide_desc">Oculta la píldora de íconos sobre el Dock hasta que deslices hacia arriba en el Dock. Desliza hacia abajo para ocultarla de nuevo.</string>
 </resources>

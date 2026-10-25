@@ -451,4 +451,6 @@
     <string name="app_group_delete">Supprimer le panneau</string>
     <string name="app_group_empty_hint">Aucune appli. Ajoutez-en dans Paramètres › Applis.</string>
     <string name="app_group_remove_app">Retirer du panneau</string>
+    <string name="settings_pill_auto_hide_title">Masquer la pilule d\'icônes</string>
+    <string name="settings_pill_auto_hide_desc">Masque la pilule d\'icônes au-dessus du Dock jusqu\'à ce que vous balayiez vers le haut sur le Dock. Balayez vers le bas pour la masquer à nouveau.</string>
 </resources>

@@ -451,4 +451,6 @@
     <string name="app_group_delete">מחיקת לוח</string>
     <string name="app_group_empty_hint">אין עדיין אפליקציות. הוסף בהגדרות › אפליקציות.</string>
     <string name="app_group_remove_app">הסרה מהלוח</string>
+    <string name="settings_pill_auto_hide_title">הסתרה אוטומטית של גלולת הסמלים</string>
+    <string name="settings_pill_auto_hide_desc">מסתיר את גלולת הסמלים מעל ה-Dock עד שתחליק למעלה על ה-Dock. החלק למטה כדי להסתיר אותה שוב.</string>
 </resources>

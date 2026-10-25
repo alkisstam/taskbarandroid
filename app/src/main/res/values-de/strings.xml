@@ -451,4 +451,6 @@
     <string name="app_group_delete">Panel löschen</string>
     <string name="app_group_empty_hint">Noch keine Apps. Füge welche unter Einstellungen › Apps hinzu.</string>
     <string name="app_group_remove_app">Aus Panel entfernen</string>
+    <string name="settings_pill_auto_hide_title">Symbolleiste automatisch ausblenden</string>
+    <string name="settings_pill_auto_hide_desc">Blendet die Symbolleiste über dem Dock aus, bis du auf dem Dock nach oben wischst. Wische nach unten, um sie wieder auszublenden.</string>
 </resources>

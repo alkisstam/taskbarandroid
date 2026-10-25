@@ -39,6 +39,16 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.currentStateAsState
 import androidx.compose.ui.draw.alpha
@@ -173,6 +183,11 @@ fun SettingsScreen(
     )
     val pagerState = rememberPagerState(pageCount = { tabs.size })
     val coroutineScope = rememberCoroutineScope()
+    // A focused text field (panel name) would otherwise keep focus off-screen and reopen
+    // the keyboard when the app comes back.
+    val focusManager = LocalFocusManager.current
+    LaunchedEffect(pagerState.currentPage) { focusManager.clearFocus() }
+    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) { focusManager.clearFocus() }
     val navBarPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     val navBottomPadding = 88.dp + navBarPadding
 
@@ -657,8 +672,27 @@ internal fun BehaviourCard(viewModel: TaskbarViewModel) {
     val autoHideInLandscape by viewModel.autoHideInLandscape.collectAsState()
     val disableOnLockscreen by viewModel.disableOnLockscreen.collectAsState()
     val hapticFeedbackEnabled by viewModel.hapticFeedbackEnabled.collectAsState()
+    val iconsPillAutoHide by viewModel.iconsPillAutoHide.collectAsState()
 
     SettingsCard(title = stringResource(R.string.settings_behaviour_card_title)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(stringResource(R.string.settings_pill_auto_hide_title), style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    stringResource(R.string.settings_pill_auto_hide_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(
+                checked = iconsPillAutoHide,
+                onCheckedChange = { viewModel.setIconsPillAutoHide(it) }
+            )
+        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -1120,6 +1154,7 @@ internal fun PinnedAppsReorderCard(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AppGroupCard(
     viewModel: TaskbarViewModel,
@@ -1150,16 +1185,41 @@ private fun AppGroupCard(
                     tint = MaterialTheme.colorScheme.onSecondaryContainer
                 )
             }
-            OutlinedTextField(
+            val focusManager = LocalFocusManager.current
+            val interactionSource = remember { MutableInteractionSource() }
+            BasicTextField(
                 value = name,
                 onValueChange = {
                     name = it
                     viewModel.renameAppGroup(group.id, it)
                 },
                 singleLine = true,
-                shape = CircleShape,
-                modifier = Modifier.weight(1f)
-            )
+                textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+                interactionSource = interactionSource,
+                modifier = Modifier.weight(1f).height(40.dp)
+            ) { innerTextField ->
+                OutlinedTextFieldDefaults.DecorationBox(
+                    value = name,
+                    innerTextField = innerTextField,
+                    enabled = true,
+                    singleLine = true,
+                    visualTransformation = VisualTransformation.None,
+                    interactionSource = interactionSource,
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    container = {
+                        OutlinedTextFieldDefaults.Container(
+                            enabled = true,
+                            isError = false,
+                            interactionSource = interactionSource,
+                            colors = OutlinedTextFieldDefaults.colors(),
+                            shape = CircleShape
+                        )
+                    }
+                )
+            }
             Switch(
                 checked = group.enabled,
                 onCheckedChange = { viewModel.setAppGroupEnabled(group.id, it) }

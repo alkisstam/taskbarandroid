@@ -212,6 +212,19 @@ class TaskbarViewModel @Inject constructor(
     }
         .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
+    val iconsPillAutoHide: StateFlow<Boolean> = prefsRepository.iconsPillAutoHide
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    // Auto-hide: revealed by a swipe up on the dock, until the dock hides.
+    private val _pillRevealed = MutableStateFlow(false)
+
+    fun setPillRevealed(revealed: Boolean) { _pillRevealed.value = revealed }
+
+    val pillVisible: StateFlow<Boolean> = combine(
+        pillIconCount, iconsPillAutoHide, _pillRevealed
+    ) { count, autoHide, revealed -> count > 0 && (!autoHide || revealed) }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     val alwaysShowMusicPanel: StateFlow<Boolean> = prefsRepository.alwaysShowMusicPanel
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
@@ -420,6 +433,7 @@ class TaskbarViewModel @Inject constructor(
     fun hideTaskbar(force: Boolean = false) {
         _isDockExpanded.value = false
         _expandedGroupId.value = null
+        _pillRevealed.value = false
         _dockExpandProgress.value = 0f
         if (isDockPinned.value && !force) return
         _isTaskbarVisible.value = false
@@ -620,6 +634,10 @@ class TaskbarViewModel @Inject constructor(
         viewModelScope.launch {
             prefsRepository.setMusicPanelEnabled(enabled)
         }
+    }
+
+    fun setIconsPillAutoHide(enabled: Boolean) {
+        viewModelScope.launch { prefsRepository.setIconsPillAutoHide(enabled) }
     }
 
     fun setAlwaysShowMusicPanel(enabled: Boolean) {

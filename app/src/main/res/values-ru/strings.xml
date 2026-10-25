@@ -451,4 +451,6 @@
     <string name="app_group_delete">Удалить панель</string>
     <string name="app_group_empty_hint">Приложений пока нет. Добавьте их в Настройки › Приложения.</string>
     <string name="app_group_remove_app">Убрать с панели</string>
+    <string name="settings_pill_auto_hide_title">Автоскрытие пилюли значков</string>
+    <string name="settings_pill_auto_hide_desc">Скрывает пилюлю значков над доком, пока вы не смахнёте вверх по доку. Смахните вниз, чтобы снова скрыть её.</string>
 </resources>

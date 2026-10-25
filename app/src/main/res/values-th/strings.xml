@@ -451,4 +451,6 @@
     <string name="app_group_delete">ลบแผง</string>
     <string name="app_group_empty_hint">ยังไม่มีแอป เพิ่มได้ที่ การตั้งค่า › แอป</string>
     <string name="app_group_remove_app">นำออกจากแผง</string>
+    <string name="settings_pill_auto_hide_title">ซ่อนแคปซูลไอคอนอัตโนมัติ</string>
+    <string name="settings_pill_auto_hide_desc">ซ่อนแคปซูลไอคอนเหนือ Dock จนกว่าคุณจะปัดขึ้นบน Dock ปัดลงเพื่อซ่อนอีกครั้ง</string>
 </resources>

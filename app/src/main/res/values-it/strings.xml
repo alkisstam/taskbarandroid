@@ -451,4 +451,6 @@
     <string name="app_group_delete">Elimina pannello</string>
     <string name="app_group_empty_hint">Nessuna app. Aggiungine in Impostazioni › App.</string>
     <string name="app_group_remove_app">Rimuovi dal pannello</string>
+    <string name="settings_pill_auto_hide_title">Nascondi pillola icone</string>
+    <string name="settings_pill_auto_hide_desc">Nasconde la pillola delle icone sopra il Dock finché non scorri verso l\'alto sul Dock. Scorri verso il basso per nasconderla di nuovo.</string>
 </resources>

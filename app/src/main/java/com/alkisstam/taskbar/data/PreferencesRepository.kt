@@ -247,6 +247,7 @@ class PreferencesRepository @Inject constructor(
         private val APP_LAUNCH_COUNTS_KEY = stringPreferencesKey("app_launch_counts")
         private val FLOATING_WINDOW_BOUNDS_KEY = stringPreferencesKey("floating_window_bounds")
         private val APP_GROUPS_KEY = stringPreferencesKey("app_groups")
+        private val PILL_AUTO_HIDE_KEY = booleanPreferencesKey("icons_pill_auto_hide")
 
         val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen", "caffeine", "clipboard", "calculator", "wifi", "bluetooth", "share", "notif_history", "notes")
 
@@ -349,7 +350,8 @@ class PreferencesRepository @Inject constructor(
             SHOW_RECENT_APPS_KEY,
             SHOW_RECENT_APPS_ROW_KEY,
             TRANSLUCENT_MODE_KEY,
-            BLUR_TINT_KEY
+            BLUR_TINT_KEY,
+            PILL_AUTO_HIDE_KEY
         )
         private val BACKUP_FLOAT_KEYS = listOf(
             PILL_WIDTH_KEY,
@@ -818,6 +820,16 @@ class PreferencesRepository @Inject constructor(
     suspend fun setAlwaysShowMusicPanel(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[ALWAYS_SHOW_MUSIC_PANEL_KEY] = enabled
+        }
+    }
+
+    val iconsPillAutoHide: Flow<Boolean> = safeData.map { prefs ->
+        prefs[PILL_AUTO_HIDE_KEY] ?: false
+    }
+
+    suspend fun setIconsPillAutoHide(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[PILL_AUTO_HIDE_KEY] = enabled
         }
     }
 
