@@ -1,0 +1,5 @@
+Gewijzigd
+• Alle apps-menu schermvullend, zoeken onderaan naast het sorteermenu; verbergt het dock zolang het open is
+• Instelling Pictogramgrootte vervangt Rijen
+Opgelost
+• Pilacties App-menu en Apps zoeken tonen het dock niet meer

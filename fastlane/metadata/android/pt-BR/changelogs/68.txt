@@ -1,0 +1,5 @@
+Alterado
+• Menu Todos os apps em tela cheia, busca embaixo ao lado do menu de ordenação; oculta o dock enquanto aberto
+• A opção Tamanho dos ícones substitui Linhas
+Corrigido
+• As ações Menu de apps e Buscar apps da pílula não mostram mais o dock

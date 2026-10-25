@@ -1,0 +1,5 @@
+Changed
+• Fullscreen All Apps menu with search at the bottom next to the sort menu; it hides the dock while open
+• Icon Size setting for the All Apps menu replaces Rows
+Fixed
+• Pill Show App Menu and Search Apps actions no longer bring up the dock

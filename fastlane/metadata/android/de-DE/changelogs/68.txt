@@ -1,0 +1,5 @@
+Geändert
+• Alle-Apps-Menü im Vollbild, Suche unten neben dem Sortiermenü; blendet das Dock aus, solange es offen ist
+• Einstellung Symbolgröße für das Alle-Apps-Menü ersetzt Zeilen
+Behoben
+• Pillen-Aktionen App-Menü und App-Suche blenden das Dock nicht mehr ein

@@ -1,0 +1,5 @@
+Değişenler
+• Tüm Uygulamalar menüsü tam ekran, arama altta sıralama menüsünün yanında; açıkken dock'u gizler
+• Simge Boyutu ayarı Satır ayarının yerini aldı
+Düzeltmeler
+• Hap eylemleri Uygulama Menüsü ve Uygulama Ara artık dock'u göstermiyor

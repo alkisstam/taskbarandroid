@@ -288,6 +288,16 @@ val whatsNewReleases = listOf(
             "Every pill gesture gets an action dropdown, with new Show App Menu and Search Apps actions",
             "Fixed the dock and pill disappearing in Instagram, Camera, Maps and similar apps"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.5.13",
+        versionCode = 68,
+        highlights = listOf(
+            "The All Apps menu is now fullscreen, with search at the bottom next to the sort menu",
+            "Opening it hides the dock; tap outside or press Back to close it",
+            "New Icon Size setting for the All Apps menu in Settings → Apps",
+            "The pill's Show App Menu and Search Apps actions no longer bring up the dock"
+        )
     )
 )
 

@@ -1,0 +1,5 @@
+Diubah
+• Menu Semua Aplikasi layar penuh, pencarian di bawah di samping menu urutan; menyembunyikan dock saat terbuka
+• Setelan Ukuran Ikon menggantikan Baris
+Diperbaiki
+• Aksi pil Menu Aplikasi dan Cari Aplikasi tidak lagi memunculkan dock

@@ -1,0 +1,5 @@
+Modificato
+• Menu Tutte le app a schermo intero, ricerca in basso accanto al menu di ordinamento; nasconde il dock mentre è aperto
+• L'impostazione Dimensione icone sostituisce Righe
+Corretto
+• Le azioni Menu app e Cerca app della pillola non mostrano più il dock

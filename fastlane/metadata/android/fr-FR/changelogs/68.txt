@@ -1,0 +1,5 @@
+Modifié
+• Menu Toutes les applis en plein écran, recherche en bas à côté du menu de tri ; masque le dock quand il est ouvert
+• Le réglage Taille des icônes remplace Lignes
+Corrigé
+• Les actions Menu des applis et Recherche de la pilule n'affichent plus le dock

@@ -4,6 +4,19 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.5.13] - 2026-10-25
+
+Fullscreen All Apps menu with the search at the bottom, and an Icon Size setting for it.
+
+### Changed
+- **Fullscreen All Apps menu** — the menu is now a large rounded card filling the screen, with equal gaps at the top and bottom. Search is a pill at the bottom with the sort (three-dots) menu beside it. Opening it hides the dock and the icons pill and closes any open panel; tap outside the card or press Back to close it and the dock comes back.
+- **Icon Size replaces Rows** — Settings → Apps → App Grid. The Rows slider did nothing once the menu filled the screen; Icon Size (32–120dp, default 48dp) sets the size of app icons in the menu and its recent apps row. Large sizes shrink to fit the column. Included in backup/restore.
+
+### Fixed
+- **Show App Menu and Search Apps pill actions revealing the dock** — closing the menu or search opened from the pill no longer brings up a dock that was hidden.
+
+---
+
 ## [1.5.12] - 2026-10-25
 
 App panels in a pill above the dock, open apps in floating windows, swipe in on side pills without triggering Back, every pill gesture configurable, new App Menu and Search actions.

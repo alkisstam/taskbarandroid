@@ -1,0 +1,5 @@
+Cambios
+• Menú Todas las apps en pantalla completa, búsqueda abajo junto al menú de orden; oculta el dock mientras está abierto
+• El ajuste Tamaño de íconos reemplaza a Filas
+Corregido
+• Las acciones Menú de apps y Buscar apps de la píldora ya no muestran el dock
