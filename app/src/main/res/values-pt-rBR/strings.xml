@@ -128,7 +128,7 @@
     <string name="settings_always_show_panel_desc">Abre o painel ao tocar mesmo quando nada está tocando</string>
     <string name="settings_always_show_panel_title">Sempre Exibir Painel</string>
     <string name="settings_app_grid_columns_label">Colunas</string>
-    <string name="settings_app_grid_rows_label">Linhas</string>
+    <string name="settings_app_grid_icon_size_label">Tamanho dos ícones</string>
     <string name="settings_app_grid_title">Grade de Apps</string>
     <string name="settings_app_order_desc">Altera a ordem dos apps no Menu de Apps</string>
     <string name="settings_app_order_title">Ordem dos Apps</string>

@@ -12,6 +12,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -48,6 +51,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.AppMenuButtonSide
@@ -87,17 +91,26 @@ internal fun OverlayContent(
     val themeMode by taskbarViewModel.themeMode.collectAsState()
     val menuVisible by appMenuViewModel.menuVisible.collectAsState()
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
-    val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
-    val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
-
-    val expandedRows = if (isDockExpanded) 1 else 0
     val navBarInsetDp by taskbarViewModel.navBarInsetDp.collectAsState()
-    val panelBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.heightDp, expandedRows, maxOf(taskbarSettings.dockPadding.bottomGapDp, navBarInsetDp))
+    // Accessibility overlays often get zero status bar insets, so keep a floor under them.
+    val topInset = maxOf(WindowInsets.statusBars.asPaddingValues().calculateTopPadding(), 32.dp)
+    val bottomInset = maxOf(taskbarSettings.dockPadding.bottomGapDp, navBarInsetDp).dp
+    val edgeGap = maxOf(topInset + 8.dp, bottomInset + 12.dp)
+    // The window starts below the status bar, so the visible top gap is larger than edgeGap
+    // by the window's screen offset; add it at the bottom so both gaps look equal.
+    val view = LocalView.current
+    val density = LocalDensity.current
+    var windowTopOffset by remember { mutableStateOf(0.dp) }
 
     TaskBarTheme(themeMode = themeMode) {
         Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.BottomCenter
+            modifier = Modifier
+                .fillMaxSize()
+                .onGloballyPositioned {
+                    val location = IntArray(2)
+                    view.getLocationOnScreen(location)
+                    windowTopOffset = with(density) { location[1].toDp() }
+                }
         ) {
             if (menuVisible) {
                 Box(
@@ -109,14 +122,14 @@ internal fun OverlayContent(
                         ) { appMenuViewModel.dismissMenu() }
                 )
             }
-            Column(modifier = Modifier.wrapContentHeight().padding(bottom = panelBottomPadding)) {
-                AppMenuPanel(
-                    viewModel = appMenuViewModel,
-                    taskbarViewModel = taskbarViewModel,
-                    onHideTaskbar = taskbarViewModel::hideTaskbar,
-                    modifier = Modifier
-                )
-            }
+            AppMenuPanel(
+                viewModel = appMenuViewModel,
+                taskbarViewModel = taskbarViewModel,
+                onHideTaskbar = taskbarViewModel::hideTaskbar,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 12.dp, end = 12.dp, top = edgeGap, bottom = edgeGap + windowTopOffset)
+            )
         }
     }
 }
@@ -132,13 +145,21 @@ internal fun TaskbarContent(
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
     val navBarInsetDp by taskbarViewModel.navBarInsetDp.collectAsState()
     val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
+    val menuVisible by appMenuViewModel.menuVisible.collectAsState()
     val dockBottomGap = maxOf(taskbarSettings.dockPadding.bottomGapDp, navBarInsetDp).dp
 
     val revealAnim = remember { Animatable(0f) }
     var taskbarHeightPx by remember { mutableFloatStateOf(0f) }
 
-    LaunchedEffect(isTaskbarVisible, dockRevealProgress) {
+    LaunchedEffect(menuVisible) {
+        if (menuVisible) taskbarViewModel.collapseDock()
+    }
+
+    // The fullscreen app menu covers the dock; it slides back once the menu closes.
+    LaunchedEffect(isTaskbarVisible, dockRevealProgress, menuVisible) {
         when {
+            menuVisible ->
+                revealAnim.animateTo(0f, tween(150))
             isTaskbarVisible ->
                 revealAnim.animateTo(1f, spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium))
             dockRevealProgress == 0f ->
@@ -269,11 +290,9 @@ internal fun TriggerPillContent(taskbarViewModel: TaskbarViewModel, appMenuViewM
                     }
                     GestureAction.TOGGLE_FLASHLIGHT -> appMenuViewModel.toggleTorch()
                     GestureAction.SHOW_APP_MENU -> {
-                        taskbarViewModel.showTaskbar()
                         if (!appMenuViewModel.menuVisible.value) appMenuViewModel.toggleMenu()
                     }
                     GestureAction.SHOW_SEARCH -> {
-                        taskbarViewModel.showTaskbar()
                         appMenuViewModel.openSearch()
                     }
                     GestureAction.DISABLED -> {}

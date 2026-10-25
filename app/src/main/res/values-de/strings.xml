@@ -128,7 +128,7 @@
     <string name="settings_always_show_panel_desc">Das Panel beim Antippen öffnen, auch wenn nichts abgespielt wird</string>
     <string name="settings_always_show_panel_title">Panel immer anzeigen</string>
     <string name="settings_app_grid_columns_label">Spalten</string>
-    <string name="settings_app_grid_rows_label">Zeilen</string>
+    <string name="settings_app_grid_icon_size_label">Symbolgröße</string>
     <string name="settings_app_grid_title">App-Raster</string>
     <string name="settings_app_order_desc">Ändert die Reihenfolge der Apps im App-Menü</string>
     <string name="settings_app_order_title">App-Reihenfolge</string>

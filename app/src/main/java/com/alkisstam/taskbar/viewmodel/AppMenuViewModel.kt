@@ -539,7 +539,14 @@ class AppMenuViewModel @Inject constructor(
         _menuVisible.value = !_menuVisible.value
         if (_menuVisible.value) {
             refreshQuickControls()
+            _volumePanelVisible.value = false
+            _brightnessPanelVisible.value = false
             _calculatorPanelVisible.value = false
+            _clipboardPanelVisible.value = false
+            _notificationPanelVisible.value = false
+            _notesPanelVisible.value = false
+            _quickSettingsPanelVisible.value = false
+            restoreMusicAfterOverlay()
         }
     }
 

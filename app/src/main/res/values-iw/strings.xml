@@ -128,7 +128,7 @@
     <string name="settings_always_show_panel_desc">פתיחת הלוח בהקשה גם כשאין השמעה פעילה</string>
     <string name="settings_always_show_panel_title">הצגת הלוח תמיד</string>
     <string name="settings_app_grid_columns_label">עמודות</string>
-    <string name="settings_app_grid_rows_label">שורות</string>
+    <string name="settings_app_grid_icon_size_label">גודל סמל</string>
     <string name="settings_app_grid_title">רשת אפליקציות</string>
     <string name="settings_app_order_desc">שינוי סדר האפליקציות בתפריט האפליקציות</string>
     <string name="settings_app_order_title">סדר אפליקציות</string>

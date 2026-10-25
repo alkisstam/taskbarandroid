@@ -128,7 +128,7 @@
     <string name="settings_always_show_panel_desc">Open het paneel bij tikken, ook als er niets wordt afgespeeld</string>
     <string name="settings_always_show_panel_title">Paneel altijd tonen</string>
     <string name="settings_app_grid_columns_label">Kolommen</string>
-    <string name="settings_app_grid_rows_label">Rijen</string>
+    <string name="settings_app_grid_icon_size_label">Pictogramgrootte</string>
     <string name="settings_app_grid_title">App-raster</string>
     <string name="settings_app_order_desc">Wijzig de app-volgorde in het App-menu</string>
     <string name="settings_app_order_title">App-volgorde</string>

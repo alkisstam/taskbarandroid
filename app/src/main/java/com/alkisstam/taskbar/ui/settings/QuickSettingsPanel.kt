@@ -132,7 +132,7 @@ fun QuickSettingsPanel(
                                     val pinnedApps by taskbarViewModel.pinnedApps.collectAsState()
                                     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
                                     val appGridColumns by taskbarViewModel.appGridColumns.collectAsState()
-                                    val appGridRows by taskbarViewModel.appGridRows.collectAsState()
+                                    val appGridIconSize by taskbarViewModel.appGridIconSize.collectAsState()
                                     Column(
                                         modifier = Modifier
                                             .fillMaxSize()
@@ -147,7 +147,7 @@ fun QuickSettingsPanel(
                                             inlinePicker = true
                                         )
                                         AppOrderCard(viewModel = taskbarViewModel)
-                                        AppGridCard(viewModel = taskbarViewModel, appGridColumns = appGridColumns, appGridRows = appGridRows)
+                                        AppGridCard(viewModel = taskbarViewModel, appGridColumns = appGridColumns, appGridIconSize = appGridIconSize)
                                     }
                                 }
                                 2 -> Column(

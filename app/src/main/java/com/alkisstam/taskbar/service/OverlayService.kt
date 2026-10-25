@@ -911,7 +911,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             val wrapper = object : FrameLayout(this) {
                 override fun dispatchKeyEvent(event: KeyEvent): Boolean {
                     if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
-                        dismissAll()
+                        // The dock is only hidden behind the app menu, so back brings it back.
+                        if (appMenuViewModel.menuVisible.value) appMenuViewModel.dismissMenu() else dismissAll()
                         return true
                     }
                     return super.dispatchKeyEvent(event)

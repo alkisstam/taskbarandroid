@@ -128,7 +128,7 @@
     <string name="settings_always_show_panel_desc">कुछ भी न बजने पर भी टैप करने पर पैनल खोलें</string>
     <string name="settings_always_show_panel_title">हमेशा पैनल दिखाएं</string>
     <string name="settings_app_grid_columns_label">कॉलम</string>
-    <string name="settings_app_grid_rows_label">पंक्तियां</string>
+    <string name="settings_app_grid_icon_size_label">आइकन का आकार</string>
     <string name="settings_app_grid_title">ऐप ग्रिड</string>
     <string name="settings_app_order_desc">ऐप मेनू में ऐप्स का क्रम बदलें</string>
     <string name="settings_app_order_title">ऐप क्रम</string>

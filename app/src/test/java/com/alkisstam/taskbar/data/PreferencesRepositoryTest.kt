@@ -85,7 +85,7 @@ class PreferencesRepositoryTest {
         put("haptic_feedback", true)
         put("panel_outline_enabled", true)
         put("app_grid_columns", 5)
-        put("app_grid_rows", 6)
+        put("app_grid_icon_size", 64.0)
         put("pill_trigger_area", 24.5)
         put("fuzzy_search_enabled", true)
         put("show_recent_apps", true)
@@ -122,8 +122,8 @@ class PreferencesRepositoryTest {
     fun `partial backup only overwrites present settings`() {
         val prefs = mutablePreferencesOf()
         PreferencesRepository.importPrefs(prefs, fullBackup())
-        PreferencesRepository.importPrefs(prefs, JSONObject().put("theme_mode", "LIGHT").put("app_grid_rows", 3))
-        val expected = fullBackup().put("theme_mode", "LIGHT").put("app_grid_rows", 3)
+        PreferencesRepository.importPrefs(prefs, JSONObject().put("theme_mode", "LIGHT").put("app_grid_columns", 3))
+        val expected = fullBackup().put("theme_mode", "LIGHT").put("app_grid_columns", 3)
         assertSameJson(expected, PreferencesRepository.exportPrefs(prefs))
     }
 

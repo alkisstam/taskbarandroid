@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -33,6 +35,7 @@ import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
@@ -57,6 +60,7 @@ fun AppGrid(
     onHideApp: (String) -> Unit,
     columns: Int = 3,
     iconShape: IconShape = IconShape.DEFAULT,
+    iconSize: Dp = 48.dp,
     modifier: Modifier = Modifier
 ) {
     LazyVerticalGrid(
@@ -72,6 +76,7 @@ fun AppGrid(
                 app = app,
                 isPinned = isPinned,
                 iconShape = iconShape,
+                iconSize = iconSize,
                 onLaunch = { onLaunchApp(app.packageName) },
                 altLaunchLabel = altLaunchLabel,
                 onAltLaunch = { onAltLaunchApp(app.packageName) },
@@ -91,6 +96,7 @@ private fun AppGridItem(
     app: AppInfo,
     isPinned: Boolean,
     iconShape: IconShape,
+    iconSize: Dp,
     onLaunch: () -> Unit,
     altLaunchLabel: String?,
     onAltLaunch: () -> Unit,
@@ -121,7 +127,8 @@ private fun AppGridItem(
                 icon = app.icon,
                 contentDescription = app.label,
                 shape = iconShape.toComposeShape(),
-                modifier = Modifier.size(48.dp)
+                // Clamped to the cell width so large sizes shrink instead of overflowing.
+                modifier = Modifier.widthIn(max = iconSize).fillMaxWidth().aspectRatio(1f)
             )
             if (isPinned) {
                 Box(

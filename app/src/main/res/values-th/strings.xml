@@ -128,7 +128,7 @@
     <string name="settings_always_show_panel_desc">เปิดแผงเมื่อแตะแม้ไม่มีอะไรกำลังเล่นอยู่</string>
     <string name="settings_always_show_panel_title">แสดงแผงเสมอ</string>
     <string name="settings_app_grid_columns_label">คอลัมน์</string>
-    <string name="settings_app_grid_rows_label">แถว</string>
+    <string name="settings_app_grid_icon_size_label">ขนาดไอคอน</string>
     <string name="settings_app_grid_title">ตารางแอป</string>
     <string name="settings_app_order_desc">เปลี่ยนลำดับแอปในเมนูแอป</string>
     <string name="settings_app_order_title">ลำดับแอป</string>

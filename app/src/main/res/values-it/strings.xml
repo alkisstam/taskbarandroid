@@ -128,7 +128,7 @@
     <string name="settings_always_show_panel_desc">Apre il pannello al tocco anche quando non è in riproduzione nulla</string>
     <string name="settings_always_show_panel_title">Mostra sempre il pannello</string>
     <string name="settings_app_grid_columns_label">Colonne</string>
-    <string name="settings_app_grid_rows_label">Righe</string>
+    <string name="settings_app_grid_icon_size_label">Dimensione icone</string>
     <string name="settings_app_grid_title">Griglia app</string>
     <string name="settings_app_order_desc">Cambia l\'ordine delle app nel Menu app</string>
     <string name="settings_app_order_title">Ordine app</string>

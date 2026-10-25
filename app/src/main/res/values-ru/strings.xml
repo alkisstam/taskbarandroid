@@ -128,7 +128,7 @@
     <string name="settings_always_show_panel_desc">Открывать панель по нажатию, даже если ничего не воспроизводится</string>
     <string name="settings_always_show_panel_title">Всегда показывать панель</string>
     <string name="settings_app_grid_columns_label">Столбцы</string>
-    <string name="settings_app_grid_rows_label">Строки</string>
+    <string name="settings_app_grid_icon_size_label">Размер значков</string>
     <string name="settings_app_grid_title">Сетка приложений</string>
     <string name="settings_app_order_desc">Изменяет порядок приложений в меню приложений</string>
     <string name="settings_app_order_title">Порядок приложений</string>

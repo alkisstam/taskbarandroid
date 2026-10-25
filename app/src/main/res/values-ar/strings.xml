@@ -128,7 +128,7 @@
     <string name="settings_always_show_panel_desc">افتح اللوحة عند النقر حتى عندما لا يتم تشغيل أي شيء</string>
     <string name="settings_always_show_panel_title">إظهار اللوحة دائمًا</string>
     <string name="settings_app_grid_columns_label">الأعمدة</string>
-    <string name="settings_app_grid_rows_label">الصفوف</string>
+    <string name="settings_app_grid_icon_size_label">حجم الأيقونة</string>
     <string name="settings_app_grid_title">شبكة التطبيقات</string>
     <string name="settings_app_order_desc">تغيير ترتيب التطبيقات في قائمة التطبيقات</string>
     <string name="settings_app_order_title">ترتيب التطبيقات</string>

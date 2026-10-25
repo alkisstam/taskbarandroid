@@ -226,7 +226,7 @@ class PreferencesRepository @Inject constructor(
         private val FLOATING_ON_TAP_KEY = booleanPreferencesKey("floating_windows_on_tap")
         private val PANEL_OUTLINE_KEY = booleanPreferencesKey("panel_outline_enabled")
         private val APP_GRID_COLUMNS_KEY = intPreferencesKey("app_grid_columns")
-        private val APP_GRID_ROWS_KEY = intPreferencesKey("app_grid_rows")
+        private val APP_GRID_ICON_SIZE_KEY = floatPreferencesKey("app_grid_icon_size")
         private val PILL_TRIGGER_AREA_KEY = floatPreferencesKey("pill_trigger_area")
         private val TRANSLUCENT_MODE_KEY = booleanPreferencesKey("translucent_mode")
         private val TRANSLUCENT_ALPHA_KEY = floatPreferencesKey("translucent_alpha")
@@ -354,6 +354,7 @@ class PreferencesRepository @Inject constructor(
             PILL_AUTO_HIDE_KEY
         )
         private val BACKUP_FLOAT_KEYS = listOf(
+            APP_GRID_ICON_SIZE_KEY,
             PILL_WIDTH_KEY,
             PILL_HEIGHT_KEY,
             PILL_ALPHA_KEY,
@@ -373,8 +374,7 @@ class PreferencesRepository @Inject constructor(
             BLUR_TINT_ALPHA_KEY
         )
         private val BACKUP_INT_KEYS = listOf(
-            APP_GRID_COLUMNS_KEY,
-            APP_GRID_ROWS_KEY
+            APP_GRID_COLUMNS_KEY
         )
 
         internal fun exportPrefs(prefs: Preferences): JSONObject = JSONObject().apply {
@@ -1019,13 +1019,13 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
-    val appGridRows: Flow<Int> = safeData.map { prefs ->
-        prefs[APP_GRID_ROWS_KEY] ?: 5
+    val appGridIconSize: Flow<Float> = safeData.map { prefs ->
+        prefs[APP_GRID_ICON_SIZE_KEY] ?: 48f
     }
 
-    suspend fun setAppGridRows(value: Int) {
+    suspend fun setAppGridIconSize(value: Float) {
         context.dataStore.edit { prefs ->
-            prefs[APP_GRID_ROWS_KEY] = value
+            prefs[APP_GRID_ICON_SIZE_KEY] = value
         }
     }
 

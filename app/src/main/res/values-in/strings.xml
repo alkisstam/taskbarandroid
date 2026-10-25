@@ -128,7 +128,7 @@
     <string name="settings_always_show_panel_desc">Buka panel saat diketuk meski tidak ada yang sedang diputar</string>
     <string name="settings_always_show_panel_title">Selalu Tampilkan Panel</string>
     <string name="settings_app_grid_columns_label">Kolom</string>
-    <string name="settings_app_grid_rows_label">Baris</string>
+    <string name="settings_app_grid_icon_size_label">Ukuran Ikon</string>
     <string name="settings_app_grid_title">Grid Aplikasi</string>
     <string name="settings_app_order_desc">Mengubah urutan aplikasi di Menu Aplikasi</string>
     <string name="settings_app_order_title">Urutan Aplikasi</string>

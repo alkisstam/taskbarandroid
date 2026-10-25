@@ -128,7 +128,7 @@
     <string name="settings_always_show_panel_desc">Abre el panel al tocar aunque no se esté reproduciendo nada</string>
     <string name="settings_always_show_panel_title">Mostrar siempre el panel</string>
     <string name="settings_app_grid_columns_label">Columnas</string>
-    <string name="settings_app_grid_rows_label">Filas</string>
+    <string name="settings_app_grid_icon_size_label">Tamaño de iconos</string>
     <string name="settings_app_grid_title">Cuadrícula de aplicaciones</string>
     <string name="settings_app_order_desc">Cambia el orden de las apps en el Menú de aplicaciones</string>
     <string name="settings_app_order_title">Orden de apps</string>

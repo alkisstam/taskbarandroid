@@ -128,7 +128,7 @@
     <string name="settings_always_show_panel_desc">Ouvre le panneau au toucher même si rien n\'est en cours de lecture</string>
     <string name="settings_always_show_panel_title">Toujours afficher le panneau</string>
     <string name="settings_app_grid_columns_label">Colonnes</string>
-    <string name="settings_app_grid_rows_label">Lignes</string>
+    <string name="settings_app_grid_icon_size_label">Taille des icônes</string>
     <string name="settings_app_grid_title">Grille d\'applications</string>
     <string name="settings_app_order_desc">Modifie l\'ordre des applications dans le Menu des applications</string>
     <string name="settings_app_order_title">Ordre des applications</string>

@@ -128,7 +128,7 @@
     <string name="settings_always_show_panel_desc">Open the panel on tap even when nothing is playing</string>
     <string name="settings_always_show_panel_title">Always Show Panel</string>
     <string name="settings_app_grid_columns_label">Columns</string>
-    <string name="settings_app_grid_rows_label">Rows</string>
+    <string name="settings_app_grid_icon_size_label">Icon Size</string>
     <string name="settings_app_grid_title">App Grid</string>
     <string name="settings_app_order_desc">Change the app order in the App Menu</string>
     <string name="settings_app_order_title">App order</string>

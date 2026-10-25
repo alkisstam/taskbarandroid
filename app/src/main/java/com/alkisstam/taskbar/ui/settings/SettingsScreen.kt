@@ -946,7 +946,7 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
     val taskbarSettings by viewModel.taskbarSettings.collectAsState()
     val iconShape = taskbarSettings.iconShape.toComposeShape()
     val appGridColumns by viewModel.appGridColumns.collectAsState()
-    val appGridRows by viewModel.appGridRows.collectAsState()
+    val appGridIconSize by viewModel.appGridIconSize.collectAsState()
     val showRecentAppsRow by viewModel.showRecentAppsRow.collectAsState()
     var showHideAppPicker by remember { mutableStateOf(false) }
     val defaultGroupName = stringResource(R.string.app_group_default_name, appGroups.size + 1)
@@ -1067,7 +1067,7 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
             AppOrderCard(viewModel = viewModel)
         }
         item {
-            AppGridCard(viewModel = viewModel, appGridColumns = appGridColumns, appGridRows = appGridRows)
+            AppGridCard(viewModel = viewModel, appGridColumns = appGridColumns, appGridIconSize = appGridIconSize)
         }
     }
 }
@@ -1401,7 +1401,7 @@ internal fun AppOrderCard(viewModel: TaskbarViewModel) {
 }
 
 @Composable
-internal fun AppGridCard(viewModel: TaskbarViewModel, appGridColumns: Int, appGridRows: Int) {
+internal fun AppGridCard(viewModel: TaskbarViewModel, appGridColumns: Int, appGridIconSize: Float) {
     SettingsCard(title = stringResource(R.string.settings_app_grid_title)) {
         Column {
             SettingsSlider(
@@ -1416,14 +1416,12 @@ internal fun AppGridCard(viewModel: TaskbarViewModel, appGridColumns: Int, appGr
             )
             Spacer(modifier = Modifier.height(10.dp))
             SettingsSlider(
-                label = stringResource(R.string.settings_app_grid_rows_label),
-                value = appGridRows.toFloat(),
-                valueRange = 3f..6f,
-                unit = "",
+                label = stringResource(R.string.settings_app_grid_icon_size_label),
+                value = appGridIconSize,
+                valueRange = 32f..120f,
+                unit = "dp",
                 step = 1f,
-                sliderSteps = 2,
-                displayTransform = { "${it.toInt()}" },
-                onValueChange = { viewModel.setAppGridRows(it.roundToInt()) }
+                onValueChange = { viewModel.setAppGridIconSize(it) }
             )
         }
     }

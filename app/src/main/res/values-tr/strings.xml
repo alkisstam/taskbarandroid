@@ -128,7 +128,7 @@
     <string name="settings_always_show_panel_desc">Hiçbir şey çalmıyor olsa bile dokunulduğunda paneli açar</string>
     <string name="settings_always_show_panel_title">Paneli Her Zaman Göster</string>
     <string name="settings_app_grid_columns_label">Sütun</string>
-    <string name="settings_app_grid_rows_label">Satır</string>
+    <string name="settings_app_grid_icon_size_label">Simge Boyutu</string>
     <string name="settings_app_grid_title">Uygulama Izgarası</string>
     <string name="settings_app_order_desc">Uygulama Menüsü\'ndeki uygulama sırasını değiştirir</string>
     <string name="settings_app_order_title">Uygulama Sırası</string>
