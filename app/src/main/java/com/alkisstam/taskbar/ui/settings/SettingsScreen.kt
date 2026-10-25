@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -53,6 +54,7 @@ import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DoNotDisturbOff
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.FlashlightOn
@@ -83,6 +85,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.alkisstam.taskbar.R
@@ -122,9 +125,13 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.alkisstam.taskbar.data.AppGroup
 import com.alkisstam.taskbar.data.AppInfo
+import com.alkisstam.taskbar.data.MAX_APP_GROUPS
 import com.alkisstam.taskbar.data.AppSortOrder
+import com.alkisstam.taskbar.ui.common.AppGroupIcons
 import com.alkisstam.taskbar.ui.common.AppIconImage
+import com.alkisstam.taskbar.ui.common.appGroupIcon
 import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import com.alkisstam.taskbar.ui.common.toComposeShape
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
@@ -901,22 +908,22 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
     val pinnedApps by viewModel.pinnedApps.collectAsState()
     val allApps by viewModel.allApps.collectAsState()
     val hiddenApps by viewModel.hiddenAppsInfo.collectAsState()
-    val pinnedPackages = remember(pinnedApps) { pinnedApps.map { it.packageName }.toSet() }
+    val appGroups by viewModel.appGroupsResolved.collectAsState()
     val taskbarSettings by viewModel.taskbarSettings.collectAsState()
     val iconShape = taskbarSettings.iconShape.toComposeShape()
     val appGridColumns by viewModel.appGridColumns.collectAsState()
     val appGridRows by viewModel.appGridRows.collectAsState()
     val showRecentAppsRow by viewModel.showRecentAppsRow.collectAsState()
     var showHideAppPicker by remember { mutableStateOf(false) }
+    val defaultGroupName = stringResource(R.string.app_group_default_name, appGroups.size + 1)
 
-    // Compose defers Dialog.show() a frame; if the activity is finishing or
-    // being recreated by then, addView hits a dead window token (BadTokenException).
-    val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
-    if (showHideAppPicker && lifecycleState.isAtLeast(Lifecycle.State.RESUMED)) {
-        HideAppPickerDialog(
+    if (showHideAppPicker) {
+        AppPickerDialog(
+            title = stringResource(R.string.settings_hide_apps_dialog_title),
             apps = allApps,
+            selected = emptySet(),
             iconShape = iconShape,
-            onHide = { viewModel.hideApp(it) },
+            onToggle = { viewModel.hideApp(it) },
             onDismiss = { showHideAppPicker = false }
         )
     }
@@ -935,7 +942,17 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
             )
         }
         item {
-            PinnedAppsReorderCard(viewModel = viewModel, pinnedApps = pinnedApps, iconShape = iconShape)
+            PinnedAppsReorderCard(
+                viewModel = viewModel,
+                pinnedApps = pinnedApps,
+                iconShape = iconShape,
+                onAddPanel = if (appGroups.size < MAX_APP_GROUPS) {
+                    { viewModel.addAppGroup(defaultGroupName) }
+                } else null
+            )
+        }
+        items(appGroups, key = { it.first.id }) { (group, apps) ->
+            AppGroupCard(viewModel = viewModel, group = group, apps = apps, allApps = allApps, iconShape = iconShape)
         }
         item {
             SettingsCard(title = stringResource(R.string.settings_hidden_apps_title, hiddenApps.size)) {
@@ -944,32 +961,7 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
                     contentPadding = PaddingValues(vertical = 4.dp)
                 ) {
                     item {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(48.dp)
-                                    .clip(CircleShape)
-                                    .background(MaterialTheme.colorScheme.secondaryContainer)
-                                    .clickable { showHideAppPicker = true },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.Add,
-                                    contentDescription = stringResource(R.string.settings_add_app_content_description),
-                                    tint = MaterialTheme.colorScheme.onSecondaryContainer
-                                )
-                            }
-                            Text(
-                                text = stringResource(R.string.settings_add_label),
-                                style = MaterialTheme.typography.labelSmall,
-                                maxLines = 1,
-                                modifier = Modifier.width(48.dp),
-                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                            )
-                        }
+                        AddAppTile(onClick = { showHideAppPicker = true })
                     }
                     items(hiddenApps, key = { it.packageName }) { app ->
                         Column(
@@ -1016,31 +1008,6 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
             }
         }
         item {
-            SettingsCard(title = stringResource(R.string.settings_all_apps_title, allApps.size)) {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(4),
-                    modifier = Modifier.height(340.dp), // ~4 rows: (80dp row * 4) + (4dp gap * 3) + (4dp padding * 2)
-                    contentPadding = PaddingValues(4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    items(allApps, key = { it.packageName }) { app ->
-                        AllAppGridItem(
-                            app = app,
-                            isPinned = app.packageName in pinnedPackages,
-                            iconShape = iconShape,
-                            onTogglePin = {
-                                if (app.packageName in pinnedPackages)
-                                    viewModel.unpinApp(app.packageName)
-                                else
-                                    viewModel.pinApp(app.packageName)
-                            }
-                        )
-                    }
-                }
-            }
-        }
-        item {
             SettingsCard(title = stringResource(R.string.settings_recent_apps_title)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -1072,89 +1039,277 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
 }
 
 @Composable
-internal fun PinnedAppsReorderCard(viewModel: TaskbarViewModel, pinnedApps: List<AppInfo>, iconShape: Shape) {
-    SettingsCard(title = stringResource(R.string.settings_pinned_apps_title, pinnedApps.size)) {
-        if (pinnedApps.isEmpty()) {
-            Text(
-                text = stringResource(R.string.settings_pinned_apps_empty_desc),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+private fun AddAppTile(onClick: () -> Unit) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.secondaryContainer)
+                .clickable(onClick = onClick),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = stringResource(R.string.settings_add_app_content_description),
+                tint = MaterialTheme.colorScheme.onSecondaryContainer
             )
-        } else {
-            val lazyListState = rememberLazyListState()
-            val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
-            val hapticEnabled = LocalHapticEnabled.current
-            // Local working copy during a drag: persisting per-swap races the async
-            // DataStore save and can store a stale intermediate order.
-            var localPinned by remember(pinnedApps) { mutableStateOf(pinnedApps) }
-            val reorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
-                localPinned = localPinned.toMutableList().apply {
-                    if (from.index in indices && to.index in indices) add(to.index, removeAt(from.index))
+        }
+        Text(
+            text = stringResource(R.string.settings_add_label),
+            style = MaterialTheme.typography.labelSmall,
+            maxLines = 1,
+            modifier = Modifier.widthIn(min = 48.dp),
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+        )
+    }
+}
+
+// Inline picker for the overlay quick settings panel, where a Dialog has no window token.
+@Composable
+internal fun PinnedAppsReorderCard(
+    viewModel: TaskbarViewModel,
+    pinnedApps: List<AppInfo>,
+    iconShape: Shape,
+    inlinePicker: Boolean = false,
+    onAddPanel: (() -> Unit)? = null
+) {
+    val allApps by viewModel.allApps.collectAsState()
+    val pinnedPackages = remember(pinnedApps) { pinnedApps.map { it.packageName }.toSet() }
+    var showPicker by remember { mutableStateOf(false) }
+    val onToggle: (String) -> Unit = { pkg ->
+        if (pkg in pinnedPackages) viewModel.unpinApp(pkg) else viewModel.pinApp(pkg)
+    }
+    SettingsCard(title = stringResource(R.string.settings_pinned_apps_title, pinnedApps.size)) {
+        ReorderableAppRow(
+            apps = pinnedApps,
+            iconShape = iconShape,
+            onAdd = { showPicker = !showPicker },
+            onRemove = { viewModel.unpinApp(it) },
+            onReorder = { viewModel.reorderPinnedApps(it) }
+        )
+        if (showPicker) {
+            if (inlinePicker) {
+                AppPickerGrid(apps = allApps, selected = pinnedPackages, iconShape = iconShape, showSearch = false, onToggle = onToggle)
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                    TextButton(onClick = { showPicker = false }) {
+                        Text(stringResource(R.string.settings_hide_apps_done_button))
+                    }
+                }
+            } else {
+                AppPickerDialog(
+                    title = stringResource(R.string.settings_choose_apps_dialog_title),
+                    apps = allApps,
+                    selected = pinnedPackages,
+                    iconShape = iconShape,
+                    onToggle = onToggle,
+                    onDismiss = { showPicker = false }
+                )
+            }
+        }
+        onAddPanel?.let {
+            OutlinedButton(onClick = it, modifier = Modifier.fillMaxWidth()) {
+                Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(stringResource(R.string.app_group_add_button))
+            }
+        }
+    }
+}
+
+@Composable
+private fun AppGroupCard(
+    viewModel: TaskbarViewModel,
+    group: AppGroup,
+    apps: List<AppInfo>,
+    allApps: List<AppInfo>,
+    iconShape: Shape
+) {
+    var showPicker by remember { mutableStateOf(false) }
+    var showIcons by remember { mutableStateOf(false) }
+    var name by remember(group.id) { mutableStateOf(group.name) }
+    SettingsCard(title = stringResource(R.string.app_group_card_title, apps.size)) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.secondaryContainer)
+                    .clickable { showIcons = !showIcons },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = appGroupIcon(group.iconKey),
+                    contentDescription = stringResource(R.string.app_group_choose_icon),
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+            }
+            OutlinedTextField(
+                value = name,
+                onValueChange = {
+                    name = it
+                    viewModel.renameAppGroup(group.id, it)
+                },
+                singleLine = true,
+                shape = CircleShape,
+                modifier = Modifier.weight(1f)
+            )
+            Switch(
+                checked = group.enabled,
+                onCheckedChange = { viewModel.setAppGroupEnabled(group.id, it) }
+            )
+            IconButton(onClick = { viewModel.deleteAppGroup(group.id) }) {
+                Icon(
+                    imageVector = Icons.Filled.Delete,
+                    contentDescription = stringResource(R.string.app_group_delete),
+                    tint = MaterialTheme.colorScheme.error
+                )
+            }
+        }
+        if (showIcons) {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                AppGroupIcons.chunked(6).forEach { row ->
+                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        row.forEach { (key, icon) ->
+                            val selected = key == group.iconKey
+                            Box(
+                                modifier = Modifier
+                                    .size(44.dp)
+                                    .clip(CircleShape)
+                                    .background(
+                                        if (selected) MaterialTheme.colorScheme.primary
+                                        else MaterialTheme.colorScheme.surfaceVariant
+                                    )
+                                    .clickable {
+                                        viewModel.setAppGroupIcon(group.id, key)
+                                        showIcons = false
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = icon,
+                                    contentDescription = key,
+                                    tint = if (selected) MaterialTheme.colorScheme.onPrimary
+                                           else MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
                 }
             }
-            LazyRow(
-                state = lazyListState,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(vertical = 4.dp)
-            ) {
-                items(localPinned, key = { it.packageName }) { app ->
-                    ReorderableItem(reorderableState, key = app.packageName) { isDragging ->
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(4.dp),
-                            modifier = Modifier
-                                .longPressDraggableHandle(
-                                    onDragStarted = {
-                                        if (hapticEnabled) haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
-                                    },
-                                    onDragStopped = {
-                                        viewModel.reorderPinnedApps(localPinned.map { it.packageName })
-                                    }
-                                )
-                        ) {
-                            Box {
-                                AppIconImage(
-                                    icon = app.icon,
-                                    contentDescription = app.label,
-                                    shape = iconShape,
-                                    modifier = Modifier
-                                        .size(48.dp)
-                                        .then(
-                                            if (isDragging) Modifier.background(
-                                                MaterialTheme.colorScheme.primaryContainer,
-                                                iconShape
-                                            ) else Modifier
-                                        )
-                                )
-                                Box(
-                                    modifier = Modifier
-                                        .align(Alignment.TopEnd)
-                                        .size(16.dp)
-                                        .background(
-                                            color = MaterialTheme.colorScheme.error,
-                                            shape = CircleShape
-                                        )
-                                        .clickable { viewModel.unpinApp(app.packageName) },
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.Close,
-                                        contentDescription = stringResource(R.string.settings_pinned_app_unpin_content_description),
-                                        tint = MaterialTheme.colorScheme.onError,
-                                        modifier = Modifier.size(10.dp)
-                                    )
-                                }
+        }
+        ReorderableAppRow(
+            apps = apps,
+            iconShape = iconShape,
+            onAdd = { showPicker = true },
+            onRemove = { viewModel.removeAppGroupPackage(group.id, it) },
+            onReorder = { viewModel.setAppGroupPackages(group.id, it) }
+        )
+        if (showPicker) {
+            AppPickerDialog(
+                title = stringResource(R.string.settings_choose_apps_dialog_title),
+                apps = allApps,
+                selected = group.packages.toSet(),
+                iconShape = iconShape,
+                onToggle = { viewModel.toggleAppGroupPackage(group.id, it) },
+                onDismiss = { showPicker = false }
+            )
+        }
+    }
+}
+
+@Composable
+private fun ReorderableAppRow(
+    apps: List<AppInfo>,
+    iconShape: Shape,
+    onAdd: () -> Unit,
+    onRemove: (String) -> Unit,
+    onReorder: (List<String>) -> Unit
+) {
+    val lazyListState = rememberLazyListState()
+    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
+    val hapticEnabled = LocalHapticEnabled.current
+    // Local working copy during a drag: persisting per-swap races the async
+    // DataStore save and can store a stale intermediate order.
+    var localApps by remember(apps) { mutableStateOf(apps) }
+    val reorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
+        // Keyed lookup: the add tile shifts LazyRow indices by one.
+        localApps = localApps.toMutableList().apply {
+            val fromIndex = indexOfFirst { it.packageName == from.key }
+            val toIndex = indexOfFirst { it.packageName == to.key }
+            if (fromIndex >= 0 && toIndex >= 0) add(toIndex, removeAt(fromIndex))
+        }
+    }
+    LazyRow(
+        state = lazyListState,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(vertical = 4.dp)
+    ) {
+        item(key = "add") {
+            AddAppTile(onClick = onAdd)
+        }
+        items(localApps, key = { it.packageName }) { app ->
+            ReorderableItem(reorderableState, key = app.packageName) { isDragging ->
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    modifier = Modifier
+                        .longPressDraggableHandle(
+                            onDragStarted = {
+                                if (hapticEnabled) haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                            },
+                            onDragStopped = {
+                                onReorder(localApps.map { it.packageName })
                             }
-                            Text(
-                                text = app.label,
-                                style = MaterialTheme.typography.labelSmall,
-                                maxLines = 1,
-                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                                modifier = Modifier.width(48.dp),
-                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                ) {
+                    Box {
+                        AppIconImage(
+                            icon = app.icon,
+                            contentDescription = app.label,
+                            shape = iconShape,
+                            modifier = Modifier
+                                .size(48.dp)
+                                .then(
+                                    if (isDragging) Modifier.background(
+                                        MaterialTheme.colorScheme.primaryContainer,
+                                        iconShape
+                                    ) else Modifier
+                                )
+                        )
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .size(16.dp)
+                                .background(
+                                    color = MaterialTheme.colorScheme.error,
+                                    shape = CircleShape
+                                )
+                                .clickable { onRemove(app.packageName) },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Close,
+                                contentDescription = stringResource(R.string.settings_pinned_app_unpin_content_description),
+                                tint = MaterialTheme.colorScheme.onError,
+                                modifier = Modifier.size(10.dp)
                             )
                         }
                     }
+                    Text(
+                        text = app.label,
+                        style = MaterialTheme.typography.labelSmall,
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                        modifier = Modifier.width(48.dp),
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
                 }
             }
         }
@@ -1268,66 +1423,101 @@ internal fun AllAppGridItem(
 }
 
 @Composable
-private fun HideAppPickerDialog(
+private fun AppPickerDialog(
+    title: String,
     apps: List<AppInfo>,
+    selected: Set<String>,
     iconShape: Shape = RectangleShape,
-    onHide: (String) -> Unit,
+    onToggle: (String) -> Unit,
     onDismiss: () -> Unit
+) {
+    // Compose defers Dialog.show() a frame; if the activity is finishing or
+    // being recreated by then, addView hits a dead window token (BadTokenException).
+    val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
+    if (!lifecycleState.isAtLeast(Lifecycle.State.RESUMED)) return
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(title) },
+        text = { AppPickerGrid(apps = apps, selected = selected, iconShape = iconShape, showSearch = true, onToggle = onToggle) },
+        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.settings_hide_apps_done_button)) } }
+    )
+}
+
+@Composable
+private fun AppPickerGrid(
+    apps: List<AppInfo>,
+    selected: Set<String>,
+    iconShape: Shape,
+    showSearch: Boolean,
+    onToggle: (String) -> Unit
 ) {
     var query by remember { mutableStateOf("") }
     val filtered = remember(apps, query) {
         if (query.isBlank()) apps
         else apps.filter { it.label.contains(query, ignoreCase = true) }
     }
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.settings_hide_apps_dialog_title)) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(
-                    value = query,
-                    onValueChange = { query = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text(stringResource(R.string.settings_hide_apps_search_placeholder)) },
-                    singleLine = true
-                )
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(4),
-                    modifier = Modifier.height(340.dp),
-                    contentPadding = PaddingValues(4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        if (showSearch) {
+            OutlinedTextField(
+                value = query,
+                onValueChange = { query = it },
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text(stringResource(R.string.settings_hide_apps_search_placeholder)) },
+                singleLine = true
+            )
+        }
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(4),
+            modifier = Modifier.height(340.dp),
+            contentPadding = PaddingValues(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            items(filtered, key = { it.packageName }) { app ->
+                Column(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable { onToggle(app.packageName) }
+                        .padding(vertical = 4.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    items(filtered, key = { it.packageName }) { app ->
-                        Column(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(8.dp))
-                                .clickable { onHide(app.packageName) }
-                                .padding(vertical = 4.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            AppIconImage(
-                                icon = app.icon,
-                                contentDescription = app.label,
-                                shape = iconShape,
-                                modifier = Modifier.size(52.dp)
-                            )
-                            Text(
-                                text = app.label,
-                                style = MaterialTheme.typography.labelSmall,
-                                maxLines = 1,
-                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
-                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                    Box {
+                        AppIconImage(
+                            icon = app.icon,
+                            contentDescription = app.label,
+                            shape = iconShape,
+                            modifier = Modifier.size(52.dp)
+                        )
+                        if (app.packageName in selected) {
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.BottomEnd)
+                                    .size(20.dp)
+                                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(6.dp)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Check,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onPrimary,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                            }
                         }
                     }
+                    Text(
+                        text = app.label,
+                        style = MaterialTheme.typography.labelSmall,
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
             }
-        },
-        confirmButton = { TextButton(onClick = onDismiss) { Text(stringResource(R.string.settings_hide_apps_done_button)) } }
-    )
+        }
+    }
 }
 
 @Composable
@@ -1417,9 +1607,7 @@ internal fun QuickControlsToggleCard(viewModel: TaskbarViewModel) {
         }
         Spacer(modifier = Modifier.height(8.dp))
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .alpha(if (quickControlsEnabled) 1f else 0.38f),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -1433,8 +1621,7 @@ internal fun QuickControlsToggleCard(viewModel: TaskbarViewModel) {
             }
             Switch(
                 checked = pinDockControlEnabled,
-                onCheckedChange = { viewModel.setPinDockControlEnabled(it) },
-                enabled = quickControlsEnabled
+                onCheckedChange = { viewModel.setPinDockControlEnabled(it) }
             )
         }
     }

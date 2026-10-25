@@ -153,6 +153,16 @@ data class PillSettings(
     val triggerAreaDp: Float = 22f
 )
 
+data class AppGroup(
+    val id: String,
+    val name: String,
+    val iconKey: String,
+    val packages: List<String>,
+    val enabled: Boolean = true
+)
+
+const val MAX_APP_GROUPS = 3
+
 @Singleton
 class PreferencesRepository @Inject constructor(
     @param:ApplicationContext private val context: Context
@@ -236,6 +246,7 @@ class PreferencesRepository @Inject constructor(
         private val APP_SORT_ORDER_KEY = stringPreferencesKey("app_sort_order")
         private val APP_LAUNCH_COUNTS_KEY = stringPreferencesKey("app_launch_counts")
         private val FLOATING_WINDOW_BOUNDS_KEY = stringPreferencesKey("floating_window_bounds")
+        private val APP_GROUPS_KEY = stringPreferencesKey("app_groups")
 
         val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen", "caffeine", "clipboard", "calculator", "wifi", "bluetooth", "share", "notif_history", "notes")
 
@@ -256,6 +267,34 @@ class PreferencesRepository @Inject constructor(
                 stored.split("||").filter { it.isNotBlank() }
             }
         }
+
+        internal fun serializeAppGroups(groups: List<AppGroup>): String =
+            JSONArray(groups.map { g ->
+                JSONObject()
+                    .put("id", g.id)
+                    .put("name", g.name)
+                    .put("icon", g.iconKey)
+                    .put("packages", JSONArray(g.packages))
+                    .put("enabled", g.enabled)
+            }).toString()
+
+        internal fun deserializeAppGroups(stored: String): List<AppGroup> =
+            try {
+                val arr = JSONArray(stored)
+                List(arr.length()) { i ->
+                    val o = arr.getJSONObject(i)
+                    val pkgs = o.getJSONArray("packages")
+                    AppGroup(
+                        id = o.getString("id"),
+                        name = o.getString("name"),
+                        iconKey = o.getString("icon"),
+                        packages = List(pkgs.length()) { pkgs.getString(it) },
+                        enabled = o.optBoolean("enabled", true)
+                    )
+                }
+            } catch (e: JSONException) {
+                emptyList()
+            }
 
         internal fun serializeLaunchCounts(counts: Map<String, Int>): String =
             JSONObject().apply { counts.forEach { (k, v) -> put(k, v) } }.toString()
@@ -286,7 +325,8 @@ class PreferencesRepository @Inject constructor(
             CONTROLS_DISABLED_KEY,
             ICON_PACK_KEY,
             APP_LANGUAGE_TAG_KEY,
-            APP_SORT_ORDER_KEY
+            APP_SORT_ORDER_KEY,
+            APP_GROUPS_KEY
         )
         private val BACKUP_BOOLEAN_KEYS = listOf(
             OVERLAY_ENABLED_KEY,
@@ -449,6 +489,46 @@ class PreferencesRepository @Inject constructor(
             val current = prefs[HIDDEN_APPS_KEY]?.let { deserializeStringList(it).toSet() } ?: emptySet()
             prefs[HIDDEN_APPS_KEY] = serializeStringList((current - packageName).toList())
         }
+    }
+
+    val appGroups: Flow<List<AppGroup>> = safeData.map { prefs ->
+        prefs[APP_GROUPS_KEY]?.let { deserializeAppGroups(it) } ?: emptyList()
+    }
+
+    private suspend fun editAppGroups(transform: (List<AppGroup>) -> List<AppGroup>) {
+        context.dataStore.edit { prefs ->
+            val current = prefs[APP_GROUPS_KEY]?.let { deserializeAppGroups(it) } ?: emptyList()
+            prefs[APP_GROUPS_KEY] = serializeAppGroups(transform(current))
+        }
+    }
+
+    suspend fun addAppGroup(name: String, iconKey: String) = editAppGroups { groups ->
+        if (groups.size >= MAX_APP_GROUPS) groups
+        else groups + AppGroup(java.util.UUID.randomUUID().toString(), name, iconKey, emptyList())
+    }
+
+    private suspend fun editAppGroup(id: String, transform: (AppGroup) -> AppGroup) = editAppGroups { groups ->
+        groups.map { if (it.id == id) transform(it) else it }
+    }
+
+    suspend fun renameAppGroup(id: String, name: String) = editAppGroup(id) { it.copy(name = name) }
+
+    suspend fun setAppGroupEnabled(id: String, enabled: Boolean) = editAppGroup(id) { it.copy(enabled = enabled) }
+
+    suspend fun setAppGroupIcon(id: String, iconKey: String) = editAppGroup(id) { it.copy(iconKey = iconKey) }
+
+    suspend fun toggleAppGroupPackage(id: String, packageName: String) = editAppGroup(id) {
+        it.copy(packages = if (packageName in it.packages) it.packages - packageName else it.packages + packageName)
+    }
+
+    suspend fun removeAppGroupPackage(id: String, packageName: String) = editAppGroup(id) {
+        it.copy(packages = it.packages - packageName)
+    }
+
+    suspend fun deleteAppGroup(id: String) = editAppGroups { groups -> groups.filterNot { it.id == id } }
+
+    suspend fun setAppGroupPackages(id: String, packages: List<String>) = editAppGroup(id) {
+        it.copy(packages = packages.distinct())
     }
 
     val pillSettings: Flow<PillSettings> = safeData.map { prefs ->

@@ -2,6 +2,7 @@ package com.alkisstam.taskbar.viewmodel
 
 import android.content.Context
 import android.graphics.Bitmap
+import com.alkisstam.taskbar.data.AppGroup
 import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.AppRepository
 import com.alkisstam.taskbar.data.AppSortOrder
@@ -61,6 +62,8 @@ class TaskbarViewModelTest {
             every { hiddenApps } returns flowOf(emptySet())
             every { iconPackPackage } returns flowOf("")
             every { appSortOrder } returns flowOf(AppSortOrder.NAME)
+            every { appGroups } returns flowOf(emptyList())
+            every { pinDockControlEnabled } returns flowOf(false)
         }
         iconPackRepo = mockk<IconPackRepository>(relaxed = true)
     }
@@ -135,5 +138,62 @@ class TaskbarViewModelTest {
 
         assertTrue(collected.last().isEmpty())
         job.cancel()
+    }
+
+    @Test
+    fun `toggleGroupPanel opens, switches and closes`() = runTest(mainDispatcherRule.dispatcher) {
+        val vm = createViewModel()
+        vm.toggleGroupPanel("a")
+        assertTrue(vm.isDockExpanded.value)
+        assertEquals("a", vm.expandedGroupId.value)
+        vm.toggleGroupPanel("b")
+        assertTrue(vm.isDockExpanded.value)
+        assertEquals("b", vm.expandedGroupId.value)
+        vm.toggleGroupPanel("b")
+        assertFalse(vm.isDockExpanded.value)
+        assertEquals(null, vm.expandedGroupId.value)
+    }
+
+    @Test
+    fun `toggleDockExpanded switches from group panel to quick controls`() = runTest(mainDispatcherRule.dispatcher) {
+        val vm = createViewModel()
+        vm.toggleGroupPanel("a")
+        vm.toggleDockExpanded()
+        assertTrue(vm.isDockExpanded.value)
+        assertEquals(null, vm.expandedGroupId.value)
+        vm.toggleDockExpanded()
+        assertFalse(vm.isDockExpanded.value)
+    }
+
+    @Test
+    fun `hideTaskbar clears open group panel`() = runTest(mainDispatcherRule.dispatcher) {
+        val vm = createViewModel()
+        vm.toggleGroupPanel("a")
+        vm.hideTaskbar()
+        assertFalse(vm.isDockExpanded.value)
+        assertEquals(null, vm.expandedGroupId.value)
+    }
+
+    @Test
+    fun `pillIconCount counts quick controls, enabled groups, music and pin`() = runTest(mainDispatcherRule.dispatcher) {
+        every { prefsRepo.musicPanelEnabled } returns flowOf(true)
+        every { prefsRepo.appGroups } returns flowOf(listOf(
+            AppGroup("a", "A", "folder", emptyList()),
+            AppGroup("b", "B", "folder", emptyList()),
+            AppGroup("c", "C", "folder", emptyList(), enabled = false)
+        ))
+        every { prefsRepo.pinDockControlEnabled } returns flowOf(true)
+        val vm = createViewModel()
+        advanceUntilIdle()
+        assertEquals(5, vm.pillIconCount.value)
+    }
+
+    @Test
+    fun `pillIconCount without quick controls`() = runTest(mainDispatcherRule.dispatcher) {
+        every { prefsRepo.quickControlsEnabled } returns flowOf(false)
+        every { prefsRepo.musicPanelEnabled } returns flowOf(true)
+        val vm = createViewModel()
+        advanceUntilIdle()
+        assertEquals(1, vm.pillIconCount.value)
     }
 }

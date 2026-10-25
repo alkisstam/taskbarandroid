@@ -121,9 +121,8 @@
     <string name="settings_active_controls_title">已启用的控制</string>
     <string name="settings_active_controls_desc">触摸并拖动图标即可重新排序</string>
     <string name="settings_add_app_content_description">添加应用</string>
-    <string name="settings_add_label">添加</string>
+    <string name="settings_add_label">添加应用</string>
     <string name="settings_all_apps_pin_content_description">固定</string>
-    <string name="settings_all_apps_title">所有应用 (%1$d)</string>
     <string name="settings_all_apps_unpin_content_description">取消固定</string>
     <string name="settings_all_controls_title">所有控制</string>
     <string name="settings_always_show_panel_desc">即使没有正在播放的内容，点击也会打开面板</string>
@@ -186,11 +185,11 @@
     <string name="settings_disable_lockscreen_desc">阻止触发药丸在锁屏界面打开程序坞</string>
     <string name="settings_disable_lockscreen_title">锁屏时禁用</string>
     <string name="settings_enable_accessibility_button">启用无障碍服务</string>
-    <string name="settings_enable_quick_controls_desc">在程序坞上方显示一个按钮，用于打开快捷控制面板。向下滑动面板或点击外部即可关闭。</string>
+    <string name="settings_enable_quick_controls_desc">在 Dock 上方的胶囊中显示快捷控制图标。点按可打开面板；在面板上向下滑动或点按外部即可关闭。</string>
     <string name="settings_enable_quick_controls_title">启用快捷控制</string>
     <string name="settings_enable_quick_settings_panel_desc">在程序坞的快捷控制中显示设置图标，并访问快速设置面板</string>
     <string name="settings_enable_quick_settings_panel_title">启用快速设置</string>
-    <string name="settings_enable_pin_dock_desc">在程序坞快捷控制的首位显示固定按钮，让程序坞保持在屏幕上</string>
+    <string name="settings_enable_pin_dock_desc">在 Dock 上方的胶囊中显示固定图标，使 Dock 始终保留在屏幕上</string>
     <string name="settings_enable_pin_dock_title">启用固定程序坞</string>
     <string name="settings_fuzzy_search_desc">即使输入有误或只输入部分名称，也能匹配应用</string>
     <string name="settings_fuzzy_search_title">模糊搜索</string>
@@ -200,8 +199,8 @@
     <string name="settings_hide_apps_dialog_title">隐藏应用</string>
     <string name="settings_hide_apps_done_button">完成</string>
     <string name="settings_hide_apps_search_placeholder">搜索应用</string>
-    <string name="settings_keep_controls_expanded_desc">触发程序坞时自动展开快捷控制</string>
-    <string name="settings_keep_controls_expanded_title">自动展开控制面板</string>
+    <string name="settings_keep_controls_expanded_desc">每次 Dock 出现时自动打开快捷控制面板</string>
+    <string name="settings_keep_controls_expanded_title">自动显示控制</string>
     <string name="settings_language_card_title">语言</string>
     <string name="settings_language_system_default">跟随系统</string>
     <string name="settings_music_panel_notification_required_desc">需要通知访问权限才能读取曲目信息并控制播放。</string>
@@ -238,9 +237,8 @@
     <string name="settings_permissions_card_title">权限</string>
     <string name="settings_permission_write_settings_desc">可选 — 用于自动旋转和亮度控制</string>
     <string name="settings_permission_write_settings_name">修改系统设置</string>
-    <string name="settings_pinned_apps_empty_desc">尚未固定任何应用。点击下方应用上的 + 即可固定。</string>
-    <string name="settings_pinned_apps_hint">点击应用图标即可将其添加到已固定的应用。在已固定的应用中触摸并拖动图标可重新排序。</string>
-    <string name="settings_pinned_apps_title">已固定的应用 (%1$d)</string>
+    <string name="settings_pinned_apps_hint">点按 + 添加应用。长按并拖动图标可调整顺序。添加面板可获得更多应用行，从 Dock 上方的胶囊打开。</string>
+    <string name="settings_pinned_apps_title">固定的应用 – 主 Dock (%1$d)</string>
     <string name="settings_pinned_app_unpin_content_description">取消固定</string>
     <string name="settings_quick_controls_title">快捷控制</string>
     <string name="settings_recent_apps_title">最近使用的应用</string>
@@ -445,4 +443,12 @@
     <string name="whats_new_dialog_title">更新内容</string>
     <string name="whats_new_dialog_title_single">%1$s 更新内容</string>
     <string name="whats_new_dialog_dismiss">知道了</string>
+    <string name="settings_choose_apps_dialog_title">选择应用</string>
+    <string name="app_group_add_button">添加面板</string>
+    <string name="app_group_default_name">面板 %1$d</string>
+    <string name="app_group_card_title">应用面板 (%1$d)</string>
+    <string name="app_group_choose_icon">选择图标</string>
+    <string name="app_group_delete">删除面板</string>
+    <string name="app_group_empty_hint">还没有应用。请在 设置 › 应用 中添加。</string>
+    <string name="app_group_remove_app">从面板移除</string>
 </resources>

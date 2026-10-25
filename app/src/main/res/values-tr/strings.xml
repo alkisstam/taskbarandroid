@@ -121,9 +121,8 @@
     <string name="settings_active_controls_title">Etkin Kontroller</string>
     <string name="settings_active_controls_desc">Yeniden sıralamak için bir simgeye dokunup sürükleyin</string>
     <string name="settings_add_app_content_description">Uygulama Ekle</string>
-    <string name="settings_add_label">Ekle</string>
+    <string name="settings_add_label">Uygulama Ekle</string>
     <string name="settings_all_apps_pin_content_description">Sabitle</string>
-    <string name="settings_all_apps_title">Tüm Uygulamalar (%1$d)</string>
     <string name="settings_all_apps_unpin_content_description">Sabitlemeyi kaldır</string>
     <string name="settings_all_controls_title">Tüm Kontroller</string>
     <string name="settings_always_show_panel_desc">Hiçbir şey çalmıyor olsa bile dokunulduğunda paneli açar</string>
@@ -186,11 +185,11 @@
     <string name="settings_disable_lockscreen_desc">Tetikleme hapının kilit ekranında dock\'u açmasını engeller</string>
     <string name="settings_disable_lockscreen_title">Kilit Ekranında Devre Dışı Bırak</string>
     <string name="settings_enable_accessibility_button">Erişilebilirlik Hizmetini Etkinleştir</string>
-    <string name="settings_enable_quick_controls_desc">Dock\'un üzerinde hızlı kontroller panelini açan bir düğme göster. Kapatmak için paneli aşağı kaydırın veya dışına dokunun.</string>
+    <string name="settings_enable_quick_controls_desc">Dock üzerindeki hapta bir hızlı kontroller simgesi gösterir. Paneli açmak için dokunun; kapatmak için panelde aşağı kaydırın veya dışına dokunun.</string>
     <string name="settings_enable_quick_controls_title">Hızlı Kontrolleri Etkinleştir</string>
     <string name="settings_enable_quick_settings_panel_desc">Dock\'taki hızlı kontrollerde bir ayarlar simgesi gösterir ve Hızlı Ayarlar paneline erişim sağlar</string>
     <string name="settings_enable_quick_settings_panel_title">Hızlı Ayarları Etkinleştir</string>
-    <string name="settings_enable_pin_dock_desc">Dock\'u ekranda tutmak için dock\'taki Hızlı Kontrollerde ilk sırada bir sabitleme kontrolü gösterir</string>
+    <string name="settings_enable_pin_dock_desc">Dock\'u her zaman ekranda tutmak için Dock üzerindeki hapta bir sabitleme simgesi gösterir</string>
     <string name="settings_enable_pin_dock_title">Dock sabitlemeyi etkinleştir</string>
     <string name="settings_fuzzy_search_desc">Yazım hatası olsa veya isim eksik yazılsa bile uygulamaları eşleştirir</string>
     <string name="settings_fuzzy_search_title">Bulanık Arama</string>
@@ -200,8 +199,8 @@
     <string name="settings_hide_apps_dialog_title">Uygulamaları Gizle</string>
     <string name="settings_hide_apps_done_button">Bitti</string>
     <string name="settings_hide_apps_search_placeholder">Uygulama ara</string>
-    <string name="settings_keep_controls_expanded_desc">Dock tetiklendiğinde hızlı kontrolleri otomatik genişletir</string>
-    <string name="settings_keep_controls_expanded_title">Kontrolleri otomatik genişlet</string>
+    <string name="settings_keep_controls_expanded_desc">Dock her göründüğünde hızlı kontroller panelini otomatik açar</string>
+    <string name="settings_keep_controls_expanded_title">Kontrolleri Otomatik Göster</string>
     <string name="settings_language_card_title">Dil</string>
     <string name="settings_language_system_default">Sistem Varsayılanı</string>
     <string name="settings_music_panel_notification_required_desc">Parça bilgisini okumak ve oynatmayı kontrol etmek için Bildirim Erişimi gerektirir.</string>
@@ -238,9 +237,8 @@
     <string name="settings_permissions_card_title">İzinler</string>
     <string name="settings_permission_write_settings_desc">İsteğe bağlı — otomatik döndürme ve parlaklık kontrolleri</string>
     <string name="settings_permission_write_settings_name">Sistem ayarlarını değiştir</string>
-    <string name="settings_pinned_apps_empty_desc">Henüz sabitlenmiş uygulama yok. Sabitlemek için aşağıdaki bir uygulamada + işaretine dokunun.</string>
-    <string name="settings_pinned_apps_hint">Bir uygulamayı Sabitlenmiş Uygulamalar\'a eklemek için simgesine dokunun. Yeniden sıralamak için Sabitlenmiş Uygulamalar\'daki bir simgeye dokunup sürükleyin.</string>
-    <string name="settings_pinned_apps_title">Sabitlenmiş Uygulamalar (%1$d)</string>
+    <string name="settings_pinned_apps_hint">Uygulama eklemek için + simgesine dokunun. Yeniden sıralamak için bir simgeyi basılı tutup sürükleyin. Dock üzerindeki hapdan açılan ek uygulama satırları için paneller ekleyin.</string>
+    <string name="settings_pinned_apps_title">Sabitlenmiş Uygulamalar – Ana Dock (%1$d)</string>
     <string name="settings_pinned_app_unpin_content_description">Sabitlemeyi kaldır</string>
     <string name="settings_quick_controls_title">Hızlı Kontroller</string>
     <string name="settings_recent_apps_title">Son Kullanılan Uygulamalar</string>
@@ -445,4 +443,12 @@
     <string name="whats_new_dialog_title">Yenilikler</string>
     <string name="whats_new_dialog_title_single">%1$s Sürümündeki Yenilikler</string>
     <string name="whats_new_dialog_dismiss">Anladım</string>
+    <string name="settings_choose_apps_dialog_title">Uygulama Seç</string>
+    <string name="app_group_add_button">Panel Ekle</string>
+    <string name="app_group_default_name">Panel %1$d</string>
+    <string name="app_group_card_title">Uygulama Paneli (%1$d)</string>
+    <string name="app_group_choose_icon">Simge seç</string>
+    <string name="app_group_delete">Paneli sil</string>
+    <string name="app_group_empty_hint">Henüz uygulama yok. Ayarlar › Uygulamalar bölümünden ekleyin.</string>
+    <string name="app_group_remove_app">Panelden kaldır</string>
 </resources>

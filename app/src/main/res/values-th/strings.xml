@@ -121,9 +121,8 @@
     <string name="settings_active_controls_title">ตัวควบคุมที่ใช้งานอยู่</string>
     <string name="settings_active_controls_desc">แตะและลากไอคอนเพื่อจัดลำดับใหม่</string>
     <string name="settings_add_app_content_description">เพิ่มแอป</string>
-    <string name="settings_add_label">เพิ่ม</string>
+    <string name="settings_add_label">เพิ่มแอป</string>
     <string name="settings_all_apps_pin_content_description">ปักหมุด</string>
-    <string name="settings_all_apps_title">แอปทั้งหมด (%1$d)</string>
     <string name="settings_all_apps_unpin_content_description">เลิกปักหมุด</string>
     <string name="settings_all_controls_title">ตัวควบคุมทั้งหมด</string>
     <string name="settings_always_show_panel_desc">เปิดแผงเมื่อแตะแม้ไม่มีอะไรกำลังเล่นอยู่</string>
@@ -186,11 +185,11 @@
     <string name="settings_disable_lockscreen_desc">ป้องกันไม่ให้ปุ่มลอยเปิดด็อกขณะอยู่ที่หน้าจอล็อก</string>
     <string name="settings_disable_lockscreen_title">ปิดใช้งานที่หน้าจอล็อก</string>
     <string name="settings_enable_accessibility_button">เปิดใช้บริการการเข้าถึงพิเศษ</string>
-    <string name="settings_enable_quick_controls_desc">แสดงปุ่มเหนือด็อกเพื่อเปิดแผงควบคุมด่วน ปัดแผงลงหรือแตะด้านนอกเพื่อปิด</string>
+    <string name="settings_enable_quick_controls_desc">แสดงไอคอนควบคุมด่วนในแคปซูลเหนือ Dock แตะเพื่อเปิดแผง ปัดแผงลงหรือแตะด้านนอกเพื่อปิด</string>
     <string name="settings_enable_quick_controls_title">เปิดใช้ควบคุมด่วน</string>
     <string name="settings_enable_quick_settings_panel_desc">แสดงไอคอนการตั้งค่าในควบคุมด่วนบนด็อก และเข้าถึงแผงการตั้งค่าด่วน</string>
     <string name="settings_enable_quick_settings_panel_title">เปิดใช้งานการตั้งค่าด่วน</string>
-    <string name="settings_enable_pin_dock_desc">แสดงปุ่มปักหมุดเป็นอันดับแรกในการควบคุมด่วนบน Dock เพื่อให้ Dock อยู่บนหน้าจอ</string>
+    <string name="settings_enable_pin_dock_desc">แสดงไอคอนปักหมุดในแคปซูลเหนือ Dock เพื่อให้ Dock อยู่บนหน้าจอเสมอ</string>
     <string name="settings_enable_pin_dock_title">เปิดใช้การปักหมุด Dock</string>
     <string name="settings_fuzzy_search_desc">ค้นหาแอปเจอแม้พิมพ์ผิดหรือใส่ชื่อไม่ครบ</string>
     <string name="settings_fuzzy_search_title">ค้นหาแบบยืดหยุ่น</string>
@@ -200,8 +199,8 @@
     <string name="settings_hide_apps_dialog_title">ซ่อนแอป</string>
     <string name="settings_hide_apps_done_button">เสร็จสิ้น</string>
     <string name="settings_hide_apps_search_placeholder">ค้นหาแอป</string>
-    <string name="settings_keep_controls_expanded_desc">ขยายควบคุมด่วนอัตโนมัติเมื่อเรียกด็อก</string>
-    <string name="settings_keep_controls_expanded_title">ขยายตัวควบคุมอัตโนมัติ</string>
+    <string name="settings_keep_controls_expanded_desc">เปิดแผงควบคุมด่วนโดยอัตโนมัติทุกครั้งที่ Dock ปรากฏ</string>
+    <string name="settings_keep_controls_expanded_title">แสดงตัวควบคุมอัตโนมัติ</string>
     <string name="settings_language_card_title">ภาษา</string>
     <string name="settings_language_system_default">ค่าเริ่มต้นของระบบ</string>
     <string name="settings_music_panel_notification_required_desc">ต้องมีสิทธิ์เข้าถึงการแจ้งเตือนเพื่ออ่านข้อมูลเพลงและควบคุมการเล่น</string>
@@ -238,9 +237,8 @@
     <string name="settings_permissions_card_title">สิทธิ์การเข้าถึง</string>
     <string name="settings_permission_write_settings_desc">ไม่บังคับ — ควบคุมความสว่างและหมุนจออัตโนมัติ</string>
     <string name="settings_permission_write_settings_name">แก้ไขการตั้งค่าระบบ</string>
-    <string name="settings_pinned_apps_empty_desc">ยังไม่มีแอปที่ปักหมุด แตะ + ที่แอปด้านล่างเพื่อปักหมุด</string>
-    <string name="settings_pinned_apps_hint">แตะไอคอนแอปเพื่อเพิ่มลงในแอปที่ปักหมุด แตะค้างแล้วลากไอคอนในแอปที่ปักหมุดเพื่อจัดลำดับใหม่</string>
-    <string name="settings_pinned_apps_title">แอปที่ปักหมุด (%1$d)</string>
+    <string name="settings_pinned_apps_hint">แตะ + เพื่อเพิ่มแอป แตะค้างแล้วลากไอคอนเพื่อจัดเรียงใหม่ เพิ่มแผงสำหรับแถวแอปเพิ่มเติมที่เปิดจากแคปซูลเหนือ Dock</string>
+    <string name="settings_pinned_apps_title">แอปที่ปักหมุด – Dock หลัก (%1$d)</string>
     <string name="settings_pinned_app_unpin_content_description">เลิกปักหมุด</string>
     <string name="settings_quick_controls_title">ควบคุมด่วน</string>
     <string name="settings_recent_apps_title">แอปล่าสุด</string>
@@ -445,4 +443,12 @@
     <string name="whats_new_dialog_title">มีอะไรใหม่</string>
     <string name="whats_new_dialog_title_single">มีอะไรใหม่ใน %1$s</string>
     <string name="whats_new_dialog_dismiss">เข้าใจแล้ว</string>
+    <string name="settings_choose_apps_dialog_title">เลือกแอป</string>
+    <string name="app_group_add_button">เพิ่มแผง</string>
+    <string name="app_group_default_name">แผง %1$d</string>
+    <string name="app_group_card_title">แผงแอป (%1$d)</string>
+    <string name="app_group_choose_icon">เลือกไอคอน</string>
+    <string name="app_group_delete">ลบแผง</string>
+    <string name="app_group_empty_hint">ยังไม่มีแอป เพิ่มได้ที่ การตั้งค่า › แอป</string>
+    <string name="app_group_remove_app">นำออกจากแผง</string>
 </resources>

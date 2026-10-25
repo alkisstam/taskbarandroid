@@ -29,6 +29,20 @@ class PreferencesRepositoryTest {
         assertEquals(emptyList<String>(), PreferencesRepository.deserializeStringList("garbage"))
     }
 
+    @Test
+    fun `app groups JSON round-trip`() {
+        val groups = listOf(
+            AppGroup("g1", "Social", "social", listOf("com.a", "com.b")),
+            AppGroup("g2", "Empty", "folder", emptyList())
+        )
+        assertEquals(groups, PreferencesRepository.deserializeAppGroups(PreferencesRepository.serializeAppGroups(groups)))
+    }
+
+    @Test
+    fun `corrupt app groups yields empty`() {
+        assertEquals(emptyList<AppGroup>(), PreferencesRepository.deserializeAppGroups("garbage"))
+    }
+
     private fun fullBackup() = JSONObject().apply {
         put("pinned_apps", "[\"com.a\",\"com.b\"]")
         put("theme_mode", "DARK")
@@ -85,6 +99,7 @@ class PreferencesRepositoryTest {
         put("icon_pack_package", "com.iconpack")
         put("app_language_tag", "el")
         put("app_sort_order", "USAGE")
+        put("app_groups", PreferencesRepository.serializeAppGroups(listOf(AppGroup("g1", "Tools", "tools", listOf("com.a")))))
     }
 
     private fun assertSameJson(expected: JSONObject, actual: JSONObject) {

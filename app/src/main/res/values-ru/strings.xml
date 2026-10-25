@@ -121,9 +121,8 @@
     <string name="settings_active_controls_title">Активные кнопки</string>
     <string name="settings_active_controls_desc">Коснитесь значка и перетащите его, чтобы изменить порядок</string>
     <string name="settings_add_app_content_description">Добавить приложение</string>
-    <string name="settings_add_label">Добавить</string>
+    <string name="settings_add_label">Добавить приложение</string>
     <string name="settings_all_apps_pin_content_description">Закрепить</string>
-    <string name="settings_all_apps_title">Все приложения (%1$d)</string>
     <string name="settings_all_apps_unpin_content_description">Открепить</string>
     <string name="settings_all_controls_title">Все кнопки</string>
     <string name="settings_always_show_panel_desc">Открывать панель по нажатию, даже если ничего не воспроизводится</string>
@@ -186,11 +185,11 @@
     <string name="settings_disable_lockscreen_desc">Не позволяет капсуле открывать панель на экране блокировки</string>
     <string name="settings_disable_lockscreen_title">Отключить на экране блокировки</string>
     <string name="settings_enable_accessibility_button">Включить специальные возможности</string>
-    <string name="settings_enable_quick_controls_desc">Показывать над панелью кнопку, открывающую панель быстрых кнопок. Проведите по ней вниз или нажмите снаружи, чтобы закрыть.</string>
+    <string name="settings_enable_quick_controls_desc">Показывает значок быстрых настроек на пилюле над доком. Нажмите его, чтобы открыть панель; смахните панель вниз или нажмите вне её, чтобы закрыть.</string>
     <string name="settings_enable_quick_controls_title">Включить быстрые кнопки</string>
     <string name="settings_enable_quick_settings_panel_desc">Показывает значок настроек в быстрых кнопках на панели и открывает доступ к панели быстрых настроек</string>
     <string name="settings_enable_quick_settings_panel_title">Включить быстрые настройки</string>
-    <string name="settings_enable_pin_dock_desc">Показывать кнопку закрепления первой в быстрых элементах управления дока, чтобы док оставался на экране</string>
+    <string name="settings_enable_pin_dock_desc">Показывает значок закрепления на пилюле над доком, чтобы док всегда оставался на экране</string>
     <string name="settings_enable_pin_dock_title">Включить закрепление дока</string>
     <string name="settings_fuzzy_search_desc">Находить приложения даже при опечатках или неполном названии</string>
     <string name="settings_fuzzy_search_title">Нечёткий поиск</string>
@@ -200,8 +199,8 @@
     <string name="settings_hide_apps_dialog_title">Скрыть приложения</string>
     <string name="settings_hide_apps_done_button">Готово</string>
     <string name="settings_hide_apps_search_placeholder">Поиск приложений</string>
-    <string name="settings_keep_controls_expanded_desc">Автоматически разворачивать быстрые кнопки при открытии панели</string>
-    <string name="settings_keep_controls_expanded_title">Разворачивать кнопки автоматически</string>
+    <string name="settings_keep_controls_expanded_desc">Автоматически открывает панель быстрых настроек при появлении дока</string>
+    <string name="settings_keep_controls_expanded_title">Автопоказ быстрых настроек</string>
     <string name="settings_language_card_title">Язык</string>
     <string name="settings_language_system_default">Как в системе</string>
     <string name="settings_music_panel_notification_required_desc">Требуется доступ к уведомлениям для чтения информации о треке и управления воспроизведением.</string>
@@ -238,9 +237,8 @@
     <string name="settings_permissions_card_title">Разрешения</string>
     <string name="settings_permission_write_settings_desc">Необязательно — автоповорот и управление яркостью</string>
     <string name="settings_permission_write_settings_name">Изменение системных настроек</string>
-    <string name="settings_pinned_apps_empty_desc">Пока нет закреплённых приложений. Нажмите + рядом с приложением ниже, чтобы закрепить его.</string>
-    <string name="settings_pinned_apps_hint">Нажмите на значок приложения, чтобы добавить его в закреплённые. Чтобы изменить порядок, коснитесь значка в разделе «Закреплённые приложения» и перетащите его.</string>
-    <string name="settings_pinned_apps_title">Закреплённые приложения (%1$d)</string>
+    <string name="settings_pinned_apps_hint">Нажмите +, чтобы добавить приложения. Удерживайте и перетащите значок, чтобы изменить порядок. Добавьте панели для дополнительных рядов приложений, которые открываются с пилюли над доком.</string>
+    <string name="settings_pinned_apps_title">Закреплённые приложения – основной док (%1$d)</string>
     <string name="settings_pinned_app_unpin_content_description">Открепить</string>
     <string name="settings_quick_controls_title">Быстрые кнопки</string>
     <string name="settings_recent_apps_title">Недавние приложения</string>
@@ -445,4 +443,12 @@
     <string name="whats_new_dialog_title">Что нового</string>
     <string name="whats_new_dialog_title_single">Что нового в %1$s</string>
     <string name="whats_new_dialog_dismiss">Понятно</string>
+    <string name="settings_choose_apps_dialog_title">Выбрать приложения</string>
+    <string name="app_group_add_button">Добавить панель</string>
+    <string name="app_group_default_name">Панель %1$d</string>
+    <string name="app_group_card_title">Панель приложений (%1$d)</string>
+    <string name="app_group_choose_icon">Выбрать значок</string>
+    <string name="app_group_delete">Удалить панель</string>
+    <string name="app_group_empty_hint">Приложений пока нет. Добавьте их в Настройки › Приложения.</string>
+    <string name="app_group_remove_app">Убрать с панели</string>
 </resources>

@@ -121,9 +121,8 @@
     <string name="settings_active_controls_title">有効なコントロール</string>
     <string name="settings_active_controls_desc">アイコンをタッチしてドラッグすると並べ替えられます</string>
     <string name="settings_add_app_content_description">アプリを追加</string>
-    <string name="settings_add_label">追加</string>
+    <string name="settings_add_label">アプリを追加</string>
     <string name="settings_all_apps_pin_content_description">ピン留め</string>
-    <string name="settings_all_apps_title">すべてのアプリ (%1$d)</string>
     <string name="settings_all_apps_unpin_content_description">ピン留めを解除</string>
     <string name="settings_all_controls_title">すべてのコントロール</string>
     <string name="settings_always_show_panel_desc">何も再生していないときもタップでパネルを開く</string>
@@ -186,11 +185,11 @@
     <string name="settings_disable_lockscreen_desc">ロック画面でトリガーピルからドックを開けないようにします</string>
     <string name="settings_disable_lockscreen_title">ロック画面で無効にする</string>
     <string name="settings_enable_accessibility_button">ユーザー補助サービスを有効にする</string>
-    <string name="settings_enable_quick_controls_desc">ドックの上にクイックコントロールパネルを開くボタンを表示します。パネルを下にスワイプするか外側をタップすると閉じます。</string>
+    <string name="settings_enable_quick_controls_desc">ドック上のピルにクイックコントロールのアイコンを表示します。タップでパネルを開き、パネルを下にスワイプするか外側をタップすると閉じます。</string>
     <string name="settings_enable_quick_controls_title">クイックコントロールを有効にする</string>
     <string name="settings_enable_quick_settings_panel_desc">ドックのクイックコントロールに設定アイコンを表示し、クイック設定パネルにアクセスします</string>
     <string name="settings_enable_quick_settings_panel_title">クイック設定を有効にする</string>
-    <string name="settings_enable_pin_dock_desc">ドックのクイックコントロールの先頭に固定ボタンを表示し、ドックを画面に表示したままにします</string>
+    <string name="settings_enable_pin_dock_desc">ドック上のピルに固定アイコンを表示し、ドックを常に画面に表示します</string>
     <string name="settings_enable_pin_dock_title">ドック固定を有効にする</string>
     <string name="settings_fuzzy_search_desc">誤字や一部の文字だけでもアプリを検索できるようにします</string>
     <string name="settings_fuzzy_search_title">あいまい検索</string>
@@ -200,8 +199,8 @@
     <string name="settings_hide_apps_dialog_title">アプリを非表示</string>
     <string name="settings_hide_apps_done_button">完了</string>
     <string name="settings_hide_apps_search_placeholder">アプリを検索</string>
-    <string name="settings_keep_controls_expanded_desc">ドックを表示したときにクイックコントロールを自動的に展開します</string>
-    <string name="settings_keep_controls_expanded_title">コントロールを自動的に展開</string>
+    <string name="settings_keep_controls_expanded_desc">ドックが表示されるたびにクイックコントロールパネルを自動で開きます</string>
+    <string name="settings_keep_controls_expanded_title">コントロールを自動表示</string>
     <string name="settings_language_card_title">言語</string>
     <string name="settings_language_system_default">システムのデフォルト</string>
     <string name="settings_music_panel_notification_required_desc">曲情報の取得と再生操作には通知へのアクセスが必要です。</string>
@@ -238,9 +237,8 @@
     <string name="settings_permissions_card_title">権限</string>
     <string name="settings_permission_write_settings_desc">任意 — 自動回転と明るさの調整</string>
     <string name="settings_permission_write_settings_name">システム設定の変更</string>
-    <string name="settings_pinned_apps_empty_desc">まだピン留めされたアプリがありません。下のアプリの+をタップしてピン留めしましょう。</string>
-    <string name="settings_pinned_apps_hint">アプリアイコンをタップするとピン留めしたアプリに追加されます。ピン留めしたアプリでアイコンを長押ししてドラッグすると並べ替えできます。</string>
-    <string name="settings_pinned_apps_title">ピン留めしたアプリ (%1$d)</string>
+    <string name="settings_pinned_apps_hint">+ をタップしてアプリを追加します。アイコンを長押ししてドラッグすると並べ替えられます。ドック上のピルから開く追加のアプリ列としてパネルを追加できます。</string>
+    <string name="settings_pinned_apps_title">固定したアプリ – メインドック (%1$d)</string>
     <string name="settings_pinned_app_unpin_content_description">ピン留めを解除</string>
     <string name="settings_quick_controls_title">クイックコントロール</string>
     <string name="settings_recent_apps_title">最近使ったアプリ</string>
@@ -445,4 +443,12 @@
     <string name="whats_new_dialog_title">更新情報</string>
     <string name="whats_new_dialog_title_single">%1$sの更新情報</string>
     <string name="whats_new_dialog_dismiss">OK</string>
+    <string name="settings_choose_apps_dialog_title">アプリを選択</string>
+    <string name="app_group_add_button">パネルを追加</string>
+    <string name="app_group_default_name">パネル %1$d</string>
+    <string name="app_group_card_title">アプリパネル (%1$d)</string>
+    <string name="app_group_choose_icon">アイコンを選択</string>
+    <string name="app_group_delete">パネルを削除</string>
+    <string name="app_group_empty_hint">アプリがまだありません。設定 › アプリ で追加してください。</string>
+    <string name="app_group_remove_app">パネルから削除</string>
 </resources>

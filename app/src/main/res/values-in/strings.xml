@@ -121,9 +121,8 @@
     <string name="settings_active_controls_title">Kontrol Aktif</string>
     <string name="settings_active_controls_desc">Sentuh dan seret ikon untuk mengurutkannya ulang</string>
     <string name="settings_add_app_content_description">Tambah Aplikasi</string>
-    <string name="settings_add_label">Tambah</string>
+    <string name="settings_add_label">Tambah Aplikasi</string>
     <string name="settings_all_apps_pin_content_description">Sematkan</string>
-    <string name="settings_all_apps_title">Semua Aplikasi (%1$d)</string>
     <string name="settings_all_apps_unpin_content_description">Lepas sematan</string>
     <string name="settings_all_controls_title">Semua Kontrol</string>
     <string name="settings_always_show_panel_desc">Buka panel saat diketuk meski tidak ada yang sedang diputar</string>
@@ -186,11 +185,11 @@
     <string name="settings_disable_lockscreen_desc">Mencegah pil pemicu membuka dock di layar kunci</string>
     <string name="settings_disable_lockscreen_title">Nonaktifkan di Layar Kunci</string>
     <string name="settings_enable_accessibility_button">Aktifkan Layanan Aksesibilitas</string>
-    <string name="settings_enable_quick_controls_desc">Tampilkan tombol di atas Dock yang membuka panel kontrol cepat. Geser panel ke bawah atau ketuk di luar untuk menutupnya.</string>
+    <string name="settings_enable_quick_controls_desc">Menampilkan ikon kontrol cepat di pil di atas Dock. Ketuk untuk membuka panel; geser ke bawah pada panel atau ketuk di luar untuk menutupnya.</string>
     <string name="settings_enable_quick_controls_title">Aktifkan Kontrol Cepat</string>
     <string name="settings_enable_quick_settings_panel_desc">Menampilkan ikon pengaturan di Kontrol Cepat pada Dock dan mengakses panel Pengaturan Cepat</string>
     <string name="settings_enable_quick_settings_panel_title">Aktifkan Pengaturan Cepat</string>
-    <string name="settings_enable_pin_dock_desc">Menampilkan kontrol sematkan di urutan pertama Kontrol Cepat pada dock agar dock tetap di layar</string>
+    <string name="settings_enable_pin_dock_desc">Menampilkan ikon sematkan di pil di atas Dock agar Dock selalu ada di layar</string>
     <string name="settings_enable_pin_dock_title">Aktifkan Sematkan Dock</string>
     <string name="settings_fuzzy_search_desc">Cocokkan aplikasi meski ada salah ketik atau nama sebagian</string>
     <string name="settings_fuzzy_search_title">Pencarian Fuzzy</string>
@@ -200,8 +199,8 @@
     <string name="settings_hide_apps_dialog_title">Sembunyikan Aplikasi</string>
     <string name="settings_hide_apps_done_button">Selesai</string>
     <string name="settings_hide_apps_search_placeholder">Cari aplikasi</string>
-    <string name="settings_keep_controls_expanded_desc">Otomatis memperluas Kontrol Cepat saat memicu Dock</string>
-    <string name="settings_keep_controls_expanded_title">Perluas kontrol secara otomatis</string>
+    <string name="settings_keep_controls_expanded_desc">Membuka panel kontrol cepat secara otomatis setiap kali Dock muncul</string>
+    <string name="settings_keep_controls_expanded_title">Tampilkan Kontrol Otomatis</string>
     <string name="settings_language_card_title">Bahasa</string>
     <string name="settings_language_system_default">Bawaan Sistem</string>
     <string name="settings_music_panel_notification_required_desc">Memerlukan Akses Notifikasi untuk membaca info lagu dan mengontrol pemutaran.</string>
@@ -238,9 +237,8 @@
     <string name="settings_permissions_card_title">Izin</string>
     <string name="settings_permission_write_settings_desc">Opsional — kontrol rotasi otomatis dan kecerahan</string>
     <string name="settings_permission_write_settings_name">Ubah pengaturan sistem</string>
-    <string name="settings_pinned_apps_empty_desc">Belum ada aplikasi yang disematkan. Ketuk + pada aplikasi mana pun di bawah untuk menyematkannya.</string>
-    <string name="settings_pinned_apps_hint">Ketuk ikon aplikasi untuk menambahkannya ke Aplikasi yang Disematkan. Sentuh dan seret ikon di Aplikasi yang Disematkan untuk mengurutkan ulang.</string>
-    <string name="settings_pinned_apps_title">Aplikasi yang Disematkan (%1$d)</string>
+    <string name="settings_pinned_apps_hint">Ketuk + untuk menambahkan aplikasi. Sentuh lama dan seret ikon untuk mengurutkan ulang. Tambahkan panel untuk baris aplikasi tambahan yang terbuka dari pil di atas Dock.</string>
+    <string name="settings_pinned_apps_title">Aplikasi Disematkan – Dock Utama (%1$d)</string>
     <string name="settings_pinned_app_unpin_content_description">Lepas sematan</string>
     <string name="settings_quick_controls_title">Kontrol Cepat</string>
     <string name="settings_recent_apps_title">Aplikasi Terbaru</string>
@@ -445,4 +443,12 @@
     <string name="whats_new_dialog_title">Yang Baru</string>
     <string name="whats_new_dialog_title_single">Yang Baru di %1$s</string>
     <string name="whats_new_dialog_dismiss">Mengerti</string>
+    <string name="settings_choose_apps_dialog_title">Pilih Aplikasi</string>
+    <string name="app_group_add_button">Tambah Panel</string>
+    <string name="app_group_default_name">Panel %1$d</string>
+    <string name="app_group_card_title">Panel Aplikasi (%1$d)</string>
+    <string name="app_group_choose_icon">Pilih ikon</string>
+    <string name="app_group_delete">Hapus panel</string>
+    <string name="app_group_empty_hint">Belum ada aplikasi. Tambahkan di Setelan › Aplikasi.</string>
+    <string name="app_group_remove_app">Hapus dari panel</string>
 </resources>

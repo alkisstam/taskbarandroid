@@ -49,7 +49,8 @@ fun PinnedAppItem(
     altLaunchLabel: String?,
     onAltLaunch: () -> Unit,
     onUnpin: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    unpinLabel: String? = null
 ) {
     var showMenu by remember { mutableStateOf(false) }
     val haptic = LocalHapticFeedback.current
@@ -106,7 +107,7 @@ fun PinnedAppItem(
                         Column {
                             AppMenuAction(stringResource(R.string.pinned_app_menu_open)) { onLaunch(); showMenu = false }
                             altLaunchLabel?.let { AppMenuAction(it) { onAltLaunch(); showMenu = false } }
-                            AppMenuAction(stringResource(R.string.pinned_app_menu_unpin)) { onUnpin(); showMenu = false }
+                            AppMenuAction(unpinLabel ?: stringResource(R.string.pinned_app_menu_unpin)) { onUnpin(); showMenu = false }
                         }
                     }
                 }

@@ -11,6 +11,7 @@ import android.util.Log
 import androidx.compose.ui.unit.IntRect
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alkisstam.taskbar.data.AppGroup
 import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.AppRepository
 import com.alkisstam.taskbar.data.AppSortOrder
@@ -114,8 +115,8 @@ class TaskbarViewModel @Inject constructor(
     // Pinned: the dock stays shown and only its own bounds take touches. Gated on the tile being
     // available, else a pinned dock could never be unpinned.
     val isDockPinned: StateFlow<Boolean> = combine(
-        prefsRepository.dockPinned, prefsRepository.quickControlsEnabled, pinDockControlEnabled
-    ) { pinned, controlsEnabled, tileEnabled -> pinned && controlsEnabled && tileEnabled }
+        prefsRepository.dockPinned, pinDockControlEnabled
+    ) { pinned, tileEnabled -> pinned && tileEnabled }
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     fun toggleDockPinned() {
@@ -191,6 +192,25 @@ class TaskbarViewModel @Inject constructor(
 
     val musicPanelEnabled: StateFlow<Boolean> = prefsRepository.musicPanelEnabled
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    val appGroups: StateFlow<List<AppGroup>> = prefsRepository.appGroups
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    val appGroupsResolved: StateFlow<List<Pair<AppGroup, List<AppInfo>>>> = combine(
+        appGroups,
+        appRepository.apps
+    ) { groups, apps ->
+        val appMap = apps.associateBy { it.packageName }
+        groups.map { g -> g to g.packages.mapNotNull { appMap[it] } }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    // Icons in the pill above the dock: quick controls, one per enabled app group, music, pin dock.
+    val pillIconCount: StateFlow<Int> = combine(
+        quickControlsEnabled, appGroups, musicPanelEnabled, pinDockControlEnabled
+    ) { qc, groups, music, pin ->
+        (if (qc) 1 else 0) + groups.count { it.enabled } + (if (music) 1 else 0) + (if (pin) 1 else 0)
+    }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
     val alwaysShowMusicPanel: StateFlow<Boolean> = prefsRepository.alwaysShowMusicPanel
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
@@ -323,13 +343,25 @@ class TaskbarViewModel @Inject constructor(
     private val _isDockExpanded = MutableStateFlow(false)
     val isDockExpanded: StateFlow<Boolean> = _isDockExpanded.asStateFlow()
 
+    // Which panel an expanded dock shows: null is quick controls, else an app group id.
+    private val _expandedGroupId = MutableStateFlow<String?>(null)
+    val expandedGroupId: StateFlow<String?> = _expandedGroupId.asStateFlow()
+
     fun toggleDockExpanded() {
-        val next = !_isDockExpanded.value
+        val next = !(_isDockExpanded.value && _expandedGroupId.value == null)
+        _expandedGroupId.value = null
+        _isDockExpanded.value = next
+        _dockExpandProgress.value = if (next) 1f else 0f
+    }
+    fun toggleGroupPanel(id: String) {
+        val next = !(_isDockExpanded.value && _expandedGroupId.value == id)
+        _expandedGroupId.value = if (next) id else null
         _isDockExpanded.value = next
         _dockExpandProgress.value = if (next) 1f else 0f
     }
     fun collapseDock() {
         _isDockExpanded.value = false
+        _expandedGroupId.value = null
         _dockExpandProgress.value = 0f
     }
 
@@ -377,7 +409,8 @@ class TaskbarViewModel @Inject constructor(
 
     fun showTaskbar() {
         _isTaskbarVisible.value = true
-        if (taskbarSettings.value.keepDockExpanded) {
+        if (taskbarSettings.value.keepDockExpanded && quickControlsEnabled.value) {
+            _expandedGroupId.value = null
             _isDockExpanded.value = true
             _dockExpandProgress.value = 1f
         }
@@ -386,6 +419,7 @@ class TaskbarViewModel @Inject constructor(
     // [force] hides a pinned dock too (fullscreen auto-hide).
     fun hideTaskbar(force: Boolean = false) {
         _isDockExpanded.value = false
+        _expandedGroupId.value = null
         _dockExpandProgress.value = 0f
         if (isDockPinned.value && !force) return
         _isTaskbarVisible.value = false
@@ -455,6 +489,40 @@ class TaskbarViewModel @Inject constructor(
         viewModelScope.launch {
             prefsRepository.unhideApp(packageName)
         }
+    }
+
+    fun addAppGroup(name: String) {
+        viewModelScope.launch { prefsRepository.addAppGroup(name, "folder") }
+    }
+
+    fun renameAppGroup(id: String, name: String) {
+        viewModelScope.launch { prefsRepository.renameAppGroup(id, name) }
+    }
+
+    fun setAppGroupEnabled(id: String, enabled: Boolean) {
+        if (!enabled && _expandedGroupId.value == id) collapseDock()
+        viewModelScope.launch { prefsRepository.setAppGroupEnabled(id, enabled) }
+    }
+
+    fun setAppGroupIcon(id: String, iconKey: String) {
+        viewModelScope.launch { prefsRepository.setAppGroupIcon(id, iconKey) }
+    }
+
+    fun toggleAppGroupPackage(id: String, packageName: String) {
+        viewModelScope.launch { prefsRepository.toggleAppGroupPackage(id, packageName) }
+    }
+
+    fun removeAppGroupPackage(id: String, packageName: String) {
+        viewModelScope.launch { prefsRepository.removeAppGroupPackage(id, packageName) }
+    }
+
+    fun deleteAppGroup(id: String) {
+        if (_expandedGroupId.value == id) collapseDock()
+        viewModelScope.launch { prefsRepository.deleteAppGroup(id) }
+    }
+
+    fun setAppGroupPackages(id: String, packages: List<String>) {
+        viewModelScope.launch { prefsRepository.setAppGroupPackages(id, packages) }
     }
 
     fun reorderPinnedApps(newOrder: List<String>) {

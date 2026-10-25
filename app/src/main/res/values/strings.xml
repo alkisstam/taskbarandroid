@@ -121,9 +121,8 @@
     <string name="settings_active_controls_title">Active Controls</string>
     <string name="settings_active_controls_desc">Touch and drag an icon to re-order it</string>
     <string name="settings_add_app_content_description">Add App</string>
-    <string name="settings_add_label">Add</string>
+    <string name="settings_add_label">Add App</string>
     <string name="settings_all_apps_pin_content_description">Pin</string>
-    <string name="settings_all_apps_title">All Apps (%1$d)</string>
     <string name="settings_all_apps_unpin_content_description">Unpin</string>
     <string name="settings_all_controls_title">All Controls</string>
     <string name="settings_always_show_panel_desc">Open the panel on tap even when nothing is playing</string>
@@ -186,11 +185,11 @@
     <string name="settings_disable_lockscreen_desc">Prevent the trigger pill from opening the dock on the lock screen</string>
     <string name="settings_disable_lockscreen_title">Disable on Lock Screen</string>
     <string name="settings_enable_accessibility_button">Enable Accessibility Service</string>
-    <string name="settings_enable_quick_controls_desc">Show a button above the Dock that opens the quick controls panel. Swipe down on the panel or tap outside to close it.</string>
+    <string name="settings_enable_quick_controls_desc">Show a quick controls icon in the pill above the Dock. Tap it to open the quick controls panel; swipe down on the panel or tap outside to close it.</string>
     <string name="settings_enable_quick_controls_title">Enable Quick Controls</string>
     <string name="settings_enable_quick_settings_panel_desc">Show a settings icon in Quick Controls in Dock and access the Quick Settings panel</string>
     <string name="settings_enable_quick_settings_panel_title">Enable Quick Settings</string>
-    <string name="settings_enable_pin_dock_desc">Show a pin control first in the Quick Controls on the dock to keep the dock on screen</string>
+    <string name="settings_enable_pin_dock_desc">Show a pin control icon in the panel above the dock to keep it always on screen</string>
     <string name="settings_enable_pin_dock_title">Enable Pin Dock</string>
     <string name="settings_fuzzy_search_desc">Match apps even with typos or partial names</string>
     <string name="settings_fuzzy_search_title">Fuzzy Search</string>
@@ -200,8 +199,8 @@
     <string name="settings_hide_apps_dialog_title">Hide Apps</string>
     <string name="settings_hide_apps_done_button">Done</string>
     <string name="settings_hide_apps_search_placeholder">Search apps</string>
-    <string name="settings_keep_controls_expanded_desc">Auto expand the Quick Controls when triggering the Dock</string>
-    <string name="settings_keep_controls_expanded_title">Auto expand controls</string>
+    <string name="settings_keep_controls_expanded_desc">Open the quick controls panel automatically whenever the Dock appears</string>
+    <string name="settings_keep_controls_expanded_title">Auto Reveal Controls</string>
     <string name="settings_language_card_title">Language</string>
     <string name="settings_language_system_default">System Default</string>
     <string name="settings_music_panel_notification_required_desc">Requires Notification Access to read track info and control playback.</string>
@@ -238,9 +237,8 @@
     <string name="settings_permissions_card_title">Permissions</string>
     <string name="settings_permission_write_settings_desc">Optional — auto-rotate and brightness controls</string>
     <string name="settings_permission_write_settings_name">Modify system settings</string>
-    <string name="settings_pinned_apps_empty_desc">No apps pinned yet. Tap + on any app below to pin it.</string>
-    <string name="settings_pinned_apps_hint">Tap on an app icon to add it to Pinned Apps. Touch and drag an icon in Pinned Apps to re-order it.</string>
-    <string name="settings_pinned_apps_title">Pinned Apps (%1$d)</string>
+    <string name="settings_pinned_apps_hint">Tap + to add apps. Touch and drag an icon to re-order it. Add panels for extra rows of apps that open from the pill above the Dock.</string>
+    <string name="settings_pinned_apps_title">Pinned Apps - Main Dock (%1$d)</string>
     <string name="settings_pinned_app_unpin_content_description">Unpin</string>
     <string name="settings_quick_controls_title">Quick Controls</string>
     <string name="settings_recent_apps_title">Recent Apps</string>
@@ -445,4 +443,12 @@
     <string name="whats_new_dialog_title">What\'s New</string>
     <string name="whats_new_dialog_title_single">What\'s New in %1$s</string>
     <string name="whats_new_dialog_dismiss">Got it</string>
+    <string name="settings_choose_apps_dialog_title">Choose Apps</string>
+    <string name="app_group_add_button">Add Panel</string>
+    <string name="app_group_default_name">Panel %1$d</string>
+    <string name="app_group_card_title">App Panel (%1$d)</string>
+    <string name="app_group_choose_icon">Choose icon</string>
+    <string name="app_group_delete">Delete panel</string>
+    <string name="app_group_empty_hint">No apps yet. Add some in Settings › Apps.</string>
+    <string name="app_group_remove_app">Remove from panel</string>
 </resources>

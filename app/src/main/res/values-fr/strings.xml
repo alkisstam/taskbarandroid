@@ -121,9 +121,8 @@
     <string name="settings_active_controls_title">Contrôles actifs</string>
     <string name="settings_active_controls_desc">Touchez et faites glisser une icône pour la réorganiser</string>
     <string name="settings_add_app_content_description">Ajouter une application</string>
-    <string name="settings_add_label">Ajouter</string>
+    <string name="settings_add_label">Ajouter une appli</string>
     <string name="settings_all_apps_pin_content_description">Épingler</string>
-    <string name="settings_all_apps_title">Toutes les applications (%1$d)</string>
     <string name="settings_all_apps_unpin_content_description">Détacher</string>
     <string name="settings_all_controls_title">Tous les contrôles</string>
     <string name="settings_always_show_panel_desc">Ouvre le panneau au toucher même si rien n\'est en cours de lecture</string>
@@ -186,11 +185,11 @@
     <string name="settings_disable_lockscreen_desc">Empêche la pastille de déclenchement d\'ouvrir le dock sur l\'écran de verrouillage</string>
     <string name="settings_disable_lockscreen_title">Désactiver sur l\'écran de verrouillage</string>
     <string name="settings_enable_accessibility_button">Activer le service d\'accessibilité</string>
-    <string name="settings_enable_quick_controls_desc">Affiche un bouton au-dessus du dock qui ouvre le panneau des contrôles rapides. Glissez le panneau vers le bas ou touchez à l\'extérieur pour le fermer.</string>
+    <string name="settings_enable_quick_controls_desc">Affiche une icône de commandes rapides dans la pilule au-dessus du Dock. Appuyez dessus pour ouvrir le panneau ; balayez-le vers le bas ou appuyez à l\'extérieur pour le fermer.</string>
     <string name="settings_enable_quick_controls_title">Activer les contrôles rapides</string>
     <string name="settings_enable_quick_settings_panel_desc">Affiche une icône de paramètres dans les contrôles rapides du dock et permet d\'accéder au panneau Paramètres rapides</string>
     <string name="settings_enable_quick_settings_panel_title">Activer les Paramètres rapides</string>
-    <string name="settings_enable_pin_dock_desc">Affiche une commande d\'épinglage en premier dans les commandes rapides du dock pour garder le dock à l\'écran</string>
+    <string name="settings_enable_pin_dock_desc">Affiche une icône d\'épinglage dans la pilule au-dessus du Dock pour le garder toujours à l\'écran</string>
     <string name="settings_enable_pin_dock_title">Activer Épingler le dock</string>
     <string name="settings_fuzzy_search_desc">Trouve les applications même avec des fautes de frappe ou un nom partiel</string>
     <string name="settings_fuzzy_search_title">Recherche approximative</string>
@@ -200,8 +199,8 @@
     <string name="settings_hide_apps_dialog_title">Masquer des applications</string>
     <string name="settings_hide_apps_done_button">Terminé</string>
     <string name="settings_hide_apps_search_placeholder">Rechercher des applications</string>
-    <string name="settings_keep_controls_expanded_desc">Déployer automatiquement les contrôles rapides à l\'ouverture du dock</string>
-    <string name="settings_keep_controls_expanded_title">Déployer automatiquement les contrôles</string>
+    <string name="settings_keep_controls_expanded_desc">Ouvre automatiquement le panneau des commandes rapides dès que le Dock apparaît</string>
+    <string name="settings_keep_controls_expanded_title">Afficher les commandes automatiquement</string>
     <string name="settings_language_card_title">Langue</string>
     <string name="settings_language_system_default">Paramètre système</string>
     <string name="settings_music_panel_notification_required_desc">Nécessite l\'accès aux notifications pour lire les infos de la piste et contrôler la lecture.</string>
@@ -238,9 +237,8 @@
     <string name="settings_permissions_card_title">Autorisations</string>
     <string name="settings_permission_write_settings_desc">Facultatif — rotation automatique et contrôles de luminosité</string>
     <string name="settings_permission_write_settings_name">Modifier les paramètres système</string>
-    <string name="settings_pinned_apps_empty_desc">Aucune application épinglée pour l\'instant. Appuyez sur + sur une application ci-dessous pour l\'épingler.</string>
-    <string name="settings_pinned_apps_hint">Appuyez sur une icône d\'application pour l\'ajouter aux applications épinglées. Maintenez et faites glisser une icône dans les applications épinglées pour la réorganiser.</string>
-    <string name="settings_pinned_apps_title">Applications épinglées (%1$d)</string>
+    <string name="settings_pinned_apps_hint">Appuyez sur + pour ajouter des applis. Maintenez et faites glisser une icône pour la réorganiser. Ajoutez des panneaux pour d\'autres rangées d\'applis qui s\'ouvrent depuis la pilule au-dessus du Dock.</string>
+    <string name="settings_pinned_apps_title">Applis épinglées – Dock principal (%1$d)</string>
     <string name="settings_pinned_app_unpin_content_description">Détacher</string>
     <string name="settings_quick_controls_title">Contrôles rapides</string>
     <string name="settings_recent_apps_title">Applications récentes</string>
@@ -445,4 +443,12 @@
     <string name="whats_new_dialog_title">Nouveautés</string>
     <string name="whats_new_dialog_title_single">Nouveautés de %1$s</string>
     <string name="whats_new_dialog_dismiss">Compris</string>
+    <string name="settings_choose_apps_dialog_title">Choisir des applis</string>
+    <string name="app_group_add_button">Ajouter un panneau</string>
+    <string name="app_group_default_name">Panneau %1$d</string>
+    <string name="app_group_card_title">Panneau d\'applis (%1$d)</string>
+    <string name="app_group_choose_icon">Choisir une icône</string>
+    <string name="app_group_delete">Supprimer le panneau</string>
+    <string name="app_group_empty_hint">Aucune appli. Ajoutez-en dans Paramètres › Applis.</string>
+    <string name="app_group_remove_app">Retirer du panneau</string>
 </resources>

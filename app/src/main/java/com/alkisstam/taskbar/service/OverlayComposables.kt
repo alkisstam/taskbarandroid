@@ -88,10 +88,9 @@ internal fun OverlayContent(
     val menuVisible by appMenuViewModel.menuVisible.collectAsState()
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
     val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
-    val quickControlsEnabled by taskbarViewModel.quickControlsEnabled.collectAsState()
     val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
 
-    val expandedRows = if (isDockExpanded && quickControlsEnabled) 1 else 0
+    val expandedRows = if (isDockExpanded) 1 else 0
     val navBarInsetDp by taskbarViewModel.navBarInsetDp.collectAsState()
     val panelBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.heightDp, expandedRows, maxOf(taskbarSettings.dockPadding.bottomGapDp, navBarInsetDp))
 
@@ -421,10 +420,9 @@ internal fun ClipboardPanelContent(
     val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
     val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
-    val quickControlsEnabled by taskbarViewModel.quickControlsEnabled.collectAsState()
     val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
 
-    val expandedRows = if (isDockExpanded && quickControlsEnabled) 1 else 0
+    val expandedRows = if (isDockExpanded) 1 else 0
     val dockBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.heightDp, expandedRows, taskbarSettings.dockPadding.bottomGapDp)
 
     TaskBarTheme(themeMode = themeMode) {
@@ -460,10 +458,9 @@ internal fun NotesPanelContent(
     val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
     val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
-    val quickControlsEnabled by taskbarViewModel.quickControlsEnabled.collectAsState()
     val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
 
-    val expandedRows = if (isDockExpanded && quickControlsEnabled) 1 else 0
+    val expandedRows = if (isDockExpanded) 1 else 0
     val dockBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.heightDp, expandedRows, taskbarSettings.dockPadding.bottomGapDp)
 
     TaskBarTheme(themeMode = themeMode) {
@@ -504,11 +501,10 @@ internal fun QuickSettingsPanelContent(
     val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
     val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
-    val quickControlsEnabled by taskbarViewModel.quickControlsEnabled.collectAsState()
     val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
     val quickSettingsPanelVisible by appMenuViewModel.quickSettingsPanelVisible.collectAsState()
 
-    val expandedRows = if (isDockExpanded && quickControlsEnabled) 1 else 0
+    val expandedRows = if (isDockExpanded) 1 else 0
     val dockBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.heightDp, expandedRows, taskbarSettings.dockPadding.bottomGapDp)
     val context = LocalContext.current
     val hasNotificationListenerPermission = remember(quickSettingsPanelVisible) {
@@ -544,13 +540,12 @@ internal fun NotificationHistoryPanelContent(
     val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
     val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
-    val quickControlsEnabled by taskbarViewModel.quickControlsEnabled.collectAsState()
     val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
     val allApps by appMenuViewModel.allApps.collectAsState()
 
     val appsByPackage = remember(allApps) { allApps.associateBy { it.packageName } }
 
-    val expandedRows = if (isDockExpanded && quickControlsEnabled) 1 else 0
+    val expandedRows = if (isDockExpanded) 1 else 0
     val dockBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.heightDp, expandedRows, taskbarSettings.dockPadding.bottomGapDp)
 
     TaskBarTheme(themeMode = themeMode) {
@@ -626,11 +621,11 @@ internal fun MusicPanelContent(
     val translucentAlpha by taskbarViewModel.translucentAlpha.collectAsState()
     val grainAlpha by taskbarViewModel.grainAlpha.collectAsState()
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
-    val quickControlsEnabled by taskbarViewModel.quickControlsEnabled.collectAsState()
+    val pillIconCount by taskbarViewModel.pillIconCount.collectAsState()
     val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
-    // Sits beside the quick controls button instead of covering it; OverlayService lowers
-    // the window to the button's row in the same state.
-    val besideButton = quickControlsEnabled && !isDockExpanded
+    // Sits beside a short (1-2 icon) pill instead of covering it; OverlayService lowers
+    // the window to the pill's row in the same state. A longer pill leaves no room, so it goes above.
+    val besideButton = pillIconCount in 1..2 && !isDockExpanded
     val buttonBounds by taskbarViewModel.quickControlsButtonBounds.collectAsState()
     // Bounds clear while the dock is hidden; keep the last width so the inset doesn't grow from 0 on reveal.
     var lastButtonWidthPx by remember { mutableIntStateOf(0) }

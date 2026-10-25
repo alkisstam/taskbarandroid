@@ -121,9 +121,8 @@
     <string name="settings_active_controls_title">عناصر التحكم النشطة</string>
     <string name="settings_active_controls_desc">المس واسحب أيقونة لإعادة ترتيبها</string>
     <string name="settings_add_app_content_description">إضافة تطبيق</string>
-    <string name="settings_add_label">إضافة</string>
+    <string name="settings_add_label">إضافة تطبيق</string>
     <string name="settings_all_apps_pin_content_description">تثبيت</string>
-    <string name="settings_all_apps_title">جميع التطبيقات (%1$d)</string>
     <string name="settings_all_apps_unpin_content_description">إلغاء التثبيت</string>
     <string name="settings_all_controls_title">جميع عناصر التحكم</string>
     <string name="settings_always_show_panel_desc">افتح اللوحة عند النقر حتى عندما لا يتم تشغيل أي شيء</string>
@@ -186,11 +185,11 @@
     <string name="settings_disable_lockscreen_desc">منع مقبض التفعيل من فتح الرصيف على شاشة القفل</string>
     <string name="settings_disable_lockscreen_title">تعطيل على شاشة القفل</string>
     <string name="settings_enable_accessibility_button">تفعيل خدمة إمكانية الوصول</string>
-    <string name="settings_enable_quick_controls_desc">إظهار زر فوق الرصيف يفتح لوحة عناصر التحكم السريع. مرر اللوحة لأسفل أو انقر خارجها لإغلاقها.</string>
+    <string name="settings_enable_quick_controls_desc">يعرض أيقونة عناصر التحكم السريعة في الكبسولة فوق الشريط. اضغط عليها لفتح اللوحة؛ اسحب اللوحة لأسفل أو اضغط خارجها لإغلاقها.</string>
     <string name="settings_enable_quick_controls_title">تفعيل عناصر التحكم السريع</string>
     <string name="settings_enable_quick_settings_panel_desc">إظهار أيقونة الإعدادات في عناصر التحكم السريع في الرصيف والوصول إلى لوحة الإعدادات السريعة</string>
     <string name="settings_enable_quick_settings_panel_title">تفعيل الإعدادات السريعة</string>
-    <string name="settings_enable_pin_dock_desc">إظهار عنصر تثبيت أولاً في عناصر التحكم السريع على الشريط لإبقاء الشريط على الشاشة</string>
+    <string name="settings_enable_pin_dock_desc">يعرض أيقونة تثبيت في الكبسولة فوق الشريط لإبقائه على الشاشة دائمًا</string>
     <string name="settings_enable_pin_dock_title">تفعيل تثبيت الشريط</string>
     <string name="settings_fuzzy_search_desc">مطابقة التطبيقات حتى مع وجود أخطاء إملائية أو أسماء جزئية</string>
     <string name="settings_fuzzy_search_title">البحث التقريبي</string>
@@ -200,8 +199,8 @@
     <string name="settings_hide_apps_dialog_title">إخفاء التطبيقات</string>
     <string name="settings_hide_apps_done_button">تم</string>
     <string name="settings_hide_apps_search_placeholder">ابحث عن التطبيقات</string>
-    <string name="settings_keep_controls_expanded_desc">توسيع عناصر التحكم السريع تلقائيًا عند تشغيل الرصيف</string>
-    <string name="settings_keep_controls_expanded_title">توسيع عناصر التحكم تلقائيًا</string>
+    <string name="settings_keep_controls_expanded_desc">يفتح لوحة عناصر التحكم السريعة تلقائيًا عند ظهور الشريط</string>
+    <string name="settings_keep_controls_expanded_title">إظهار عناصر التحكم تلقائيًا</string>
     <string name="settings_language_card_title">اللغة</string>
     <string name="settings_language_system_default">افتراضي النظام</string>
     <string name="settings_music_panel_notification_required_desc">يتطلب الوصول إلى الإشعارات لقراءة معلومات المقطع والتحكم في التشغيل.</string>
@@ -238,9 +237,8 @@
     <string name="settings_permissions_card_title">الأذونات</string>
     <string name="settings_permission_write_settings_desc">اختياري — عناصر التحكم في التدوير التلقائي والسطوع</string>
     <string name="settings_permission_write_settings_name">تعديل إعدادات النظام</string>
-    <string name="settings_pinned_apps_empty_desc">لا توجد تطبيقات مثبتة بعد. اضغط على + بجانب أي تطبيق أدناه لتثبيته.</string>
-    <string name="settings_pinned_apps_hint">اضغط على أيقونة تطبيق لإضافته إلى التطبيقات المثبتة. المس واسحب أيقونة في التطبيقات المثبتة لإعادة ترتيبها.</string>
-    <string name="settings_pinned_apps_title">التطبيقات المثبتة (%1$d)</string>
+    <string name="settings_pinned_apps_hint">اضغط + لإضافة تطبيقات. المس مطولاً واسحب أيقونة لإعادة ترتيبها. أضف لوحات لصفوف إضافية من التطبيقات تُفتح من الكبسولة فوق الشريط.</string>
+    <string name="settings_pinned_apps_title">التطبيقات المثبتة – الشريط الرئيسي (%1$d)</string>
     <string name="settings_pinned_app_unpin_content_description">إلغاء التثبيت</string>
     <string name="settings_quick_controls_title">عناصر التحكم السريع</string>
     <string name="settings_recent_apps_title">التطبيقات الأخيرة</string>
@@ -445,4 +443,12 @@
     <string name="whats_new_dialog_title">ما الجديد</string>
     <string name="whats_new_dialog_title_single">ما الجديد في %1$s</string>
     <string name="whats_new_dialog_dismiss">فهمت</string>
+    <string name="settings_choose_apps_dialog_title">اختيار التطبيقات</string>
+    <string name="app_group_add_button">إضافة لوحة</string>
+    <string name="app_group_default_name">لوحة %1$d</string>
+    <string name="app_group_card_title">لوحة تطبيقات (%1$d)</string>
+    <string name="app_group_choose_icon">اختيار أيقونة</string>
+    <string name="app_group_delete">حذف اللوحة</string>
+    <string name="app_group_empty_hint">لا توجد تطبيقات بعد. أضفها من الإعدادات › التطبيقات.</string>
+    <string name="app_group_remove_app">إزالة من اللوحة</string>
 </resources>

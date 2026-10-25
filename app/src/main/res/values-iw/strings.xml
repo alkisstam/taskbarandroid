@@ -121,9 +121,8 @@
     <string name="settings_active_controls_title">פקדים פעילים</string>
     <string name="settings_active_controls_desc">גע וגרור סמל כדי לסדר אותו מחדש</string>
     <string name="settings_add_app_content_description">הוספת אפליקציה</string>
-    <string name="settings_add_label">הוספה</string>
+    <string name="settings_add_label">הוספת אפליקציה</string>
     <string name="settings_all_apps_pin_content_description">נעיצה</string>
-    <string name="settings_all_apps_title">כל האפליקציות (%1$d)</string>
     <string name="settings_all_apps_unpin_content_description">ביטול נעיצה</string>
     <string name="settings_all_controls_title">כל הפקדים</string>
     <string name="settings_always_show_panel_desc">פתיחת הלוח בהקשה גם כשאין השמעה פעילה</string>
@@ -186,11 +185,11 @@
     <string name="settings_disable_lockscreen_desc">מניעת פתיחת הדוק על ידי הידית במסך הנעילה</string>
     <string name="settings_disable_lockscreen_title">השבתה במסך הנעילה</string>
     <string name="settings_enable_accessibility_button">הפעלת שירות הנגישות</string>
-    <string name="settings_enable_quick_controls_desc">הצגת כפתור מעל הדוק שפותח את חלונית הפקדים המהירים. החלקה של החלונית למטה או הקשה מחוץ לה סוגרת אותה.</string>
+    <string name="settings_enable_quick_controls_desc">מציג סמל פקדים מהירים בגלולה מעל ה-Dock. הקש עליו כדי לפתוח את הלוח; החלק את הלוח למטה או הקש מחוצה לו כדי לסגור.</string>
     <string name="settings_enable_quick_controls_title">הפעלת פקדים מהירים</string>
     <string name="settings_enable_quick_settings_panel_desc">הצגת סמל הגדרות בפקדים המהירים בדוק וגישה ללוח ההגדרות המהירות</string>
     <string name="settings_enable_quick_settings_panel_title">הפעלת הגדרות מהירות</string>
-    <string name="settings_enable_pin_dock_desc">הצגת פקד הצמדה ראשון בפקדים המהירים בסרגל כדי להשאיר את הסרגל על המסך</string>
+    <string name="settings_enable_pin_dock_desc">מציג סמל הצמדה בגלולה מעל ה-Dock כדי להשאיר אותו תמיד על המסך</string>
     <string name="settings_enable_pin_dock_title">הפעלת הצמדת הסרגל</string>
     <string name="settings_fuzzy_search_desc">התאמת אפליקציות גם עם שגיאות הקלדה או שמות חלקיים</string>
     <string name="settings_fuzzy_search_title">חיפוש מקורב</string>
@@ -200,8 +199,8 @@
     <string name="settings_hide_apps_dialog_title">הסתרת אפליקציות</string>
     <string name="settings_hide_apps_done_button">סיום</string>
     <string name="settings_hide_apps_search_placeholder">חיפוש אפליקציות</string>
-    <string name="settings_keep_controls_expanded_desc">הרחבת הפקדים המהירים אוטומטית בעת הפעלת הדוק</string>
-    <string name="settings_keep_controls_expanded_title">הרחבת הפקדים אוטומטית</string>
+    <string name="settings_keep_controls_expanded_desc">פותח את לוח הפקדים המהירים אוטומטית בכל פעם שה-Dock מופיע</string>
+    <string name="settings_keep_controls_expanded_title">הצגת פקדים אוטומטית</string>
     <string name="settings_language_card_title">שפה</string>
     <string name="settings_language_system_default">ברירת המחדל של המערכת</string>
     <string name="settings_music_panel_notification_required_desc">דורש גישה להתראות כדי לקרוא פרטי רצועה ולשלוט בהשמעה.</string>
@@ -238,9 +237,8 @@
     <string name="settings_permissions_card_title">הרשאות</string>
     <string name="settings_permission_write_settings_desc">אופציונלי — פקדי סיבוב אוטומטי ובהירות</string>
     <string name="settings_permission_write_settings_name">שינוי הגדרות המערכת</string>
-    <string name="settings_pinned_apps_empty_desc">עדיין אין אפליקציות נעוצות. הקש על + ליד כל אפליקציה למטה כדי לנעוץ אותה.</string>
-    <string name="settings_pinned_apps_hint">הקש על אייקון אפליקציה כדי להוסיף אותו לאפליקציות הנעוצות. גע וגרור אייקון באפליקציות הנעוצות כדי לסדר אותו מחדש.</string>
-    <string name="settings_pinned_apps_title">אפליקציות נעוצות (%1$d)</string>
+    <string name="settings_pinned_apps_hint">הקש על + כדי להוסיף אפליקציות. לחץ לחיצה ארוכה וגרור סמל כדי לשנות את הסדר. הוסף לוחות לשורות נוספות של אפליקציות שנפתחות מהגלולה מעל ה-Dock.</string>
+    <string name="settings_pinned_apps_title">אפליקציות מוצמדות – Dock ראשי (%1$d)</string>
     <string name="settings_pinned_app_unpin_content_description">ביטול נעיצה</string>
     <string name="settings_quick_controls_title">פקדים מהירים</string>
     <string name="settings_recent_apps_title">אפליקציות אחרונות</string>
@@ -445,4 +443,12 @@
     <string name="whats_new_dialog_title">מה חדש</string>
     <string name="whats_new_dialog_title_single">מה חדש ב-%1$s</string>
     <string name="whats_new_dialog_dismiss">הבנתי</string>
+    <string name="settings_choose_apps_dialog_title">בחירת אפליקציות</string>
+    <string name="app_group_add_button">הוספת לוח</string>
+    <string name="app_group_default_name">לוח %1$d</string>
+    <string name="app_group_card_title">לוח אפליקציות (%1$d)</string>
+    <string name="app_group_choose_icon">בחירת סמל</string>
+    <string name="app_group_delete">מחיקת לוח</string>
+    <string name="app_group_empty_hint">אין עדיין אפליקציות. הוסף בהגדרות › אפליקציות.</string>
+    <string name="app_group_remove_app">הסרה מהלוח</string>
 </resources>

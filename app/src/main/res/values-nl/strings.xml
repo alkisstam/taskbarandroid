@@ -121,9 +121,8 @@
     <string name="settings_active_controls_title">Actieve bedieningselementen</string>
     <string name="settings_active_controls_desc">Raak een pictogram aan en sleep het om de volgorde te wijzigen</string>
     <string name="settings_add_app_content_description">App toevoegen</string>
-    <string name="settings_add_label">Toevoegen</string>
+    <string name="settings_add_label">App toevoegen</string>
     <string name="settings_all_apps_pin_content_description">Vastzetten</string>
-    <string name="settings_all_apps_title">Alle apps (%1$d)</string>
     <string name="settings_all_apps_unpin_content_description">Losmaken</string>
     <string name="settings_all_controls_title">Alle bedieningselementen</string>
     <string name="settings_always_show_panel_desc">Open het paneel bij tikken, ook als er niets wordt afgespeeld</string>
@@ -186,11 +185,11 @@
     <string name="settings_disable_lockscreen_desc">Voorkomt dat de trigger-pil de dock opent op het vergrendelscherm</string>
     <string name="settings_disable_lockscreen_title">Uitschakelen op vergrendelscherm</string>
     <string name="settings_enable_accessibility_button">Toegankelijkheidsservice inschakelen</string>
-    <string name="settings_enable_quick_controls_desc">Toon een knop boven de dock die het paneel met snelle bediening opent. Veeg het paneel omlaag of tik erbuiten om het te sluiten.</string>
+    <string name="settings_enable_quick_controls_desc">Toont een snelle-bedieningspictogram in de pil boven het Dock. Tik erop om het paneel te openen; veeg omlaag op het paneel of tik ernaast om het te sluiten.</string>
     <string name="settings_enable_quick_controls_title">Snelle bediening inschakelen</string>
     <string name="settings_enable_quick_settings_panel_desc">Toon een instellingenpictogram in de snelle bediening in de dock en open het Snelle instellingen-paneel</string>
     <string name="settings_enable_quick_settings_panel_title">Snelle instellingen inschakelen</string>
-    <string name="settings_enable_pin_dock_desc">Toon een vastzetknop als eerste in de snelle bediening van het dock om het dock op het scherm te houden</string>
+    <string name="settings_enable_pin_dock_desc">Toont een vastzetpictogram in de pil boven het Dock om het altijd op het scherm te houden</string>
     <string name="settings_enable_pin_dock_title">Dock vastzetten inschakelen</string>
     <string name="settings_fuzzy_search_desc">Vindt apps ook bij typefouten of gedeeltelijke namen</string>
     <string name="settings_fuzzy_search_title">Fuzzy-zoeken</string>
@@ -200,8 +199,8 @@
     <string name="settings_hide_apps_dialog_title">Apps verbergen</string>
     <string name="settings_hide_apps_done_button">Klaar</string>
     <string name="settings_hide_apps_search_placeholder">Apps zoeken</string>
-    <string name="settings_keep_controls_expanded_desc">Snelle bediening automatisch uitklappen bij het openen van de dock</string>
-    <string name="settings_keep_controls_expanded_title">Bediening automatisch uitklappen</string>
+    <string name="settings_keep_controls_expanded_desc">Opent het snelle-bedieningspaneel automatisch zodra het Dock verschijnt</string>
+    <string name="settings_keep_controls_expanded_title">Bediening automatisch tonen</string>
     <string name="settings_language_card_title">Taal</string>
     <string name="settings_language_system_default">Systeemstandaard</string>
     <string name="settings_music_panel_notification_required_desc">Vereist meldingstoegang om nummerinfo te lezen en afspelen te bedienen.</string>
@@ -238,9 +237,8 @@
     <string name="settings_permissions_card_title">Toestemmingen</string>
     <string name="settings_permission_write_settings_desc">Optioneel — automatisch draaien en helderheidsbediening</string>
     <string name="settings_permission_write_settings_name">Systeeminstellingen wijzigen</string>
-    <string name="settings_pinned_apps_empty_desc">Nog geen apps vastgezet. Tik op + bij een app hieronder om die vast te zetten.</string>
-    <string name="settings_pinned_apps_hint">Tik op een app-pictogram om het toe te voegen aan Vastgezette apps. Houd een pictogram in Vastgezette apps vast en sleep het om de volgorde te wijzigen.</string>
-    <string name="settings_pinned_apps_title">Vastgezette apps (%1$d)</string>
+    <string name="settings_pinned_apps_hint">Tik op + om apps toe te voegen. Houd een pictogram vast en sleep om de volgorde te wijzigen. Voeg panelen toe voor extra rijen apps die openen vanuit de pil boven het Dock.</string>
+    <string name="settings_pinned_apps_title">Vastgezette apps – Hoofddock (%1$d)</string>
     <string name="settings_pinned_app_unpin_content_description">Losmaken</string>
     <string name="settings_quick_controls_title">Snelle bediening</string>
     <string name="settings_recent_apps_title">Recente apps</string>
@@ -445,4 +443,12 @@
     <string name="whats_new_dialog_title">Wat is er nieuw</string>
     <string name="whats_new_dialog_title_single">Wat is er nieuw in %1$s</string>
     <string name="whats_new_dialog_dismiss">Begrepen</string>
+    <string name="settings_choose_apps_dialog_title">Apps kiezen</string>
+    <string name="app_group_add_button">Paneel toevoegen</string>
+    <string name="app_group_default_name">Paneel %1$d</string>
+    <string name="app_group_card_title">App-paneel (%1$d)</string>
+    <string name="app_group_choose_icon">Pictogram kiezen</string>
+    <string name="app_group_delete">Paneel verwijderen</string>
+    <string name="app_group_empty_hint">Nog geen apps. Voeg ze toe via Instellingen › Apps.</string>
+    <string name="app_group_remove_app">Uit paneel verwijderen</string>
 </resources>

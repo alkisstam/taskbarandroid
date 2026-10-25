@@ -760,18 +760,22 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 taskbarViewModel.dockExpandProgress,
                 taskbarViewModel.navBarInsetDp,
                 combine(
-                    taskbarViewModel.quickControlsEnabled,
+                    taskbarViewModel.pillIconCount,
                     taskbarViewModel.dockHeightPx,
                     ::Pair
                 )
-            ) { settings, menuOpen, expandProgress, navInset, (quickControlsEnabled, dockHeightPx) ->
+            ) { settings, menuOpen, expandProgress, navInset, (pillIconCount, dockHeightPx) ->
                 val bottomGap = maxOf(settings.dockPadding.bottomGapDp, navInset)
                 val baseY = bottomGap + settings.heightDp + 16f + 16f + expandProgress * (settings.heightDp + 4f)
                 volumePanelYOffsetDp = baseY
-                // Beside the quick controls button: share its row, just above the dock.
-                val y = if (quickControlsEnabled && expandProgress == 0f && dockHeightPx != null)
-                    bottomGap + dockHeightPx / resources.displayMetrics.density + QuickControlsButtonGap.value
-                else baseY
+                val y = when {
+                    // Beside a 1-2 icon pill: share its row, just above the dock.
+                    pillIconCount in 1..2 && expandProgress == 0f && dockHeightPx != null ->
+                        bottomGap + dockHeightPx / resources.displayMetrics.density + QuickControlsButtonGap.value
+                    // Longer pill: above it, where it sits while a panel is open.
+                    pillIconCount > 2 -> bottomGap + settings.heightDp + 16f + 16f + settings.heightDp + 4f
+                    else -> baseY
+                }
                 if (menuOpen) y + 400f else y
             }.distinctUntilChanged().collect { yOffset ->
                 musicPanelYOffsetDp = yOffset

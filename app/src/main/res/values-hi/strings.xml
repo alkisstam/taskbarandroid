@@ -121,9 +121,8 @@
     <string name="settings_active_controls_title">सक्रिय नियंत्रण</string>
     <string name="settings_active_controls_desc">फिर से क्रम में लगाने के लिए किसी आइकन को छूकर खींचें</string>
     <string name="settings_add_app_content_description">ऐप जोड़ें</string>
-    <string name="settings_add_label">जोड़ें</string>
+    <string name="settings_add_label">ऐप जोड़ें</string>
     <string name="settings_all_apps_pin_content_description">पिन करें</string>
-    <string name="settings_all_apps_title">सभी ऐप्स (%1$d)</string>
     <string name="settings_all_apps_unpin_content_description">अनपिन करें</string>
     <string name="settings_all_controls_title">सभी नियंत्रण</string>
     <string name="settings_always_show_panel_desc">कुछ भी न बजने पर भी टैप करने पर पैनल खोलें</string>
@@ -186,11 +185,11 @@
     <string name="settings_disable_lockscreen_desc">लॉक स्क्रीन पर ट्रिगर पिल को डॉक खोलने से रोकें</string>
     <string name="settings_disable_lockscreen_title">लॉक स्क्रीन पर बंद करें</string>
     <string name="settings_enable_accessibility_button">एक्सेसिबिलिटी सेवा सक्षम करें</string>
-    <string name="settings_enable_quick_controls_desc">डॉक के ऊपर एक बटन दिखाएं जो क्विक कंट्रोल्स पैनल खोलता है। बंद करने के लिए पैनल को नीचे स्वाइप करें या बाहर टैप करें।</string>
+    <string name="settings_enable_quick_controls_desc">डॉक के ऊपर वाली पिल में क्विक कंट्रोल्स आइकन दिखाता है। पैनल खोलने के लिए उस पर टैप करें; बंद करने के लिए पैनल पर नीचे स्वाइप करें या बाहर टैप करें।</string>
     <string name="settings_enable_quick_controls_title">क्विक कंट्रोल्स सक्षम करें</string>
     <string name="settings_enable_quick_settings_panel_desc">डॉक में क्विक कंट्रोल्स में सेटिंग्स आइकन दिखाएं और क्विक सेटिंग्स पैनल एक्सेस करें</string>
     <string name="settings_enable_quick_settings_panel_title">क्विक सेटिंग्स सक्षम करें</string>
-    <string name="settings_enable_pin_dock_desc">डॉक को स्क्रीन पर रखने के लिए डॉक के क्विक कंट्रोल्स में सबसे पहले पिन कंट्रोल दिखाएं</string>
+    <string name="settings_enable_pin_dock_desc">डॉक को हमेशा स्क्रीन पर रखने के लिए उसके ऊपर वाली पिल में पिन आइकन दिखाता है</string>
     <string name="settings_enable_pin_dock_title">डॉक पिन करना सक्षम करें</string>
     <string name="settings_fuzzy_search_desc">टाइपो या आंशिक नामों के साथ भी ऐप्स को मैच करें</string>
     <string name="settings_fuzzy_search_title">फजी सर्च</string>
@@ -200,8 +199,8 @@
     <string name="settings_hide_apps_dialog_title">ऐप्स छिपाएं</string>
     <string name="settings_hide_apps_done_button">हो गया</string>
     <string name="settings_hide_apps_search_placeholder">ऐप्स खोजें</string>
-    <string name="settings_keep_controls_expanded_desc">डॉक ट्रिगर करने पर क्विक कंट्रोल्स को अपने आप विस्तृत करें</string>
-    <string name="settings_keep_controls_expanded_title">नियंत्रण अपने आप विस्तृत करें</string>
+    <string name="settings_keep_controls_expanded_desc">डॉक दिखने पर क्विक कंट्रोल्स पैनल अपने-आप खोलता है</string>
+    <string name="settings_keep_controls_expanded_title">कंट्रोल्स अपने-आप दिखाएं</string>
     <string name="settings_language_card_title">भाषा</string>
     <string name="settings_language_system_default">सिस्टम डिफ़ॉल्ट</string>
     <string name="settings_music_panel_notification_required_desc">ट्रैक जानकारी पढ़ने और प्लेबैक नियंत्रित करने के लिए सूचना एक्सेस आवश्यक है।</string>
@@ -238,9 +237,8 @@
     <string name="settings_permissions_card_title">अनुमतियां</string>
     <string name="settings_permission_write_settings_desc">वैकल्पिक — ऑटो-रोटेट और ब्राइटनेस नियंत्रण</string>
     <string name="settings_permission_write_settings_name">सिस्टम सेटिंग्स बदलें</string>
-    <string name="settings_pinned_apps_empty_desc">अभी तक कोई ऐप पिन नहीं किया गया है। किसी भी ऐप को पिन करने के लिए नीचे उसके + पर टैप करें।</string>
-    <string name="settings_pinned_apps_hint">किसी ऐप आइकन को पिन किए गए ऐप्स में जोड़ने के लिए उस पर टैप करें। क्रम बदलने के लिए पिन किए गए ऐप्स में किसी आइकन को छूकर खींचें।</string>
-    <string name="settings_pinned_apps_title">पिन किए गए ऐप्स (%1$d)</string>
+    <string name="settings_pinned_apps_hint">ऐप्स जोड़ने के लिए + पर टैप करें। क्रम बदलने के लिए किसी आइकन को दबाकर खींचें। डॉक के ऊपर वाली पिल से खुलने वाली ऐप्स की अतिरिक्त पंक्तियों के लिए पैनल जोड़ें।</string>
+    <string name="settings_pinned_apps_title">पिन किए गए ऐप्स – मुख्य डॉक (%1$d)</string>
     <string name="settings_pinned_app_unpin_content_description">अनपिन करें</string>
     <string name="settings_quick_controls_title">क्विक कंट्रोल्स</string>
     <string name="settings_recent_apps_title">हाल के ऐप्स</string>
@@ -445,4 +443,12 @@
     <string name="whats_new_dialog_title">नया क्या है</string>
     <string name="whats_new_dialog_title_single">%1$s में नया क्या है</string>
     <string name="whats_new_dialog_dismiss">समझ गया</string>
+    <string name="settings_choose_apps_dialog_title">ऐप्स चुनें</string>
+    <string name="app_group_add_button">पैनल जोड़ें</string>
+    <string name="app_group_default_name">पैनल %1$d</string>
+    <string name="app_group_card_title">ऐप पैनल (%1$d)</string>
+    <string name="app_group_choose_icon">आइकन चुनें</string>
+    <string name="app_group_delete">पैनल हटाएं</string>
+    <string name="app_group_empty_hint">अभी कोई ऐप नहीं। सेटिंग्स › ऐप्स में जोड़ें।</string>
+    <string name="app_group_remove_app">पैनल से हटाएं</string>
 </resources>

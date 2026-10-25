@@ -121,9 +121,8 @@
     <string name="settings_active_controls_title">Controlli attivi</string>
     <string name="settings_active_controls_desc">Tocca e trascina un\'icona per riordinarla</string>
     <string name="settings_add_app_content_description">Aggiungi app</string>
-    <string name="settings_add_label">Aggiungi</string>
+    <string name="settings_add_label">Aggiungi app</string>
     <string name="settings_all_apps_pin_content_description">Blocca</string>
-    <string name="settings_all_apps_title">Tutte le app (%1$d)</string>
     <string name="settings_all_apps_unpin_content_description">Sblocca</string>
     <string name="settings_all_controls_title">Tutti i controlli</string>
     <string name="settings_always_show_panel_desc">Apre il pannello al tocco anche quando non è in riproduzione nulla</string>
@@ -186,11 +185,11 @@
     <string name="settings_disable_lockscreen_desc">Impedisce alla pillola di attivazione di aprire il dock nella schermata di blocco</string>
     <string name="settings_disable_lockscreen_title">Disattiva nella schermata di blocco</string>
     <string name="settings_enable_accessibility_button">Attiva servizio di accessibilità</string>
-    <string name="settings_enable_quick_controls_desc">Mostra un pulsante sopra il dock che apre il pannello dei controlli rapidi. Scorri il pannello verso il basso o tocca all\'esterno per chiuderlo.</string>
+    <string name="settings_enable_quick_controls_desc">Mostra un\'icona dei controlli rapidi nella pillola sopra il Dock. Toccala per aprire il pannello; scorri verso il basso sul pannello o tocca fuori per chiuderlo.</string>
     <string name="settings_enable_quick_controls_title">Attiva controlli rapidi</string>
     <string name="settings_enable_quick_settings_panel_desc">Mostra un\'icona delle impostazioni nei controlli rapidi del dock e accedi al pannello Impostazioni rapide</string>
     <string name="settings_enable_quick_settings_panel_title">Attiva Impostazioni rapide</string>
-    <string name="settings_enable_pin_dock_desc">Mostra un controllo di fissaggio per primo nei controlli rapidi del dock per tenere il dock sullo schermo</string>
+    <string name="settings_enable_pin_dock_desc">Mostra un\'icona di blocco nella pillola sopra il Dock per tenerlo sempre sullo schermo</string>
     <string name="settings_enable_pin_dock_title">Attiva Fissa dock</string>
     <string name="settings_fuzzy_search_desc">Trova le app anche con errori di battitura o nomi parziali</string>
     <string name="settings_fuzzy_search_title">Ricerca approssimata</string>
@@ -200,8 +199,8 @@
     <string name="settings_hide_apps_dialog_title">Nascondi app</string>
     <string name="settings_hide_apps_done_button">Fine</string>
     <string name="settings_hide_apps_search_placeholder">Cerca app</string>
-    <string name="settings_keep_controls_expanded_desc">Espandi automaticamente i controlli rapidi all\'apertura del dock</string>
-    <string name="settings_keep_controls_expanded_title">Espandi automaticamente i controlli</string>
+    <string name="settings_keep_controls_expanded_desc">Apre automaticamente il pannello dei controlli rapidi quando compare il Dock</string>
+    <string name="settings_keep_controls_expanded_title">Mostra controlli automaticamente</string>
     <string name="settings_language_card_title">Lingua</string>
     <string name="settings_language_system_default">Predefinito di sistema</string>
     <string name="settings_music_panel_notification_required_desc">Richiede l\'accesso alle notifiche per leggere le info del brano e controllare la riproduzione.</string>
@@ -238,9 +237,8 @@
     <string name="settings_permissions_card_title">Autorizzazioni</string>
     <string name="settings_permission_write_settings_desc">Facoltativo — controlli rapidi di rotazione automatica e luminosità</string>
     <string name="settings_permission_write_settings_name">Modifica impostazioni di sistema</string>
-    <string name="settings_pinned_apps_empty_desc">Nessuna app bloccata per ora. Tocca + su un\'app qui sotto per bloccarla.</string>
-    <string name="settings_pinned_apps_hint">Tocca l\'icona di un\'app per aggiungerla alle app bloccate. Tieni premuto e trascina un\'icona nelle app bloccate per riordinarla.</string>
-    <string name="settings_pinned_apps_title">App bloccate (%1$d)</string>
+    <string name="settings_pinned_apps_hint">Tocca + per aggiungere app. Tieni premuto e trascina un\'icona per riordinarla. Aggiungi pannelli per altre righe di app che si aprono dalla pillola sopra il Dock.</string>
+    <string name="settings_pinned_apps_title">App fissate – Dock principale (%1$d)</string>
     <string name="settings_pinned_app_unpin_content_description">Sblocca</string>
     <string name="settings_quick_controls_title">Controlli rapidi</string>
     <string name="settings_recent_apps_title">App recenti</string>
@@ -445,4 +443,12 @@
     <string name="whats_new_dialog_title">Novità</string>
     <string name="whats_new_dialog_title_single">Novità in %1$s</string>
     <string name="whats_new_dialog_dismiss">Capito</string>
+    <string name="settings_choose_apps_dialog_title">Scegli app</string>
+    <string name="app_group_add_button">Aggiungi pannello</string>
+    <string name="app_group_default_name">Pannello %1$d</string>
+    <string name="app_group_card_title">Pannello app (%1$d)</string>
+    <string name="app_group_choose_icon">Scegli icona</string>
+    <string name="app_group_delete">Elimina pannello</string>
+    <string name="app_group_empty_hint">Nessuna app. Aggiungine in Impostazioni › App.</string>
+    <string name="app_group_remove_app">Rimuovi dal pannello</string>
 </resources>

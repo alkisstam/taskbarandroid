@@ -121,9 +121,8 @@
     <string name="settings_active_controls_title">Aktive Steuerelemente</string>
     <string name="settings_active_controls_desc">Zum Neuanordnen ein Symbol berühren und ziehen</string>
     <string name="settings_add_app_content_description">App hinzufügen</string>
-    <string name="settings_add_label">Hinzufügen</string>
+    <string name="settings_add_label">App hinzufügen</string>
     <string name="settings_all_apps_pin_content_description">Anheften</string>
-    <string name="settings_all_apps_title">Alle Apps (%1$d)</string>
     <string name="settings_all_apps_unpin_content_description">Lösen</string>
     <string name="settings_all_controls_title">Alle Steuerelemente</string>
     <string name="settings_always_show_panel_desc">Das Panel beim Antippen öffnen, auch wenn nichts abgespielt wird</string>
@@ -186,11 +185,11 @@
     <string name="settings_disable_lockscreen_desc">Verhindert, dass die Auslöse-Pill das Dock auf dem Sperrbildschirm öffnet</string>
     <string name="settings_disable_lockscreen_title">Auf Sperrbildschirm deaktivieren</string>
     <string name="settings_enable_accessibility_button">Bedienungshilfen-Dienst aktivieren</string>
-    <string name="settings_enable_quick_controls_desc">Zeigt über dem Dock eine Schaltfläche, die das Schnellzugriff-Panel öffnet. Panel nach unten wischen oder außerhalb tippen, um es zu schließen.</string>
+    <string name="settings_enable_quick_controls_desc">Zeigt ein Schnellzugriff-Symbol in der Leiste über dem Dock. Tippe darauf, um das Schnellzugriff-Panel zu öffnen; wische darauf nach unten oder tippe daneben, um es zu schließen.</string>
     <string name="settings_enable_quick_controls_title">Schnellzugriffe aktivieren</string>
     <string name="settings_enable_quick_settings_panel_desc">Zeigt ein Einstellungssymbol in den Schnellzugriffen im Dock und öffnet das Schnelleinstellungen-Panel</string>
     <string name="settings_enable_quick_settings_panel_title">Schnelleinstellungen aktivieren</string>
-    <string name="settings_enable_pin_dock_desc">Zeigt ein Anheften-Symbol als Erstes in den Schnellzugriffen im Dock, um das Dock auf dem Bildschirm zu halten</string>
+    <string name="settings_enable_pin_dock_desc">Zeigt ein Anheften-Symbol in der Leiste über dem Dock, um das Dock immer auf dem Bildschirm zu halten</string>
     <string name="settings_enable_pin_dock_title">Dock anheften aktivieren</string>
     <string name="settings_fuzzy_search_desc">Findet Apps auch bei Tippfehlern oder Teilnamen</string>
     <string name="settings_fuzzy_search_title">Unscharfe Suche</string>
@@ -200,8 +199,8 @@
     <string name="settings_hide_apps_dialog_title">Apps ausblenden</string>
     <string name="settings_hide_apps_done_button">Fertig</string>
     <string name="settings_hide_apps_search_placeholder">Apps suchen</string>
-    <string name="settings_keep_controls_expanded_desc">Schnellzugriffe beim Öffnen des Docks automatisch ausklappen</string>
-    <string name="settings_keep_controls_expanded_title">Steuerelemente automatisch ausklappen</string>
+    <string name="settings_keep_controls_expanded_desc">Öffnet das Schnellzugriff-Panel automatisch, sobald das Dock erscheint</string>
+    <string name="settings_keep_controls_expanded_title">Schnellzugriffe automatisch einblenden</string>
     <string name="settings_language_card_title">Sprache</string>
     <string name="settings_language_system_default">Systemstandard</string>
     <string name="settings_music_panel_notification_required_desc">Erfordert Benachrichtigungszugriff, um Titelinfos zu lesen und die Wiedergabe zu steuern.</string>
@@ -238,9 +237,8 @@
     <string name="settings_permissions_card_title">Berechtigungen</string>
     <string name="settings_permission_write_settings_desc">Optional — Auto-Drehung und Helligkeitssteuerung</string>
     <string name="settings_permission_write_settings_name">Systemeinstellungen ändern</string>
-    <string name="settings_pinned_apps_empty_desc">Noch keine Apps angeheftet. Tippe auf + bei einer App unten, um sie anzuheften.</string>
-    <string name="settings_pinned_apps_hint">Tippe auf ein App-Symbol, um es zu den angehefteten Apps hinzuzufügen. Halte und ziehe ein Symbol in den angehefteten Apps, um es umzusortieren.</string>
-    <string name="settings_pinned_apps_title">Angeheftete Apps (%1$d)</string>
+    <string name="settings_pinned_apps_hint">Tippe auf +, um Apps hinzuzufügen. Halte und ziehe ein Symbol, um es neu anzuordnen. Füge Panels für weitere App-Reihen hinzu, die sich über die Leiste über dem Dock öffnen.</string>
+    <string name="settings_pinned_apps_title">Angeheftete Apps – Haupt-Dock (%1$d)</string>
     <string name="settings_pinned_app_unpin_content_description">Lösen</string>
     <string name="settings_quick_controls_title">Schnellzugriffe</string>
     <string name="settings_recent_apps_title">Zuletzt verwendete Apps</string>
@@ -445,4 +443,12 @@
     <string name="whats_new_dialog_title">Was ist neu</string>
     <string name="whats_new_dialog_title_single">Was ist neu in %1$s</string>
     <string name="whats_new_dialog_dismiss">Verstanden</string>
+    <string name="settings_choose_apps_dialog_title">Apps auswählen</string>
+    <string name="app_group_add_button">Panel hinzufügen</string>
+    <string name="app_group_default_name">Panel %1$d</string>
+    <string name="app_group_card_title">App-Panel (%1$d)</string>
+    <string name="app_group_choose_icon">Symbol auswählen</string>
+    <string name="app_group_delete">Panel löschen</string>
+    <string name="app_group_empty_hint">Noch keine Apps. Füge welche unter Einstellungen › Apps hinzu.</string>
+    <string name="app_group_remove_app">Aus Panel entfernen</string>
 </resources>

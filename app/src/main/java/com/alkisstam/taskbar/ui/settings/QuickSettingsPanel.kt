@@ -143,7 +143,8 @@ fun QuickSettingsPanel(
                                         PinnedAppsReorderCard(
                                             viewModel = taskbarViewModel,
                                             pinnedApps = pinnedApps,
-                                            iconShape = taskbarSettings.iconShape.toComposeShape()
+                                            iconShape = taskbarSettings.iconShape.toComposeShape(),
+                                            inlinePicker = true
                                         )
                                         AppOrderCard(viewModel = taskbarViewModel)
                                         AppGridCard(viewModel = taskbarViewModel, appGridColumns = appGridColumns, appGridRows = appGridRows)
