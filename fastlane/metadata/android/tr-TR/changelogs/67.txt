@@ -1,5 +1,8 @@
-Değişiklikler
-• Müzik paneli artık Hızlı Kontroller hapıyla uyumlu ve onun yanından kayarak açılıyor
+Yenilikler
+• Uygulama panelleri: Dock'un üstündeki haptan açılan, adı ve simgesi olan en fazla 3 ek uygulama satırı
+• Dock'un üstünde Hızlı kontroller, paneller, Müzik ve Sabitle içeren hap; Dock'ta yukarı kaydırana kadar gizlenebilir
+• Kayan pencerede uygulama (cihaz desteği veya Shizuku)
+• Yan haplar için İçeri Kaydır; Geri tetiklenmez
+• Her hap hareketi için Uygulama Menüsü ve Arama
 Düzeltmeler
-• Müzik panelinin açılırken yerine zıplaması
-• Şeffaf temada Tüm Uygulamalar menüsü kapanırken beyaz parlama
+• Instagram, Kamera, Haritalar'da Dock ve hapın kaybolması

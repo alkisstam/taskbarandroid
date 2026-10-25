@@ -1,5 +1,8 @@
-Modifiche
-• Il pannello musica ora riprende la pillola dei controlli rapidi e scorre dal suo lato
+Novità
+• Pannelli app: fino a 3 righe di app con nome e icona, aperte dalla pillola sopra il dock
+• Pillola sopra il dock con Controlli rapidi, pannelli, Musica e Blocca dock; può nascondersi finché non scorri in su sul dock
+• App in finestre mobili (serve supporto o Shizuku)
+• Scorri verso l'interno per le pillole laterali, senza Indietro
+• Menu app e Cerca app per ogni gesto della pillola
 Correzioni
-• Il pannello musica saltava in posizione all'apertura
-• Lampo bianco alla chiusura del menu Tutte le app con il tema trasparente
+• Dock e pillola che sparivano in Instagram, Fotocamera, Maps

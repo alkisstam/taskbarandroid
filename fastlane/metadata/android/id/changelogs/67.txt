@@ -1,5 +1,8 @@
-Perubahan
-• Panel musik kini serasi dengan pil Kontrol Cepat dan bergeser masuk dari sisinya
+Baru
+• Panel aplikasi: hingga 3 baris aplikasi tambahan dengan nama dan ikon, dibuka dari pil di atas Dock
+• Pil di atas Dock berisi Kontrol Cepat, panel, Musik, dan Sematkan Dock; bisa tersembunyi sampai Anda menggeser ke atas di Dock
+• Jendela mengambang (dukungan perangkat atau Shizuku)
+• Geser Masuk untuk pil samping, tanpa Kembali
+• Menu Aplikasi dan Cari untuk setiap gestur pil
 Perbaikan
-• Panel musik melompat ke posisinya saat dibuka
-• Kilatan putih saat menutup menu Semua Aplikasi dengan tema transparan
+• Dock dan pil menghilang di Instagram, Kamera, Maps

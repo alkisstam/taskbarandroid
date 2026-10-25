@@ -1,5 +1,8 @@
-Modifications
-• Le panneau musique reprend la forme de la pilule des commandes rapides et glisse depuis son côté
+Nouveautés
+• Panneaux d'apps : jusqu'à 3 rangées d'apps avec nom et icône, ouvertes depuis la pilule au-dessus du dock
+• Pilule avec Contrôles rapides, panneaux, Musique et Épingler ; peut se masquer jusqu'à un balayage vers le haut sur le dock
+• Fenêtres flottantes (appareil compatible ou Shizuku)
+• Glisser vers l'intérieur sur les pilules latérales, sans Retour
+• Menu des apps et Recherche pour chaque geste
 Corrections
-• Le panneau musique sautait en place à l'ouverture
-• Flash blanc à la fermeture du menu Toutes les apps avec le thème transparent
+• Dock et pilule disparaissant dans Instagram, Maps…

@@ -4,24 +4,14 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
-## [1.5.13] - 2026-10-24
+## [1.5.12] - 2026-10-25
 
-Music panel reshaped to match the Quick Controls pill, cleaner All Apps menu close.
-
-### Changed
-- **Music panel matches the Quick Controls pill** — same height as the dock and fully rounded ends, lined up with the pill beside it. It now slides in and out sideways from the pill's side, like the Quick Controls panel, instead of up and down.
-
-### Fixed
-- **Music panel jumping on open** — it no longer appears at the dock's row and drifts up into place, or moves while the dock slides in. When the dock appears it waits for the dock to settle before sliding out, and it hides straight away when the dock hides.
-- **White flash when closing the All Apps menu** — with the transparent theme, the menu briefly showed a white background as it slid away. It now fades out cleanly.
-
----
-
-## [1.5.12] - 2026-10-21
-
-Open apps in floating windows, Quick Controls in their own panel, swipe in on side pills without triggering Back, every pill gesture configurable, new App Menu and Search actions.
+App panels in a pill above the dock, open apps in floating windows, swipe in on side pills without triggering Back, every pill gesture configurable, new App Menu and Search actions.
 
 ### Added
+- **App panels** — Settings → Apps → Add Panel, under Pinned Apps - Main Dock. Up to 3 extra rows of apps, each with a name, an icon from 17 presets (tools, social, chat, productivity, work, media, music, photos, games, shopping, finance, travel, health, education, news, star, folder) and an on/off switch. Each enabled panel adds its icon to the pill above the dock; tap it and the panel slides in from that side, styled like the dock. Tapping an app works like a dock icon; long-press offers Remove from panel. Included in backup/restore.
+- **Pinned apps picker** — the All Apps grid in Settings → Apps is gone. Tap + at the start of Pinned Apps - Main Dock (or a panel) to open a searchable app list; tap apps to add or remove them. The dock's Quick Settings panel shows the list inline.
+- **Auto-hide Icons Pill** — Settings → General → Behaviour. Off by default. Hides the pill above the dock until you swipe up on the dock; swipe down to hide it again. It hides again whenever the dock hides. Included in backup/restore.
 - **Floating windows** — Settings → General → Floating Windows. Off by default. Adds "Open in floating window" to the long-press menu of pinned apps, the app grid and search results. **Open apps floating on tap** (also off by default) makes a tap open the floating window, and the long-press menu offers "Open in fullscreen" instead. Works on devices with built-in floating window support; other devices need Shizuku installed and running. With Shizuku granted, each app's floating window size and position are remembered for the next launch. Both settings are included in backup/restore.
 - **Swipe In Action** — Settings → Design → Pill Size & Appearance, for Left, Right and Both pills: swipe in from the pill to run an action. Off by default. Included in backup/restore.
 - **Side pills block the Back gesture** — on gesture navigation, swiping in over a side pill no longer goes back; Back still works above and below the pill. Bottom pills keep the system home gesture as before.
@@ -29,8 +19,11 @@ Open apps in floating windows, Quick Controls in their own panel, swipe in on si
 - **Show App Menu and Search Apps actions** — new choices in every pill gesture dropdown: open the app menu or app search directly from the pill.
 
 ### Changed
-- **Quick Controls moved to their own panel** — the dock no longer grows when you swipe up. With Quick Controls enabled, a pill sits above the dock on the same side as the All Apps button, holding the Quick Controls and Music buttons; tap Quick Controls and a panel styled like the dock (same width, height, corners, tint and glass) slides in from that side. Swipe the panel down or tap outside to close it. Auto expand controls now opens this panel when the dock appears.
-- **Music panel sits beside the Quick Controls pill** — with Quick Controls enabled, the Music button moves from the controls into the pill, and the music panel shrinks to make room for the pill and lines up with it just above the dock, instead of covering it. It returns to full width above the open Quick Controls panel.
+- **Icons pill above the dock** — the dock no longer grows when you swipe up. A pill sits above the dock on the same side as the All Apps button, holding Quick Controls, your app panels, Music and Pin Dock, in that order. Tap Quick Controls and a panel styled like the dock (same width, height, corners, tint and glass) slides in from that side. Swipe the panel down or tap outside to close it.
+- **Enable Quick Controls only hides its icon** — turning it off removes the Quick Controls icon from the pill; the pill stays while it holds any other icon.
+- **Pin Dock moved to the pill** — the Pin Dock tile left the Quick Controls panel and is now the last icon in the pill. Enable Pin Dock no longer depends on Quick Controls.
+- **Auto Reveal Controls** — renamed from Auto expand controls; opens the Quick Controls panel when the dock appears.
+- **Music panel beside the pill** — with Music enabled, the Music button sits in the pill. The music panel matches the pill's height and rounded ends and slides in sideways from the pill's side. With 1–2 icons in the pill it sits beside it just above the dock; with more it sits above the pill. It returns to full width above an open panel.
 - **Dock handle removed** — the strip with the drag handle at the top of the dock is gone, making the dock shorter.
 - **Smaller gap between the dock and panels** — the App Menu, notes, clipboard, notifications, volume, brightness, calculator and music panels sit about half as far above the dock.
 - **Only the pill responds to gestures** — Restrict Trigger to Pill is removed; the trigger area is now always the pill itself.
@@ -42,6 +35,8 @@ Open apps in floating windows, Quick Controls in their own panel, swipe in on si
 ### Fixed
 - **Crash opening the pill's custom tint picker from the dock's Quick Settings panel** — the picker now opens inline instead of as a dialog, which the overlay can't host.
 - **Dock and pill disappearing in Instagram, Camera, Maps and similar apps** — the camera, microphone or location indicator was mistaken for the notification shade, hiding the pill and the pinned dock until you switched apps.
+- **Music panel jumping on open** — it no longer appears at the dock's row and drifts up into place, or moves while the dock slides in. When the dock appears it waits for the dock to settle before sliding out, and it hides straight away when the dock hides.
+- **White flash when closing the All Apps menu** — with the transparent theme, the menu briefly showed a white background as it slid away. It now fades out cleanly.
 
 ---
 

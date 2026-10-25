@@ -1,5 +1,8 @@
-Cambios
-• El panel de música ahora coincide con la píldora de controles rápidos y se desliza desde su lado
+Novedades
+• Paneles de apps: hasta 3 filas extra con nombre e ícono, abiertas desde la píldora sobre el dock
+• Píldora sobre el dock con Controles rápidos, paneles, Música y Fijar dock; puede ocultarse hasta que deslices hacia arriba en el dock
+• Apps en ventanas flotantes (requiere soporte o Shizuku)
+• Deslizar hacia dentro en píldoras laterales, sin activar Atrás
+• Menú de apps y Buscar apps en cada gesto
 Correcciones
-• El panel de música saltaba a su lugar al abrirse
-• Destello blanco al cerrar el menú de todas las apps con el tema transparente
+• El dock y la píldora desaparecían en Instagram, Cámara, Maps

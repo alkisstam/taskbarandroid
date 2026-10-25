@@ -1,5 +1,8 @@
-Changed
-• Music panel now matches the Quick Controls pill and slides in from its side
+Added
+• App panels: up to 3 extra rows of apps with a name and icon, opened from the pill above the dock
+• Pill above the dock with Quick Controls, panels, Music and Pin Dock; can auto-hide until you swipe up on the dock
+• Open apps in floating windows (needs device support or Shizuku)
+• Swipe In action for side pills, which no longer trigger Back
+• App Menu and Search actions for every pill gesture
 Fixed
-• Music panel jumping into place when opened
-• White flash when closing the All Apps menu with the transparent theme
+• Dock and pill vanishing in Instagram, Camera, Maps

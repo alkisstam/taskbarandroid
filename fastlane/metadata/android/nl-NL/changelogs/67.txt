@@ -1,5 +1,8 @@
-Gewijzigd
-• Muziekpaneel past nu bij de snelle-bediening-pil en schuift vanaf die kant in beeld
+Nieuw
+• App-panelen: tot 3 extra rijen apps met naam en pictogram, te openen via de pil boven de dock
+• Pil boven de dock met snelle bediening, panelen, muziek en vastzetten; kan verbergen tot je omhoog veegt op de dock
+• Apps in zwevende vensters (ondersteuning of Shizuku nodig)
+• Inswipen voor zijpillen, zonder Terug
+• App-menu en Apps zoeken voor elk pilgebaar
 Opgelost
-• Muziekpaneel dat bij openen op zijn plek sprong
-• Witte flits bij het sluiten van het Alle apps-menu met het transparante thema
+• Dock en pil verdwenen in Instagram, Camera, Maps

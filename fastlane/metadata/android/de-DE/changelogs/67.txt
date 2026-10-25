@@ -1,5 +1,8 @@
-Geändert
-• Musik-Panel passt jetzt zur Schnellzugriff-Pille und gleitet von ihrer Seite herein
+Neu
+• App-Panels: bis zu 3 weitere App-Reihen mit Name und Symbol, geöffnet über die Pille über dem Dock
+• Pille über dem Dock mit Schnellzugriffen, Panels, Musik und Dock anheften; blendet sich optional aus, bis du auf dem Dock nach oben wischst
+• Apps in schwebenden Fenstern (Gerätesupport oder Shizuku)
+• „Hineinwischen“ für seitliche Pillen, ohne Zurück
+• App-Menü und App-Suche für jede Pillen-Geste
 Behoben
-• Musik-Panel sprang beim Öffnen an seinen Platz
-• Weißes Aufblitzen beim Schließen des Alle-Apps-Menüs im transparenten Design
+• Dock und Pille verschwanden in Instagram, Kamera, Maps

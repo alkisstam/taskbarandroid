@@ -1,5 +1,8 @@
-Alterações
-• O painel de música agora combina com a pílula de controles rápidos e desliza do lado dela
+Novidades
+• Painéis de apps: até 3 fileiras extras com nome e ícone, abertas pela pílula acima do Dock
+• Pílula acima do Dock com Controles rápidos, painéis, Música e Fixar Dock; pode se ocultar até você deslizar para cima no Dock
+• Apps em janelas flutuantes (requer suporte ou Shizuku)
+• Deslizar para dentro nas pílulas laterais, sem acionar Voltar
+• Menu de apps e Pesquisar apps em cada gesto
 Correções
-• Painel de música pulando para o lugar ao abrir
-• Flash branco ao fechar o menu Todos os apps com o tema transparente
+• Dock e pílula sumiam no Instagram, Câmera, Maps

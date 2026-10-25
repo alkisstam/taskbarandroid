@@ -278,23 +278,15 @@ val whatsNewReleases = listOf(
     ),
     WhatsNewRelease(
         versionName = "1.5.12",
-        versionCode = 66,
-        highlights = listOf(
-            "Floating windows — turn on in Settings → General, then long-press any app and choose Open in floating window. Devices without built-in support need Shizuku",
-            "Quick Controls now open in their own panel from a new pill above the dock, which also holds the Music button",
-            "New Swipe In action for side pills, which no longer trigger Back",
-            "Every pill gesture gets an action dropdown, with new Show App Menu and Search Apps actions",
-            "Dock handle removed; panels sit closer to the dock",
-            "Fixed the dock and pill disappearing in Instagram, Camera, Maps and similar apps"
-        )
-    ),
-    WhatsNewRelease(
-        versionName = "1.5.13",
         versionCode = 67,
         highlights = listOf(
-            "Music panel now matches the Quick Controls pill and slides in from its side",
-            "Fixed the music panel jumping into place when opened",
-            "Fixed a white flash when closing the All Apps menu with the transparent theme"
+            "App panels — add up to 3 named rows of apps with their own icon in Settings → Apps, and open them from the pill above the dock",
+            "Pin apps with the new + button in Settings → Apps",
+            "Quick Controls, your panels, Music and Pin Dock now live in a pill above the dock, which can auto-hide until you swipe up on the dock",
+            "Floating windows — turn on in Settings → General, then long-press any app and choose Open in floating window. Devices without built-in support need Shizuku",
+            "New Swipe In action for side pills, which no longer trigger Back",
+            "Every pill gesture gets an action dropdown, with new Show App Menu and Search Apps actions",
+            "Fixed the dock and pill disappearing in Instagram, Camera, Maps and similar apps"
         )
     )
 )
