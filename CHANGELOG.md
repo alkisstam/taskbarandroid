@@ -16,6 +16,8 @@ Fullscreen All Apps menu with the search at the bottom, and an Icon Size setting
 - **Show App Menu and Search Apps pill actions revealing the dock** — closing the menu or search opened from the pill no longer brings up a dock that was hidden.
 - **Auto-hide in Fullscreen** — now detects apps and games going fullscreen, and hides the pill as well as the dock, like Auto-hide in Landscape. Leaving fullscreen brings back a pinned dock.
 - **Pill disappearing after a few seconds** — on some devices a system window was mistaken for the notification shade and kept the pill hidden until you switched apps. The pill now comes back within 15 seconds.
+- **Back gesture over side pills** — with Swipe In Action set to Disabled, side pills no longer block the Back gesture.
+- **Restrict Trigger to Pill is back** — Settings → Design → Pill Size & Appearance, under Trigger Area, for Left, Right and Both pills while Swipe In Action is Disabled. Turn it off to use the whole edge for pill gestures. On by default; a setting from before 1.5.12 is kept. Included in backup/restore.
 
 ---
 

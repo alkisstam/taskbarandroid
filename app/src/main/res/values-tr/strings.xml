@@ -93,6 +93,8 @@
     <string name="pill_position_along_edge_label">Kenar boyunca konum</string>
     <string name="pill_position_from_bottom_label">Alttan konum</string>
     <string name="pill_position_label">Konum</string>
+    <string name="pill_restrict_trigger_desc">Yalnızca hap alanı hareketlere yanıt verir, kenarın tamamı değil</string>
+    <string name="pill_restrict_trigger_title">Tetiklemeyi Hap ile Sınırla</string>
     <string name="pill_section_collapse_content_description">Daralt</string>
     <string name="pill_section_expand_content_description">Genişlet</string>
     <string name="pill_size_appearance_section_title">Hap Boyutu &amp; Görünümü</string>

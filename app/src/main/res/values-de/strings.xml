@@ -93,6 +93,8 @@
     <string name="pill_position_along_edge_label">Position entlang der Kante</string>
     <string name="pill_position_from_bottom_label">Position von unten</string>
     <string name="pill_position_label">Position</string>
+    <string name="pill_restrict_trigger_desc">Nur der Pill-Bereich reagiert auf Gesten, nicht die gesamte Kante</string>
+    <string name="pill_restrict_trigger_title">Auslöser auf Pill beschränken</string>
     <string name="pill_section_collapse_content_description">Einklappen</string>
     <string name="pill_section_expand_content_description">Ausklappen</string>
     <string name="pill_size_appearance_section_title">Pillgröße &amp; Erscheinungsbild</string>

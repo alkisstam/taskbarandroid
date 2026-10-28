@@ -93,6 +93,8 @@
     <string name="pill_position_along_edge_label">Position along edge</string>
     <string name="pill_position_from_bottom_label">Position from bottom</string>
     <string name="pill_position_label">Position</string>
+    <string name="pill_restrict_trigger_desc">Only the pill area responds to gestures, not the whole edge</string>
+    <string name="pill_restrict_trigger_title">Restrict Trigger to Pill</string>
     <string name="pill_section_collapse_content_description">Collapse</string>
     <string name="pill_section_expand_content_description">Expand</string>
     <string name="pill_size_appearance_section_title">Pill Size &amp; Appearance</string>

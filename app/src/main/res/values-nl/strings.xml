@@ -93,6 +93,8 @@
     <string name="pill_position_along_edge_label">Positie langs de rand</string>
     <string name="pill_position_from_bottom_label">Positie vanaf onderkant</string>
     <string name="pill_position_label">Positie</string>
+    <string name="pill_restrict_trigger_desc">Alleen het pilgebied reageert op gebaren, niet de hele rand</string>
+    <string name="pill_restrict_trigger_title">Trigger beperken tot pil</string>
     <string name="pill_section_collapse_content_description">Inklappen</string>
     <string name="pill_section_expand_content_description">Uitklappen</string>
     <string name="pill_size_appearance_section_title">Pilgrootte &amp; uiterlijk</string>

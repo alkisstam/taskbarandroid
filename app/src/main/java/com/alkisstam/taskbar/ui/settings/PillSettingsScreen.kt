@@ -338,6 +338,27 @@ private fun PillSectionContent(viewModel: TaskbarViewModel) {
         color = MaterialTheme.colorScheme.onSurfaceVariant
     )
     Spacer(modifier = Modifier.height(8.dp))
+    if (pillSettings.edgePosition != PillEdgePosition.BOTTOM && pillSettings.swipeInAction == GestureAction.DISABLED) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(stringResource(R.string.pill_restrict_trigger_title), style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    stringResource(R.string.pill_restrict_trigger_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(
+                checked = pillSettings.restrictTriggerToPill,
+                onCheckedChange = { viewModel.savePillSettings(pillSettings.copy(restrictTriggerToPill = it)) }
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+    }
     Text(stringResource(R.string.pill_position_label), style = MaterialTheme.typography.bodyMedium)
     Spacer(modifier = Modifier.height(4.dp))
     val edgeBottomLabel = stringResource(R.string.pill_edge_bottom)
@@ -457,7 +478,7 @@ private fun PillSectionContent(viewModel: TaskbarViewModel) {
         )
     }
     Spacer(modifier = Modifier.height(12.dp))
-    PillPositionPreview(pillSettings.edgePosition, pillSettings.widthDp, pillSettings.heightDp, pillSettings.alpha, pillSettings.sidePositionPct, pillSettings.positionXPct)
+    PillPositionPreview(pillSettings.edgePosition, pillSettings.widthDp, pillSettings.heightDp, pillSettings.alpha, pillSettings.sidePositionPct, pillSettings.positionXPct, pillSettings.triggerOnWholeEdge)
     Spacer(modifier = Modifier.height(8.dp))
     if (pillSettings.edgePosition != PillEdgePosition.BOTTOM && pillSettings.swipeUpAction == GestureAction.SHOW_DOCK) {
         Text(
@@ -649,7 +670,8 @@ private fun PillPositionPreview(
     heightDp: Float,
     alpha: Float,
     sidePositionPct: Float = 50f,
-    positionXPct: Float = 50f
+    positionXPct: Float = 50f,
+    triggerOnWholeEdge: Boolean = false
 ) {
     val pillColor = MaterialTheme.colorScheme.primary.copy(alpha = alpha)
     val triggerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)
@@ -705,8 +727,8 @@ private fun PillPositionPreview(
                             modifier = Modifier
                                 .align(alignment)
                                 .width(6.dp)
-                                .height(sidePillH)
-                                .offset(y = sideOffset)
+                                .height(if (triggerOnWholeEdge) frameH else sidePillH)
+                                .offset(y = if (triggerOnWholeEdge) 0.dp else sideOffset)
                                 .background(triggerColor, triggerShape)
                         )
                         // Pill indicator

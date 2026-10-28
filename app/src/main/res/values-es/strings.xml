@@ -93,6 +93,8 @@
     <string name="pill_position_along_edge_label">Posición en el borde</string>
     <string name="pill_position_from_bottom_label">Posición desde abajo</string>
     <string name="pill_position_label">Posición</string>
+    <string name="pill_restrict_trigger_desc">Solo el área de la píldora responde a los gestos, no todo el borde</string>
+    <string name="pill_restrict_trigger_title">Restringir activación a la píldora</string>
     <string name="pill_section_collapse_content_description">Contraer</string>
     <string name="pill_section_expand_content_description">Expandir</string>
     <string name="pill_size_appearance_section_title">Tamaño &amp; aspecto de la píldora</string>

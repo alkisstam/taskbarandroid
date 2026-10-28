@@ -93,6 +93,8 @@
     <string name="pill_position_along_edge_label">الموضع على طول الحافة</string>
     <string name="pill_position_from_bottom_label">الموضع من الأسفل</string>
     <string name="pill_position_label">الموضع</string>
+    <string name="pill_restrict_trigger_desc">تستجيب منطقة المقبض فقط للإيماءات، وليس الحافة بأكملها</string>
+    <string name="pill_restrict_trigger_title">قصر التفعيل على المقبض</string>
     <string name="pill_section_collapse_content_description">طي</string>
     <string name="pill_section_expand_content_description">توسيع</string>
     <string name="pill_size_appearance_section_title">حجم المقبض &amp; مظهره</string>

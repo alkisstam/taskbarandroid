@@ -93,6 +93,8 @@
     <string name="pill_position_along_edge_label">מיקום לאורך הקצה</string>
     <string name="pill_position_from_bottom_label">מיקום מהתחתית</string>
     <string name="pill_position_label">מיקום</string>
+    <string name="pill_restrict_trigger_desc">רק אזור הידית מגיב למחוות, לא כל הקצה</string>
+    <string name="pill_restrict_trigger_title">הגבלת ההפעלה לידית</string>
     <string name="pill_section_collapse_content_description">כיווץ</string>
     <string name="pill_section_expand_content_description">הרחבה</string>
     <string name="pill_size_appearance_section_title">גודל הידית &amp; מראה</string>

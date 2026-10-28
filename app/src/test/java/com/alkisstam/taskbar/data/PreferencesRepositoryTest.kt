@@ -87,6 +87,7 @@ class PreferencesRepositoryTest {
         put("app_grid_columns", 5)
         put("app_grid_icon_size", 64.0)
         put("pill_trigger_area", 24.5)
+        put("pill_restrict_trigger", true)
         put("fuzzy_search_enabled", true)
         put("show_recent_apps", true)
         put("show_recent_apps_row", true)

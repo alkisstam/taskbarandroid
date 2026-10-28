@@ -93,6 +93,8 @@
     <string name="pill_position_along_edge_label">Position le long du bord</string>
     <string name="pill_position_from_bottom_label">Position depuis le bas</string>
     <string name="pill_position_label">Position</string>
+    <string name="pill_restrict_trigger_desc">Seule la zone de la pastille répond aux gestes, pas tout le bord</string>
+    <string name="pill_restrict_trigger_title">Limiter le déclencheur à la pastille</string>
     <string name="pill_section_collapse_content_description">Réduire</string>
     <string name="pill_section_expand_content_description">Développer</string>
     <string name="pill_size_appearance_section_title">Taille et apparence de la pastille</string>

@@ -93,6 +93,8 @@
     <string name="pill_position_along_edge_label">किनारे के साथ स्थिति</string>
     <string name="pill_position_from_bottom_label">नीचे से स्थिति</string>
     <string name="pill_position_label">स्थिति</string>
+    <string name="pill_restrict_trigger_desc">पूरे किनारे की जगह केवल पिल क्षेत्र ही जेस्चर पर प्रतिक्रिया देता है</string>
+    <string name="pill_restrict_trigger_title">ट्रिगर को पिल तक सीमित करें</string>
     <string name="pill_section_collapse_content_description">संक्षिप्त करें</string>
     <string name="pill_section_expand_content_description">विस्तृत करें</string>
     <string name="pill_size_appearance_section_title">पिल का आकार &amp; रूप</string>

@@ -9,8 +9,10 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.systemGestureExclusion
@@ -71,11 +73,11 @@ fun TriggerPillView(
         val holdDragEnabled = pillSettings.holdDragAction != PillHoldDragAction.DISABLED &&
             !(isBottom && context.isGestureNavigation())
 
-        Box(
+        BoxWithConstraints(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .fillMaxSize()
-                .then(if (!isBottom) Modifier.systemGestureExclusion() else Modifier)
+                .then(if (!isBottom && pillSettings.swipeInAction != GestureAction.DISABLED) Modifier.systemGestureExclusion() else Modifier)
                 .pointerInput(pillSettings, dockRevealMaxDragPx) {
                     var totalDragX = 0f
                     var totalDragY = 0f
@@ -179,7 +181,16 @@ fun TriggerPillView(
                     }
                 }
         ) {
-            PillShape(pillSettings = pillSettings)
+            if (pillSettings.triggerOnWholeEdge) {
+                val availableH = maxHeight - pillSettings.heightDp.coerceAtLeast(2f).dp
+                val yOffset = (pillSettings.sidePositionPct / 100f * availableH.value).dp
+                    .coerceIn(0.dp, availableH.coerceAtLeast(0.dp))
+                Box(modifier = Modifier.offset(y = yOffset).align(Alignment.TopCenter)) {
+                    PillShape(pillSettings = pillSettings)
+                }
+            } else {
+                PillShape(pillSettings = pillSettings)
+            }
         }
     }
 }

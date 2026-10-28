@@ -57,7 +57,8 @@ internal fun Context.pillLayoutParams(
     val side = if (settings.edgePosition == PillEdgePosition.BOTH) {
         if (isRight) PillEdgePosition.RIGHT else PillEdgePosition.LEFT
     } else settings.edgePosition
-    val sideLengthPx = (settings.heightDp * density).toInt()
+    val wholeEdge = settings.triggerOnWholeEdge
+    val sideLengthPx = if (wholeEdge) WindowManager.LayoutParams.MATCH_PARENT else (settings.heightDp * density).toInt()
     val bottomLengthPx = (settings.widthDp * density).toInt()
     return WindowManager.LayoutParams(
         if (side == PillEdgePosition.BOTTOM) bottomLengthPx else sideStripPx,
@@ -70,12 +71,12 @@ internal fun Context.pillLayoutParams(
             PillEdgePosition.LEFT -> {
                 gravity = Gravity.START or Gravity.TOP
                 x = 0
-                y = sidePositionOffsetPx(settings, density)
+                y = if (wholeEdge) 0 else sidePositionOffsetPx(settings, density)
             }
             PillEdgePosition.RIGHT -> {
                 gravity = Gravity.END or Gravity.TOP
                 x = 0
-                y = sidePositionOffsetPx(settings, density)
+                y = if (wholeEdge) 0 else sidePositionOffsetPx(settings, density)
             }
             else -> {
                 gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
