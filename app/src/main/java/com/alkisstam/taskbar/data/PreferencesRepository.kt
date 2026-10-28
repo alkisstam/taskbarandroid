@@ -151,7 +151,8 @@ data class PillSettings(
     val edgePosition: PillEdgePosition = PillEdgePosition.BOTTOM,
     val sidePositionPct: Float = 50f,
     val triggerAreaDp: Float = 22f,
-    val restrictTriggerToPill: Boolean = true
+    val restrictTriggerToPill: Boolean = true,
+    val swipeThresholdDp: Float = 8f
 ) {
     // Swipe In needs the back-gesture exclusion, which is capped at 200dp, so it forces the pill-only area.
     val triggerOnWholeEdge: Boolean
@@ -234,6 +235,7 @@ class PreferencesRepository @Inject constructor(
         private val APP_GRID_ICON_SIZE_KEY = floatPreferencesKey("app_grid_icon_size")
         private val PILL_TRIGGER_AREA_KEY = floatPreferencesKey("pill_trigger_area")
         private val PILL_RESTRICT_TRIGGER_KEY = booleanPreferencesKey("pill_restrict_trigger")
+        private val PILL_SWIPE_THRESHOLD_KEY = floatPreferencesKey("pill_swipe_threshold")
         private val TRANSLUCENT_MODE_KEY = booleanPreferencesKey("translucent_mode")
         private val TRANSLUCENT_ALPHA_KEY = floatPreferencesKey("translucent_alpha")
         private val GRAIN_ALPHA_KEY = floatPreferencesKey("grain_alpha")
@@ -375,6 +377,7 @@ class PreferencesRepository @Inject constructor(
             QUICK_CONTROL_SIZE_KEY,
             TASKBAR_CORNER_RADIUS_KEY,
             PILL_TRIGGER_AREA_KEY,
+            PILL_SWIPE_THRESHOLD_KEY,
             TRANSLUCENT_ALPHA_KEY,
             GRAIN_ALPHA_KEY,
             BLUR_RADIUS_KEY,
@@ -555,7 +558,8 @@ class PreferencesRepository @Inject constructor(
             edgePosition     = prefs[PILL_EDGE_POSITION_KEY].toPillEdgePosition(),
             sidePositionPct  = prefs[PILL_SIDE_POSITION_PCT_KEY]  ?: 50f,
             triggerAreaDp    = prefs[PILL_TRIGGER_AREA_KEY]       ?: 22f,
-            restrictTriggerToPill = prefs[PILL_RESTRICT_TRIGGER_KEY] ?: true
+            restrictTriggerToPill = prefs[PILL_RESTRICT_TRIGGER_KEY] ?: true,
+            swipeThresholdDp = prefs[PILL_SWIPE_THRESHOLD_KEY] ?: 8f
         ).let {
             // Android honours at most 200dp of back-gesture exclusion per edge.
             if (it.edgePosition != PillEdgePosition.BOTTOM && it.heightDp > 200f) it.copy(heightDp = 200f) else it
@@ -730,6 +734,7 @@ class PreferencesRepository @Inject constructor(
             prefs[PILL_SIDE_POSITION_PCT_KEY]  = settings.sidePositionPct
             prefs[PILL_TRIGGER_AREA_KEY]       = settings.triggerAreaDp
             prefs[PILL_RESTRICT_TRIGGER_KEY]   = settings.restrictTriggerToPill
+            prefs[PILL_SWIPE_THRESHOLD_KEY]    = settings.swipeThresholdDp
         }
     }
 

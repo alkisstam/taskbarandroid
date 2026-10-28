@@ -117,6 +117,8 @@
     <string name="pill_tint_tab_light">लाइट</string>
     <string name="pill_trigger_area_label">ट्रिगर क्षेत्र</string>
     <string name="pill_trigger_area_desc">स्क्रीन के किनारे से कितनी दूरी पर स्वाइप पिल जेस्चर शुरू करता है। यह पिल की चौड़ाई से स्वतंत्र है।</string>
+    <string name="pill_swipe_sensitivity_label">स्वाइप संवेदनशीलता</string>
+    <string name="pill_swipe_sensitivity_desc">जेस्चर ट्रिगर होने से पहले पिल पर कितनी दूर स्वाइप करना होगा। कम मान छोटे स्वाइप पर प्रतिक्रिया देते हैं।</string>
     <string name="pill_width_label">चौड़ाई</string>
     <string name="pinned_apps_drag_reorder_content_description">क्रम बदलने के लिए खींचें</string>
     <string name="pinned_apps_unpin_content_description">अनपिन करें</string>

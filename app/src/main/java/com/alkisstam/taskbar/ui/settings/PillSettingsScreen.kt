@@ -337,6 +337,20 @@ private fun PillSectionContent(viewModel: TaskbarViewModel) {
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant
     )
+    Spacer(modifier = Modifier.height(10.dp))
+    SettingsSlider(
+        label = stringResource(R.string.pill_swipe_sensitivity_label),
+        value = pillSettings.swipeThresholdDp,
+        valueRange = 4f..40f,
+        unit = "dp",
+        step = 1f,
+        onValueChange = { viewModel.savePillSettings(pillSettings.copy(swipeThresholdDp = it)) }
+    )
+    Text(
+        stringResource(R.string.pill_swipe_sensitivity_desc),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
     Spacer(modifier = Modifier.height(8.dp))
     if (pillSettings.edgePosition != PillEdgePosition.BOTTOM && pillSettings.swipeInAction == GestureAction.DISABLED) {
         Row(

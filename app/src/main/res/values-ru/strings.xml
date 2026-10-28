@@ -117,6 +117,8 @@
     <string name="pill_tint_tab_light">Светлая</string>
     <string name="pill_trigger_area_label">Область запуска</string>
     <string name="pill_trigger_area_desc">На каком расстоянии от края экрана свайп запускает жест пилюли. Не зависит от ширины пилюли.</string>
+    <string name="pill_swipe_sensitivity_label">Чувствительность свайпа</string>
+    <string name="pill_swipe_sensitivity_desc">Насколько далеко нужно провести по капсуле, чтобы сработал жест. Меньшие значения реагируют на более короткие свайпы.</string>
     <string name="pill_width_label">Ширина</string>
     <string name="pinned_apps_drag_reorder_content_description">Перетащите, чтобы изменить порядок</string>
     <string name="pinned_apps_unpin_content_description">Открепить</string>

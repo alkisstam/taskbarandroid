@@ -117,6 +117,8 @@
     <string name="pill_tint_tab_light">בהיר</string>
     <string name="pill_trigger_area_label">אזור ההפעלה</string>
     <string name="pill_trigger_area_desc">המרחק מקצה המסך שבו החלקה מפעילה את מחוות הגלולה. לא תלוי ברוחב הגלולה.</string>
+    <string name="pill_swipe_sensitivity_label">רגישות החלקה</string>
+    <string name="pill_swipe_sensitivity_desc">כמה רחוק צריך להחליק על הידית לפני שמחווה מופעלת. ערכים נמוכים מגיבים להחלקות קצרות יותר.</string>
     <string name="pill_width_label">רוחב</string>
     <string name="pinned_apps_drag_reorder_content_description">גרירה לסידור מחדש</string>
     <string name="pinned_apps_unpin_content_description">ביטול נעיצה</string>

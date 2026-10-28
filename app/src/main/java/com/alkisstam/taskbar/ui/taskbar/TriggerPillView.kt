@@ -116,23 +116,28 @@ fun TriggerPillView(
                         totalDragX += drag.x
                         totalDragY += drag.y
                         val upward = -totalDragY
+                        // Judge the whole swipe, not single events: high touch sample rates (Pixel)
+                        // split a swipe into deltas too small to cross the threshold on their own.
+                        val horizontal = abs(totalDragX) > abs(totalDragY)
+                        val threshold = pillSettings.swipeThresholdDp.dp.toPx()
                         if (!swipeFiredLocal) {
                             when {
                                 // Side pills only: either direction counts, since swiping outward from an edge isn't physically possible.
                                 !isBottom && pillSettings.swipeInAction != GestureAction.DISABLED &&
-                                    abs(totalDragX) > Constants.SWIPE_TRIGGER_THRESHOLD_PX && abs(drag.x) > abs(drag.y) -> {
+                                    abs(totalDragX) > threshold && horizontal -> {
                                     swipeFiredLocal = true
                                     onAction(pillSettings.swipeInAction)
                                 }
-                                pillSettings.swipeUpAction == GestureAction.SHOW_DOCK && upward > 0 && abs(drag.y) > abs(drag.x) -> {
+                                pillSettings.swipeUpAction == GestureAction.SHOW_DOCK && upward > 0 && !horizontal -> {
                                     onRevealProgress((upward / dockRevealMaxDragPx).coerceIn(0f, 1f))
                                 }
-                                pillSettings.swipeUpAction != GestureAction.SHOW_DOCK &&
-                                    drag.y < -Constants.SWIPE_TRIGGER_THRESHOLD_PX && abs(drag.y) > abs(drag.x) -> {
+                                pillSettings.swipeUpAction != GestureAction.SHOW_DOCK && pillSettings.swipeUpAction != GestureAction.DISABLED &&
+                                    upward > threshold && !horizontal -> {
                                     swipeFiredLocal = true
                                     onAction(pillSettings.swipeUpAction)
                                 }
-                                !isBottom && drag.y > Constants.SWIPE_TRIGGER_THRESHOLD_PX && abs(drag.y) > abs(drag.x) -> {
+                                !isBottom && pillSettings.swipeDownAction != GestureAction.DISABLED &&
+                                    totalDragY > threshold && !horizontal -> {
                                     swipeFiredLocal = true
                                     onAction(pillSettings.swipeDownAction)
                                 }

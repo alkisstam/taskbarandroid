@@ -117,6 +117,8 @@
     <string name="pill_tint_tab_light">Licht</string>
     <string name="pill_trigger_area_label">Triggergebied</string>
     <string name="pill_trigger_area_desc">Hoe ver vanaf de schermrand een veeg het pilgebaar start. Staat los van de breedte van de pil.</string>
+    <string name="pill_swipe_sensitivity_label">Veeggevoeligheid</string>
+    <string name="pill_swipe_sensitivity_desc">Hoe ver je over de pil moet vegen voordat een gebaar wordt geactiveerd. Lagere waarden reageren op kortere veegbewegingen.</string>
     <string name="pill_width_label">Breedte</string>
     <string name="pinned_apps_drag_reorder_content_description">Slepen om te herschikken</string>
     <string name="pinned_apps_unpin_content_description">Losmaken</string>

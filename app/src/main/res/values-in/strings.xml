@@ -117,6 +117,8 @@
     <string name="pill_tint_tab_light">Terang</string>
     <string name="pill_trigger_area_label">Area Pemicu</string>
     <string name="pill_trigger_area_desc">Seberapa jauh dari tepi layar usapan memicu gestur pil. Tidak bergantung pada lebar pil.</string>
+    <string name="pill_swipe_sensitivity_label">Sensitivitas Geser</string>
+    <string name="pill_swipe_sensitivity_desc">Seberapa jauh Anda perlu menggeser pada pil sebelum gestur terpicu. Nilai lebih rendah merespons geseran yang lebih pendek.</string>
     <string name="pill_width_label">Lebar</string>
     <string name="pinned_apps_drag_reorder_content_description">Seret untuk mengurutkan ulang</string>
     <string name="pinned_apps_unpin_content_description">Lepas sematan</string>

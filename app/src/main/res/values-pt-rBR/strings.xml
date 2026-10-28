@@ -117,6 +117,8 @@
     <string name="pill_tint_tab_light">Claro</string>
     <string name="pill_trigger_area_label">Área de Acionamento</string>
     <string name="pill_trigger_area_desc">Distância da borda da tela em que um deslize aciona o gesto da pílula. Independente da largura da pílula.</string>
+    <string name="pill_swipe_sensitivity_label">Sensibilidade do Deslize</string>
+    <string name="pill_swipe_sensitivity_desc">Quanto você precisa deslizar na pílula antes de um gesto ser acionado. Valores menores respondem a deslizes mais curtos.</string>
     <string name="pill_width_label">Largura</string>
     <string name="pinned_apps_drag_reorder_content_description">Arraste para reordenar</string>
     <string name="pinned_apps_unpin_content_description">Desafixar</string>

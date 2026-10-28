@@ -117,6 +117,8 @@
     <string name="pill_tint_tab_light">فاتح</string>
     <string name="pill_trigger_area_label">منطقة التفعيل</string>
     <string name="pill_trigger_area_desc">المسافة من حافة الشاشة التي يبدأ عندها السحب إيماءة الشريط. مستقلة عن عرض الشريط.</string>
+    <string name="pill_swipe_sensitivity_label">حساسية السحب</string>
+    <string name="pill_swipe_sensitivity_desc">المسافة التي يجب سحبها على المقبض قبل تفعيل الإيماءة. القيم الأقل تستجيب لعمليات سحب أقصر.</string>
     <string name="pill_width_label">العرض</string>
     <string name="pinned_apps_drag_reorder_content_description">اسحب لإعادة الترتيب</string>
     <string name="pinned_apps_unpin_content_description">إلغاء التثبيت</string>
