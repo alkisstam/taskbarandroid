@@ -11,6 +11,8 @@ Fullscreen All Apps menu with the search at the bottom, and an Icon Size setting
 ### Changed
 - **Fullscreen All Apps menu** — the menu is now a large rounded card filling the screen, with equal gaps at the top and bottom. Search is a pill at the bottom with the sort (three-dots) menu beside it. Opening it hides the dock and the icons pill and closes any open panel; tap outside the card or press Back to close it and the dock comes back.
 - **Icon Size replaces Rows** — Settings → Apps → App Grid. The Rows slider did nothing once the menu filled the screen; Icon Size (32–120dp, default 48dp) sets the size of app icons in the menu and its recent apps row. Large sizes shrink to fit the column. Included in backup/restore.
+- **Panels close from their own icon** — each app panel and the Quick Controls panel now shows its icon on the App Menu side, lined up with the App Menu button; tap it to close the panel.
+- **Tapping outside closes the dock and the open panel together** — and the next time the dock opens, that panel comes back. Launching an app from a panel also brings it back next time; closing a panel with its icon or by swiping down doesn't.
 
 ### Fixed
 - **Show App Menu and Search Apps pill actions revealing the dock** — closing the menu or search opened from the pill no longer brings up a dock that was hidden.

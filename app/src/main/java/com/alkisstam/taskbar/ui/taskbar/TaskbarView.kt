@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -54,6 +56,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
@@ -172,7 +175,8 @@ fun TaskbarView(
                     QuickControlsPanel(
                         taskbarViewModel = taskbarViewModel,
                         appMenuViewModel = appMenuViewModel,
-                        surfaceColor = surfaceColor
+                        surfaceColor = surfaceColor,
+                        buttonOnLeft = buttonOnLeft
                     )
                 }
                 appGroups.forEach { (group, apps) ->
@@ -186,7 +190,8 @@ fun TaskbarView(
                             group = group,
                             apps = apps,
                             surfaceColor = surfaceColor,
-                            altLaunchLabel = altLaunchLabel
+                            altLaunchLabel = altLaunchLabel,
+                            buttonOnLeft = buttonOnLeft
                         )
                     }
                 }
@@ -389,7 +394,8 @@ private fun DockSurface(
 private fun QuickControlsPanel(
     taskbarViewModel: TaskbarViewModel,
     appMenuViewModel: AppMenuViewModel,
-    surfaceColor: Color
+    surfaceColor: Color,
+    buttonOnLeft: Boolean
 ) {
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
     val controlsOrder by taskbarViewModel.controlsOrder.collectAsState()
@@ -405,39 +411,80 @@ private fun QuickControlsPanel(
     }
 
     ExpandedPanelSurface(taskbarViewModel = taskbarViewModel, surfaceColor = surfaceColor) {
-        LazyRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(taskbarSettings.heightDp.dp),
-            contentPadding = PaddingValues(horizontal = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
-            verticalAlignment = Alignment.CenterVertically
+        PanelRow(
+            taskbarViewModel = taskbarViewModel,
+            buttonOnLeft = buttonOnLeft,
+            icon = Icons.Filled.Tune,
+            label = stringResource(R.string.quick_controls),
+            onClose = { taskbarViewModel.toggleDockExpanded() }
         ) {
-            items(extraTiles) { (data, onToggle) ->
-                QuickControlItem(
-                    item = data,
-                    onToggle = onToggle,
-                    showLabel = taskbarSettings.showControlLabels,
-                    tileSize = taskbarSettings.quickControlSizeDp.dp
-                )
-            }
-            items(quickControlItems) { item ->
-                QuickControlItem(
-                    item = item,
-                    onToggle = {
-                        appMenuViewModel.handleQuickControlAction(item.id)
-                        if (item.id in listOf("qr", "power", "screenshot", "lockscreen", "wifi", "bluetooth", "share"))
-                            taskbarViewModel.hideTaskbar()
-                        if (item.id in listOf("wifi", "bluetooth", "share")) {
-                            appMenuViewModel.dismissMusicPanel()
-                            appMenuViewModel.dismissCalculatorPanel()
-                        }
-                    },
-                    showLabel = taskbarSettings.showControlLabels,
-                    tileSize = taskbarSettings.quickControlSizeDp.dp
-                )
+            LazyRow(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
+                contentPadding = PaddingValues(horizontal = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                items(extraTiles) { (data, onToggle) ->
+                    QuickControlItem(
+                        item = data,
+                        onToggle = onToggle,
+                        showLabel = taskbarSettings.showControlLabels,
+                        tileSize = taskbarSettings.quickControlSizeDp.dp
+                    )
+                }
+                items(quickControlItems) { item ->
+                    QuickControlItem(
+                        item = item,
+                        onToggle = {
+                            appMenuViewModel.handleQuickControlAction(item.id)
+                            if (item.id in listOf("qr", "power", "screenshot", "lockscreen", "wifi", "bluetooth", "share"))
+                                taskbarViewModel.hideTaskbar()
+                            if (item.id in listOf("wifi", "bluetooth", "share")) {
+                                appMenuViewModel.dismissMusicPanel()
+                                appMenuViewModel.dismissCalculatorPanel()
+                            }
+                        },
+                        showLabel = taskbarSettings.showControlLabels,
+                        tileSize = taskbarSettings.quickControlSizeDp.dp
+                    )
+                }
             }
         }
+    }
+}
+
+// Mirrors the dock row so the panel's close button lines up with the App Menu button.
+@Composable
+private fun PanelRow(
+    taskbarViewModel: TaskbarViewModel,
+    buttonOnLeft: Boolean,
+    icon: ImageVector,
+    label: String,
+    onClose: () -> Unit,
+    content: @Composable RowScope.() -> Unit
+) {
+    val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(taskbarSettings.heightDp.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        val button = @Composable { padding: Modifier ->
+            AppMenuButton(
+                menuOpen = true,
+                onClick = onClose,
+                size = taskbarSettings.pinnedIconSizeDp.dp,
+                modifier = padding,
+                icon = icon,
+                contentDescription = label
+            )
+        }
+        if (buttonOnLeft) button(Modifier.padding(start = 8.dp))
+        content()
+        if (!buttonOnLeft) button(Modifier.padding(end = 8.dp))
     }
 }
 
@@ -483,52 +530,61 @@ private fun AppGroupPanel(
     group: AppGroup,
     apps: List<AppInfo>,
     surfaceColor: Color,
-    altLaunchLabel: String?
+    altLaunchLabel: String?,
+    buttonOnLeft: Boolean
 ) {
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
     val removeLabel = stringResource(R.string.app_group_remove_app)
 
     ExpandedPanelSurface(taskbarViewModel = taskbarViewModel, surfaceColor = surfaceColor) {
-        if (apps.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(taskbarSettings.heightDp.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = stringResource(R.string.app_group_empty_hint),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        } else {
-            LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(taskbarSettings.heightDp.dp),
-                contentPadding = PaddingValues(horizontal = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(taskbarSettings.pinnedIconPaddingDp.dp, Alignment.CenterHorizontally),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                items(apps, key = { it.packageName }) { app ->
-                    PinnedAppItem(
-                        app = app,
-                        iconSize = taskbarSettings.pinnedIconSizeDp.dp,
-                        showLabel = false,
-                        iconShape = taskbarSettings.iconShape,
-                        onLaunch = {
-                            taskbarViewModel.launchAppTap(app.packageName)
-                            taskbarViewModel.hideTaskbar()
-                        },
-                        altLaunchLabel = altLaunchLabel,
-                        onAltLaunch = {
-                            taskbarViewModel.launchAppAlternate(app.packageName)
-                            taskbarViewModel.hideTaskbar()
-                        },
-                        onUnpin = { taskbarViewModel.removeAppGroupPackage(group.id, app.packageName) },
-                        unpinLabel = removeLabel
+        PanelRow(
+            taskbarViewModel = taskbarViewModel,
+            buttonOnLeft = buttonOnLeft,
+            icon = appGroupIcon(group.iconKey),
+            label = group.name,
+            onClose = { taskbarViewModel.toggleGroupPanel(group.id) }
+        ) {
+            if (apps.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.app_group_empty_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                }
+            } else {
+                LazyRow(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    contentPadding = PaddingValues(horizontal = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(taskbarSettings.pinnedIconPaddingDp.dp, Alignment.CenterHorizontally),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    items(apps, key = { it.packageName }) { app ->
+                        PinnedAppItem(
+                            app = app,
+                            iconSize = taskbarSettings.pinnedIconSizeDp.dp,
+                            showLabel = false,
+                            iconShape = taskbarSettings.iconShape,
+                            onLaunch = {
+                                taskbarViewModel.launchAppTap(app.packageName)
+                                taskbarViewModel.hideTaskbar()
+                            },
+                            altLaunchLabel = altLaunchLabel,
+                            onAltLaunch = {
+                                taskbarViewModel.launchAppAlternate(app.packageName)
+                                taskbarViewModel.hideTaskbar()
+                            },
+                            onUnpin = { taskbarViewModel.removeAppGroupPackage(group.id, app.packageName) },
+                            unpinLabel = removeLabel
+                        )
+                    }
                 }
             }
         }

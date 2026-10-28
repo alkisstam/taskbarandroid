@@ -420,9 +420,21 @@ class TaskbarViewModel @Inject constructor(
         }
     }
 
+    // Panel open when the dock was last hidden; "" is quick controls, else an app group id.
+    private var lastPanel: String? = null
+
     fun showTaskbar() {
         _isTaskbarVisible.value = true
-        if (taskbarSettings.value.keepDockExpanded && quickControlsEnabled.value) {
+        val panel = lastPanel
+        lastPanel = null
+        if (panel == "" && quickControlsEnabled.value ||
+            panel != null && appGroups.value.any { it.id == panel && it.enabled }) {
+            _expandedGroupId.value = panel?.ifEmpty { null }
+            _isDockExpanded.value = true
+            // The panel was opened from the icons pill, so closing it should land back on the pill.
+            _pillRevealed.value = true
+            _dockExpandProgress.value = 1f
+        } else if (taskbarSettings.value.keepDockExpanded && quickControlsEnabled.value) {
             _expandedGroupId.value = null
             _isDockExpanded.value = true
             _dockExpandProgress.value = 1f
@@ -431,6 +443,10 @@ class TaskbarViewModel @Inject constructor(
     }
     // [force] hides a pinned dock too (fullscreen auto-hide).
     fun hideTaskbar(force: Boolean = false) {
+        // Skip repeat hides so they don't wipe the memory; a pinned dock stays, so nothing to restore.
+        if (_isTaskbarVisible.value && (!isDockPinned.value || force)) {
+            lastPanel = if (_isDockExpanded.value) _expandedGroupId.value ?: "" else null
+        }
         _isDockExpanded.value = false
         _expandedGroupId.value = null
         _pillRevealed.value = false

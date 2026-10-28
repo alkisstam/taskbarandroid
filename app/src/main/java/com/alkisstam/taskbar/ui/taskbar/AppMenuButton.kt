@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -24,7 +25,9 @@ fun AppMenuButton(
     menuOpen: Boolean,
     onClick: () -> Unit,
     size: Dp = 48.dp,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    icon: ImageVector = Icons.Filled.GridView,
+    contentDescription: String = stringResource(R.string.taskbar_app_menu_content_desc)
 ) {
     Surface(
         modifier = modifier
@@ -39,8 +42,8 @@ fun AppMenuButton(
     ) {
         Box(contentAlignment = Alignment.Center) {
             Icon(
-                imageVector = Icons.Filled.GridView,
-                contentDescription = stringResource(R.string.taskbar_app_menu_content_desc),
+                imageVector = icon,
+                contentDescription = contentDescription,
                 modifier = Modifier.size(24.dp),
                 tint = if (menuOpen)
                     MaterialTheme.colorScheme.onPrimaryContainer

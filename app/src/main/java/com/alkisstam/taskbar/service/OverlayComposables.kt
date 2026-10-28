@@ -172,7 +172,7 @@ internal fun TaskbarContent(
     TaskBarTheme(themeMode = themeMode) {
         Box(modifier = Modifier.fillMaxSize()) {
             if (revealAnim.value > 0.001f) {
-                // Consumes the tap so the wrapper doesn't also hide the dock.
+                // A pinned dock's wrapper ignores outside taps, so the scrim closes the panel itself.
                 if (isDockExpanded) {
                     Box(
                         modifier = Modifier
@@ -180,7 +180,7 @@ internal fun TaskbarContent(
                             .clickable(
                                 indication = null,
                                 interactionSource = remember { MutableInteractionSource() }
-                            ) { taskbarViewModel.collapseDock() }
+                            ) { taskbarViewModel.hideTaskbar() }
                     )
                 }
                 Box(
