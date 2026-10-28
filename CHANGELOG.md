@@ -4,7 +4,7 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
-## [1.5.13] - 2026-10-25
+## [1.5.13] - 2026-10-28
 
 Fullscreen All Apps menu with the search at the bottom, and an Icon Size setting for it.
 

@@ -294,9 +294,13 @@ val whatsNewReleases = listOf(
         versionCode = 68,
         highlights = listOf(
             "The All Apps menu is now fullscreen, with search at the bottom next to the sort menu",
-            "Opening it hides the dock; tap outside or press Back to close it",
             "New Icon Size setting for the All Apps menu in Settings → Apps",
-            "The pill's Show App Menu and Search Apps actions no longer bring up the dock"
+            "App panels and Quick Controls close from their own icon, on the App Menu button's side",
+            "Tapping outside closes the dock and the open panel together, and that panel reopens next time",
+            "New Swipe Sensitivity setting for the pill, and pill swipes are more reliable on Pixel and similar phones",
+            "Restrict Trigger to Pill is back for side pills, which now only block Back when a Swipe In action is set",
+            "Auto-hide in Fullscreen now works and hides the pill too",
+            "Fixed the pill disappearing after a few seconds on some devices, and the pill's App Menu and Search actions bringing up the dock"
         )
     )
 )

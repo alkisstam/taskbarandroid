@@ -1,5 +1,11 @@
+Nieuw
+• Instelling Veeggevoeligheid voor pilgebaren
+• Trigger beperken tot pil is terug voor zijpillen
 Gewijzigd
-• Alle apps-menu schermvullend, zoeken onderaan naast het sorteermenu; verbergt het dock zolang het open is
-• Instelling Pictogramgrootte vervangt Rijen
+• Alle apps-menu schermvullend, zoeken onderaan; Pictogramgrootte vervangt Rijen
+• Panelen sluiten via hun eigen pictogram; buiten tikken sluit dock en paneel samen, en het paneel opent de volgende keer weer
 Opgelost
-• Pilacties App-menu en Apps zoeken tonen het dock niet meer
+• Veegbewegingen op de pil op Pixel
+• Pil verdween na een paar seconden
+• Verbergen in volledig scherm verbergt nu ook de pil
+• Terug-gebaar boven zijpillen

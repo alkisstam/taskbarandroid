@@ -1,5 +1,11 @@
+Nouveautés
+• Réglage Sensibilité du balayage
+• Limiter le déclencheur à la pastille revient
 Modifié
-• Menu Toutes les applis en plein écran, recherche en bas à côté du menu de tri ; masque le dock quand il est ouvert
-• Le réglage Taille des icônes remplace Lignes
+• Menu Toutes les applis en plein écran, recherche en bas ; Taille des icônes remplace Lignes
+• Les panneaux se ferment via leur icône ; toucher à côté ferme dock et panneau, qui se rouvre ensuite
 Corrigé
-• Les actions Menu des applis et Recherche de la pilule n'affichent plus le dock
+• Balayages de la pastille sur Pixel
+• Pastille qui disparaissait après quelques secondes
+• Masquer en plein écran masque aussi la pastille
+• Geste Retour sur les pastilles latérales

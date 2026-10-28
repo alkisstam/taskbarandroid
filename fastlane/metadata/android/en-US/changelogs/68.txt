@@ -1,5 +1,11 @@
+Added
+• Swipe Sensitivity setting for pill gestures
+• Restrict Trigger to Pill is back for side pills
 Changed
-• Fullscreen All Apps menu with search at the bottom next to the sort menu; it hides the dock while open
-• Icon Size setting for the All Apps menu replaces Rows
+• Fullscreen All Apps menu, search at the bottom; Icon Size replaces Rows
+• Panels close from their own icon; tapping outside closes the dock and panel, and the panel reopens next time
 Fixed
-• Pill Show App Menu and Search Apps actions no longer bring up the dock
+• Pill swipes on Pixel phones
+• Pill disappearing after a few seconds
+• Auto-hide in Fullscreen, now hides the pill too
+• Back gesture over side pills without Swipe In

@@ -1,5 +1,11 @@
+Neu
+• Einstellung Wischempfindlichkeit für Pillen-Gesten
+• Auslöser auf Pill beschränken ist zurück
 Geändert
-• Alle-Apps-Menü im Vollbild, Suche unten neben dem Sortiermenü; blendet das Dock aus, solange es offen ist
-• Einstellung Symbolgröße für das Alle-Apps-Menü ersetzt Zeilen
+• Alle-Apps-Menü im Vollbild, Suche unten; Symbolgröße ersetzt Zeilen
+• Panels schließen über ihr Symbol; Tippen außerhalb schließt Dock und Panel, das Panel öffnet danach wieder
 Behoben
-• Pillen-Aktionen App-Menü und App-Suche blenden das Dock nicht mehr ein
+• Pillen-Wischgesten auf Pixel
+• Pille verschwand nach einigen Sekunden
+• Im Vollbild ausblenden blendet jetzt auch die Pille aus
+• Zurück-Geste über seitlichen Pillen

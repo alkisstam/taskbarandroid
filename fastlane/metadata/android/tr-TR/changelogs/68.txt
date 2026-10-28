@@ -1,5 +1,11 @@
+Yenilikler
+• Kaydırma Hassasiyeti ayarı
+• Tetiklemeyi Hap ile Sınırla geri döndü
 Değişenler
-• Tüm Uygulamalar menüsü tam ekran, arama altta sıralama menüsünün yanında; açıkken dock'u gizler
-• Simge Boyutu ayarı Satır ayarının yerini aldı
-Düzeltmeler
-• Hap eylemleri Uygulama Menüsü ve Uygulama Ara artık dock'u göstermiyor
+• Tüm Uygulamalar menüsü tam ekran, arama altta; Simge Boyutu Satırlar'ın yerini aldı
+• Paneller kendi simgesiyle kapanır; dışarı dokunmak dock ve paneli birlikte kapatır, panel bir sonraki sefer yeniden açılır
+Düzeltilenler
+• Pixel telefonlarda hap kaydırmaları
+• Hapın birkaç saniye sonra kaybolması
+• Tam ekranda otomatik gizleme artık hapı da gizler
+• Yan hapların üzerinde Geri hareketi

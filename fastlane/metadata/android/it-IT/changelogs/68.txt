@@ -1,5 +1,11 @@
+Novità
+• Impostazione Sensibilità dello scorrimento
+• Torna Limita l'attivazione alla pillola
 Modificato
-• Menu Tutte le app a schermo intero, ricerca in basso accanto al menu di ordinamento; nasconde il dock mentre è aperto
-• L'impostazione Dimensione icone sostituisce Righe
+• Menu Tutte le app a schermo intero, ricerca in basso; Dimensione icone sostituisce Righe
+• I pannelli si chiudono dalla loro icona; toccare fuori chiude dock e pannello, che si riapre la volta dopo
 Corretto
-• Le azioni Menu app e Cerca app della pillola non mostrano più il dock
+• Scorrimenti della pillola su Pixel
+• La pillola spariva dopo pochi secondi
+• Nascondi a schermo intero ora nasconde anche la pillola
+• Gesto Indietro sulle pillole laterali

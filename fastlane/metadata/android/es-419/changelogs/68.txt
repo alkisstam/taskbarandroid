@@ -1,5 +1,11 @@
+Novedades
+• Ajuste Sensibilidad del deslizamiento
+• Vuelve Restringir activación a la píldora
 Cambios
-• Menú Todas las apps en pantalla completa, búsqueda abajo junto al menú de orden; oculta el dock mientras está abierto
-• El ajuste Tamaño de íconos reemplaza a Filas
+• Menú Todas las apps en pantalla completa, búsqueda abajo; Tamaño de íconos reemplaza a Filas
+• Los paneles se cierran con su ícono; tocar fuera cierra dock y panel, que se reabre la próxima vez
 Corregido
-• Las acciones Menú de apps y Buscar apps de la píldora ya no muestran el dock
+• Deslizamientos de la píldora en Pixel
+• La píldora desaparecía tras unos segundos
+• Ocultar en pantalla completa ahora oculta la píldora
+• Gesto Atrás sobre píldoras laterales

@@ -1,5 +1,11 @@
+Baru
+• Setelan Sensitivitas Geser untuk gestur pil
+• Batasi Pemicu ke Pil kembali untuk pil samping
 Diubah
-• Menu Semua Aplikasi layar penuh, pencarian di bawah di samping menu urutan; menyembunyikan dock saat terbuka
-• Setelan Ukuran Ikon menggantikan Baris
+• Menu Semua Aplikasi layar penuh, pencarian di bawah; Ukuran Ikon menggantikan Baris
+• Panel ditutup lewat ikonnya sendiri; mengetuk di luar menutup dock dan panel, dan panel terbuka lagi lain kali
 Diperbaiki
-• Aksi pil Menu Aplikasi dan Cari Aplikasi tidak lagi memunculkan dock
+• Geseran pil di ponsel Pixel
+• Pil menghilang setelah beberapa detik
+• Sembunyikan otomatis di layar penuh kini juga menyembunyikan pil
+• Gestur Kembali di atas pil samping

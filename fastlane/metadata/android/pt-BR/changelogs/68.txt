@@ -1,5 +1,11 @@
+Novidades
+• Configuração Sensibilidade do Deslize
+• Restringir Acionamento à Pílula voltou
 Alterado
-• Menu Todos os apps em tela cheia, busca embaixo ao lado do menu de ordenação; oculta o dock enquanto aberto
-• A opção Tamanho dos ícones substitui Linhas
+• Menu Todos os apps em tela cheia, busca embaixo; Tamanho do ícone substitui Linhas
+• Os painéis fecham pelo próprio ícone; tocar fora fecha a dock e o painel, que reabre na próxima vez
 Corrigido
-• As ações Menu de apps e Buscar apps da pílula não mostram mais o dock
+• Deslizes da pílula em celulares Pixel
+• Pílula sumia após alguns segundos
+• Ocultar em tela cheia agora oculta a pílula também
+• Gesto Voltar sobre pílulas laterais
