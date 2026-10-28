@@ -1027,6 +1027,21 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         FirebaseCrashlytics.getInstance().recordException(IllegalStateException("Pill hidden on settings open: $state"))
     }
 
+    // Glass only blurs through AOSP cross-window blur or Samsung's SemBlurInfo. Report what each
+    // device offers, plus any vendor blur methods on View, to find which OEMs need their own path.
+    private fun reportBlurSupport() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return
+        val prefs = getSharedPreferences("diag", MODE_PRIVATE)
+        if (prefs.getBoolean("blur_probe_sent", false)) return
+        val vendorMethods = View::class.java.methods.map { it.name }
+            .filter { it.contains("blur", ignoreCase = true) }
+            .distinct().sorted().joinToString(",").take(1000)
+        val state = "manufacturer=${Build.MANUFACTURER} model=${Build.MODEL} sdk=${Build.VERSION.SDK_INT} " +
+            "xwin=${crossWindowBlurEnabled()} sem=${semBlurSupported()} viewBlurMethods=[$vendorMethods]"
+        FirebaseCrashlytics.getInstance().recordException(IllegalStateException("BlurProbe: $state"))
+        prefs.edit().putBoolean("blur_probe_sent", true).apply()
+    }
+
     private fun updatePillForSystemUi() {
         val hide = lastImeVisible || shadeOpen || hiddenForFullscreen
         if (hide == pillHiddenForSystemUi) return
@@ -1440,6 +1455,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     // Applied in place rather than through observeDockBlur so dragging the slider doesn't
     // hide and re-settle the dock blur on every step.
     private fun observeBlurRadius() {
+        reportBlurSupport()
         GlassBlur.available = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
             !crossWindowBlurEnabled() && semBlurSupported()
         updateWindowGlass()
