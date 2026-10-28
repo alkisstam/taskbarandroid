@@ -77,6 +77,7 @@ import kotlinx.coroutines.flow.map
 import com.alkisstam.taskbar.ui.taskbar.QuickControlsButtonGap
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 
 @AndroidEntryPoint
 class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStateRegistryOwner {
@@ -249,6 +250,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 }
                 ACTION_SETTINGS_OPEN -> {
                     taskbarViewModel.setSettingsOpen(true)
+                    handler.post { reportHiddenPill() }
                 }
                 ACTION_SETTINGS_CLOSE -> {
                     taskbarViewModel.setSettingsOpen(false)
@@ -976,9 +978,22 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     private fun setImeVisible(visible: Boolean) {
         if (visible == lastImeVisible) return
+        FirebaseCrashlytics.getInstance().log("ime visible=$visible")
         lastImeVisible = visible
         updatePillForSystemUi()
         applySystemUiAutoHide()
+    }
+
+    // Users report a vanished pill by opening settings, so that's when its state gets captured.
+    private fun reportHiddenPill() {
+        val pill = pillView
+        if (pill?.isAttachedToWindow == true && pill.visibility == View.VISIBLE) return
+        if (hiddenForLandscape) return
+        val state = "attached=${pill?.isAttachedToWindow} visibility=${pill?.visibility} " +
+            "ime=$lastImeVisible shade=$shadeOpen landscape=$hiddenForLandscape " +
+            "lockscreen=$overlayHiddenForLockscreen pillDisabledLock=$pillDisabledForLockscreen " +
+            "a11y=${TaskBarAccessibilityService.isRunning()} imePolling=$imePolling"
+        FirebaseCrashlytics.getInstance().recordException(IllegalStateException("Pill hidden on settings open: $state"))
     }
 
     private fun updatePillForSystemUi() {

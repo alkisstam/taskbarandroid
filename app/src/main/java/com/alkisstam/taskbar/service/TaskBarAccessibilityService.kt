@@ -6,12 +6,15 @@ import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.view.KeyEvent
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import com.alkisstam.taskbar.data.PreferencesRepository
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -102,11 +105,31 @@ class TaskBarAccessibilityService : AccessibilityService() {
     private var shadeOpen = false
     private val keyguardManager by lazy { getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager }
 
+    private val handler = Handler(Looper.getMainLooper())
+
+    // A SystemUI window that matches the shade heuristic but never reports closing would keep the
+    // pill hidden for as long as the user stays in the same app, so the shade state expires.
+    private val shadeExpiry = Runnable {
+        FirebaseCrashlytics.getInstance().log("shade state expired")
+        setShadeOpen(false)
+    }
+
+    private fun setShadeOpen(open: Boolean) {
+        shadeOpen = open
+        handler.removeCallbacks(shadeExpiry)
+        if (open) handler.postDelayed(shadeExpiry, SHADE_EXPIRY_MS)
+        sendBroadcast(
+            Intent(OverlayService.ACTION_SHADE_CHANGED).setPackage(packageName)
+                .putExtra(OverlayService.EXTRA_SHADE_OPEN, open)
+        )
+    }
+
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             val pkg = event.packageName?.toString() ?: return
             val cls = event.className?.toString()
             if (cls == "android.inputmethodservice.SoftInputWindow") {
+                FirebaseCrashlytics.getInstance().log("ime shown pkg=$pkg")
                 sendBroadcast(Intent(OverlayService.ACTION_IME_SHOWN).setPackage(packageName))
             }
             // Without canRetrieveWindowContent the window list is off-limits. The shade arrives as a
@@ -124,11 +147,10 @@ class TaskBarAccessibilityService : AccessibilityService() {
                 else -> false
             }
             if (shade != shadeOpen) {
-                shadeOpen = shade
-                sendBroadcast(
-                    Intent(OverlayService.ACTION_SHADE_CHANGED).setPackage(packageName)
-                        .putExtra(OverlayService.EXTRA_SHADE_OPEN, shade)
-                )
+                val detail = "shade=$shade pkg=$pkg cls=$cls text=${event.text} changes=${event.contentChangeTypes}"
+                FirebaseCrashlytics.getInstance().log(detail)
+                FirebaseCrashlytics.getInstance().setCustomKey("shade_event", detail)
+                setShadeOpen(shade)
             }
             // OneUI (and other launchers) refire WINDOW_STATE_CHANGED for the launcher package
             // while already in the foreground (icon layout/widget refresh etc). Only dismiss on
@@ -158,6 +180,7 @@ class TaskBarAccessibilityService : AccessibilityService() {
 
     override fun onDestroy() {
         instance = null
+        handler.removeCallbacks(shadeExpiry)
         scope.cancel()
         sendBroadcast(
             Intent(OverlayService.ACTION_ACCESSIBILITY_CHANGED).setPackage(packageName)
@@ -166,6 +189,8 @@ class TaskBarAccessibilityService : AccessibilityService() {
     }
 
     companion object {
+        private const val SHADE_EXPIRY_MS = 15_000L
+
         @Volatile
         var instance: TaskBarAccessibilityService? = null
             private set
