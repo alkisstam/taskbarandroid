@@ -161,6 +161,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     @Volatile private var pillHiddenForSystemUi = false
     @Volatile private var shadeOpen = false
     private var lastImeVisible = false
+    private var hiddenForFullscreen = false
     private var imePolling = false
     private var forceHiddenForSystemUi = false
 
@@ -482,6 +483,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             observeVolumeAndBrightnessPanels()
             observeMusicPanelVisibility()
             observeTranslucentMode()
+            observeFullscreenAutoHide()
             observeClipboardPanel()
             observeNotesPanel()
             observeQuickSettingsPanel()
@@ -976,6 +978,35 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         })
     }
 
+    // Overlay windows never get status bar insets updates and no a11y event marks an app going
+    // fullscreen, so poll WindowManager's metrics while the setting is on.
+    private val fullscreenPoll = object : Runnable {
+        override fun run() {
+            val fullscreen = !windowManager.currentWindowMetrics.windowInsets
+                .isVisible(android.view.WindowInsets.Type.statusBars())
+            setFullscreen(fullscreen)
+            handler.postDelayed(this, 500)
+        }
+    }
+
+    private fun observeFullscreenAutoHide() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return
+        serviceScope.launch {
+            taskbarViewModel.autoHideInFullscreen.collect { enabled ->
+                handler.removeCallbacks(fullscreenPoll)
+                if (enabled) handler.post(fullscreenPoll) else setFullscreen(false)
+            }
+        }
+    }
+
+    private fun setFullscreen(fullscreen: Boolean) {
+        if (fullscreen == hiddenForFullscreen) return
+        hiddenForFullscreen = fullscreen
+        if (fullscreen) taskbarViewModel.hideTaskbar(force = true)
+        else if (taskbarViewModel.isDockPinned.value) taskbarViewModel.showTaskbar()
+        updatePillForSystemUi()
+    }
+
     private fun setImeVisible(visible: Boolean) {
         if (visible == lastImeVisible) return
         FirebaseCrashlytics.getInstance().log("ime visible=$visible")
@@ -988,7 +1019,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private fun reportHiddenPill() {
         val pill = pillView
         if (pill?.isAttachedToWindow == true && pill.visibility == View.VISIBLE) return
-        if (hiddenForLandscape) return
+        if (hiddenForLandscape || hiddenForFullscreen) return
         val state = "attached=${pill?.isAttachedToWindow} visibility=${pill?.visibility} " +
             "ime=$lastImeVisible shade=$shadeOpen landscape=$hiddenForLandscape " +
             "lockscreen=$overlayHiddenForLockscreen pillDisabledLock=$pillDisabledForLockscreen " +
@@ -997,7 +1028,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     }
 
     private fun updatePillForSystemUi() {
-        val hide = lastImeVisible || shadeOpen
+        val hide = lastImeVisible || shadeOpen || hiddenForFullscreen
         if (hide == pillHiddenForSystemUi) return
         pillHiddenForSystemUi = hide
         val show = !hide && !hiddenForLandscape && !overlayHiddenForLockscreen
@@ -1012,10 +1043,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         // stuck in GONE state (the OnGlobalLayoutListener deadlock).
         ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
             publishNavBarInset()
-            if (taskbarViewModel.autoHideInFullscreen.value) {
-                val isFullscreen = !insets.isVisible(WindowInsetsCompat.Type.statusBars())
-                if (isFullscreen) taskbarViewModel.hideTaskbar(force = true) else taskbarViewModel.showTaskbar()
-            }
             if (!overlayHiddenForLockscreen) {
                 if (insets.isVisible(WindowInsetsCompat.Type.ime())) {
                     // Make non-interactive so keyboard receives touches, but keep VISIBLE.
