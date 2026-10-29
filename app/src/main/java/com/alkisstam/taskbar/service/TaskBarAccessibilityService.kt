@@ -129,7 +129,7 @@ class TaskBarAccessibilityService : AccessibilityService() {
             val pkg = event.packageName?.toString() ?: return
             val cls = event.className?.toString()
             if (cls == "android.inputmethodservice.SoftInputWindow") {
-                FirebaseCrashlytics.getInstance().log("ime shown pkg=$pkg")
+                FirebaseCrashlytics.getInstance().log("ime shown")
                 sendBroadcast(Intent(OverlayService.ACTION_IME_SHOWN).setPackage(packageName))
             }
             // Without canRetrieveWindowContent the window list is off-limits. The shade arrives as a
@@ -147,7 +147,13 @@ class TaskBarAccessibilityService : AccessibilityService() {
                 else -> false
             }
             if (shade != shadeOpen) {
-                val detail = "shade=$shade pkg=$pkg cls=$cls text=${event.text} changes=${event.contentChangeTypes}"
+                // Other apps' package names and window text must not leave the device (Play a11y policy).
+                val source = when (pkg) {
+                    "com.android.systemui" -> "systemui"
+                    packageName -> "self"
+                    else -> "other"
+                }
+                val detail = "shade=$shade src=$source cls=$cls hasText=${event.text.isNotEmpty()} changes=${event.contentChangeTypes}"
                 FirebaseCrashlytics.getInstance().log(detail)
                 FirebaseCrashlytics.getInstance().setCustomKey("shade_event", detail)
                 setShadeOpen(shade)
