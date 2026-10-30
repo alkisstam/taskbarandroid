@@ -1,5 +1,8 @@
 package com.alkisstam.taskbar.service
 
+import android.view.WindowManager
+import android.graphics.Point
+import android.os.Build
 import android.media.AudioManager
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
@@ -92,15 +95,18 @@ internal fun OverlayContent(
     val menuVisible by appMenuViewModel.menuVisible.collectAsState()
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
     val navBarInsetDp by taskbarViewModel.navBarInsetDp.collectAsState()
-    // Accessibility overlays often get zero status bar insets, so keep a floor under them.
-    val topInset = maxOf(WindowInsets.statusBars.asPaddingValues().calculateTopPadding(), 32.dp)
+    val statusBarInsetDp by taskbarViewModel.statusBarInsetDp.collectAsState()
+    // Accessibility overlays get zero dispatched insets, so the status bar/cutout height comes
+    // from WindowManager metrics; the floor covers devices where neither reports anything.
+    val topInset = maxOf(WindowInsets.statusBars.asPaddingValues().calculateTopPadding(), statusBarInsetDp.dp, 32.dp)
     val bottomInset = maxOf(taskbarSettings.dockPadding.bottomGapDp, navBarInsetDp).dp
     val edgeGap = maxOf(topInset + 8.dp, bottomInset + 12.dp)
-    // The window starts below the status bar, so the visible top gap is larger than edgeGap
-    // by the window's screen offset; add it at the bottom so both gaps look equal.
+    // The window may not span the whole screen (e.g. it starts below the status bar or ends
+    // above the nav bar), so shift the bottom padding by both offsets to keep the gaps equal.
     val view = LocalView.current
     val density = LocalDensity.current
     var windowTopOffset by remember { mutableStateOf(0.dp) }
+    var windowBottomOffset by remember { mutableStateOf(0.dp) }
 
     TaskBarTheme(themeMode = themeMode) {
         Box(
@@ -109,7 +115,15 @@ internal fun OverlayContent(
                 .onGloballyPositioned {
                     val location = IntArray(2)
                     view.getLocationOnScreen(location)
+                    val screenHeightPx = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        view.context.getSystemService(WindowManager::class.java).maximumWindowMetrics.bounds.height()
+                    } else {
+                        Point().also { @Suppress("DEPRECATION") view.display?.getRealSize(it) }.y
+                    }
                     windowTopOffset = with(density) { location[1].toDp() }
+                    windowBottomOffset = with(density) {
+                        (screenHeightPx - location[1] - view.height).coerceAtLeast(0).toDp()
+                    }
                 }
         ) {
             if (menuVisible) {
@@ -128,7 +142,7 @@ internal fun OverlayContent(
                 onHideTaskbar = taskbarViewModel::hideTaskbar,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(start = 12.dp, end = 12.dp, top = edgeGap, bottom = edgeGap + windowTopOffset)
+                    .padding(start = 12.dp, end = 12.dp, top = edgeGap, bottom = (edgeGap + windowTopOffset - windowBottomOffset).coerceAtLeast(0.dp))
             )
         }
     }

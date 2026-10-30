@@ -353,6 +353,11 @@ class TaskbarViewModel @Inject constructor(
 
     fun setNavBarInset(dp: Float) { _navBarInsetDp.value = dp }
 
+    private val _statusBarInsetDp = MutableStateFlow(0f)
+    val statusBarInsetDp: StateFlow<Float> = _statusBarInsetDp.asStateFlow()
+
+    fun setStatusBarInset(dp: Float) { _statusBarInsetDp.value = dp }
+
     private val _isDockExpanded = MutableStateFlow(false)
     val isDockExpanded: StateFlow<Boolean> = _isDockExpanded.asStateFlow()
 

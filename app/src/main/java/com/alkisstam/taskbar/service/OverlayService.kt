@@ -950,8 +950,21 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         return bottomPx / resources.displayMetrics.density
     }
 
+    private fun statusBarInsetDp(): Float {
+        val types = android.view.WindowInsets.Type.statusBars() or android.view.WindowInsets.Type.displayCutout()
+        val topPx = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            windowManager.currentWindowMetrics.windowInsets.getInsets(types).top
+        } else {
+            val view = taskbarView ?: overlayView ?: return 0f
+            ViewCompat.getRootWindowInsets(view)
+                ?.getInsets(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.displayCutout())?.top ?: 0
+        }
+        return topPx / resources.displayMetrics.density
+    }
+
     private fun publishNavBarInset() {
         taskbarViewModel.setNavBarInset(navBarInsetDp())
+        taskbarViewModel.setStatusBarInset(statusBarInsetDp())
     }
 
     // Pinned dock hides under the keyboard and notification shade. Acts only on transitions so an
