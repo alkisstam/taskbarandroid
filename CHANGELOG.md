@@ -12,6 +12,7 @@ Stability fixes.
 - **Crash on launch on some devices** — devices that report Android 14 but are missing its system colors no longer crash when opening the app; they use the built-in color theme instead.
 - **Freezes while music plays** — the dock no longer re-copies the album art on every play, pause, seek or buffering change, which could make the app stop responding.
 - **Privacy in crash reports** — crash reports no longer include other apps' package names or on-screen text.
+- **All Apps menu gaps on other screens** — on phones with a tall status bar or camera cutout, the top of the menu no longer slides under the status bar, and the top and bottom gaps stay equal when the dock runs without the accessibility service.
 
 ---
 
