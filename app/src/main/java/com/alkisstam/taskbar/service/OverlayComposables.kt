@@ -250,8 +250,8 @@ internal fun TriggerPillContent(taskbarViewModel: TaskbarViewModel, appMenuViewM
     val pillHiddenForScreenshot by appMenuViewModel.pillHiddenForScreenshot.collectAsState()
     val context = LocalContext.current
     val density = LocalDensity.current
-    val dockRevealMaxDragPx = remember(taskbarSettings.heightDp, density) {
-        with(density) { taskbarSettings.heightDp.dp.toPx() }
+    val dockRevealMaxDragPx = remember(taskbarSettings.dockHeightDp, density) {
+        with(density) { taskbarSettings.dockHeightDp.dp.toPx() }
     }
     var holdBase by remember { mutableIntStateOf(-1) }
     var holdMax by remember { mutableIntStateOf(0) }
@@ -479,7 +479,7 @@ internal fun ClipboardPanelContent(
     val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
 
     val expandedRows = if (isDockExpanded) 1 else 0
-    val dockBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.heightDp, expandedRows, taskbarSettings.dockPadding.bottomGapDp)
+    val dockBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.dockHeightDp, expandedRows, taskbarSettings.dockPadding.bottomGapDp)
 
     TaskBarTheme(themeMode = themeMode) {
         ClipboardPanel(
@@ -518,7 +518,7 @@ internal fun NotesPanelContent(
     val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
 
     val expandedRows = if (isDockExpanded) 1 else 0
-    val dockBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.heightDp, expandedRows, taskbarSettings.dockPadding.bottomGapDp)
+    val dockBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.dockHeightDp, expandedRows, taskbarSettings.dockPadding.bottomGapDp)
 
     TaskBarTheme(themeMode = themeMode) {
         NotesPanel(
@@ -563,7 +563,7 @@ internal fun QuickSettingsPanelContent(
     val quickSettingsPanelVisible by appMenuViewModel.quickSettingsPanelVisible.collectAsState()
 
     val expandedRows = if (isDockExpanded) 1 else 0
-    val dockBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.heightDp, expandedRows, taskbarSettings.dockPadding.bottomGapDp)
+    val dockBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.dockHeightDp, expandedRows, taskbarSettings.dockPadding.bottomGapDp)
     val context = LocalContext.current
     val hasNotificationListenerPermission = remember(quickSettingsPanelVisible) {
         notificationListenerEnabled(context)
@@ -605,7 +605,7 @@ internal fun NotificationHistoryPanelContent(
     val appsByPackage = remember(allApps) { allApps.associateBy { it.packageName } }
 
     val expandedRows = if (isDockExpanded) 1 else 0
-    val dockBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.heightDp, expandedRows, taskbarSettings.dockPadding.bottomGapDp)
+    val dockBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.dockHeightDp, expandedRows, taskbarSettings.dockPadding.bottomGapDp)
 
     TaskBarTheme(themeMode = themeMode) {
         NotificationHistoryPanel(
@@ -700,7 +700,7 @@ internal fun MusicPanelContent(
 
     TaskBarTheme(themeMode = themeMode) {
         // Fixed height: OverlayService keeps the window touch-transparent while the panel is hidden.
-        Box(modifier = Modifier.fillMaxWidth().height(taskbarSettings.heightDp.dp), contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier.fillMaxWidth().height(taskbarSettings.dockHeightDp.dp), contentAlignment = Alignment.Center) {
             if (revealAnim.value > 0.001f) {
                 MusicPanel(
                     mediaState = mediaState,
@@ -711,7 +711,7 @@ internal fun MusicPanelContent(
                     translucentMode = translucentMode,
                     translucentAlpha = translucentAlpha,
                     grainAlpha = grainAlpha,
-                    heightDp = taskbarSettings.heightDp,
+                    heightDp = taskbarSettings.dockHeightDp,
                     dockWidthFraction = 1f,
                     onArtworkClick = {
                         if (mediaState.packageName.isNotEmpty()) {

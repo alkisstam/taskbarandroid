@@ -771,14 +771,14 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 )
             ) { settings, menuOpen, expandProgress, navInset, (pillIconCount, pillVisible, dockHeightPx) ->
                 val bottomGap = maxOf(settings.dockPadding.bottomGapDp, navInset)
-                val baseY = bottomGap + settings.heightDp + 16f + 16f + expandProgress * (settings.heightDp + 4f)
+                val baseY = bottomGap + settings.dockHeightDp + 16f + 16f + expandProgress * (settings.dockHeightDp + 4f)
                 volumePanelYOffsetDp = baseY
                 val y = when {
                     // Beside a 1-2 icon pill, or in its row while it is auto-hidden: just above the dock.
                     pillIconCount > 0 && (!pillVisible || pillIconCount <= 2) && expandProgress == 0f && dockHeightPx != null ->
                         bottomGap + dockHeightPx / resources.displayMetrics.density + QuickControlsButtonGap.value
                     // Longer pill: above it, where it sits while a panel is open.
-                    pillVisible && pillIconCount > 2 -> bottomGap + settings.heightDp + 16f + 16f + settings.heightDp + 4f
+                    pillVisible && pillIconCount > 2 -> bottomGap + settings.dockHeightDp + 16f + 16f + settings.dockHeightDp + 4f
                     else -> baseY
                 }
                 if (menuOpen) y + 400f else y
@@ -836,7 +836,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 }
                 calculatorPanelView?.let { view ->
                     val settings = taskbarViewModel.taskbarSettings.value
-                    val yOffset = maxOf(settings.dockPadding.bottomGapDp, navBarInsetDp()) + settings.heightDp + 16f + 16f
+                    val yOffset = maxOf(settings.dockPadding.bottomGapDp, navBarInsetDp()) + settings.dockHeightDp + 16f + 16f
                     try { windowManager.updateViewLayoutKeepingType(view, musicPanelLayoutParams(yOffset, translucentModeEnabled, active = appMenuViewModel.calculatorPanelVisible.value)) }
                     catch (e: Exception) { Log.w(TAG, "Failed to update calculator panel blur", e) }
                 }
@@ -862,7 +862,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             }.collect { (volumeVisible, brightnessVisible, calculatorVisible) ->
                 val settings = taskbarViewModel.taskbarSettings.value
                 val dockExpanded = taskbarViewModel.isDockExpanded.value
-                val yOffset = maxOf(settings.dockPadding.bottomGapDp, navBarInsetDp()) + settings.heightDp + 16f + (if (dockExpanded) settings.heightDp + 20f else 16f)
+                val yOffset = maxOf(settings.dockPadding.bottomGapDp, navBarInsetDp()) + settings.dockHeightDp + 16f + (if (dockExpanded) settings.dockHeightDp + 20f else 16f)
 
                 val scrimActive = volumeVisible || brightnessVisible || calculatorVisible
                 setVolumeScrimActive(scrimActive)
@@ -1269,7 +1269,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         volumePanelView = null
         try {
             val initialSettings = taskbarViewModel.taskbarSettings.value
-            volumePanelYOffsetDp = 20f + initialSettings.heightDp + 16f + 16f
+            volumePanelYOffsetDp = 20f + initialSettings.dockHeightDp + 16f + 16f
             val composeView = ComposeView(this).apply {
                 setBackgroundColor(android.graphics.Color.TRANSPARENT)
                 setViewTreeLifecycleOwner(this@OverlayService)
@@ -1298,7 +1298,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         brightnessPanelView = null
         try {
             val initialSettings = taskbarViewModel.taskbarSettings.value
-            val yOffset = maxOf(20f, navBarInsetDp()) + initialSettings.heightDp + 16f + 16f
+            val yOffset = maxOf(20f, navBarInsetDp()) + initialSettings.dockHeightDp + 16f + 16f
             val composeView = ComposeView(this).apply {
                 setBackgroundColor(android.graphics.Color.TRANSPARENT)
                 setViewTreeLifecycleOwner(this@OverlayService)
@@ -1352,7 +1352,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         musicPanelView = null
         try {
             val initialSettings = taskbarViewModel.taskbarSettings.value
-            musicPanelYOffsetDp = 20f + initialSettings.heightDp + 16f + 16f
+            musicPanelYOffsetDp = 20f + initialSettings.dockHeightDp + 16f + 16f
             val composeView = ComposeView(this).apply {
                 setBackgroundColor(android.graphics.Color.TRANSPARENT)
                 setViewTreeLifecycleOwner(this@OverlayService)
@@ -1396,7 +1396,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         calculatorPanelView = null
         try {
             val initialSettings = taskbarViewModel.taskbarSettings.value
-            val yOffset = maxOf(initialSettings.dockPadding.bottomGapDp, navBarInsetDp()) + initialSettings.heightDp + 16f + 16f
+            val yOffset = maxOf(initialSettings.dockPadding.bottomGapDp, navBarInsetDp()) + initialSettings.dockHeightDp + 16f + 16f
             val composeView = ComposeView(this).apply {
                 setBackgroundColor(android.graphics.Color.TRANSPARENT)
                 setViewTreeLifecycleOwner(this@OverlayService)

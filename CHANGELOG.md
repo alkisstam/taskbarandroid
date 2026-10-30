@@ -9,7 +9,7 @@ All notable changes to Floating Dock are documented here.
 Stability fixes, tablet and landscape layouts, bigger dock icons.
 
 ### Changed
-- **Bigger dock icons** — Pinned App Icon Size and Quick Controls Size now go up to 120dp (was 60dp). Raise Dock Height too so large icons fit.
+- **Bigger dock icons** — Pinned App Icon Size and Quick Controls Size now go up to 120dp (was 60dp). The dock grows taller on its own when the icons no longer fit its Dock Height.
 - **Tablets and landscape** — the All Apps menu, clipboard, notes, notifications, Quick Settings and calculator stop growing past a comfortable width and stay centered on tablets. In phone landscape they stay clear of a side navigation bar or camera cutout, the All Apps menu hides the recent apps row to make room for the grid, and the calculator shows its display and keypad side by side.
 - **Calculator scientific keys** — the handle is easier to grab: swipe up from anywhere near it, or tap it, to show or hide the scientific keys.
 

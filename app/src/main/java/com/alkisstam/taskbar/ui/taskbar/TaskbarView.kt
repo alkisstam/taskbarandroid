@@ -204,7 +204,7 @@ fun TaskbarView(
                     DisposableEffect(Unit) {
                         onDispose { taskbarViewModel.setQuickControlsButtonBounds(null) }
                     }
-                    val pillHeight = taskbarSettings.heightDp.dp
+                    val pillHeight = taskbarSettings.dockHeightDp.dp
                     val tileSize = taskbarSettings.quickControlSizeDp.dp
                     val controlsTile = QuickControlItemData(
                         id = "quick_controls", label = stringResource(R.string.quick_controls),
@@ -287,7 +287,7 @@ fun TaskbarView(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(taskbarSettings.heightDp.dp)
+                        .height(taskbarSettings.dockHeightDp.dp)
                         .padding(vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start
@@ -469,7 +469,7 @@ private fun PanelRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(taskbarSettings.heightDp.dp),
+            .height(taskbarSettings.dockHeightDp.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         val button = @Composable { padding: Modifier ->
@@ -508,8 +508,8 @@ private fun ExpandedPanelSurface(
         modifier = Modifier
             .fillMaxWidth()
             .graphicsLayer { translationY = dragOffset.value }
-            .pointerInput(taskbarSettings.heightDp) {
-                val closeThresholdPx = with(density) { taskbarSettings.heightDp.dp.toPx() } * 0.4f
+            .pointerInput(taskbarSettings.dockHeightDp) {
+                val closeThresholdPx = with(density) { taskbarSettings.dockHeightDp.dp.toPx() } * 0.4f
                 detectVerticalDragGestures(
                     onDragEnd = {
                         if (dragOffset.value >= closeThresholdPx) taskbarViewModel.collapseDock()

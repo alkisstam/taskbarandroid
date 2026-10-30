@@ -135,7 +135,11 @@ data class TaskbarSettings(
     val dockPadding: DockPadding = DockPadding.DEFAULT,
     val appMenuButtonSide: AppMenuButtonSide = AppMenuButtonSide.LEFT,
     val iconShape: IconShape = IconShape.DEFAULT
-)
+) {
+    // The dock row pads its content by 8dp top and bottom, so grow past the Dock Height
+    // setting when the icons or controls wouldn't fit.
+    val dockHeightDp: Float get() = maxOf(heightDp, pinnedIconSizeDp + 16f, quickControlSizeDp + 16f)
+}
 
 data class PillSettings(
     val swipeUpAction: GestureAction = GestureAction.DISABLED,
