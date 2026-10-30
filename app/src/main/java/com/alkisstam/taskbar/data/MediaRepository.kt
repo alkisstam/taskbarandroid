@@ -60,7 +60,7 @@ class MediaRepository @Inject constructor(
 
     private val controllerCallback = object : MediaController.Callback() {
         override fun onPlaybackStateChanged(state: PlaybackState?) {
-            updateState(activeController)
+            updateState(activeController, refreshArt = false)
         }
         override fun onMetadataChanged(metadata: MediaMetadata?) {
             updateState(activeController)
@@ -184,7 +184,7 @@ class MediaRepository @Inject constructor(
         }
     }
 
-    private fun updateState(controller: MediaController?) {
+    private fun updateState(controller: MediaController?, refreshArt: Boolean = true) {
         if (controller == null) {
             _mediaState.value = MediaState()
             return
@@ -197,10 +197,16 @@ class MediaRepository @Inject constructor(
                 title = metadata?.getString(MediaMetadata.METADATA_KEY_TITLE) ?: "",
                 artist = metadata?.getString(MediaMetadata.METADATA_KEY_ARTIST)
                     ?: metadata?.getString(MediaMetadata.METADATA_KEY_ALBUM_ARTIST) ?: "",
-                albumArt = safeCopy(
-                    metadata?.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
-                        ?: metadata?.getBitmap(MediaMetadata.METADATA_KEY_ART)
-                ),
+                // Playback-state callbacks fire on every seek/buffer tick; re-copying the
+                // full-size art on the main thread each time caused GC-stall ANRs.
+                albumArt = if (!refreshArt && _mediaState.value.packageName == controller.packageName) {
+                    _mediaState.value.albumArt
+                } else {
+                    safeCopy(
+                        metadata?.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
+                            ?: metadata?.getBitmap(MediaMetadata.METADATA_KEY_ART)
+                    )
+                },
                 hasSession = true,
                 packageName = controller.packageName
             )
