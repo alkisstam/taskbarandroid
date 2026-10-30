@@ -1,5 +1,7 @@
 package com.alkisstam.taskbar.ui.clipboard
 
+import com.alkisstam.taskbar.ui.theme.PanelMaxWidth
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -91,7 +92,8 @@ fun ClipboardPanel(
     translucentAlpha: Float = 0.80f,
     grainAlpha: Float = 0.10f,
     surfaceTintColor: Long = 0L,
-    dockBottomPadding: Dp = 0.dp
+    dockBottomPadding: Dp = 0.dp,
+    systemInsets: PaddingValues = PaddingValues()
 ) {
     val clips by viewModel.clips.collectAsState()
     val favorites by viewModel.favorites.collectAsState()
@@ -118,8 +120,10 @@ fun ClipboardPanel(
 
         Surface(
             modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(systemInsets)
+                .widthIn(max = PanelMaxWidth)
                 .fillMaxSize()
-                .statusBarsPadding()
                 .padding(top = 4.dp, start = 2.dp, end = 2.dp)
                 .padding(bottom = dockBottomPadding)
                 .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, panelShape) else Modifier)

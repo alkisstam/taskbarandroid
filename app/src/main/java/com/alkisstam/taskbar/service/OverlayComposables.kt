@@ -1,5 +1,8 @@
 package com.alkisstam.taskbar.service
 
+import com.alkisstam.taskbar.ui.theme.PanelMaxWidth
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.PaddingValues
 import android.view.WindowManager
 import android.graphics.Point
 import android.os.Build
@@ -86,6 +89,16 @@ import kotlin.math.roundToInt
 private fun dockAwarePanelBottomPadding(isTaskbarVisible: Boolean, heightDp: Float, expandedRows: Int, bottomGapDp: Float) =
     if (isTaskbarVisible) (bottomGapDp + heightDp * (1 + expandedRows) + 4f * expandedRows + 16f + 18f).dp else 0.dp
 
+// Dispatched insets are zero in accessibility overlays, so sheets take the status bar, cutout and
+// side nav bar sizes that OverlayService reads from WindowManager metrics.
+@Composable
+private fun overlaySystemInsets(taskbarViewModel: TaskbarViewModel): PaddingValues {
+    val statusBarInsetDp by taskbarViewModel.statusBarInsetDp.collectAsState()
+    val sideInsetsDp by taskbarViewModel.sideInsetsDp.collectAsState()
+    val top = maxOf(WindowInsets.statusBars.asPaddingValues().calculateTopPadding(), statusBarInsetDp.dp)
+    return PaddingValues.Absolute(left = sideInsetsDp.first.dp, top = top, right = sideInsetsDp.second.dp)
+}
+
 @Composable
 internal fun OverlayContent(
     taskbarViewModel: TaskbarViewModel,
@@ -96,6 +109,7 @@ internal fun OverlayContent(
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
     val navBarInsetDp by taskbarViewModel.navBarInsetDp.collectAsState()
     val statusBarInsetDp by taskbarViewModel.statusBarInsetDp.collectAsState()
+    val sideInsetsDp by taskbarViewModel.sideInsetsDp.collectAsState()
     // Accessibility overlays get zero dispatched insets, so the status bar/cutout height comes
     // from WindowManager metrics; the floor covers devices where neither reports anything.
     val topInset = maxOf(WindowInsets.statusBars.asPaddingValues().calculateTopPadding(), statusBarInsetDp.dp, 32.dp)
@@ -141,8 +155,17 @@ internal fun OverlayContent(
                 taskbarViewModel = taskbarViewModel,
                 onHideTaskbar = taskbarViewModel::hideTaskbar,
                 modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(
+                        PaddingValues.Absolute(
+                            left = 12.dp + sideInsetsDp.first.dp,
+                            right = 12.dp + sideInsetsDp.second.dp,
+                            top = edgeGap,
+                            bottom = (edgeGap + windowTopOffset - windowBottomOffset).coerceAtLeast(0.dp)
+                        )
+                    )
+                    .widthIn(max = PanelMaxWidth)
                     .fillMaxSize()
-                    .padding(start = 12.dp, end = 12.dp, top = edgeGap, bottom = (edgeGap + windowTopOffset - windowBottomOffset).coerceAtLeast(0.dp))
             )
         }
     }
@@ -472,7 +495,8 @@ internal fun ClipboardPanelContent(
             translucentAlpha = translucentAlpha,
             grainAlpha = grainAlpha,
             surfaceTintColor = surfaceTintColor,
-            dockBottomPadding = dockBottomPadding
+            dockBottomPadding = dockBottomPadding,
+            systemInsets = overlaySystemInsets(taskbarViewModel)
         )
     }
 }
@@ -510,7 +534,8 @@ internal fun NotesPanelContent(
             translucentAlpha = translucentAlpha,
             grainAlpha = grainAlpha,
             surfaceTintColor = surfaceTintColor,
-            dockBottomPadding = dockBottomPadding
+            dockBottomPadding = dockBottomPadding,
+            systemInsets = overlaySystemInsets(taskbarViewModel)
         )
     }
 }
@@ -554,7 +579,8 @@ internal fun QuickSettingsPanelContent(
             translucentAlpha = translucentAlpha,
             grainAlpha = grainAlpha,
             surfaceTintColor = surfaceTintColor,
-            dockBottomPadding = dockBottomPadding
+            dockBottomPadding = dockBottomPadding,
+            systemInsets = overlaySystemInsets(taskbarViewModel)
         )
     }
 }
@@ -597,6 +623,7 @@ internal fun NotificationHistoryPanelContent(
             grainAlpha = grainAlpha,
             surfaceTintColor = surfaceTintColor,
             dockBottomPadding = dockBottomPadding,
+            systemInsets = overlaySystemInsets(taskbarViewModel),
             iconShape = taskbarSettings.iconShape
         )
     }
@@ -720,8 +747,14 @@ internal fun CalculatorPanelContent(
     val grainAlpha by taskbarViewModel.grainAlpha.collectAsState()
     val surfaceTintColor by taskbarViewModel.surfaceTintColor.collectAsState()
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
+    val sideInsetsDp by taskbarViewModel.sideInsetsDp.collectAsState()
     TaskBarTheme(themeMode = themeMode) {
-        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(PaddingValues.Absolute(left = sideInsetsDp.first.dp, right = sideInsetsDp.second.dp)),
+            contentAlignment = Alignment.Center
+        ) {
             CalculatorPanel(
                 panelOutlineEnabled = panelOutlineEnabled,
                 translucentMode = translucentMode,

@@ -1,5 +1,13 @@
 package com.alkisstam.taskbar.ui.appmenu
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import com.alkisstam.taskbar.ui.theme.PanelMaxWidth
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.ColumnScope
+import android.content.res.Configuration
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -217,6 +225,11 @@ fun CalculatorPanel(
 
     val surfaceColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
     val cornerShape = RoundedCornerShape(cornerRadiusDp.dp)
+    // Phone landscape is too short for the stacked layout above the dock, so the display and
+    // keypad sit side by side with shorter keys.
+    val configuration = LocalConfiguration.current
+    val compact = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE &&
+        configuration.screenHeightDp < 600
 
     Surface(
         shape = cornerShape,
@@ -226,13 +239,14 @@ fun CalculatorPanel(
         shadowElevation = if (translucentMode) 0.dp else 8.dp,
         modifier = modifier
             .fillMaxWidth(dockWidthFraction)
+            .widthIn(max = PanelMaxWidth)
             .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, cornerShape) else Modifier)
             .clip(cornerShape)
             .grain(enabled = translucentMode && grainAlpha > 0f, alpha = grainAlpha)
             .glassSheen(enabled = translucentMode && !panelOutlineEnabled, shape = cornerShape)
     ) {
         GlassBackdrop(enabled = translucentMode, cornerRadius = cornerRadiusDp.dp, tint = surfaceColor.copy(alpha = translucentAlpha), windowBlur = true) {
-            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
+            val display: @Composable ColumnScope.() -> Unit = {
                 Text(
                     text = state.expression,
                     style = MaterialTheme.typography.displaySmall,
@@ -257,10 +271,16 @@ fun CalculatorPanel(
                 )
 
                 var dragAccum by remember { mutableStateOf(0f) }
+                // The bar is only 4dp tall; the 32dp box is the touch target, so a swipe that
+                // starts near the bar still lands on it. Tapping it toggles too.
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 4.dp)
+                        .height(32.dp)
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) { sciExpanded = !sciExpanded }
                         .pointerInput(Unit) {
                             detectVerticalDragGestures(
                                 onDragStart = { dragAccum = 0f },
@@ -274,10 +294,11 @@ fun CalculatorPanel(
                                 }
                             )
                         },
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.BottomCenter
                 ) {
                     Box(
                         modifier = Modifier
+                            .padding(bottom = 6.dp)
                             .width(36.dp)
                             .height(4.dp)
                             .clip(RoundedCornerShape(2.dp))
@@ -316,9 +337,9 @@ fun CalculatorPanel(
                         )
                     }
                 }
+            }
 
-                Box(modifier = Modifier.height(4.dp))
-
+            val keypad: @Composable () -> Unit = {
                 val digitColor = MaterialTheme.colorScheme.surfaceVariant.glass()
                 val onDigitColor = MaterialTheme.colorScheme.onSurfaceVariant
                 val opColor = MaterialTheme.colorScheme.secondaryContainer.glass()
@@ -359,9 +380,29 @@ fun CalculatorPanel(
                     }
                 }
             }
+
+            if (compact) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Column(modifier = Modifier.weight(1f), content = display)
+                    Box(modifier = Modifier.weight(1.3f)) {
+                        CompositionLocalProvider(LocalCalcKeyHeight provides 40.dp) { keypad() }
+                    }
+                }
+            } else {
+                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
+                    display()
+                    Box(modifier = Modifier.height(4.dp))
+                    keypad()
+                }
+            }
         }
     }
 }
+
+private val LocalCalcKeyHeight = staticCompositionLocalOf { 52.dp }
 
 @Composable
 private fun CalcRow(content: @Composable RowScope.() -> Unit) {
@@ -390,7 +431,7 @@ private fun CalcButton(
     contentColor: Color,
     modifier: Modifier = Modifier,
     style: TextStyle = MaterialTheme.typography.titleLarge,
-    height: Dp = 52.dp,
+    height: Dp = LocalCalcKeyHeight.current,
     onClick: () -> Unit
 ) {
     Box(
@@ -415,7 +456,7 @@ private fun CalcIconButton(
 ) {
     Box(
         modifier = modifier
-            .height(52.dp)
+            .height(LocalCalcKeyHeight.current)
             .clip(CircleShape)
             .background(containerColor)
             .clickable(onClick = onClick),

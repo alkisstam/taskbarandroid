@@ -93,6 +93,9 @@ fun TaskBarTheme(
     )
 }
 
+// Full-screen panels stop growing past this so tablets don't get edge-to-edge sheets.
+val PanelMaxWidth = 720.dp
+
 fun Modifier.glassSheen(enabled: Boolean, shape: Shape): Modifier {
     if (!enabled) return this
     return drawWithContent {

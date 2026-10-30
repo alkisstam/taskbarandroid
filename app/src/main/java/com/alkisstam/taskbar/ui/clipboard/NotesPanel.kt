@@ -1,5 +1,7 @@
 package com.alkisstam.taskbar.ui.clipboard
 
+import com.alkisstam.taskbar.ui.theme.PanelMaxWidth
+import androidx.compose.foundation.layout.widthIn
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -19,7 +21,6 @@ import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -75,7 +76,8 @@ fun NotesPanel(
     translucentAlpha: Float = 0.80f,
     grainAlpha: Float = 0.10f,
     surfaceTintColor: Long = 0L,
-    dockBottomPadding: Dp = 0.dp
+    dockBottomPadding: Dp = 0.dp,
+    systemInsets: PaddingValues = PaddingValues()
 ) {
     val noteItems by viewModel.noteItems.collectAsState()
     val todoItems by viewModel.todoItems.collectAsState()
@@ -100,8 +102,10 @@ fun NotesPanel(
 
         Surface(
             modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(systemInsets)
+                .widthIn(max = PanelMaxWidth)
                 .fillMaxSize()
-                .statusBarsPadding()
                 .padding(top = 4.dp, start = 2.dp, end = 2.dp)
                 .padding(bottom = dockBottomPadding)
                 .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, panelShape) else Modifier)

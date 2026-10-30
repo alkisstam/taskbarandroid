@@ -1,5 +1,7 @@
 package com.alkisstam.taskbar.ui.appmenu
 
+import androidx.compose.ui.platform.LocalConfiguration
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
@@ -84,6 +86,10 @@ fun AppMenuPanel(
     val panelColor = if (surfaceTintColor != 0L) Color(surfaceTintColor) else MaterialTheme.colorScheme.surface
 
     val panelShape = RoundedCornerShape(32.dp)
+    // Phone landscape leaves too little height for the grid once the recent row takes its share.
+    val configuration = LocalConfiguration.current
+    val shortLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE &&
+        configuration.screenHeightDp < 600
 
     AnimatedVisibility(
         visible = menuVisible,
@@ -115,7 +121,7 @@ fun AppMenuPanel(
             // Samsung's blur ignores Compose alpha, so drop it as soon as the fade-out starts.
             GlassBackdrop(enabled = translucentMode && menuVisible, cornerRadius = 32.dp, tint = panelColor.copy(alpha = translucentAlpha), windowBlur = true) {
             Column(modifier = Modifier.fillMaxSize().padding(top = 16.dp, start = 8.dp, end = 8.dp)) {
-                if (showRecentAppsRow && recentApps.isNotEmpty()) {
+                if (showRecentAppsRow && recentApps.isNotEmpty() && !shortLandscape) {
                     // Same contentPadding + horizontalArrangement as AppGrid's LazyVerticalGrid
                     // below, so each icon's column center lines up with the grid's columns.
                     Row(

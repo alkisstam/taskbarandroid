@@ -1,5 +1,7 @@
 package com.alkisstam.taskbar.ui.notifications
 
+import com.alkisstam.taskbar.ui.theme.PanelMaxWidth
+import androidx.compose.foundation.layout.widthIn
 import android.app.Notification
 import android.graphics.Bitmap
 import androidx.compose.animation.AnimatedVisibility
@@ -20,7 +22,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -79,6 +80,7 @@ fun NotificationHistoryPanel(
     grainAlpha: Float = 0.10f,
     surfaceTintColor: Long = 0L,
     dockBottomPadding: Dp = 0.dp,
+    systemInsets: PaddingValues = PaddingValues(),
     iconShape: IconShape = IconShape.DEFAULT
 ) {
     val notifications by viewModel.notifications.collectAsState()
@@ -100,8 +102,10 @@ fun NotificationHistoryPanel(
 
         Surface(
             modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(systemInsets)
+                .widthIn(max = PanelMaxWidth)
                 .fillMaxSize()
-                .statusBarsPadding()
                 .padding(top = 4.dp, start = 2.dp, end = 2.dp)
                 .padding(bottom = dockBottomPadding)
                 .then(if (panelOutlineEnabled) Modifier.border(1.dp, TaskbarOutlineGreen, panelShape) else Modifier)

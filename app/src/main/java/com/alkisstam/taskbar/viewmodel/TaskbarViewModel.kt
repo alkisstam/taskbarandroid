@@ -358,6 +358,11 @@ class TaskbarViewModel @Inject constructor(
 
     fun setStatusBarInset(dp: Float) { _statusBarInsetDp.value = dp }
 
+    private val _sideInsetsDp = MutableStateFlow(0f to 0f)
+    val sideInsetsDp: StateFlow<Pair<Float, Float>> = _sideInsetsDp.asStateFlow()
+
+    fun setSideInsets(leftDp: Float, rightDp: Float) { _sideInsetsDp.value = leftDp to rightDp }
+
     private val _isDockExpanded = MutableStateFlow(false)
     val isDockExpanded: StateFlow<Boolean> = _isDockExpanded.asStateFlow()
 

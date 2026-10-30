@@ -962,9 +962,27 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         return topPx / resources.displayMetrics.density
     }
 
+    // Side nav bar (phone landscape, 3-button) and side cutouts, as left/right dp.
+    private fun sideInsetsDp(): Pair<Float, Float> {
+        val insets = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            windowManager.currentWindowMetrics.windowInsets
+                .getInsets(android.view.WindowInsets.Type.navigationBars() or android.view.WindowInsets.Type.displayCutout())
+                .let { it.left to it.right }
+        } else {
+            val view = taskbarView ?: overlayView ?: return 0f to 0f
+            ViewCompat.getRootWindowInsets(view)
+                ?.getInsets(WindowInsetsCompat.Type.navigationBars() or WindowInsetsCompat.Type.displayCutout())
+                ?.let { it.left to it.right } ?: (0 to 0)
+        }
+        val density = resources.displayMetrics.density
+        return insets.first / density to insets.second / density
+    }
+
     private fun publishNavBarInset() {
         taskbarViewModel.setNavBarInset(navBarInsetDp())
         taskbarViewModel.setStatusBarInset(statusBarInsetDp())
+        val (left, right) = sideInsetsDp()
+        taskbarViewModel.setSideInsets(left, right)
     }
 
     // Pinned dock hides under the keyboard and notification shade. Acts only on transitions so an
