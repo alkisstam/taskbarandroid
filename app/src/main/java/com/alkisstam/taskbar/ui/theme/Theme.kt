@@ -1,6 +1,7 @@
 package com.alkisstam.taskbar.ui.theme
 
 import android.content.Context
+import android.content.res.Resources
 import android.os.Build
 import android.view.View
 import androidx.compose.foundation.background
@@ -73,13 +74,16 @@ fun TaskBarTheme(
     }
 
     val context = LocalContext.current
-    val colorScheme = when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            if (darkTheme) dynamicDarkColorScheme(context)
-            else dynamicLightColorScheme(context)
-        }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+    val colorScheme = remember(context, darkTheme) {
+        val dynamic = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // Some ROMs report API 34 but lack the android.R.color.system_* resources Material3 reads
+            try {
+                if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            } catch (_: Resources.NotFoundException) {
+                null
+            }
+        } else null
+        dynamic ?: if (darkTheme) DarkColorScheme else LightColorScheme
     }
 
     MaterialTheme(
