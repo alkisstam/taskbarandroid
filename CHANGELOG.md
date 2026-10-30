@@ -6,13 +6,19 @@ All notable changes to Floating Dock are documented here.
 
 ## [1.5.14] - 2026-10-30
 
-Stability fixes.
+Stability fixes, tablet and landscape layouts, bigger dock icons.
+
+### Changed
+- **Bigger dock icons** — Pinned App Icon Size and Quick Controls Size now go up to 120dp (was 60dp). Raise Dock Height too so large icons fit.
+- **Tablets and landscape** — the All Apps menu, clipboard, notes, notifications, Quick Settings and calculator stop growing past a comfortable width and stay centered on tablets. In phone landscape they stay clear of a side navigation bar or camera cutout, the All Apps menu hides the recent apps row to make room for the grid, and the calculator shows its display and keypad side by side.
+- **Calculator scientific keys** — the handle is easier to grab: swipe up from anywhere near it, or tap it, to show or hide the scientific keys.
 
 ### Fixed
 - **Crash on launch on some devices** — devices that report Android 14 but are missing its system colors no longer crash when opening the app; they use the built-in color theme instead.
 - **Freezes while music plays** — the dock no longer re-copies the album art on every play, pause, seek or buffering change, which could make the app stop responding.
 - **Privacy in crash reports** — crash reports no longer include other apps' package names or on-screen text.
 - **All Apps menu gaps on other screens** — on phones with a tall status bar or camera cutout, the top of the menu no longer slides under the status bar, and the top and bottom gaps stay equal when the dock runs without the accessibility service.
+- **Panels under the status bar** — clipboard, notes, notifications and Quick Settings no longer start under the status bar.
 
 ---
 

@@ -521,7 +521,7 @@ private fun DockSectionContent(viewModel: TaskbarViewModel, expanded: Boolean) {
     SettingsSlider(
         label = stringResource(R.string.dock_pinned_icon_size_label),
         value = taskbarSettings.pinnedIconSizeDp,
-        valueRange = 32f..60f,
+        valueRange = 32f..120f,
         unit = "dp",
         step = 1f,
         onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(pinnedIconSizeDp = it)) }
@@ -539,7 +539,7 @@ private fun DockSectionContent(viewModel: TaskbarViewModel, expanded: Boolean) {
     SettingsSlider(
         label = stringResource(R.string.dock_quick_controls_size_label),
         value = taskbarSettings.quickControlSizeDp,
-        valueRange = 32f..60f,
+        valueRange = 32f..120f,
         unit = "dp",
         step = 1f,
         onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(quickControlSizeDp = it)) }
