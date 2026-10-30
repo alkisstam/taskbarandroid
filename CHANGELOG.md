@@ -4,6 +4,17 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.5.14] - 2026-10-30
+
+Stability fixes.
+
+### Fixed
+- **Crash on launch on some devices** — devices that report Android 14 but are missing its system colors no longer crash when opening the app; they use the built-in color theme instead.
+- **Freezes while music plays** — the dock no longer re-copies the album art on every play, pause, seek or buffering change, which could make the app stop responding.
+- **Privacy in crash reports** — crash reports no longer include other apps' package names or on-screen text.
+
+---
+
 ## [1.5.13] - 2026-10-28
 
 Fullscreen All Apps menu with the search at the bottom, and an Icon Size setting for it.
