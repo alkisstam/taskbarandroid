@@ -1019,7 +1019,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private fun reportHiddenPill() {
         val pill = pillView
         if (pill?.isAttachedToWindow == true && pill.visibility == View.VISIBLE) return
-        if (hiddenForLandscape || hiddenForFullscreen) return
+        if (hiddenForLandscape || hiddenForFullscreen || overlayHiddenForLockscreen) return
         val state = "attached=${pill?.isAttachedToWindow} visibility=${pill?.visibility} " +
             "ime=$lastImeVisible shade=$shadeOpen landscape=$hiddenForLandscape " +
             "lockscreen=$overlayHiddenForLockscreen pillDisabledLock=$pillDisabledForLockscreen " +
