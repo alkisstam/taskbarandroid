@@ -51,11 +51,8 @@
     <string name="dock_quick_controls_size_label">ขนาดควบคุมด่วน</string>
     <string name="pill_alpha_transparency_label">ความโปร่งใส</string>
     <string name="pill_custom_color_apply_button">นำไปใช้</string>
-    <string name="pill_custom_color_b_label">B: %1$d</string>
     <string name="pill_custom_color_cancel_button">ยกเลิก</string>
     <string name="pill_custom_color_dialog_title">สีกำหนดเอง</string>
-    <string name="pill_custom_color_g_label">G: %1$d</string>
-    <string name="pill_custom_color_r_label">R: %1$d</string>
     <string name="pill_dock_size_appearance_section_title">ขนาด &amp; รูปลักษณ์ของด็อก</string>
     <string name="pill_edge_both">ทั้งสองด้าน</string>
     <string name="pill_edge_bottom">ด้านล่าง</string>
@@ -457,4 +454,8 @@
     <string name="app_group_remove_app">นำออกจากแผง</string>
     <string name="settings_pill_auto_hide_title">ซ่อนแคปซูลไอคอนอัตโนมัติ</string>
     <string name="settings_pill_auto_hide_desc">ซ่อนแคปซูลไอคอนเหนือ Dock จนกว่าคุณจะปัดขึ้นบน Dock ปัดลงเพื่อซ่อนอีกครั้ง</string>
+    <string name="settings_hide_app_menu_title">ซ่อนเมนูแอป</string>
+    <string name="settings_hide_app_menu_desc">นำปุ่มเมนูแอปออกจาก Dock ยังเปิดเมนูได้ด้วยท่าทางบนพิล</string>
+    <string name="dock_hide_info_line_label">ซ่อนเวลา วันที่ และแบตเตอรี่</string>
+    <string name="pill_custom_color_hex_label">สี</string>
 </resources>

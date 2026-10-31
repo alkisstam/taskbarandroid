@@ -51,11 +51,8 @@
     <string name="dock_quick_controls_size_label">क्विक कंट्रोल्स का आकार</string>
     <string name="pill_alpha_transparency_label">पारदर्शिता</string>
     <string name="pill_custom_color_apply_button">लागू करें</string>
-    <string name="pill_custom_color_b_label">B: %1$d</string>
     <string name="pill_custom_color_cancel_button">रद्द करें</string>
     <string name="pill_custom_color_dialog_title">कस्टम कलर</string>
-    <string name="pill_custom_color_g_label">G: %1$d</string>
-    <string name="pill_custom_color_r_label">R: %1$d</string>
     <string name="pill_dock_size_appearance_section_title">डॉक का आकार &amp; रूप</string>
     <string name="pill_edge_both">दोनों</string>
     <string name="pill_edge_bottom">नीचे</string>
@@ -457,4 +454,8 @@
     <string name="app_group_remove_app">पैनल से हटाएं</string>
     <string name="settings_pill_auto_hide_title">आइकन पिल अपने-आप छिपाएं</string>
     <string name="settings_pill_auto_hide_desc">डॉक पर ऊपर स्वाइप करने तक डॉक के ऊपर वाली आइकन पिल छिपी रहती है। फिर से छिपाने के लिए नीचे स्वाइप करें।</string>
+    <string name="settings_hide_app_menu_title">ऐप मेनू छिपाएँ</string>
+    <string name="settings_hide_app_menu_desc">डॉक से ऐप मेनू बटन हटाएँ। पिल जेस्चर से मेनू अब भी खोला जा सकता है।</string>
+    <string name="dock_hide_info_line_label">समय, तारीख और बैटरी छिपाएँ</string>
+    <string name="pill_custom_color_hex_label">रंग</string>
 </resources>

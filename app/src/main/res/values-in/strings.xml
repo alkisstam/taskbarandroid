@@ -51,11 +51,8 @@
     <string name="dock_quick_controls_size_label">Ukuran Kontrol Cepat</string>
     <string name="pill_alpha_transparency_label">Transparansi</string>
     <string name="pill_custom_color_apply_button">Terapkan</string>
-    <string name="pill_custom_color_b_label">B: %1$d</string>
     <string name="pill_custom_color_cancel_button">Batal</string>
     <string name="pill_custom_color_dialog_title">Warna Kustom</string>
-    <string name="pill_custom_color_g_label">G: %1$d</string>
-    <string name="pill_custom_color_r_label">R: %1$d</string>
     <string name="pill_dock_size_appearance_section_title">Ukuran &amp; Tampilan Dock</string>
     <string name="pill_edge_both">Keduanya</string>
     <string name="pill_edge_bottom">Bawah</string>
@@ -457,4 +454,8 @@
     <string name="app_group_remove_app">Hapus dari panel</string>
     <string name="settings_pill_auto_hide_title">Sembunyikan Otomatis Pil Ikon</string>
     <string name="settings_pill_auto_hide_desc">Menyembunyikan pil ikon di atas Dock sampai Anda menggeser ke atas pada Dock. Geser ke bawah untuk menyembunyikannya lagi.</string>
+    <string name="settings_hide_app_menu_title">Sembunyikan Menu Aplikasi</string>
+    <string name="settings_hide_app_menu_desc">Hapus tombol Menu Aplikasi dari dock. Gestur pil tetap dapat membuka menu.</string>
+    <string name="dock_hide_info_line_label">Sembunyikan waktu, tanggal &amp; baterai</string>
+    <string name="pill_custom_color_hex_label">Warna</string>
 </resources>

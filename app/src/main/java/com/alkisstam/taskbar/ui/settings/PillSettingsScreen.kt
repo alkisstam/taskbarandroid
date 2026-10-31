@@ -8,9 +8,12 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -87,6 +90,9 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
@@ -94,6 +100,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -553,6 +560,17 @@ private fun DockSectionContent(viewModel: TaskbarViewModel, expanded: Boolean) {
         step = 1f,
         onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(cornerRadiusDp = it)) }
     )
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(stringResource(R.string.dock_hide_info_line_label), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+        Switch(
+            checked = taskbarSettings.hideInfoLine,
+            onCheckedChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(hideInfoLine = it)) }
+        )
+    }
     Spacer(modifier = Modifier.height(8.dp))
     Text(stringResource(R.string.dock_edge_padding_label), style = MaterialTheme.typography.bodyMedium)
     Text(
@@ -1212,14 +1230,11 @@ private fun CustomColorPicker(
     onDismiss: () -> Unit,
     onConfirm: (Long) -> Unit
 ) {
-    var r by remember { mutableFloatStateOf(((initialColor shr 16) and 0xFF).toFloat()) }
-    var g by remember { mutableFloatStateOf(((initialColor shr 8) and 0xFF).toFloat()) }
-    var b by remember { mutableFloatStateOf((initialColor and 0xFF).toFloat()) }
-    val previewColor = Color(
-        red = r / 255f,
-        green = g / 255f,
-        blue = b / 255f
-    )
+    var base by remember { mutableStateOf(Color(initialColor)) }
+    // 0 = lightest tint of base, 0.5 = base itself, 1 = black.
+    var shade by remember { mutableFloatStateOf(0.5f) }
+    val picked = shadeOf(base, shade)
+    val density = LocalDensity.current
 
     Column(
         modifier = Modifier
@@ -1230,44 +1245,84 @@ private fun CustomColorPicker(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(stringResource(R.string.pill_custom_color_dialog_title), style = MaterialTheme.typography.titleSmall)
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-                .background(previewColor, RoundedCornerShape(12.dp))
-                .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
-        )
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(stringResource(R.string.pill_custom_color_r_label, r.toInt()), style = MaterialTheme.typography.labelMedium)
-            Slider(
-                value = r,
-                onValueChange = { r = it },
-                valueRange = 0f..255f,
-                modifier = Modifier.fillMaxWidth(),
-                track = { FilledPillSliderTrack(it) },
-                thumb = {}
-            )
+        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+            val gap = 3.dp
+            val stripGap = 12.dp
+            val gridWidth = (maxWidth - stripGap) * 0.68f
+            val cell = (gridWidth - gap * 9) / 10
+            val gridHeight = cell * MATERIAL_PALETTE.size + gap * (MATERIAL_PALETTE.size - 1)
+            Row(horizontalArrangement = Arrangement.spacedBy(stripGap)) {
+                Column(verticalArrangement = Arrangement.spacedBy(gap)) {
+                    MATERIAL_PALETTE.forEach { row ->
+                        Row(horizontalArrangement = Arrangement.spacedBy(gap)) {
+                            row.forEach { value ->
+                                val color = Color(value)
+                                val selected = color == base
+                                Box(
+                                    modifier = Modifier
+                                        .size(cell)
+                                        .clip(RoundedCornerShape(3.dp))
+                                        .background(color)
+                                        .border(
+                                            if (selected) 2.dp else 1.dp,
+                                            if (selected) MaterialTheme.colorScheme.onSurface
+                                            else MaterialTheme.colorScheme.outlineVariant,
+                                            RoundedCornerShape(3.dp)
+                                        )
+                                        .clickable {
+                                            base = color
+                                            shade = 0.5f
+                                        }
+                                )
+                            }
+                        }
+                    }
+                }
+                val stripHeightPx = with(density) { gridHeight.toPx() }
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(gridHeight)
+                        .background(Brush.verticalGradient(listOf(shadeOf(base, 0f), base, Color.Black)))
+                        .pointerInput(stripHeightPx) {
+                            detectTapGestures { shade = (it.y / stripHeightPx).coerceIn(0f, 1f) }
+                        }
+                        .pointerInput(stripHeightPx) {
+                            detectVerticalDragGestures(
+                                onDragStart = { shade = (it.y / stripHeightPx).coerceIn(0f, 1f) }
+                            ) { change, _ ->
+                                change.consume()
+                                shade = (change.position.y / stripHeightPx).coerceIn(0f, 1f)
+                            }
+                        }
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .offset(y = gridHeight * shade - 10.dp)
+                            .size(20.dp)
+                            .border(2.dp, if (shade < 0.25f) Color.Black else Color.White, CircleShape)
+                    )
+                }
+            }
         }
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(stringResource(R.string.pill_custom_color_g_label, g.toInt()), style = MaterialTheme.typography.labelMedium)
-            Slider(
-                value = g,
-                onValueChange = { g = it },
-                valueRange = 0f..255f,
-                modifier = Modifier.fillMaxWidth(),
-                track = { FilledPillSliderTrack(it) },
-                thumb = {}
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(stringResource(R.string.pill_custom_color_hex_label), style = MaterialTheme.typography.bodyMedium)
+            Box(
+                modifier = Modifier
+                    .size(width = 40.dp, height = 28.dp)
+                    .background(picked, RoundedCornerShape(6.dp))
+                    .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(6.dp))
             )
-        }
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(stringResource(R.string.pill_custom_color_b_label, b.toInt()), style = MaterialTheme.typography.labelMedium)
-            Slider(
-                value = b,
-                onValueChange = { b = it },
-                valueRange = 0f..255f,
-                modifier = Modifier.fillMaxWidth(),
-                track = { FilledPillSliderTrack(it) },
-                thumb = {}
+            Text(
+                "#%06X".format(picked.toArgb() and 0xFFFFFF),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.End
             )
         }
         Row(
@@ -1275,13 +1330,35 @@ private fun CustomColorPicker(
             horizontalArrangement = Arrangement.End
         ) {
             TextButton(onClick = onDismiss) { Text(stringResource(R.string.pill_custom_color_cancel_button)) }
-            TextButton(onClick = {
-                val color = (0xFF000000L) or
-                    (r.toLong().coerceIn(0, 255) shl 16) or
-                    (g.toLong().coerceIn(0, 255) shl 8) or
-                    b.toLong().coerceIn(0, 255)
-                onConfirm(color)
-            }) { Text(stringResource(R.string.pill_custom_color_apply_button)) }
+            TextButton(onClick = { onConfirm(picked.toArgb().toLong() and 0xFFFFFFFFL) }) {
+                Text(stringResource(R.string.pill_custom_color_apply_button))
+            }
         }
     }
 }
+
+private fun shadeOf(base: Color, fraction: Float): Color =
+    if (fraction <= 0.5f) lerp(lerp(base, Color.White, 0.7f), base, fraction / 0.5f)
+    else lerp(base, Color.Black, (fraction - 0.5f) / 0.5f)
+
+private val MATERIAL_PALETTE: List<List<Long>> = listOf(
+    listOf(0xFFFFFFFF, 0xFFF5F5F5, 0xFFEEEEEE, 0xFFE0E0E0, 0xFFBDBDBD, 0xFF9E9E9E, 0xFF757575, 0xFF616161, 0xFF424242, 0xFF000000),
+    listOf(0xFFFFEBEE, 0xFFFFCDD2, 0xFFEF9A9A, 0xFFE57373, 0xFFEF5350, 0xFFF44336, 0xFFE53935, 0xFFD32F2F, 0xFFC62828, 0xFFB71C1C),
+    listOf(0xFFFCE4EC, 0xFFF8BBD0, 0xFFF48FB1, 0xFFF06292, 0xFFEC407A, 0xFFE91E63, 0xFFD81B60, 0xFFC2185B, 0xFFAD1457, 0xFF880E4F),
+    listOf(0xFFF3E5F5, 0xFFE1BEE7, 0xFFCE93D8, 0xFFBA68C8, 0xFFAB47BC, 0xFF9C27B0, 0xFF8E24AA, 0xFF7B1FA2, 0xFF6A1B9A, 0xFF4A148C),
+    listOf(0xFFEDE7F6, 0xFFD1C4E9, 0xFFB39DDB, 0xFF9575CD, 0xFF7E57C2, 0xFF673AB7, 0xFF5E35B1, 0xFF512DA8, 0xFF4527A0, 0xFF311B92),
+    listOf(0xFFE8EAF6, 0xFFC5CAE9, 0xFF9FA8DA, 0xFF7986CB, 0xFF5C6BC0, 0xFF3F51B5, 0xFF3949AB, 0xFF303F9F, 0xFF283593, 0xFF1A237E),
+    listOf(0xFFE3F2FD, 0xFFBBDEFB, 0xFF90CAF9, 0xFF64B5F6, 0xFF42A5F5, 0xFF2196F3, 0xFF1E88E5, 0xFF1976D2, 0xFF1565C0, 0xFF0D47A1),
+    listOf(0xFFE1F5FE, 0xFFB3E5FC, 0xFF81D4FA, 0xFF4FC3F7, 0xFF29B6F6, 0xFF03A9F4, 0xFF039BE5, 0xFF0288D1, 0xFF0277BD, 0xFF01579B),
+    listOf(0xFFE0F7FA, 0xFFB2EBF2, 0xFF80DEEA, 0xFF4DD0E1, 0xFF26C6DA, 0xFF00BCD4, 0xFF00ACC1, 0xFF0097A7, 0xFF00838F, 0xFF006064),
+    listOf(0xFFE0F2F1, 0xFFB2DFDB, 0xFF80CBC4, 0xFF4DB6AC, 0xFF26A69A, 0xFF009688, 0xFF00897B, 0xFF00796B, 0xFF00695C, 0xFF004D40),
+    listOf(0xFFE8F5E9, 0xFFC8E6C9, 0xFFA5D6A7, 0xFF81C784, 0xFF66BB6A, 0xFF4CAF50, 0xFF43A047, 0xFF388E3C, 0xFF2E7D32, 0xFF1B5E20),
+    listOf(0xFFF1F8E9, 0xFFDCEDC8, 0xFFC5E1A5, 0xFFAED581, 0xFF9CCC65, 0xFF8BC34A, 0xFF7CB342, 0xFF689F38, 0xFF558B2F, 0xFF33691E),
+    listOf(0xFFF9FBE7, 0xFFF0F4C3, 0xFFE6EE9C, 0xFFDCE775, 0xFFD4E157, 0xFFCDDC39, 0xFFC0CA33, 0xFFAFB42B, 0xFF9E9D24, 0xFF827717),
+    listOf(0xFFFFFDE7, 0xFFFFF9C4, 0xFFFFF59D, 0xFFFFF176, 0xFFFFEE58, 0xFFFFEB3B, 0xFFFDD835, 0xFFFBC02D, 0xFFF9A825, 0xFFF57F17),
+    listOf(0xFFFFF8E1, 0xFFFFECB3, 0xFFFFE082, 0xFFFFD54F, 0xFFFFCA28, 0xFFFFC107, 0xFFFFB300, 0xFFFFA000, 0xFFFF8F00, 0xFFFF6F00),
+    listOf(0xFFFFF3E0, 0xFFFFE0B2, 0xFFFFCC80, 0xFFFFB74D, 0xFFFFA726, 0xFFFF9800, 0xFFFB8C00, 0xFFF57C00, 0xFFEF6C00, 0xFFE65100),
+    listOf(0xFFFBE9E7, 0xFFFFCCBC, 0xFFFFAB91, 0xFFFF8A65, 0xFFFF7043, 0xFFFF5722, 0xFFF4511E, 0xFFE64A19, 0xFFD84315, 0xFFBF360C),
+    listOf(0xFFEFEBE9, 0xFFD7CCC8, 0xFFBCAAA4, 0xFFA1887F, 0xFF8D6E63, 0xFF795548, 0xFF6D4C41, 0xFF5D4037, 0xFF4E342E, 0xFF3E2723),
+    listOf(0xFFECEFF1, 0xFFCFD8DC, 0xFFB0BEC5, 0xFF90A4AE, 0xFF78909C, 0xFF607D8B, 0xFF546E7A, 0xFF455A64, 0xFF37474F, 0xFF263238)
+)

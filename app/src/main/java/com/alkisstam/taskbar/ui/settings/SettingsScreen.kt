@@ -1069,6 +1069,28 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
         item {
             AppGridCard(viewModel = viewModel, appGridColumns = appGridColumns, appGridIconSize = appGridIconSize)
         }
+        item {
+            SettingsCard(title = stringResource(R.string.app_menu)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(stringResource(R.string.settings_hide_app_menu_title), style = MaterialTheme.typography.bodyLarge)
+                        Text(
+                            stringResource(R.string.settings_hide_app_menu_desc),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Switch(
+                        checked = taskbarSettings.hideAppMenuButton,
+                        onCheckedChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(hideAppMenuButton = it)) }
+                    )
+                }
+            }
+        }
     }
 }
 

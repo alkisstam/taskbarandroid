@@ -51,11 +51,8 @@
     <string name="dock_quick_controls_size_label">Dimensione controlli rapidi</string>
     <string name="pill_alpha_transparency_label">Trasparenza</string>
     <string name="pill_custom_color_apply_button">Applica</string>
-    <string name="pill_custom_color_b_label">B: %1$d</string>
     <string name="pill_custom_color_cancel_button">Annulla</string>
     <string name="pill_custom_color_dialog_title">Colore personalizzato</string>
-    <string name="pill_custom_color_g_label">V: %1$d</string>
-    <string name="pill_custom_color_r_label">R: %1$d</string>
     <string name="pill_dock_size_appearance_section_title">Dimensione e aspetto del dock</string>
     <string name="pill_edge_both">Entrambi</string>
     <string name="pill_edge_bottom">In basso</string>
@@ -457,4 +454,8 @@
     <string name="app_group_remove_app">Rimuovi dal pannello</string>
     <string name="settings_pill_auto_hide_title">Nascondi pillola icone</string>
     <string name="settings_pill_auto_hide_desc">Nasconde la pillola delle icone sopra il Dock finché non scorri verso l\'alto sul Dock. Scorri verso il basso per nasconderla di nuovo.</string>
+    <string name="settings_hide_app_menu_title">Nascondi menu app</string>
+    <string name="settings_hide_app_menu_desc">Rimuove il pulsante del menu app dal Dock. Un gesto sulla pillola può comunque aprire il menu.</string>
+    <string name="dock_hide_info_line_label">Nascondi ora, data e batteria</string>
+    <string name="pill_custom_color_hex_label">Colore</string>
 </resources>

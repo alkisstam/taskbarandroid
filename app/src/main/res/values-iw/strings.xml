@@ -51,11 +51,8 @@
     <string name="dock_quick_controls_size_label">גודל הפקדים המהירים</string>
     <string name="pill_alpha_transparency_label">שקיפות</string>
     <string name="pill_custom_color_apply_button">החלה</string>
-    <string name="pill_custom_color_b_label">B: %1$d</string>
     <string name="pill_custom_color_cancel_button">ביטול</string>
     <string name="pill_custom_color_dialog_title">צבע מותאם אישית</string>
-    <string name="pill_custom_color_g_label">G: %1$d</string>
-    <string name="pill_custom_color_r_label">R: %1$d</string>
     <string name="pill_dock_size_appearance_section_title">גודל הדוק &amp; מראה</string>
     <string name="pill_edge_both">שניהם</string>
     <string name="pill_edge_bottom">תחתית</string>
@@ -457,4 +454,8 @@
     <string name="app_group_remove_app">הסרה מהלוח</string>
     <string name="settings_pill_auto_hide_title">הסתרה אוטומטית של גלולת הסמלים</string>
     <string name="settings_pill_auto_hide_desc">מסתיר את גלולת הסמלים מעל ה-Dock עד שתחליק למעלה על ה-Dock. החלק למטה כדי להסתיר אותה שוב.</string>
+    <string name="settings_hide_app_menu_title">הסתר תפריט אפליקציות</string>
+    <string name="settings_hide_app_menu_desc">הסרת כפתור תפריט האפליקציות מהמעגן. מחוות גלולה עדיין יכולה לפתוח את התפריט.</string>
+    <string name="dock_hide_info_line_label">הסתר שעה, תאריך וסוללה</string>
+    <string name="pill_custom_color_hex_label">צבע</string>
 </resources>

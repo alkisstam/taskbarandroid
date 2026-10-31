@@ -51,11 +51,8 @@
     <string name="dock_quick_controls_size_label">Größe der Schnellzugriffe</string>
     <string name="pill_alpha_transparency_label">Transparenz</string>
     <string name="pill_custom_color_apply_button">Anwenden</string>
-    <string name="pill_custom_color_b_label">B: %1$d</string>
     <string name="pill_custom_color_cancel_button">Abbrechen</string>
     <string name="pill_custom_color_dialog_title">Eigene Farbe</string>
-    <string name="pill_custom_color_g_label">G: %1$d</string>
-    <string name="pill_custom_color_r_label">R: %1$d</string>
     <string name="pill_dock_size_appearance_section_title">Dockgröße &amp; Erscheinungsbild</string>
     <string name="pill_edge_both">Beide</string>
     <string name="pill_edge_bottom">Unten</string>
@@ -457,4 +454,8 @@
     <string name="app_group_remove_app">Aus Panel entfernen</string>
     <string name="settings_pill_auto_hide_title">Symbolleiste automatisch ausblenden</string>
     <string name="settings_pill_auto_hide_desc">Blendet die Symbolleiste über dem Dock aus, bis du auf dem Dock nach oben wischst. Wische nach unten, um sie wieder auszublenden.</string>
+    <string name="settings_hide_app_menu_title">App-Menü ausblenden</string>
+    <string name="settings_hide_app_menu_desc">Entfernt die App-Menü-Taste aus dem Dock. Eine Pillen-Geste kann das Menü weiterhin öffnen.</string>
+    <string name="dock_hide_info_line_label">Uhrzeit, Datum &amp; Akku ausblenden</string>
+    <string name="pill_custom_color_hex_label">Farbe</string>
 </resources>

@@ -134,7 +134,9 @@ data class TaskbarSettings(
     val cornerRadiusDp: Float = 22f,
     val dockPadding: DockPadding = DockPadding.DEFAULT,
     val appMenuButtonSide: AppMenuButtonSide = AppMenuButtonSide.LEFT,
-    val iconShape: IconShape = IconShape.DEFAULT
+    val iconShape: IconShape = IconShape.DEFAULT,
+    val hideAppMenuButton: Boolean = false,
+    val hideInfoLine: Boolean = false
 ) {
     // The dock row pads its content by 8dp top and bottom, so grow past the Dock Height
     // setting when the icons or controls wouldn't fit.
@@ -206,6 +208,8 @@ class PreferencesRepository @Inject constructor(
         private val TASKBAR_HEIGHT_KEY = floatPreferencesKey("taskbar_height_dp")
         private val TASKBAR_CONTROL_LABELS_KEY = booleanPreferencesKey("taskbar_control_labels")
         private val TASKBAR_KEEP_EXPANDED_KEY = booleanPreferencesKey("taskbar_keep_expanded")
+        private val TASKBAR_HIDE_APP_MENU_BUTTON_KEY = booleanPreferencesKey("taskbar_hide_app_menu_button")
+        private val TASKBAR_HIDE_INFO_LINE_KEY = booleanPreferencesKey("taskbar_hide_info_line")
         private val PINNED_ICON_SIZE_KEY = floatPreferencesKey("pinned_icon_size_dp")
         private val PINNED_ICON_PADDING_KEY = floatPreferencesKey("pinned_icon_padding_dp")
         private val QUICK_CONTROL_SIZE_KEY = floatPreferencesKey("quick_control_size_dp")
@@ -345,6 +349,8 @@ class PreferencesRepository @Inject constructor(
             OVERLAY_ENABLED_KEY,
             TASKBAR_CONTROL_LABELS_KEY,
             TASKBAR_KEEP_EXPANDED_KEY,
+            TASKBAR_HIDE_APP_MENU_BUTTON_KEY,
+            TASKBAR_HIDE_INFO_LINE_KEY,
             AUTO_HIDE_FULLSCREEN_KEY,
             AUTO_HIDE_LANDSCAPE_KEY,
             DOCK_PINNED_KEY,
@@ -702,7 +708,9 @@ class PreferencesRepository @Inject constructor(
             cornerRadiusDp     = prefs[TASKBAR_CORNER_RADIUS_KEY]   ?: 22f,
             dockPadding        = prefs[TASKBAR_DOCK_PADDING_KEY]?.let { runCatching { DockPadding.valueOf(it) }.getOrNull() } ?: DockPadding.DEFAULT,
             appMenuButtonSide  = prefs[TASKBAR_APP_MENU_SIDE_KEY]?.let { runCatching { AppMenuButtonSide.valueOf(it) }.getOrNull() } ?: AppMenuButtonSide.LEFT,
-            iconShape          = prefs[TASKBAR_ICON_SHAPE_KEY].toIconShape()
+            iconShape          = prefs[TASKBAR_ICON_SHAPE_KEY].toIconShape(),
+            hideAppMenuButton  = prefs[TASKBAR_HIDE_APP_MENU_BUTTON_KEY] ?: false,
+            hideInfoLine       = prefs[TASKBAR_HIDE_INFO_LINE_KEY]  ?: false
         )
     }
 
@@ -719,6 +727,8 @@ class PreferencesRepository @Inject constructor(
             prefs[TASKBAR_DOCK_PADDING_KEY]   = settings.dockPadding.name
             prefs[TASKBAR_APP_MENU_SIDE_KEY]  = settings.appMenuButtonSide.name
             prefs[TASKBAR_ICON_SHAPE_KEY]     = settings.iconShape.name
+            prefs[TASKBAR_HIDE_APP_MENU_BUTTON_KEY] = settings.hideAppMenuButton
+            prefs[TASKBAR_HIDE_INFO_LINE_KEY] = settings.hideInfoLine
         }
     }
 

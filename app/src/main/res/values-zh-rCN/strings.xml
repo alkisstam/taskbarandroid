@@ -51,11 +51,8 @@
     <string name="dock_quick_controls_size_label">快捷控制大小</string>
     <string name="pill_alpha_transparency_label">透明度</string>
     <string name="pill_custom_color_apply_button">应用</string>
-    <string name="pill_custom_color_b_label">B: %1$d</string>
     <string name="pill_custom_color_cancel_button">取消</string>
     <string name="pill_custom_color_dialog_title">自定义颜色</string>
-    <string name="pill_custom_color_g_label">G: %1$d</string>
-    <string name="pill_custom_color_r_label">R: %1$d</string>
     <string name="pill_dock_size_appearance_section_title">程序坞大小与外观</string>
     <string name="pill_edge_both">两侧</string>
     <string name="pill_edge_bottom">底部</string>
@@ -457,4 +454,8 @@
     <string name="app_group_remove_app">从面板移除</string>
     <string name="settings_pill_auto_hide_title">自动隐藏图标胶囊</string>
     <string name="settings_pill_auto_hide_desc">隐藏 Dock 上方的图标胶囊，直到你在 Dock 上向上滑动。向下滑动可再次隐藏。</string>
+    <string name="settings_hide_app_menu_title">隐藏应用菜单</string>
+    <string name="settings_hide_app_menu_desc">从 Dock 中移除应用菜单按钮。仍可通过胶囊手势打开菜单。</string>
+    <string name="dock_hide_info_line_label">隐藏时间、日期和电量</string>
+    <string name="pill_custom_color_hex_label">颜色</string>
 </resources>

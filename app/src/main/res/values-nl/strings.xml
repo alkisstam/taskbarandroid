@@ -51,11 +51,8 @@
     <string name="dock_quick_controls_size_label">Grootte snelle bediening</string>
     <string name="pill_alpha_transparency_label">Transparantie</string>
     <string name="pill_custom_color_apply_button">Toepassen</string>
-    <string name="pill_custom_color_b_label">B: %1$d</string>
     <string name="pill_custom_color_cancel_button">Annuleren</string>
     <string name="pill_custom_color_dialog_title">Aangepaste kleur</string>
-    <string name="pill_custom_color_g_label">G: %1$d</string>
-    <string name="pill_custom_color_r_label">R: %1$d</string>
     <string name="pill_dock_size_appearance_section_title">Dockgrootte &amp; uiterlijk</string>
     <string name="pill_edge_both">Beide</string>
     <string name="pill_edge_bottom">Onder</string>
@@ -457,4 +454,8 @@
     <string name="app_group_remove_app">Uit paneel verwijderen</string>
     <string name="settings_pill_auto_hide_title">Pictogrampil automatisch verbergen</string>
     <string name="settings_pill_auto_hide_desc">Verbergt de pictogrampil boven het Dock tot je omhoog veegt op het Dock. Veeg omlaag om hem weer te verbergen.</string>
+    <string name="settings_hide_app_menu_title">App-menu verbergen</string>
+    <string name="settings_hide_app_menu_desc">Verwijdert de App-menuknop uit het dock. Een pilgebaar kan het menu nog steeds openen.</string>
+    <string name="dock_hide_info_line_label">Tijd, datum &amp; batterij verbergen</string>
+    <string name="pill_custom_color_hex_label">Kleur</string>
 </resources>

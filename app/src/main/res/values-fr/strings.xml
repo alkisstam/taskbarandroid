@@ -51,11 +51,8 @@
     <string name="dock_quick_controls_size_label">Taille des contrôles rapides</string>
     <string name="pill_alpha_transparency_label">Transparence</string>
     <string name="pill_custom_color_apply_button">Appliquer</string>
-    <string name="pill_custom_color_b_label">B : %1$d</string>
     <string name="pill_custom_color_cancel_button">Annuler</string>
     <string name="pill_custom_color_dialog_title">Couleur personnalisée</string>
-    <string name="pill_custom_color_g_label">V : %1$d</string>
-    <string name="pill_custom_color_r_label">R : %1$d</string>
     <string name="pill_dock_size_appearance_section_title">Taille et apparence du dock</string>
     <string name="pill_edge_both">Les deux</string>
     <string name="pill_edge_bottom">Bas</string>
@@ -457,4 +454,8 @@
     <string name="app_group_remove_app">Retirer du panneau</string>
     <string name="settings_pill_auto_hide_title">Masquer la pilule d\'icônes</string>
     <string name="settings_pill_auto_hide_desc">Masque la pilule d\'icônes au-dessus du Dock jusqu\'à ce que vous balayiez vers le haut sur le Dock. Balayez vers le bas pour la masquer à nouveau.</string>
+    <string name="settings_hide_app_menu_title">Masquer le menu des applications</string>
+    <string name="settings_hide_app_menu_desc">Retire le bouton du menu des applications du Dock. Un geste sur la pilule peut toujours ouvrir le menu.</string>
+    <string name="dock_hide_info_line_label">Masquer l\'heure, la date et la batterie</string>
+    <string name="pill_custom_color_hex_label">Couleur</string>
 </resources>

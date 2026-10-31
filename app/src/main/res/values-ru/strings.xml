@@ -51,11 +51,8 @@
     <string name="dock_quick_controls_size_label">Размер быстрых кнопок</string>
     <string name="pill_alpha_transparency_label">Прозрачность</string>
     <string name="pill_custom_color_apply_button">Применить</string>
-    <string name="pill_custom_color_b_label">B: %1$d</string>
     <string name="pill_custom_color_cancel_button">Отмена</string>
     <string name="pill_custom_color_dialog_title">Свой цвет</string>
-    <string name="pill_custom_color_g_label">G: %1$d</string>
-    <string name="pill_custom_color_r_label">R: %1$d</string>
     <string name="pill_dock_size_appearance_section_title">Размер &amp; вид панели</string>
     <string name="pill_edge_both">Обе стороны</string>
     <string name="pill_edge_bottom">Снизу</string>
@@ -457,4 +454,8 @@
     <string name="app_group_remove_app">Убрать с панели</string>
     <string name="settings_pill_auto_hide_title">Автоскрытие пилюли значков</string>
     <string name="settings_pill_auto_hide_desc">Скрывает пилюлю значков над доком, пока вы не смахнёте вверх по доку. Смахните вниз, чтобы снова скрыть её.</string>
+    <string name="settings_hide_app_menu_title">Скрыть меню приложений</string>
+    <string name="settings_hide_app_menu_desc">Убирает кнопку меню приложений с панели. Меню по-прежнему можно открыть жестом на пилюле.</string>
+    <string name="dock_hide_info_line_label">Скрыть время, дату и батарею</string>
+    <string name="pill_custom_color_hex_label">Цвет</string>
 </resources>

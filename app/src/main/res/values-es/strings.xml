@@ -51,11 +51,8 @@
     <string name="dock_quick_controls_size_label">Tamaño de controles rápidos</string>
     <string name="pill_alpha_transparency_label">Transparencia</string>
     <string name="pill_custom_color_apply_button">Aplicar</string>
-    <string name="pill_custom_color_b_label">B: %1$d</string>
     <string name="pill_custom_color_cancel_button">Cancelar</string>
     <string name="pill_custom_color_dialog_title">Color personalizado</string>
-    <string name="pill_custom_color_g_label">G: %1$d</string>
-    <string name="pill_custom_color_r_label">R: %1$d</string>
     <string name="pill_dock_size_appearance_section_title">Tamaño &amp; aspecto del dock</string>
     <string name="pill_edge_both">Ambos</string>
     <string name="pill_edge_bottom">Abajo</string>
@@ -457,4 +454,8 @@
     <string name="app_group_remove_app">Quitar del panel</string>
     <string name="settings_pill_auto_hide_title">Ocultar píldora de iconos</string>
     <string name="settings_pill_auto_hide_desc">Oculta la píldora de iconos sobre el Dock hasta que deslices hacia arriba en el Dock. Desliza hacia abajo para ocultarla de nuevo.</string>
+    <string name="settings_hide_app_menu_title">Ocultar menú de aplicaciones</string>
+    <string name="settings_hide_app_menu_desc">Quita el botón del menú de aplicaciones del Dock. Un gesto de la píldora aún puede abrir el menú.</string>
+    <string name="dock_hide_info_line_label">Ocultar hora, fecha y batería</string>
+    <string name="pill_custom_color_hex_label">Color</string>
 </resources>

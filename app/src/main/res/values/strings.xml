@@ -51,11 +51,8 @@
     <string name="dock_quick_controls_size_label">Quick Controls Size</string>
     <string name="pill_alpha_transparency_label">Transparency</string>
     <string name="pill_custom_color_apply_button">Apply</string>
-    <string name="pill_custom_color_b_label">B: %1$d</string>
     <string name="pill_custom_color_cancel_button">Cancel</string>
     <string name="pill_custom_color_dialog_title">Custom Color</string>
-    <string name="pill_custom_color_g_label">G: %1$d</string>
-    <string name="pill_custom_color_r_label">R: %1$d</string>
     <string name="pill_dock_size_appearance_section_title">Dock Size &amp; Appearance</string>
     <string name="pill_edge_both">Both</string>
     <string name="pill_edge_bottom">Bottom</string>
@@ -457,4 +454,8 @@
     <string name="app_group_remove_app">Remove from panel</string>
     <string name="settings_pill_auto_hide_title">Auto-hide Icons Pill</string>
     <string name="settings_pill_auto_hide_desc">Hide the icons pill above the Dock until you swipe up on the Dock. Swipe down to hide it again.</string>
+    <string name="settings_hide_app_menu_title">Hide App Menu</string>
+    <string name="settings_hide_app_menu_desc">Remove the App Menu button from the dock. A pill gesture can still open the menu.</string>
+    <string name="dock_hide_info_line_label">Hide time, date &amp; battery</string>
+    <string name="pill_custom_color_hex_label">Color</string>
 </resources>

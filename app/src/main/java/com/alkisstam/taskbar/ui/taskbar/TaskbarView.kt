@@ -292,7 +292,7 @@ fun TaskbarView(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start
                 ) {
-                    if (buttonOnLeft) {
+                    if (buttonOnLeft && !taskbarSettings.hideAppMenuButton) {
                         AppMenuButton(
                             menuOpen = menuVisible,
                             onClick = { appMenuViewModel.toggleMenu() },
@@ -303,7 +303,9 @@ fun TaskbarView(
 
                     LazyRow(
                         state = pinnedListState,
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .then(if (taskbarSettings.hideAppMenuButton) Modifier.padding(horizontal = 8.dp) else Modifier),
                         horizontalArrangement = Arrangement.spacedBy(taskbarSettings.pinnedIconPaddingDp.dp, Alignment.CenterHorizontally),
                         verticalAlignment = Alignment.CenterVertically,
                         contentPadding = PaddingValues(horizontal = 4.dp)
@@ -328,7 +330,7 @@ fun TaskbarView(
                             }
                         }
 
-                    if (!buttonOnLeft) {
+                    if (!buttonOnLeft && !taskbarSettings.hideAppMenuButton) {
                         AppMenuButton(
                             menuOpen = menuVisible,
                             onClick = { appMenuViewModel.toggleMenu() },
@@ -338,7 +340,7 @@ fun TaskbarView(
                     }
                 }
 
-                StatusBarRow(batteryLevel = batteryLevel, isCharging = isCharging)
+                if (!taskbarSettings.hideInfoLine) StatusBarRow(batteryLevel = batteryLevel, isCharging = isCharging)
             }
         }
     }

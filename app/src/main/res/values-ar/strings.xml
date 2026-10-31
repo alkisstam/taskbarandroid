@@ -51,11 +51,8 @@
     <string name="dock_quick_controls_size_label">حجم عناصر التحكم السريع</string>
     <string name="pill_alpha_transparency_label">الشفافية</string>
     <string name="pill_custom_color_apply_button">تطبيق</string>
-    <string name="pill_custom_color_b_label">B: %1$d</string>
     <string name="pill_custom_color_cancel_button">إلغاء</string>
     <string name="pill_custom_color_dialog_title">لون مخصص</string>
-    <string name="pill_custom_color_g_label">G: %1$d</string>
-    <string name="pill_custom_color_r_label">R: %1$d</string>
     <string name="pill_dock_size_appearance_section_title">حجم الرصيف &amp; مظهره</string>
     <string name="pill_edge_both">كلاهما</string>
     <string name="pill_edge_bottom">أسفل</string>
@@ -457,4 +454,8 @@
     <string name="app_group_remove_app">إزالة من اللوحة</string>
     <string name="settings_pill_auto_hide_title">إخفاء كبسولة الأيقونات تلقائيًا</string>
     <string name="settings_pill_auto_hide_desc">يخفي كبسولة الأيقونات فوق الشريط حتى تسحب لأعلى على الشريط. اسحب لأسفل لإخفائها مجددًا.</string>
+    <string name="settings_hide_app_menu_title">إخفاء قائمة التطبيقات</string>
+    <string name="settings_hide_app_menu_desc">إزالة زر قائمة التطبيقات من الشريط. لا يزال بإمكان إيماءة الشريط فتح القائمة.</string>
+    <string name="dock_hide_info_line_label">إخفاء الوقت والتاريخ والبطارية</string>
+    <string name="pill_custom_color_hex_label">اللون</string>
 </resources>
