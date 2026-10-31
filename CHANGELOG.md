@@ -6,9 +6,14 @@ All notable changes to Floating Dock are documented here.
 
 ## [1.5.14] - 2026-10-30
 
-Stability fixes, tablet and landscape layouts, bigger dock icons.
+Stability fixes, tablet and landscape layouts, bigger dock icons, and a new custom color picker.
+
+### Added
+- **Hide App Menu** — a new toggle at the bottom of the Apps tab removes the App Menu button from the dock. A pill gesture can still open the menu.
+- **Hide time, date & battery** — a new toggle under Corner Radius in Dock Size & Appearance hides the dock's info line, leaving equal space above and below the icons.
 
 ### Changed
+- **Custom color picker** — the custom surface tint now uses a palette grid with a light-to-dark shade strip and a hex readout, replacing the R/G/B sliders.
 - **Bigger dock icons** — Pinned App Icon Size and Quick Controls Size now go up to 120dp (was 60dp). The dock grows taller on its own when the icons no longer fit its Dock Height.
 - **Tablets and landscape** — the All Apps menu, clipboard, notes, notifications, Quick Settings and calculator stop growing past a comfortable width and stay centered on tablets. In phone landscape they stay clear of a side navigation bar or camera cutout, the All Apps menu hides the recent apps row to make room for the grid, and the calculator shows its display and keypad side by side.
 - **Calculator scientific keys** — the handle is easier to grab: swipe up from anywhere near it, or tap it, to show or hide the scientific keys.
