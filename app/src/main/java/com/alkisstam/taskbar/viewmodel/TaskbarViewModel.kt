@@ -229,7 +229,7 @@ class TaskbarViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     val fuzzySearchEnabled: StateFlow<Boolean> = prefsRepository.fuzzySearchEnabled
-        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     val showRecentApps: StateFlow<Boolean> = prefsRepository.showRecentApps
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)

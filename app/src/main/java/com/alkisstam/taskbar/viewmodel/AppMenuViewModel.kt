@@ -136,7 +136,7 @@ class AppMenuViewModel @Inject constructor(
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
     val fuzzySearchEnabled: StateFlow<Boolean> = prefsRepository.fuzzySearchEnabled
-        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     val alwaysShowMusicPanel: StateFlow<Boolean> = prefsRepository.alwaysShowMusicPanel
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
