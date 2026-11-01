@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <full-backup-content>
     <include domain="file" path="datastore/taskbar_prefs.preferences_pb" />
+    <include domain="file" path="datastore/clipboard_prefs.preferences_pb" />
 </full-backup-content>

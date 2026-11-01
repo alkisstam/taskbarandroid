@@ -2,8 +2,10 @@
 <data-extraction-rules>
     <cloud-backup>
         <include domain="file" path="datastore/taskbar_prefs.preferences_pb" />
+        <include domain="file" path="datastore/clipboard_prefs.preferences_pb" />
     </cloud-backup>
     <device-transfer>
         <include domain="file" path="datastore/taskbar_prefs.preferences_pb" />
+        <include domain="file" path="datastore/clipboard_prefs.preferences_pb" />
     </device-transfer>
 </data-extraction-rules>

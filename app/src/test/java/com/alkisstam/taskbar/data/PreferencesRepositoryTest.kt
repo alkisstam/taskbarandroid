@@ -46,7 +46,6 @@ class PreferencesRepositoryTest {
     private fun fullBackup() = JSONObject().apply {
         put("pinned_apps", "[\"com.a\",\"com.b\"]")
         put("theme_mode", "DARK")
-        put("overlay_enabled", true)
         put("pill_swipe_up_action", "SHOW_DOCK")
         put("pill_swipe_down_action", "POWER_MENU")
         put("pill_double_tap_action", "DISABLED")
@@ -127,6 +126,14 @@ class PreferencesRepositoryTest {
         PreferencesRepository.importPrefs(prefs, JSONObject().put("theme_mode", "LIGHT").put("app_grid_columns", 3))
         val expected = fullBackup().put("theme_mode", "LIGHT").put("app_grid_columns", 3)
         assertSameJson(expected, PreferencesRepository.exportPrefs(prefs))
+    }
+
+    @Test
+    fun `old backup with overlay state does not change it`() {
+        val prefs = mutablePreferencesOf()
+        PreferencesRepository.importPrefs(prefs, JSONObject().put("overlay_enabled", false))
+        assertEquals(0, PreferencesRepository.exportPrefs(prefs).length())
+        assertEquals(0, prefs.asMap().size)
     }
 
     @Test

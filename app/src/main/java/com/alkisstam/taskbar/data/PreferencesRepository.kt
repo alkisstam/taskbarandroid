@@ -200,7 +200,6 @@ class PreferencesRepository @Inject constructor(
         private val PILL_HEIGHT_KEY = floatPreferencesKey("pill_height")
         private val PILL_ALPHA_KEY = floatPreferencesKey("pill_alpha")
         private val PILL_POSITION_Y_KEY = floatPreferencesKey("pill_position_y")
-        private val PILL_POSITION_X_KEY = floatPreferencesKey("pill_position_x")
         private val PILL_POSITION_X_PCT_KEY = floatPreferencesKey("pill_position_x_pct")
         private val PILL_EDGE_POSITION_KEY = stringPreferencesKey("pill_edge_position")
         private val PILL_SIDE_POSITION_PCT_KEY = floatPreferencesKey("pill_side_position_pct")
@@ -345,8 +344,8 @@ class PreferencesRepository @Inject constructor(
             APP_SORT_ORDER_KEY,
             APP_GROUPS_KEY
         )
+        // OVERLAY_ENABLED_KEY stays out: restoring it would desync the flag from the running service.
         private val BACKUP_BOOLEAN_KEYS = listOf(
-            OVERLAY_ENABLED_KEY,
             TASKBAR_CONTROL_LABELS_KEY,
             TASKBAR_KEEP_EXPANDED_KEY,
             TASKBAR_HIDE_APP_MENU_BUTTON_KEY,
