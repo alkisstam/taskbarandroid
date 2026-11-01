@@ -2,10 +2,12 @@ package com.alkisstam.taskbar.service
 
 import android.content.Intent
 import android.net.Uri
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.util.Log
+import android.webkit.MimeTypeMap
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
 import com.alkisstam.taskbar.data.ClipItem
@@ -15,6 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.util.UUID
 import javax.inject.Inject
 
@@ -83,12 +86,26 @@ class ClipboardShareActivity : ComponentActivity() {
                 } else fileClip("txt", ClipType.TEXT_FILE)
             }
             mimeType.startsWith("text/") -> fileClip(subtype.ifBlank { "txt" }, ClipType.TEXT_FILE)
-            // FileProvider derives the shared MIME type from the extension, so keep the real one.
-            mimeType.startsWith("image/") -> fileClip(subtype.takeIf { it.isNotBlank() && it != "*" } ?: "jpg", ClipType.IMAGE, withName = false)
+            mimeType.startsWith("image/") -> fileClip("img", ClipType.IMAGE, withName = false)?.let { withImageExtension(it, mimeType) }
             mimeType == "application/pdf" -> fileClip("pdf", ClipType.PDF)
             OFFICE_DOC_EXTENSIONS.containsKey(mimeType) -> fileClip(OFFICE_DOC_EXTENSIONS.getValue(mimeType), ClipType.DOCUMENT)
             else -> null
         }
+    }
+
+    // FileProvider derives the MIME type from the extension, and senders often mislabel images
+    // (a PNG as image/* or image/jpeg), so name the file after the format its bytes actually have.
+    private fun withImageExtension(item: ClipItem, declared: String): ClipItem {
+        val file = File(item.content)
+        val sniffed = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+            .also { BitmapFactory.decodeFile(file.path, it) }.outMimeType
+        val provided = intentStream()?.let { runCatching { contentResolver.getType(it) }.getOrNull() }
+        val ext = listOfNotNull(sniffed, provided, declared)
+            .filter { it.startsWith("image/") }
+            .firstNotNullOfOrNull { MimeTypeMap.getSingleton().getExtensionFromMimeType(it.lowercase()) }
+            ?: "jpg"
+        val renamed = File(file.parentFile, "${file.nameWithoutExtension}.$ext")
+        return if (file.renameTo(renamed)) item.copy(content = renamed.absolutePath) else item
     }
 
     private fun intentStream(): Uri? {
