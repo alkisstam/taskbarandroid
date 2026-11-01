@@ -32,3 +32,5 @@ app/google-services.json
 
 # Release bundle, rebuilt by ./gradlew bundleRelease
 app/release/
+
+AUDIT-*.md
