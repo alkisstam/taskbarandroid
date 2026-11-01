@@ -186,6 +186,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     FirebaseCrashlytics.getInstance().log("screen off")
                     overlayHiddenForLockscreen = true
                     handler.removeCallbacks(keyguardPollRunnable)
+                    handler.removeCallbacks(fullscreenPoll)
                     if (this@OverlayService::appMenuViewModel.isInitialized) appMenuViewModel.deactivateCaffeine()
                     val disablePill = this@OverlayService::taskbarViewModel.isInitialized &&
                             taskbarViewModel.disableOnLockscreen.value
@@ -315,6 +316,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         )
         overlayHiddenForLockscreen = false
         handler.removeCallbacks(keyguardPollRunnable)
+        handler.removeCallbacks(fullscreenPoll)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && taskbarViewModel.autoHideInFullscreen.value) {
+            handler.post(fullscreenPoll)
+        }
         handler.post {
             if (pillDisabledForLockscreen) {
                 pillDisabledForLockscreen = false
@@ -967,8 +972,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     }
 
     private fun statusBarInsetDp(): Float {
-        val types = android.view.WindowInsets.Type.statusBars() or android.view.WindowInsets.Type.displayCutout()
         val topPx = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val types = android.view.WindowInsets.Type.statusBars() or android.view.WindowInsets.Type.displayCutout()
             windowManager.currentWindowMetrics.windowInsets.getInsets(types).top
         } else {
             val view = taskbarView ?: overlayView ?: return 0f
@@ -1029,6 +1034,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     // fullscreen, so poll WindowManager's metrics while the setting is on.
     private val fullscreenPoll = object : Runnable {
         override fun run() {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return
             val fullscreen = !windowManager.currentWindowMetrics.windowInsets
                 .isVisible(android.view.WindowInsets.Type.statusBars())
             setFullscreen(fullscreen)
