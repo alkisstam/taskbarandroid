@@ -29,3 +29,6 @@ app/google-services.json
 # Repowise local index
 .repowise/
 .claude/CLAUDE.md
+
+# Release bundle, rebuilt by ./gradlew bundleRelease
+app/release/
