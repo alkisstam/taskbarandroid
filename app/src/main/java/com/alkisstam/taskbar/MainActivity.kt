@@ -46,7 +46,6 @@ import com.google.android.play.core.install.InstallStateUpdatedListener
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.review.ReviewManagerFactory
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.lifecycle.lifecycleScope
@@ -63,7 +62,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appUpdateManager: AppUpdateManager
     private val installStateListener = InstallStateUpdatedListener { state ->
-        if (state.installStatus() == InstallStatus.DOWNLOADED) showUpdateDownloadedSnackbar()
+        if (state.installStatus() == InstallStatus.DOWNLOADED) showUpdateDownloadedPrompt()
     }
 
     private var hasOverlayPermission by mutableStateOf(false)
@@ -219,7 +218,7 @@ class MainActivity : AppCompatActivity() {
         hasBatteryOptimizationExcluded = getBatteryOptimizationExcluded()
 
         appUpdateManager.appUpdateInfo.addOnSuccessListener { info ->
-            if (info.installStatus() == InstallStatus.DOWNLOADED) showUpdateDownloadedSnackbar()
+            if (info.installStatus() == InstallStatus.DOWNLOADED) showUpdateDownloadedPrompt()
         }
     }
 
@@ -252,14 +251,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showUpdateDownloadedSnackbar() {
-        Snackbar.make(
-            findViewById(android.R.id.content),
-            getString(R.string.update_downloaded_message),
-            Snackbar.LENGTH_INDEFINITE
-        ).setAction(getString(R.string.update_downloaded_action)) {
-            appUpdateManager.completeUpdate()
-        }.show()
+    private fun showUpdateDownloadedPrompt() {
+        if (isFinishing || isDestroyed) return
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setMessage(R.string.update_downloaded_message)
+            .setPositiveButton(R.string.update_downloaded_action) { _, _ -> appUpdateManager.completeUpdate() }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     private fun getNotificationPolicyAccess(): Boolean {
