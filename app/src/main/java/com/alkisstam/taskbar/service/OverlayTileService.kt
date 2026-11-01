@@ -1,11 +1,15 @@
 package com.alkisstam.taskbar.service
 
+import android.annotation.SuppressLint
+import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.drawable.Icon
 import android.os.Build
+import android.provider.Settings
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.util.Log
+import com.alkisstam.taskbar.MainActivity
 import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.PreferencesRepository
 import dagger.hilt.android.AndroidEntryPoint
@@ -44,6 +48,9 @@ class OverlayTileService : TileService() {
                     prefsRepository.setOverlayEnabled(false)
                     stopService(Intent(this@OverlayTileService, OverlayService::class.java))
                     updateTile(false)
+                } else if (!Settings.canDrawOverlays(this@OverlayTileService)) {
+                    // The service would run with no windows and the tile would claim "on".
+                    openApp()
                 } else {
                     prefsRepository.setOverlayEnabled(true)
                     try {
@@ -59,6 +66,17 @@ class OverlayTileService : TileService() {
         }
     }
 
+    @SuppressLint("StartActivityAndCollapseDeprecated")
+    private fun openApp() {
+        val intent = Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            startActivityAndCollapse(PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE))
+        } else {
+            @Suppress("DEPRECATION")
+            startActivityAndCollapse(intent)
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         scope.cancel()
@@ -67,10 +85,8 @@ class OverlayTileService : TileService() {
     private fun updateTile(enabled: Boolean) {
         val tile = qsTile ?: return
         tile.state = if (enabled) Tile.STATE_ACTIVE else Tile.STATE_INACTIVE
-        tile.label = "Floating Dock"
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            tile.subtitle = if (enabled) "On" else "Off"
-        }
+        // No subtitle: System UI already shows a localized On/Off for the tile state.
+        tile.label = getString(R.string.app_name)
         tile.icon = Icon.createWithResource(this, R.drawable.ic_tile)
         try {
             tile.updateTile()
