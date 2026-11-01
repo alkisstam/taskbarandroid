@@ -4,6 +4,15 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.5.15] - 2026-11-01
+
+Privacy fix for notification history.
+
+### Fixed
+- **Notification history only when you use it** — notifications are now saved only while Quick Controls and the Notification history control are turned on. Granting notification access just for the music panel no longer stores your notifications.
+
+---
+
 ## [1.5.14] - 2026-11-01
 
 Stability fixes, tablet and landscape layouts, bigger dock icons, and a new custom color picker.
