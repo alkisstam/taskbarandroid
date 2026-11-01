@@ -30,34 +30,62 @@
 <body>
 
 <h1>Privacy Policy for Floating Dock</h1>
-<p class="meta">Last updated: June 14, 2026</p>
+<p class="meta">Last updated: November 1, 2026</p>
 
 <p>Floating Dock ("the app") is a free Android application that displays a system-overlay dock above other apps.</p>
 
-<h2>Data Collection</h2>
-<p>Floating Dock does not collect, store, transmit, or share any personal data or usage information. All settings and preferences are stored locally on your device using Android's DataStore and are never sent anywhere.</p>
+<h2>Summary</h2>
+<p>Everything you see and create in Floating Dock stays on your device. The only data that leaves your device is crash and diagnostic information sent to Firebase Crashlytics so bugs can be found and fixed. The app has no ads, no analytics and no account.</p>
+
+<h2>Data Sent Off the Device: Crash Reports</h2>
+<p>Floating Dock uses <a href="https://firebase.google.com/products/crashlytics">Firebase Crashlytics</a>, a Google service, to receive reports when the app crashes or hits an error. A report can contain:</p>
+<ul>
+    <li>the error and the app's internal stack trace</li>
+    <li>device information: manufacturer, model, Android version, app version, and whether some system features (such as window blur) are available</li>
+    <li>a random installation identifier created by Crashlytics, used to count how many devices are affected</li>
+    <li>short technical log lines about the app's own state (for example "screen on" or "keyboard shown")</li>
+</ul>
+<p>Crash reports never contain your notifications, clipboard items, notes, the names of other apps you use, or text shown by other apps. Crashlytics data is processed by Google under the <a href="https://firebase.google.com/support/privacy">Firebase privacy terms</a> and is used only to fix problems in the app.</p>
+
+<h2>Data Stored Only on Your Device</h2>
+<p>The following stays on your device, is never transmitted, and is deleted when you uninstall the app:</p>
+<ul>
+    <li><strong>Settings</strong> — stored with Android's DataStore. Android's own device backup may include them if you have backup turned on.</li>
+    <li><strong>Clipboard items</strong> — only items you share to Floating Dock yourself. The app does not read your clipboard in the background.</li>
+    <li><strong>Notes and to-dos</strong> — text you type into the app.</li>
+    <li><strong>Notification history</strong> — if you grant notification access and the Notification history control is enabled, the title and text of your most recent 100 notifications are kept so you can view them again. You can clear them at any time, or turn the control off to stop recording.</li>
+    <li><strong>App usage within the dock</strong> — recently opened apps and launch counts, used to sort the app menu.</li>
+</ul>
 
 <h2>Installed Apps</h2>
 <p>Floating Dock queries the list of installed apps on your device solely to populate the app grid and dock. This list is used only within the app, is never transmitted off the device, and is never shared with third parties.</p>
 
+<h2>Accessibility Service</h2>
+<p>The optional accessibility service lets the dock draw above the system navigation bar, close itself when you go to the home screen or press back, hide while the keyboard or notification shade is open, and run the screenshot, lock screen, notifications and power menu actions. It does not read the content of other apps' screens, and nothing it observes is stored or transmitted.</p>
+
 <h2>Permissions</h2>
-<p>The permissions declared by Floating Dock are used exclusively for local device functionality:</p>
+<p>The permissions declared by Floating Dock are used for local device functionality only:</p>
 <ul>
     <li><code>SYSTEM_ALERT_WINDOW</code> — display the dock overlay above other apps</li>
     <li><code>QUERY_ALL_PACKAGES</code> — list installed apps for the app grid and dock</li>
-    <li><code>WRITE_SETTINGS</code> — toggle auto-rotate and auto-brightness</li>
+    <li><code>WRITE_SETTINGS</code> — toggle auto-rotate and brightness, and change the screen timeout for the Caffeine control</li>
     <li><code>ACCESS_NOTIFICATION_POLICY</code> — toggle Do Not Disturb mode</li>
-    <li><code>FOREGROUND_SERVICE</code> — keep the overlay service running in the background</li>
-    <li><code>FOREGROUND_SERVICE_SPECIAL_USE</code> — required foreground service type on Android 14+</li>
+    <li><code>MODIFY_AUDIO_SETTINGS</code> — change volume and cycle the ringer mode</li>
+    <li><code>ACCESS_WIFI_STATE</code>, <code>ACCESS_NETWORK_STATE</code>, <code>BLUETOOTH_CONNECT</code> — show whether Wi-Fi and Bluetooth are on in the quick controls</li>
+    <li><code>FOREGROUND_SERVICE</code>, <code>FOREGROUND_SERVICE_SPECIAL_USE</code> — keep the overlay running</li>
     <li><code>POST_NOTIFICATIONS</code> — show the persistent notification required by the foreground service</li>
     <li><code>RECEIVE_BOOT_COMPLETED</code> — restore the overlay automatically after reboot</li>
-    <li><code>CHANGE_AUDIO_SETTINGS</code> — cycle the ringer mode (Normal / Vibrate / Silent)</li>
-    <li><code>BIND_ACCESSIBILITY_SERVICE</code> — draw the overlay above the system navigation bar; handle back gesture, screenshot, and lock screen quick controls</li>
+    <li>Notification access (<code>BIND_NOTIFICATION_LISTENER_SERVICE</code>) — optional; show music controls and the notification history described above</li>
+    <li>Accessibility service (<code>BIND_ACCESSIBILITY_SERVICE</code>) — optional; see above</li>
+    <li>Shizuku (<code>moe.shizuku.manager.permission.API_V23</code>) — optional; open apps in floating windows on devices without built-in support</li>
 </ul>
-<p>No permission is used to collect or transmit data.</p>
 
 <h2>Third-Party Services</h2>
-<p>Floating Dock does not use any third-party SDKs, analytics libraries, or advertising services.</p>
+<ul>
+    <li><strong>Firebase Crashlytics</strong> (Google) — crash and diagnostic reports, as described above.</li>
+    <li><strong>Google Play In-App Updates and In-App Review</strong> — let the app offer updates and show the Play rating dialog. These talk to the Play Store app on your device; Floating Dock does not receive your review or any account data.</li>
+</ul>
+<p>Floating Dock has no advertising and no analytics SDKs, and does not sell or share data.</p>
 
 <h2>Children's Privacy</h2>
 <p>Floating Dock does not knowingly collect any information from anyone, including children under the age of 13.</p>
