@@ -172,7 +172,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private val keyguardPollRunnable = object : Runnable {
         override fun run() {
             if (!overlayHiddenForLockscreen) return
-            if (!keyguardManager.isKeyguardLocked) restoreAfterLockscreen()
+            if (!keyguardManager.isKeyguardLocked) restoreAfterLockscreen("poll")
             else handler.postDelayed(this, 500)
         }
     }
@@ -181,6 +181,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
                 Intent.ACTION_SCREEN_OFF -> {
+                    FirebaseCrashlytics.getInstance().log("screen off")
                     overlayHiddenForLockscreen = true
                     handler.removeCallbacks(keyguardPollRunnable)
                     if (this@OverlayService::appMenuViewModel.isInitialized) appMenuViewModel.deactivateCaffeine()
@@ -217,16 +218,19 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     }
                 }
                 Intent.ACTION_SCREEN_ON -> {
-                    if (pillDisabledForLockscreen && keyguardManager.isKeyguardLocked) {
+                    val locked = keyguardManager.isKeyguardLocked
+                    FirebaseCrashlytics.getInstance().log("screen on keyguardLocked=$locked pillDisabledLock=$pillDisabledForLockscreen")
+                    if (pillDisabledForLockscreen && locked) {
                         // Stay hidden and untouchable until the keyguard is dismissed.
                         handler.removeCallbacks(keyguardPollRunnable)
                         handler.postDelayed(keyguardPollRunnable, 500)
                     } else {
-                        restoreAfterLockscreen()
+                        restoreAfterLockscreen("screen_on")
                     }
                 }
                 Intent.ACTION_USER_PRESENT -> {
-                    restoreAfterLockscreen()
+                    FirebaseCrashlytics.getInstance().log("user present")
+                    restoreAfterLockscreen("user_present")
                 }
                 Intent.ACTION_CONFIGURATION_CHANGED -> {
                     val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -251,7 +255,14 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 }
                 ACTION_SETTINGS_OPEN -> {
                     taskbarViewModel.setSettingsOpen(true)
-                    handler.post { reportHiddenPill() }
+                    handler.post {
+                        reportHiddenPill()
+                        // Settings can't open over the keyguard, so a lockscreen hide still set
+                        // here means the unlock broadcasts were missed.
+                        if (overlayHiddenForLockscreen && !keyguardManager.isKeyguardLocked) {
+                            restoreAfterLockscreen("settings_open")
+                        }
+                    }
                 }
                 ACTION_SETTINGS_CLOSE -> {
                     taskbarViewModel.setSettingsOpen(false)
@@ -296,7 +307,10 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         taskbarViewModel.hideTaskbar()
     }
 
-    private fun restoreAfterLockscreen() {
+    private fun restoreAfterLockscreen(reason: String) {
+        FirebaseCrashlytics.getInstance().log(
+            "restore after lockscreen reason=$reason wasHidden=$overlayHiddenForLockscreen keyguardLocked=${keyguardManager.isKeyguardLocked}"
+        )
         overlayHiddenForLockscreen = false
         handler.removeCallbacks(keyguardPollRunnable)
         handler.post {
@@ -1050,10 +1064,11 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private fun reportHiddenPill() {
         val pill = pillView
         if (pill?.isAttachedToWindow == true && pill.visibility == View.VISIBLE) return
-        if (hiddenForLandscape || hiddenForFullscreen || overlayHiddenForLockscreen) return
+        val keyguardLocked = keyguardManager.isKeyguardLocked
+        if (hiddenForLandscape || hiddenForFullscreen || (overlayHiddenForLockscreen && keyguardLocked)) return
         val state = "attached=${pill?.isAttachedToWindow} visibility=${pill?.visibility} " +
             "ime=$lastImeVisible shade=$shadeOpen landscape=$hiddenForLandscape " +
-            "lockscreen=$overlayHiddenForLockscreen pillDisabledLock=$pillDisabledForLockscreen " +
+            "lockscreen=$overlayHiddenForLockscreen keyguardLocked=$keyguardLocked pillDisabledLock=$pillDisabledForLockscreen " +
             "a11y=${TaskBarAccessibilityService.isRunning()} imePolling=$imePolling"
         FirebaseCrashlytics.getInstance().recordException(IllegalStateException("Pill hidden on settings open: $state"))
     }
@@ -1194,6 +1209,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             windowManager.addView(composeView, pillLayoutParams(initial, isRight = false, touchable = pillTouchable()))
         } catch (e: Exception) {
             Log.e(TAG, "Failed to add pill view", e)
+            FirebaseCrashlytics.getInstance().recordException(e)
             pillView = null
         }
     }

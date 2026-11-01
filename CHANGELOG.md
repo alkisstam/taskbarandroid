@@ -24,6 +24,7 @@ Stability fixes, tablet and landscape layouts, bigger dock icons, and a new cust
 - **Privacy in crash reports** — crash reports no longer include other apps' package names or on-screen text.
 - **All Apps menu gaps on other screens** — on phones with a tall status bar or camera cutout, the top of the menu no longer slides under the status bar, and the top and bottom gaps stay equal when the dock runs without the accessibility service.
 - **Panels under the status bar** — clipboard, notes, notifications and Quick Settings no longer start under the status bar.
+- **Dock missing after unlock** — if the dock and pill stay hidden after unlocking, opening Floating Dock's settings brings them back.
 
 ---
 
