@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.json.JSONArray
@@ -37,7 +38,8 @@ data class NotificationEntry(
 
 @Singleton
 class NotificationHistoryRepository @Inject constructor(
-    @param:ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context,
+    private val prefsRepository: PreferencesRepository
 ) {
     companion object {
         private const val TAG = "NotificationHistoryRepo"
@@ -79,6 +81,10 @@ class NotificationHistoryRepository @Inject constructor(
             ?.filter { it.actionIntent != null && it.remoteInputs.isNullOrEmpty() && !it.title.isNullOrBlank() }
             .orEmpty()
         scope.launch {
+            // Notification access may be granted only for the music panel; store nothing unless
+            // the user can actually reach notification history.
+            if (!prefsRepository.quickControlsEnabled.first() ||
+                "notif_history" in prefsRepository.controlsDisabledIds.first()) return@launch
             // resolveAppLabel does a binder IPC to the package manager; record() runs on
             // the listener's main thread, and that call stalling has caused ANRs.
             val entry = NotificationEntry(
