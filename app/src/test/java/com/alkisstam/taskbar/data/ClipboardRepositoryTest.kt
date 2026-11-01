@@ -2,6 +2,7 @@ package com.alkisstam.taskbar.data
 
 import io.mockk.mockk
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -49,6 +50,23 @@ class ClipboardRepositoryTest {
     fun `unknown clip type skipped instead of crashing`() {
         val json = """[{"id":"x","type":"HOLOGRAM","content":"c","sourceApp":"s","timestamp":5}]"""
         assertTrue(repo.deserializeClips(json).isEmpty())
+    }
+
+    @Test
+    fun `pruneFile deletes stored file for every file-backed clip type`() {
+        ClipType.values().filter { it != ClipType.TEXT && it != ClipType.URL }.forEach { type ->
+            val file = java.io.File.createTempFile("clip", ".bin")
+            repo.pruneFile(ClipItem("id", type, file.absolutePath, "App", 1L))
+            assertFalse("$type file not deleted", file.exists())
+        }
+    }
+
+    @Test
+    fun `pruneFile leaves inline clips alone`() {
+        val file = java.io.File.createTempFile("clip", ".bin")
+        repo.pruneFile(ClipItem("id", ClipType.TEXT, file.absolutePath, "App", 1L))
+        assertTrue(file.exists())
+        file.delete()
     }
 
     @Test

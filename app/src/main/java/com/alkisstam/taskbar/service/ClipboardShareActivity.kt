@@ -60,6 +60,18 @@ class ClipboardShareActivity : ComponentActivity() {
         val timestamp = System.currentTimeMillis()
         val sourceApp = callerPackageLabel()
 
+        fun fileClip(ext: String, type: ClipType, withName: Boolean = true): ClipItem? {
+            val uri = intentStream() ?: return null
+            val path = try {
+                contentResolver.openInputStream(uri)?.use { input ->
+                    clipboardRepository.copyStreamToStorage(input, ext, id)
+                }
+            } catch (e: Exception) { null } ?: return null
+            return ClipItem(id = id, type = type, content = path, sourceApp = sourceApp, timestamp = timestamp,
+                fileName = if (withName) resolveFileName(uri) else null)
+        }
+        val subtype = mimeType.substringAfter("/").substringBefore(";").substringBefore("+").trim()
+
         return when {
             mimeType == "text/plain" -> {
                 // Inline text lives in the DataStore prefs blob; cap it so one giant share
@@ -68,54 +80,13 @@ class ClipboardShareActivity : ComponentActivity() {
                 if (text != null) {
                     val type = if (text.startsWith("http://") || text.startsWith("https://")) ClipType.URL else ClipType.TEXT
                     ClipItem(id = id, type = type, content = text, sourceApp = sourceApp, timestamp = timestamp)
-                } else {
-                    val uri = intentStream() ?: return null
-                    val path = try {
-                        contentResolver.openInputStream(uri)?.use { input ->
-                            clipboardRepository.copyStreamToStorage(input, "txt", id)
-                        }
-                    } catch (e: Exception) { null } ?: return null
-                    ClipItem(id = id, type = ClipType.TEXT_FILE, content = path, sourceApp = sourceApp, timestamp = timestamp, fileName = resolveFileName(uri))
-                }
+                } else fileClip("txt", ClipType.TEXT_FILE)
             }
-            mimeType.startsWith("text/") -> {
-                val uri = intentStream() ?: return null
-                val ext = mimeType.substringAfter("/").substringBefore(";").trim().takeIf { it.isNotBlank() } ?: "txt"
-                val path = try {
-                    contentResolver.openInputStream(uri)?.use { input ->
-                        clipboardRepository.copyStreamToStorage(input, ext, id)
-                    }
-                } catch (e: Exception) { null } ?: return null
-                ClipItem(id = id, type = ClipType.TEXT_FILE, content = path, sourceApp = sourceApp, timestamp = timestamp, fileName = resolveFileName(uri))
-            }
-            mimeType.startsWith("image/") -> {
-                val uri = intentStream() ?: return null
-                val path = try {
-                    contentResolver.openInputStream(uri)?.use { input ->
-                        clipboardRepository.copyStreamToStorage(input, "jpg", id)
-                    }
-                } catch (e: Exception) { null } ?: return null
-                ClipItem(id = id, type = ClipType.IMAGE, content = path, sourceApp = sourceApp, timestamp = timestamp)
-            }
-            mimeType == "application/pdf" -> {
-                val uri = intentStream() ?: return null
-                val path = try {
-                    contentResolver.openInputStream(uri)?.use { input ->
-                        clipboardRepository.copyStreamToStorage(input, "pdf", id)
-                    }
-                } catch (e: Exception) { null } ?: return null
-                ClipItem(id = id, type = ClipType.PDF, content = path, sourceApp = sourceApp, timestamp = timestamp, fileName = resolveFileName(uri))
-            }
-            OFFICE_DOC_EXTENSIONS.containsKey(mimeType) -> {
-                val uri = intentStream() ?: return null
-                val ext = OFFICE_DOC_EXTENSIONS.getValue(mimeType)
-                val path = try {
-                    contentResolver.openInputStream(uri)?.use { input ->
-                        clipboardRepository.copyStreamToStorage(input, ext, id)
-                    }
-                } catch (e: Exception) { null } ?: return null
-                ClipItem(id = id, type = ClipType.DOCUMENT, content = path, sourceApp = sourceApp, timestamp = timestamp, fileName = resolveFileName(uri))
-            }
+            mimeType.startsWith("text/") -> fileClip(subtype.ifBlank { "txt" }, ClipType.TEXT_FILE)
+            // FileProvider derives the shared MIME type from the extension, so keep the real one.
+            mimeType.startsWith("image/") -> fileClip(subtype.takeIf { it.isNotBlank() && it != "*" } ?: "jpg", ClipType.IMAGE, withName = false)
+            mimeType == "application/pdf" -> fileClip("pdf", ClipType.PDF)
+            OFFICE_DOC_EXTENSIONS.containsKey(mimeType) -> fileClip(OFFICE_DOC_EXTENSIONS.getValue(mimeType), ClipType.DOCUMENT)
             else -> null
         }
     }

@@ -188,8 +188,8 @@ class ClipboardRepository @Inject constructor(
         return file.absolutePath
     }
 
-    private fun pruneFile(item: ClipItem) {
-        if (item.type == ClipType.IMAGE || item.type == ClipType.PDF || item.type == ClipType.DOCUMENT) {
+    internal fun pruneFile(item: ClipItem) {
+        if (item.type != ClipType.TEXT && item.type != ClipType.URL) {
             File(item.content).takeIf { it.exists() }?.delete()
         }
     }
