@@ -149,6 +149,8 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     // Whether the dock's host view is actually on screen (not GONE for lockscreen/landscape,
     // not detached). Compose keeps reporting bounds while an ancestor is GONE.
     private val dockHostShown = MutableStateFlow(false)
+    // Battery saver toggles cross-window blur at runtime; the dock blur window must follow it.
+    private val crossWindowBlur = MutableStateFlow(false)
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private var observersStarted = false
 
@@ -1488,11 +1490,13 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 if (translucent && visible && hostShown && bounds != null)
                     bounds to settings.cornerRadiusDp * resources.displayMetrics.density
                 else null
+            }.combine(crossWindowBlur) { target, xwin ->
+                // Without cross-window blur (One UI) TaskbarView blurs in-window via SemBlurInfo.
+                target.takeIf { xwin }
             }.distinctUntilChanged().collectLatest { target ->
                 val blur = dockBlurWindow ?: return@collectLatest
                 blur.hide()
-                // Without cross-window blur (One UI) TaskbarView blurs in-window via SemBlurInfo.
-                if (target == null || !crossWindowBlurEnabled()) return@collectLatest
+                if (target == null) return@collectLatest
                 delay(DOCK_BLUR_SETTLE_MS)
                 blur.show(target.first, target.second)
             }
@@ -1825,8 +1829,9 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     // Panel blur windows are app overlays, so they only stack below the panels when those are
     // accessibility overlays.
     private fun updateWindowGlass() {
-        GlassBlur.windowBlur = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
-            crossWindowBlurEnabled() && TaskBarAccessibilityService.instance != null
+        val xwin = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && crossWindowBlurEnabled()
+        crossWindowBlur.value = xwin
+        GlassBlur.windowBlur = xwin && TaskBarAccessibilityService.instance != null
     }
 
     // endregion

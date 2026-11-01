@@ -113,6 +113,8 @@ import com.alkisstam.taskbar.data.GestureAction
 import com.alkisstam.taskbar.data.PillHoldDragAction
 import com.alkisstam.taskbar.data.PillEdgePosition
 import com.alkisstam.taskbar.data.ThemeMode
+import com.alkisstam.taskbar.service.crossWindowBlurEnabled
+import com.alkisstam.taskbar.service.semBlurSupported
 import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import com.alkisstam.taskbar.ui.taskbar.isGestureNavigation
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
@@ -173,6 +175,14 @@ private fun ThemeSectionContent(viewModel: TaskbarViewModel) {
     val blurRadiusDp by viewModel.blurRadiusDp.collectAsState()
     val blurTint by viewModel.blurTint.collectAsState()
     val blurTintAlpha by viewModel.blurTintAlpha.collectAsState()
+    val context = LocalContext.current
+    // Battery saver also turns cross-window blur off, so only hide the blur controls when the
+    // device has no blur path outside of it.
+    val blurSupported = remember {
+        android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S &&
+            (context.crossWindowBlurEnabled() || semBlurSupported() ||
+                context.getSystemService(android.os.PowerManager::class.java)?.isPowerSaveMode == true)
+    }
 
     SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
         val themeEntries = listOf(
@@ -256,6 +266,7 @@ private fun ThemeSectionContent(viewModel: TaskbarViewModel) {
             parseEditValue = { it.toFloatOrNull()?.div(100f) },
             onValueChange = { viewModel.setGrainAlpha(it) }
         )
+        if (!blurSupported) return
         Spacer(modifier = Modifier.height(10.dp))
         SettingsSlider(
             label = stringResource(R.string.pill_blur_label),
