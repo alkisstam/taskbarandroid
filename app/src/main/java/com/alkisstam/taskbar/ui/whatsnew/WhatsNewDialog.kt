@@ -315,6 +315,18 @@ val whatsNewReleases = listOf(
             "Crash reports no longer include other apps' package names or on-screen text",
             "Fixed the dock staying hidden after unlocking, or turning see-through after battery saver"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.5.15",
+        versionCode = 70,
+        highlights = listOf(
+            "Fixed the dock crashing on Android 8, 9 and 10",
+            "Notification history is only saved while its control is turned on",
+            "Notes, to-dos and clipboard items are now included in your phone's backup",
+            "Deleting a shared text file from the clipboard now frees its storage",
+            "Shared images keep their original format instead of being saved as JPG",
+            "The Quick Settings tile opens the app when the overlay permission is missing"
+        )
     )
 )
 

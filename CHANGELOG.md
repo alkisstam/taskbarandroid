@@ -6,10 +6,21 @@ All notable changes to Floating Dock are documented here.
 
 ## [1.5.15] - 2026-11-01
 
-Privacy fix for notification history.
+Crash fix for older Android versions, privacy and backup fixes.
+
+### Changed
+- **Notes in your backup** — notes, to-dos and clipboard items are now included in Android's device backup and phone-to-phone transfer. Shared files themselves are not backed up, so restored file clips show without a preview.
+- **Update prompt** — when an update has downloaded, a dialog with Restart and Cancel replaces the bar at the bottom of the screen.
 
 ### Fixed
+- **Crash on Android 8, 9 and 10** — the dock no longer crashes when it reads the status bar size on these versions.
 - **Notification history only when you use it** — notifications are now saved only while Quick Controls and the Notification history control are turned on. Granting notification access just for the music panel no longer stores your notifications.
+- **Shared text files use up storage** — removing a shared text file from the clipboard, or letting it drop off the 100-item limit, now deletes the file.
+- **Shared images saved as JPG** — PNG, GIF, WebP and other images keep their original format, so apps you share them to get the right file type.
+- **Restoring a backup stops the dock** — restoring a backup no longer changes whether the dock is running, so the settings screen and auto-start after reboot stay correct.
+- **Quick Settings tile without permission** — if Floating Dock can't draw over other apps, the tile opens the app instead of turning on an invisible dock. The tile label is now translated.
+- **Fuzzy search flicker** — the fuzzy search setting no longer shows as on for a moment before loading.
+- **Battery use with the screen off** — the fullscreen check behind Auto-hide in fullscreen pauses while the screen is off.
 
 ---
 
