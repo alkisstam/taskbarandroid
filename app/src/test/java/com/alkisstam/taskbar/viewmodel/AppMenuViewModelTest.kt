@@ -11,6 +11,7 @@ import com.alkisstam.taskbar.data.MediaState
 import com.alkisstam.taskbar.data.PreferencesRepository
 import com.alkisstam.taskbar.data.QuickControlsRepository
 import com.alkisstam.taskbar.util.MainDispatcherRule
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -355,6 +356,35 @@ class AppMenuViewModelTest {
 
         assertTrue(collected.last().isEmpty())
         job.cancel()
+    }
+
+    // endregion
+
+    // region Caffeine
+
+    @Test
+    fun `leftover caffeine timeout is restored and cleared on start`() = runTest(mainDispatcherRule.dispatcher) {
+        every { prefsRepo.caffeineOriginalTimeout } returns flowOf(30_000)
+        every { quickControls.canWriteSettings() } returns true
+        createViewModel()
+        advanceUntilIdle()
+        verify { quickControls.setScreenTimeout(30_000) }
+        coVerify { prefsRepo.setCaffeineOriginalTimeout(null) }
+    }
+
+    @Test
+    fun `caffeine cycle ends by restoring the original timeout`() = runTest(mainDispatcherRule.dispatcher) {
+        every { quickControls.canWriteSettings() } returns true
+        every { quickControls.getScreenTimeout() } returns 30_000
+        val vm = createViewModel()
+        advanceUntilIdle()
+        repeat(4) { vm.cycleCaffeineTimeout() }
+        advanceUntilIdle()
+        verify { quickControls.setScreenTimeout(10 * 60 * 1000) }
+        verify { quickControls.setScreenTimeout(30_000) }
+        coVerify { prefsRepo.setCaffeineOriginalTimeout(30_000) }
+        coVerify { prefsRepo.setCaffeineOriginalTimeout(null) }
+        assertEquals(0, vm.quickControlsState.value.caffeineMinutes)
     }
 
     // endregion
