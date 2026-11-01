@@ -1,0 +1,11 @@
+Nieuw
+• Verberg de app-menuknop of de tijd-, datum- en batterijregel van het dock
+Gewijzigd
+• Vastgezette pictogrammen en snelle bediening tot 120 dp; het dock groeit mee
+• Kleurenpalet-kiezer voor de eigen tint
+• Betere indeling op tablets en in liggende stand
+Opgelost
+• Crash bij starten op sommige Android 14-apparaten
+• Vastlopen tijdens het afspelen van muziek
+• Crashrapporten bevatten geen gegevens van andere apps meer
+• Dock ontbrak na ontgrendelen of batterijbesparing

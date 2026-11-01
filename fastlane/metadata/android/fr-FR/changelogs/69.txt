@@ -1,0 +1,11 @@
+Nouveautés
+• Masquer le bouton du menu des apps ou la ligne heure, date, batterie du dock
+Modifié
+• Icônes épinglées et commandes rapides jusqu'à 120 dp ; le dock s'agrandit
+• Sélecteur de couleur à palette pour la teinte perso
+• Meilleure mise en page sur tablette et en paysage
+Corrigé
+• Plantage au lancement sur certains appareils Android 14
+• Blocages pendant la lecture de musique
+• Rapports de plantage sans données d'autres apps
+• Dock absent après déverrouillage ou économie d'énergie

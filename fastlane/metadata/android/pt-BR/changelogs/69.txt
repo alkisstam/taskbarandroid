@@ -1,0 +1,11 @@
+Novidades
+• Oculte o botão do menu de apps ou a linha de hora, data e bateria do dock
+Alterado
+• Ícones fixados e controles rápidos até 120 dp; o dock cresce para caber
+• Seletor de cor com paleta para a tonalidade personalizada
+• Layouts melhores em tablets e na horizontal
+Corrigido
+• Falha ao abrir em alguns aparelhos com Android 14
+• Travamentos durante a reprodução de música
+• Relatórios de falha sem dados de outros apps
+• Dock sumia após desbloquear ou com a economia de bateria

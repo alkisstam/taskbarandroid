@@ -1,0 +1,11 @@
+Neu
+• App-Menü-Taste oder die Zeit-, Datums- und Akkuzeile des Docks ausblenden
+Geändert
+• Angeheftete Symbole und Schnellsteuerung bis 120 dp; das Dock wächst mit
+• Farbpaletten-Auswahl für die eigene Tönung
+• Bessere Layouts auf Tablets und im Querformat
+Behoben
+• Absturz beim Start auf einigen Android-14-Geräten
+• Hänger während Musikwiedergabe
+• Absturzberichte enthalten keine Daten anderer Apps mehr
+• Dock fehlte nach Entsperren oder Energiesparmodus

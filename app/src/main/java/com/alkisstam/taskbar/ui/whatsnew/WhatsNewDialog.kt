@@ -302,6 +302,19 @@ val whatsNewReleases = listOf(
             "Auto-hide in Fullscreen now works and hides the pill too",
             "Fixed the pill disappearing after a few seconds on some devices, and the pill's App Menu and Search actions bringing up the dock"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.5.14",
+        versionCode = 69,
+        highlights = listOf(
+            "Hide the App Menu button from the dock, or hide the dock's time, date and battery line",
+            "Pinned app icons and Quick Controls go up to 120dp, and the dock grows taller to fit them",
+            "The custom tint now uses a palette color picker",
+            "Better layouts on tablets and in landscape for the All Apps menu, panels and calculator",
+            "Fixed a crash on launch on some Android 14 devices and freezes while music plays",
+            "Crash reports no longer include other apps' package names or on-screen text",
+            "Fixed the dock staying hidden after unlocking, or turning see-through after battery saver"
+        )
     )
 )
 

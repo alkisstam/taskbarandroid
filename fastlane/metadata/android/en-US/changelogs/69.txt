@@ -1,0 +1,11 @@
+Added
+• Hide the App Menu button, or the dock's time, date and battery line
+Changed
+• Pinned icons and Quick Controls up to 120dp; the dock grows to fit
+• Palette color picker for the custom tint
+• Better layouts on tablets and in landscape
+Fixed
+• Crash on launch on some Android 14 devices
+• Freezes while music plays
+• Crash reports no longer include other apps' data
+• Dock missing after unlock or battery saver

@@ -4,7 +4,7 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
-## [1.5.14] - 2026-10-30
+## [1.5.14] - 2026-11-01
 
 Stability fixes, tablet and landscape layouts, bigger dock icons, and a new custom color picker.
 

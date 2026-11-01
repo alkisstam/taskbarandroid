@@ -1,0 +1,11 @@
+Novità
+• Nascondi il pulsante del menu app o la riga ora, data e batteria del dock
+Modificato
+• Icone fissate e controlli rapidi fino a 120 dp; il dock si allarga
+• Selettore colore a tavolozza per la tinta personalizzata
+• Layout migliori su tablet e in orizzontale
+Corretto
+• Arresto all'avvio su alcuni dispositivi Android 14
+• Blocchi durante la riproduzione musicale
+• I report degli arresti non includono più dati di altre app
+• Dock assente dopo lo sblocco o il risparmio energetico

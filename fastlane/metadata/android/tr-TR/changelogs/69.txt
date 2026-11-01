@@ -1,0 +1,11 @@
+Yenilikler
+• Uygulama Menüsü düğmesini veya dock'un saat, tarih ve pil satırını gizleyin
+Değişenler
+• Sabit simgeler ve Hızlı Kontroller 120 dp'ye kadar; dock sığacak kadar büyür
+• Özel ton için palet renk seçici
+• Tabletlerde ve yatay modda daha iyi düzen
+Düzeltilenler
+• Bazı Android 14 cihazlarda açılışta çökme
+• Müzik çalarken donmalar
+• Çökme raporları artık diğer uygulamaların verilerini içermiyor
+• Kilit açma veya pil tasarrufu sonrası kaybolan dock

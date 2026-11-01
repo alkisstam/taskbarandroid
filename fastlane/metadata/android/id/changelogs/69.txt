@@ -1,0 +1,11 @@
+Baru
+• Sembunyikan tombol Menu Aplikasi, atau baris waktu, tanggal, dan baterai dock
+Diubah
+• Ikon tersemat dan Kontrol Cepat hingga 120 dp; dock membesar menyesuaikan
+• Pemilih warna palet untuk tint kustom
+• Tata letak lebih baik di tablet dan lanskap
+Diperbaiki
+• Crash saat dibuka di beberapa perangkat Android 14
+• Macet saat musik diputar
+• Laporan crash tidak lagi memuat data aplikasi lain
+• Dock hilang setelah membuka kunci atau penghemat baterai
