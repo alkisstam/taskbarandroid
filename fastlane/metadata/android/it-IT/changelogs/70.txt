@@ -1,0 +1,9 @@
+Modificato
+• Note, attività e appunti sono inclusi nel backup del telefono
+• L'avviso di aggiornamento ora è una finestra di dialogo
+Corretto
+• Arresto anomalo su Android 8, 9 e 10
+• La cronologia notifiche viene salvata solo con il suo controllo attivo
+• I file di testo rimossi liberano spazio
+• Le immagini condivise mantengono il formato originale
+• Il riquadro Impostazioni rapide apre l'app se manca il permesso di sovrapposizione
