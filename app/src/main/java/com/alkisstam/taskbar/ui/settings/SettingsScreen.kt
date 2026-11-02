@@ -673,6 +673,7 @@ internal fun BehaviourCard(viewModel: TaskbarViewModel) {
     val disableOnLockscreen by viewModel.disableOnLockscreen.collectAsState()
     val hapticFeedbackEnabled by viewModel.hapticFeedbackEnabled.collectAsState()
     val iconsPillAutoHide by viewModel.iconsPillAutoHide.collectAsState()
+    val iconsPillCentered by viewModel.iconsPillCentered.collectAsState()
 
     SettingsCard(title = stringResource(R.string.settings_behaviour_card_title)) {
         Row(
@@ -691,6 +692,24 @@ internal fun BehaviourCard(viewModel: TaskbarViewModel) {
             Switch(
                 checked = iconsPillAutoHide,
                 onCheckedChange = { viewModel.setIconsPillAutoHide(it) }
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(stringResource(R.string.settings_pill_centered_title), style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    stringResource(R.string.settings_pill_centered_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(
+                checked = iconsPillCentered,
+                onCheckedChange = { viewModel.setIconsPillCentered(it) }
             )
         }
         Row(

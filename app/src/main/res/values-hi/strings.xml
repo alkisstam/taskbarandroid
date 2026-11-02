@@ -454,6 +454,8 @@
     <string name="app_group_remove_app">पैनल से हटाएं</string>
     <string name="settings_pill_auto_hide_title">आइकन पिल अपने-आप छिपाएं</string>
     <string name="settings_pill_auto_hide_desc">डॉक पर ऊपर स्वाइप करने तक डॉक के ऊपर वाली आइकन पिल छिपी रहती है। फिर से छिपाने के लिए नीचे स्वाइप करें।</string>
+    <string name="settings_pill_centered_title">आइकन पिल बीच में रखें</string>
+    <string name="settings_pill_centered_desc">आइकन पिल को ऐप मेनू बटन की तरफ़ के बजाय डॉक के ऊपर बीच में दिखाएं।</string>
     <string name="settings_hide_app_menu_title">ऐप मेनू छिपाएँ</string>
     <string name="settings_hide_app_menu_desc">डॉक से ऐप मेनू बटन हटाएँ। पिल जेस्चर से मेनू अब भी खोला जा सकता है।</string>
     <string name="dock_hide_info_line_label">समय, तारीख और बैटरी छिपाएँ</string>

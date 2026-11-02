@@ -454,6 +454,8 @@
     <string name="app_group_remove_app">从面板移除</string>
     <string name="settings_pill_auto_hide_title">自动隐藏图标胶囊</string>
     <string name="settings_pill_auto_hide_desc">隐藏 Dock 上方的图标胶囊，直到你在 Dock 上向上滑动。向下滑动可再次隐藏。</string>
+    <string name="settings_pill_centered_title">图标胶囊居中</string>
+    <string name="settings_pill_centered_desc">将图标胶囊显示在 Dock 上方中间，而不是应用菜单按钮一侧。</string>
     <string name="settings_hide_app_menu_title">隐藏应用菜单</string>
     <string name="settings_hide_app_menu_desc">从 Dock 中移除应用菜单按钮。仍可通过胶囊手势打开菜单。</string>
     <string name="dock_hide_info_line_label">隐藏时间、日期和电量</string>

@@ -454,6 +454,8 @@
     <string name="app_group_remove_app">Panelden kaldır</string>
     <string name="settings_pill_auto_hide_title">Simge Hapını Otomatik Gizle</string>
     <string name="settings_pill_auto_hide_desc">Dock üzerinde yukarı kaydırana kadar Dock üzerindeki simge hapını gizler. Tekrar gizlemek için aşağı kaydırın.</string>
+    <string name="settings_pill_centered_title">Simge Hapını Ortala</string>
+    <string name="settings_pill_centered_desc">Simge hapını Uygulama Menüsü düğmesinin tarafı yerine Dock\'un üstünde ortada gösterir.</string>
     <string name="settings_hide_app_menu_title">Uygulama Menüsünü Gizle</string>
     <string name="settings_hide_app_menu_desc">Uygulama Menüsü düğmesini dock\'tan kaldırır. Hap hareketi menüyü yine de açabilir.</string>
     <string name="dock_hide_info_line_label">Saati, tarihi ve pili gizle</string>

@@ -454,6 +454,8 @@
     <string name="app_group_remove_app">إزالة من اللوحة</string>
     <string name="settings_pill_auto_hide_title">إخفاء كبسولة الأيقونات تلقائيًا</string>
     <string name="settings_pill_auto_hide_desc">يخفي كبسولة الأيقونات فوق الشريط حتى تسحب لأعلى على الشريط. اسحب لأسفل لإخفائها مجددًا.</string>
+    <string name="settings_pill_centered_title">توسيط كبسولة الأيقونات</string>
+    <string name="settings_pill_centered_desc">يعرض كبسولة الأيقونات في المنتصف فوق الشريط بدلًا من جهة زر قائمة التطبيقات.</string>
     <string name="settings_hide_app_menu_title">إخفاء قائمة التطبيقات</string>
     <string name="settings_hide_app_menu_desc">إزالة زر قائمة التطبيقات من الشريط. لا يزال بإمكان إيماءة الشريط فتح القائمة.</string>
     <string name="dock_hide_info_line_label">إخفاء الوقت والتاريخ والبطارية</string>

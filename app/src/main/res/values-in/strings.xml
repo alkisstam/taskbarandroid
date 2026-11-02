@@ -454,6 +454,8 @@
     <string name="app_group_remove_app">Hapus dari panel</string>
     <string name="settings_pill_auto_hide_title">Sembunyikan Otomatis Pil Ikon</string>
     <string name="settings_pill_auto_hide_desc">Menyembunyikan pil ikon di atas Dock sampai Anda menggeser ke atas pada Dock. Geser ke bawah untuk menyembunyikannya lagi.</string>
+    <string name="settings_pill_centered_title">Pusatkan Pil Ikon</string>
+    <string name="settings_pill_centered_desc">Menampilkan pil ikon di tengah di atas Dock, bukan di sisi tombol Menu Aplikasi.</string>
     <string name="settings_hide_app_menu_title">Sembunyikan Menu Aplikasi</string>
     <string name="settings_hide_app_menu_desc">Hapus tombol Menu Aplikasi dari dock. Gestur pil tetap dapat membuka menu.</string>
     <string name="dock_hide_info_line_label">Sembunyikan waktu, tanggal &amp; baterai</string>

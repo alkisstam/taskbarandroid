@@ -454,6 +454,8 @@
     <string name="app_group_remove_app">הסרה מהלוח</string>
     <string name="settings_pill_auto_hide_title">הסתרה אוטומטית של גלולת הסמלים</string>
     <string name="settings_pill_auto_hide_desc">מסתיר את גלולת הסמלים מעל ה-Dock עד שתחליק למעלה על ה-Dock. החלק למטה כדי להסתיר אותה שוב.</string>
+    <string name="settings_pill_centered_title">מרכוז גלולת הסמלים</string>
+    <string name="settings_pill_centered_desc">מציג את גלולת הסמלים במרכז מעל ה-Dock במקום בצד של לחצן תפריט האפליקציות.</string>
     <string name="settings_hide_app_menu_title">הסתר תפריט אפליקציות</string>
     <string name="settings_hide_app_menu_desc">הסרת כפתור תפריט האפליקציות מהמעגן. מחוות גלולה עדיין יכולה לפתוח את התפריט.</string>
     <string name="dock_hide_info_line_label">הסתר שעה, תאריך וסוללה</string>

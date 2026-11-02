@@ -454,6 +454,8 @@
     <string name="app_group_remove_app">パネルから削除</string>
     <string name="settings_pill_auto_hide_title">アイコンピルを自動で隠す</string>
     <string name="settings_pill_auto_hide_desc">ドックを上にスワイプするまで、ドック上のアイコンピルを隠します。下にスワイプすると再び隠れます。</string>
+    <string name="settings_pill_centered_title">アイコンピルを中央に配置</string>
+    <string name="settings_pill_centered_desc">アイコンピルをアプリメニューボタン側ではなく、ドック上の中央に表示します。</string>
     <string name="settings_hide_app_menu_title">アプリメニューを非表示</string>
     <string name="settings_hide_app_menu_desc">ドックからアプリメニューボタンを削除します。ピルのジェスチャーでメニューを開くことは引き続き可能です。</string>
     <string name="dock_hide_info_line_label">時刻・日付・バッテリーを非表示</string>

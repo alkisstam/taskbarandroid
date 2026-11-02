@@ -454,6 +454,8 @@
     <string name="app_group_remove_app">Remover do painel</string>
     <string name="settings_pill_auto_hide_title">Ocultar pílula de ícones</string>
     <string name="settings_pill_auto_hide_desc">Oculta a pílula de ícones acima do Dock até você deslizar para cima no Dock. Deslize para baixo para ocultá-la novamente.</string>
+    <string name="settings_pill_centered_title">Centralizar pílula de ícones</string>
+    <string name="settings_pill_centered_desc">Mostra a pílula de ícones no centro acima do Dock em vez de ao lado do botão do menu de apps.</string>
     <string name="settings_hide_app_menu_title">Ocultar Menu de Apps</string>
     <string name="settings_hide_app_menu_desc">Remove o botão do Menu de Apps do dock. Um gesto na pílula ainda pode abrir o menu.</string>
     <string name="dock_hide_info_line_label">Ocultar hora, data e bateria</string>

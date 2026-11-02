@@ -454,6 +454,8 @@
     <string name="app_group_remove_app">Убрать с панели</string>
     <string name="settings_pill_auto_hide_title">Автоскрытие пилюли значков</string>
     <string name="settings_pill_auto_hide_desc">Скрывает пилюлю значков над доком, пока вы не смахнёте вверх по доку. Смахните вниз, чтобы снова скрыть её.</string>
+    <string name="settings_pill_centered_title">Пилюля значков по центру</string>
+    <string name="settings_pill_centered_desc">Показывает пилюлю значков по центру над доком, а не со стороны кнопки меню приложений.</string>
     <string name="settings_hide_app_menu_title">Скрыть меню приложений</string>
     <string name="settings_hide_app_menu_desc">Убирает кнопку меню приложений с панели. Меню по-прежнему можно открыть жестом на пилюле.</string>
     <string name="dock_hide_info_line_label">Скрыть время, дату и батарею</string>

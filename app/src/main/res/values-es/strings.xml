@@ -454,6 +454,8 @@
     <string name="app_group_remove_app">Quitar del panel</string>
     <string name="settings_pill_auto_hide_title">Ocultar píldora de iconos</string>
     <string name="settings_pill_auto_hide_desc">Oculta la píldora de iconos sobre el Dock hasta que deslices hacia arriba en el Dock. Desliza hacia abajo para ocultarla de nuevo.</string>
+    <string name="settings_pill_centered_title">Centrar píldora de iconos</string>
+    <string name="settings_pill_centered_desc">Muestra la píldora de iconos en el centro sobre el Dock en lugar de junto al botón del menú de apps.</string>
     <string name="settings_hide_app_menu_title">Ocultar menú de aplicaciones</string>
     <string name="settings_hide_app_menu_desc">Quita el botón del menú de aplicaciones del Dock. Un gesto de la píldora aún puede abrir el menú.</string>
     <string name="dock_hide_info_line_label">Ocultar hora, fecha y batería</string>

@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -49,6 +50,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -124,6 +126,7 @@ fun TaskbarView(
     val pillIconCount by taskbarViewModel.pillIconCount.collectAsState()
     val pillVisible by taskbarViewModel.pillVisible.collectAsState()
     val iconsPillAutoHide by taskbarViewModel.iconsPillAutoHide.collectAsState()
+    val iconsPillCentered by taskbarViewModel.iconsPillCentered.collectAsState()
     val density = LocalDensity.current
     val musicPanelEnabled by taskbarViewModel.musicPanelEnabled.collectAsState()
     val musicPanelVisible by appMenuViewModel.musicPanelVisible.collectAsState()
@@ -156,16 +159,22 @@ fun TaskbarView(
     val buttonOnLeft = taskbarSettings.appMenuButtonSide == AppMenuButtonSide.LEFT
     // Slides in from the button's side and back out towards it.
     val slideFrom: (Int) -> Int = { width -> if (buttonOnLeft) -width else width }
+    // The dock shrinks to its icons; the pill sits at its edge and the info line spans it.
+    var dockWidthPx by remember { mutableIntStateOf(0) }
+    var dockRowWidthPx by remember { mutableIntStateOf(0) }
 
     Column(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .onGloballyPositioned { taskbarViewModel.setDockStackHeightPx(it.size.height) },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (pillIconCount > 0) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth(dockWidthFraction)
-                    .padding(bottom = QuickControlsButtonGap)
+                    .padding(bottom = QuickControlsButtonGap),
+                contentAlignment = Alignment.BottomCenter
             ) {
                 androidx.compose.animation.AnimatedVisibility(
                     visible = isDockExpanded && expandedGroupId == null && quickControlsEnabled,
@@ -195,9 +204,17 @@ fun TaskbarView(
                         )
                     }
                 }
+                // At least the dock's width so the pill lines up with its edge, wider when the pill needs it.
+                Box(
+                    modifier = if (dockWidthPx > 0) Modifier.widthIn(min = with(density) { dockWidthPx.toDp() }) else Modifier.fillMaxWidth()
+                ) {
                 androidx.compose.animation.AnimatedVisibility(
                     visible = pillVisible && !isDockExpanded && !menuVisible,
-                    modifier = Modifier.align(if (buttonOnLeft) Alignment.BottomStart else Alignment.BottomEnd),
+                    modifier = Modifier.align(when {
+                        iconsPillCentered -> Alignment.BottomCenter
+                        buttonOnLeft -> Alignment.BottomStart
+                        else -> Alignment.BottomEnd
+                    }),
                     enter = fadeIn() + scaleIn(),
                     exit = fadeOut() + scaleOut()
                 ) {
@@ -252,16 +269,17 @@ fun TaskbarView(
                         }
                     }
                 }
+                }
             }
         }
 
+        Box(modifier = Modifier.fillMaxWidth(dockWidthFraction), contentAlignment = Alignment.Center) {
         DockSurface(
             taskbarViewModel = taskbarViewModel,
             surfaceColor = surfaceColor,
             shape = dockCornerShape,
             cornerRadius = taskbarSettings.cornerRadiusDp.dp,
             modifier = Modifier
-                .fillMaxWidth(dockWidthFraction)
                 .wrapContentHeight()
                 .then(
                     if (iconsPillAutoHide) Modifier.pointerInput(Unit) {
@@ -281,13 +299,14 @@ fun TaskbarView(
                     // window sees the dock moving and waits for it to settle.
                     taskbarViewModel.setDockBounds(coords.boundsOnScreen(hostView))
                     taskbarViewModel.setDockHeightPx(coords.size.height)
+                    dockWidthPx = coords.size.width
                 }
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
                         .height(taskbarSettings.dockHeightDp.dp)
+                        .onGloballyPositioned { dockRowWidthPx = it.size.width }
                         .padding(vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Start
@@ -304,7 +323,7 @@ fun TaskbarView(
                     LazyRow(
                         state = pinnedListState,
                         modifier = Modifier
-                            .weight(1f)
+                            .weight(1f, fill = false)
                             .then(if (taskbarSettings.hideAppMenuButton) Modifier.padding(horizontal = 8.dp) else Modifier),
                         horizontalArrangement = Arrangement.spacedBy(taskbarSettings.pinnedIconPaddingDp.dp, Alignment.CenterHorizontally),
                         verticalAlignment = Alignment.CenterVertically,
@@ -340,8 +359,13 @@ fun TaskbarView(
                     }
                 }
 
-                if (!taskbarSettings.hideInfoLine) StatusBarRow(batteryLevel = batteryLevel, isCharging = isCharging)
+                if (!taskbarSettings.hideInfoLine) StatusBarRow(
+                    batteryLevel = batteryLevel,
+                    isCharging = isCharging,
+                    modifier = Modifier.widthIn(min = with(density) { dockRowWidthPx.toDp() })
+                )
             }
+        }
         }
     }
 }
@@ -422,7 +446,7 @@ private fun QuickControlsPanel(
         ) {
             LazyRow(
                 modifier = Modifier
-                    .weight(1f)
+                    .weight(1f, fill = false)
                     .fillMaxHeight(),
                 contentPadding = PaddingValues(horizontal = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
@@ -469,9 +493,7 @@ private fun PanelRow(
 ) {
     val taskbarSettings by taskbarViewModel.taskbarSettings.collectAsState()
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(taskbarSettings.dockHeightDp.dp),
+        modifier = Modifier.height(taskbarSettings.dockHeightDp.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         val button = @Composable { padding: Modifier ->
@@ -508,7 +530,6 @@ private fun ExpandedPanelSurface(
         shape = RoundedCornerShape(taskbarSettings.cornerRadiusDp.dp),
         cornerRadius = taskbarSettings.cornerRadiusDp.dp,
         modifier = Modifier
-            .fillMaxWidth()
             .graphicsLayer { translationY = dragOffset.value }
             .pointerInput(taskbarSettings.dockHeightDp) {
                 val closeThresholdPx = with(density) { taskbarSettings.dockHeightDp.dp.toPx() } * 0.4f
@@ -549,7 +570,7 @@ private fun AppGroupPanel(
             if (apps.isEmpty()) {
                 Box(
                     modifier = Modifier
-                        .weight(1f)
+                        .weight(1f, fill = false)
                         .fillMaxHeight(),
                     contentAlignment = Alignment.Center
                 ) {
@@ -562,7 +583,7 @@ private fun AppGroupPanel(
             } else {
                 LazyRow(
                     modifier = Modifier
-                        .weight(1f)
+                        .weight(1f, fill = false)
                         .fillMaxHeight(),
                     contentPadding = PaddingValues(horizontal = 12.dp),
                     horizontalArrangement = Arrangement.spacedBy(taskbarSettings.pinnedIconPaddingDp.dp, Alignment.CenterHorizontally),
@@ -594,7 +615,7 @@ private fun AppGroupPanel(
 }
 
 @Composable
-private fun StatusBarRow(batteryLevel: Int, isCharging: Boolean) {
+private fun StatusBarRow(batteryLevel: Int, isCharging: Boolean, modifier: Modifier = Modifier) {
     var currentTime by remember { mutableStateOf(LocalTime.now()) }
     LaunchedEffect(Unit) {
         while (true) {
@@ -618,13 +639,12 @@ private fun StatusBarRow(batteryLevel: Int, isCharging: Boolean) {
     }
     val contentAlpha = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 14.dp, vertical = 4.dp),
+        modifier = modifier.padding(horizontal = 14.dp, vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
+            modifier = Modifier.padding(end = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {

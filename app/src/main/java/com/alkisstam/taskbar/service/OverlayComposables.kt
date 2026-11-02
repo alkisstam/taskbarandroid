@@ -40,6 +40,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -688,12 +689,18 @@ internal fun MusicPanelContent(
     // Sits beside a short (1-2 icon) pill instead of covering it; OverlayService lowers
     // the window to the pill's row in the same state. A longer pill leaves no room, so it goes above.
     val pillVisible by taskbarViewModel.pillVisible.collectAsState()
-    val besideButton = pillVisible && pillIconCount in 1..2 && !isDockExpanded
+    val iconsPillCentered by taskbarViewModel.iconsPillCentered.collectAsState()
+    val besideButton = pillVisible && pillIconCount in 1..2 && !isDockExpanded && !iconsPillCentered
     val buttonBounds by taskbarViewModel.quickControlsButtonBounds.collectAsState()
     // Bounds clear while the dock is hidden; keep the last width so the inset doesn't grow from 0 on reveal.
     var lastButtonWidthPx by remember { mutableIntStateOf(0) }
     buttonBounds?.let { lastButtonWidthPx = it.width }
     val buttonWidth = with(LocalDensity.current) { lastButtonWidthPx.toDp() }
+    // Matches the dock, which shrinks to its icons; same keep-last as the button width.
+    val dockBounds by taskbarViewModel.dockBounds.collectAsState()
+    var lastDockWidthPx by remember { mutableIntStateOf(0) }
+    dockBounds?.let { lastDockWidthPx = it.width }
+    val dockWidth = with(LocalDensity.current) { lastDockWidthPx.toDp() }
     val buttonInset by animateDpAsState(
         if (besideButton && buttonWidth > 0.dp) buttonWidth + QuickControlsButtonGap else 0.dp,
         label = "musicButtonInset"
@@ -724,6 +731,7 @@ internal fun MusicPanelContent(
                     },
                     modifier = Modifier
                         .fillMaxWidth(taskbarSettings.dockPadding.widthFraction)
+                        .then(if (dockWidth > 0.dp) Modifier.wrapContentWidth().width(dockWidth.coerceAtLeast(280.dp)) else Modifier)
                         .padding(start = if (buttonOnLeft) buttonInset else 0.dp, end = if (buttonOnLeft) 0.dp else buttonInset)
                         .onGloballyPositioned { panelWidthPx = it.size.width.toFloat() }
                         .graphicsLayer {

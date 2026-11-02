@@ -794,20 +794,23 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 taskbarViewModel.navBarInsetDp,
                 combine(
                     taskbarViewModel.pillIconCount,
-                    taskbarViewModel.pillVisible,
-                    taskbarViewModel.dockHeightPx,
+                    combine(taskbarViewModel.pillVisible, taskbarViewModel.iconsPillCentered, ::Pair),
+                    combine(taskbarViewModel.dockHeightPx, taskbarViewModel.dockStackHeightPx, ::Pair),
                     ::Triple
                 )
-            ) { settings, menuOpen, expandProgress, navInset, (pillIconCount, pillVisible, dockHeightPx) ->
+            ) { settings, menuOpen, expandProgress, navInset, (pillIconCount, pillState, heights) ->
+                val (pillVisible, pillCentered) = pillState
+                val (dockHeightPx, stackHeightPx) = heights
+                val density = resources.displayMetrics.density
                 val bottomGap = maxOf(settings.dockPadding.bottomGapDp, navInset)
                 val baseY = bottomGap + settings.dockHeightDp + 16f + 16f + expandProgress * (settings.dockHeightDp + 4f)
                 volumePanelYOffsetDp = baseY
                 val y = when {
-                    // Beside a 1-2 icon pill, or in its row while it is auto-hidden: just above the dock.
-                    pillIconCount > 0 && (!pillVisible || pillIconCount <= 2) && expandProgress == 0f && dockHeightPx != null ->
-                        bottomGap + dockHeightPx / resources.displayMetrics.density + QuickControlsButtonGap.value
-                    // Longer pill: above it, where it sits while a panel is open.
-                    pillVisible && pillIconCount > 2 -> bottomGap + settings.dockHeightDp + 16f + 16f + settings.dockHeightDp + 4f
+                    // Beside a 1-2 icon pill at the dock's edge, or in its row while it is auto-hidden: just above the dock.
+                    pillIconCount > 0 && (!pillVisible || pillIconCount <= 2 && !pillCentered) && expandProgress == 0f && dockHeightPx != null ->
+                        bottomGap + dockHeightPx / density + QuickControlsButtonGap.value
+                    // Above a longer pill or an open panel: measured, so the gap matches the dock-only case.
+                    stackHeightPx != null -> bottomGap + stackHeightPx / density + QuickControlsButtonGap.value
                     else -> baseY
                 }
                 if (menuOpen) y + 400f else y

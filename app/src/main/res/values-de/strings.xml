@@ -454,6 +454,8 @@
     <string name="app_group_remove_app">Aus Panel entfernen</string>
     <string name="settings_pill_auto_hide_title">Symbolleiste automatisch ausblenden</string>
     <string name="settings_pill_auto_hide_desc">Blendet die Symbolleiste über dem Dock aus, bis du auf dem Dock nach oben wischst. Wische nach unten, um sie wieder auszublenden.</string>
+    <string name="settings_pill_centered_title">Symbolleiste zentrieren</string>
+    <string name="settings_pill_centered_desc">Zeigt die Symbolleiste mittig über dem Dock statt auf der Seite der App-Menü-Taste.</string>
     <string name="settings_hide_app_menu_title">App-Menü ausblenden</string>
     <string name="settings_hide_app_menu_desc">Entfernt die App-Menü-Taste aus dem Dock. Eine Pillen-Geste kann das Menü weiterhin öffnen.</string>
     <string name="dock_hide_info_line_label">Uhrzeit, Datum &amp; Akku ausblenden</string>

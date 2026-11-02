@@ -454,6 +454,8 @@
     <string name="app_group_remove_app">Uit paneel verwijderen</string>
     <string name="settings_pill_auto_hide_title">Pictogrampil automatisch verbergen</string>
     <string name="settings_pill_auto_hide_desc">Verbergt de pictogrampil boven het Dock tot je omhoog veegt op het Dock. Veeg omlaag om hem weer te verbergen.</string>
+    <string name="settings_pill_centered_title">Pictogrampil centreren</string>
+    <string name="settings_pill_centered_desc">Toont de pictogrampil in het midden boven het Dock in plaats van aan de kant van de app-menuknop.</string>
     <string name="settings_hide_app_menu_title">App-menu verbergen</string>
     <string name="settings_hide_app_menu_desc">Verwijdert de App-menuknop uit het dock. Een pilgebaar kan het menu nog steeds openen.</string>
     <string name="dock_hide_info_line_label">Tijd, datum &amp; batterij verbergen</string>

@@ -215,6 +215,9 @@ class TaskbarViewModel @Inject constructor(
     val iconsPillAutoHide: StateFlow<Boolean> = prefsRepository.iconsPillAutoHide
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
+    val iconsPillCentered: StateFlow<Boolean> = prefsRepository.iconsPillCentered
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     // Auto-hide: revealed by a swipe up on the dock, until the dock hides.
     private val _pillRevealed = MutableStateFlow(false)
 
@@ -409,6 +412,12 @@ class TaskbarViewModel @Inject constructor(
     val dockHeightPx: StateFlow<Int?> = _dockHeightPx.asStateFlow()
 
     fun setDockHeightPx(height: Int) { _dockHeightPx.value = height }
+
+    // Dock plus whatever sits above it (icons pill, controls or group panel).
+    private val _dockStackHeightPx = MutableStateFlow<Int?>(null)
+    val dockStackHeightPx: StateFlow<Int?> = _dockStackHeightPx.asStateFlow()
+
+    fun setDockStackHeightPx(height: Int) { _dockStackHeightPx.value = height }
 
     // Pinned dock: the touch proxy needs this too, the button sits outside the dock bounds.
     private val _quickControlsButtonBounds = MutableStateFlow<IntRect?>(null)
@@ -664,6 +673,10 @@ class TaskbarViewModel @Inject constructor(
 
     fun setIconsPillAutoHide(enabled: Boolean) {
         viewModelScope.launch { prefsRepository.setIconsPillAutoHide(enabled) }
+    }
+
+    fun setIconsPillCentered(enabled: Boolean) {
+        viewModelScope.launch { prefsRepository.setIconsPillCentered(enabled) }
     }
 
     fun setAlwaysShowMusicPanel(enabled: Boolean) {

@@ -454,6 +454,8 @@
     <string name="app_group_remove_app">Remove from panel</string>
     <string name="settings_pill_auto_hide_title">Auto-hide Icons Pill</string>
     <string name="settings_pill_auto_hide_desc">Hide the icons pill above the Dock until you swipe up on the Dock. Swipe down to hide it again.</string>
+    <string name="settings_pill_centered_title">Align Icons Pill Centered</string>
+    <string name="settings_pill_centered_desc">Show the icons pill in the middle above the Dock instead of on the App Menu button\'s side.</string>
     <string name="settings_hide_app_menu_title">Hide App Menu</string>
     <string name="settings_hide_app_menu_desc">Remove the App Menu button from the dock. A pill gesture can still open the menu.</string>
     <string name="dock_hide_info_line_label">Hide time, date &amp; battery</string>

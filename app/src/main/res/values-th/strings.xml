@@ -454,6 +454,8 @@
     <string name="app_group_remove_app">นำออกจากแผง</string>
     <string name="settings_pill_auto_hide_title">ซ่อนแคปซูลไอคอนอัตโนมัติ</string>
     <string name="settings_pill_auto_hide_desc">ซ่อนแคปซูลไอคอนเหนือ Dock จนกว่าคุณจะปัดขึ้นบน Dock ปัดลงเพื่อซ่อนอีกครั้ง</string>
+    <string name="settings_pill_centered_title">จัดแคปซูลไอคอนไว้ตรงกลาง</string>
+    <string name="settings_pill_centered_desc">แสดงแคปซูลไอคอนตรงกลางเหนือ Dock แทนที่จะอยู่ฝั่งปุ่มเมนูแอป</string>
     <string name="settings_hide_app_menu_title">ซ่อนเมนูแอป</string>
     <string name="settings_hide_app_menu_desc">นำปุ่มเมนูแอปออกจาก Dock ยังเปิดเมนูได้ด้วยท่าทางบนพิล</string>
     <string name="dock_hide_info_line_label">ซ่อนเวลา วันที่ และแบตเตอรี่</string>

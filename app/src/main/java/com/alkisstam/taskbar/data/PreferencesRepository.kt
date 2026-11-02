@@ -263,6 +263,7 @@ class PreferencesRepository @Inject constructor(
         private val FLOATING_WINDOW_BOUNDS_KEY = stringPreferencesKey("floating_window_bounds")
         private val APP_GROUPS_KEY = stringPreferencesKey("app_groups")
         private val PILL_AUTO_HIDE_KEY = booleanPreferencesKey("icons_pill_auto_hide")
+        private val PILL_CENTERED_KEY = booleanPreferencesKey("icons_pill_centered")
 
         val ALL_CONTROL_IDS = listOf("torch", "ringer", "rotate", "brightness_slider", "dnd", "qr", "power", "volume", "screenshot", "lockscreen", "caffeine", "clipboard", "calculator", "wifi", "bluetooth", "share", "notif_history", "notes")
 
@@ -369,7 +370,8 @@ class PreferencesRepository @Inject constructor(
             SHOW_RECENT_APPS_ROW_KEY,
             TRANSLUCENT_MODE_KEY,
             BLUR_TINT_KEY,
-            PILL_AUTO_HIDE_KEY
+            PILL_AUTO_HIDE_KEY,
+            PILL_CENTERED_KEY
         )
         private val BACKUP_FLOAT_KEYS = listOf(
             APP_GRID_ICON_SIZE_KEY,
@@ -857,6 +859,16 @@ class PreferencesRepository @Inject constructor(
     suspend fun setIconsPillAutoHide(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[PILL_AUTO_HIDE_KEY] = enabled
+        }
+    }
+
+    val iconsPillCentered: Flow<Boolean> = safeData.map { prefs ->
+        prefs[PILL_CENTERED_KEY] ?: false
+    }
+
+    suspend fun setIconsPillCentered(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[PILL_CENTERED_KEY] = enabled
         }
     }
 

@@ -454,6 +454,8 @@
     <string name="app_group_remove_app">Retirer du panneau</string>
     <string name="settings_pill_auto_hide_title">Masquer la pilule d\'icônes</string>
     <string name="settings_pill_auto_hide_desc">Masque la pilule d\'icônes au-dessus du Dock jusqu\'à ce que vous balayiez vers le haut sur le Dock. Balayez vers le bas pour la masquer à nouveau.</string>
+    <string name="settings_pill_centered_title">Centrer la pilule d\'icônes</string>
+    <string name="settings_pill_centered_desc">Affiche la pilule d\'icônes au milieu au-dessus du Dock au lieu du côté du bouton du menu des apps.</string>
     <string name="settings_hide_app_menu_title">Masquer le menu des applications</string>
     <string name="settings_hide_app_menu_desc">Retire le bouton du menu des applications du Dock. Un geste sur la pilule peut toujours ouvrir le menu.</string>
     <string name="dock_hide_info_line_label">Masquer l\'heure, la date et la batterie</string>
