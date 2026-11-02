@@ -1,6 +1,7 @@
 Değişenler
 • Notlar, yapılacaklar ve pano öğeleri telefon yedeğine dahil
 • Güncelleme bildirimi artık bir iletişim kutusu
+• Pano ve not panelleri, dosya görüntülendikten sonra yeniden açılır
 Düzeltilenler
 • Android 8, 9 ve 10'da çökme
 • Bildirim geçmişi yalnızca kontrolü açıkken kaydedilir

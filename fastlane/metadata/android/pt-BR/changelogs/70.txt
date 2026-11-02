@@ -1,6 +1,7 @@
 Alterado
 • Notas, tarefas e itens da área de transferência entram no backup do celular
 • O aviso de atualização agora é uma caixa de diálogo
+• Área de transferência e notas reabrem após ver um arquivo
 Corrigido
 • Falha no Android 8, 9 e 10
 • O histórico de notificações só é salvo com o controle ativado

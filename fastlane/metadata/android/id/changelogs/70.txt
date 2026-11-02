@@ -1,6 +1,7 @@
 Diubah
 • Catatan, tugas, dan item papan klip disertakan dalam cadangan ponsel
 • Pemberitahuan pembaruan kini berupa dialog
+• Panel papan klip dan catatan terbuka lagi setelah melihat file
 Diperbaiki
 • Crash di Android 8, 9, dan 10
 • Riwayat notifikasi hanya disimpan saat kontrolnya aktif

@@ -1,6 +1,7 @@
 Changed
 • Notes, to-dos and clipboard items are included in your phone's backup
 • The update prompt is now a dialog
+• The clipboard and notes panels reopen after viewing a file
 Fixed
 • Crash on Android 8, 9 and 10
 • Notification history is saved only while its control is on

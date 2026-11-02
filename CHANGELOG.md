@@ -11,6 +11,7 @@ Crash fix for older Android versions, privacy and backup fixes.
 ### Changed
 - **Notes in your backup** — notes, to-dos and clipboard items are now included in Android's device backup and phone-to-phone transfer. Shared files themselves are not backed up, so restored file clips show without a preview.
 - **Update prompt** — when an update has downloaded, a dialog with Restart and Cancel replaces the bar at the bottom of the screen.
+- **Clipboard stays open after viewing a clip** — after you open an image, file or link from the clipboard or notes panel and go back, the panel and dock reopen where you left them. Going to the home screen or another app doesn't reopen them.
 
 ### Fixed
 - **Crash on Android 8, 9 and 10** — the dock no longer crashes when it reads the status bar size on these versions.

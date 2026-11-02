@@ -1,6 +1,7 @@
 Modificato
 • Note, attività e appunti sono inclusi nel backup del telefono
 • L'avviso di aggiornamento ora è una finestra di dialogo
+• Appunti e note si riaprono dopo aver visto un file
 Corretto
 • Arresto anomalo su Android 8, 9 e 10
 • La cronologia notifiche viene salvata solo con il suo controllo attivo

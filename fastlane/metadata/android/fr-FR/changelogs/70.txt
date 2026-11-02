@@ -1,6 +1,7 @@
 Modifié
 • Notes, tâches et presse-papiers inclus dans la sauvegarde du téléphone
-• L'invite de mise à jour est maintenant une boîte de dialogue
+• L'invite de mise à jour est une boîte de dialogue
+• Presse-papiers et notes se rouvrent après avoir vu un fichier
 Corrigé
 • Plantage sous Android 8, 9 et 10
 • L'historique des notifications n'est enregistré que si sa commande est active

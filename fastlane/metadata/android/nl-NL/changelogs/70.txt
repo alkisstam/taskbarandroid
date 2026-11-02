@@ -1,6 +1,7 @@
 Gewijzigd
 • Notities, taken en klembordonderdelen zitten nu in de back-up van je telefoon
 • De updatemelding is nu een dialoogvenster
+• Klembord en notities openen weer nadat je een bestand hebt bekeken
 Opgelost
 • Crash op Android 8, 9 en 10
 • Meldingsgeschiedenis wordt alleen opgeslagen als de knop aan staat

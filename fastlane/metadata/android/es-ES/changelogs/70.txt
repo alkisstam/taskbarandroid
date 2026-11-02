@@ -1,6 +1,7 @@
 Cambios
-• Notas, tareas y elementos del portapapeles se incluyen en la copia de seguridad
+• Notas, tareas y portapapeles se incluyen en la copia de seguridad
 • El aviso de actualización ahora es un diálogo
+• El portapapeles y las notas se reabren tras ver un archivo
 Corregido
 • Cierre inesperado en Android 8, 9 y 10
 • El historial de notificaciones solo se guarda con su control activado
