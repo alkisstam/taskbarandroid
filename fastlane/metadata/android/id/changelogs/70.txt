@@ -2,9 +2,9 @@ Diubah
 • Catatan, tugas, dan item papan klip disertakan dalam cadangan ponsel
 • Pemberitahuan pembaruan kini berupa dialog
 • Panel papan klip dan catatan terbuka lagi setelah melihat file
+• Dock dan panel menyesuaikan jumlah ikon; opsi memusatkan pil ikon
 Diperbaiki
 • Crash di Android 8, 9, dan 10
 • Riwayat notifikasi hanya disimpan saat kontrolnya aktif
 • File teks yang dihapus kini mengosongkan penyimpanan
 • Gambar yang dibagikan tetap dalam format aslinya
-• Ubin Setelan Cepat membuka aplikasi jika izin overlay belum diberikan

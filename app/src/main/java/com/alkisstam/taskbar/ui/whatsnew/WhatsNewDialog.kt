@@ -326,6 +326,7 @@ val whatsNewReleases = listOf(
             "Deleting a shared text file from the clipboard now frees its storage",
             "Shared images keep their original format instead of being saved as JPG",
             "The clipboard and notes panels reopen after you view an image or file",
+            "The dock and its panels shrink to fit their icons, with an option to center the icons pill",
             "The Quick Settings tile opens the app when the overlay permission is missing"
         )
     )

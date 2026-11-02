@@ -6,12 +6,14 @@ All notable changes to Floating Dock are documented here.
 
 ## [1.5.15] - 2026-11-01
 
-Crash fix for older Android versions, privacy and backup fixes.
+Crash fix for older Android versions, a dock that fits its icons, privacy and backup fixes.
 
 ### Changed
 - **Notes in your backup** — notes, to-dos and clipboard items are now included in Android's device backup and phone-to-phone transfer. Shared files themselves are not backed up, so restored file clips show without a preview.
 - **Update prompt** — when an update has downloaded, a dialog with Restart and Cancel replaces the bar at the bottom of the screen.
 - **Clipboard stays open after viewing a clip** — after you open an image, file or link from the clipboard or notes panel and go back, the panel and dock reopen where you left them. Going to the home screen or another app doesn't reopen them.
+- **Dock fits its icons** — the dock, the quick controls panel and app group panels shrink to fit their icons and stay centered; the dock width setting is now the maximum. The icons pill lines up with the dock's edge and the music panel matches its width.
+- **Center the icons pill** — new Behaviour option, Align Icons Pill Centered, shows the icons pill in the middle above the dock.
 
 ### Fixed
 - **Crash on Android 8, 9 and 10** — the dock no longer crashes when it reads the status bar size on these versions.
@@ -22,6 +24,7 @@ Crash fix for older Android versions, privacy and backup fixes.
 - **Quick Settings tile without permission** — if Floating Dock can't draw over other apps, the tile opens the app instead of turning on an invisible dock. The tile label is now translated.
 - **Fuzzy search flicker** — the fuzzy search setting no longer shows as on for a moment before loading.
 - **Battery use with the screen off** — the fullscreen check behind Auto-hide in fullscreen pauses while the screen is off.
+- **Music panel gap** — above the icons pill or an open panel, the music panel no longer sits higher than it does above the dock alone.
 
 ---
 

@@ -2,9 +2,9 @@ Geändert
 • Notizen, To-dos und Zwischenablage sind jetzt im Geräte-Backup enthalten
 • Der Update-Hinweis ist jetzt ein Dialog
 • Zwischenablage und Notizen öffnen sich nach dem Ansehen einer Datei wieder
+• Dock und Leisten passen sich der Symbolanzahl an; Symbolleiste zentrierbar
 Behoben
 • Absturz unter Android 8, 9 und 10
 • Benachrichtigungsverlauf wird nur gespeichert, wenn die Steuerung aktiv ist
 • Entfernte geteilte Textdateien geben Speicher frei
 • Geteilte Bilder behalten ihr Format
-• Schnelleinstellungs-Kachel öffnet die App, wenn die Overlay-Berechtigung fehlt

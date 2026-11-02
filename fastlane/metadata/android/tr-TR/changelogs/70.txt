@@ -2,9 +2,9 @@ Değişenler
 • Notlar, yapılacaklar ve pano öğeleri telefon yedeğine dahil
 • Güncelleme bildirimi artık bir iletişim kutusu
 • Pano ve not panelleri, dosya görüntülendikten sonra yeniden açılır
+• Dock ve paneller simgelere göre küçülür; simge hapı ortalanabilir
 Düzeltilenler
 • Android 8, 9 ve 10'da çökme
 • Bildirim geçmişi yalnızca kontrolü açıkken kaydedilir
 • Kaldırılan metin dosyaları artık depolama alanı açar
 • Paylaşılan görseller orijinal biçimini korur
-• Hızlı Ayarlar kutucuğu, yer paylaşımı izni yoksa uygulamayı açar

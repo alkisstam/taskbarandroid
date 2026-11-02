@@ -2,9 +2,9 @@ Cambios
 • Notas, tareas y portapapeles se incluyen en la copia de seguridad
 • El aviso de actualización ahora es un diálogo
 • El portapapeles y las notas se reabren tras ver un archivo
+• El Dock y los paneles se ajustan a sus íconos; opción para centrar la píldora
 Corregido
 • Cierre inesperado en Android 8, 9 y 10
 • El historial de notificaciones solo se guarda con su control activado
 • Los archivos de texto eliminados liberan espacio
 • Las imágenes compartidas conservan su formato
-• El mosaico de Ajustes rápidos abre la app si falta el permiso de superposición
