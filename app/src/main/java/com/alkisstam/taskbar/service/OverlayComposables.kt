@@ -486,7 +486,8 @@ internal fun ClipboardPanelContent(
             viewModel = clipboardViewModel,
             onDismiss = appMenuViewModel::dismissClipboardPanel,
             onOpenExternal = {
-                appMenuViewModel.dismissClipboardPanelForExternalOpen()
+                appMenuViewModel.dismissClipboardPanelForExternalOpen(isTaskbarVisible)
+                TaskBarAccessibilityService.instance?.armReturnRestore()
                 taskbarViewModel.hideTaskbar()
                 appMenuViewModel.dismissMusicPanel()
             },
@@ -525,7 +526,8 @@ internal fun NotesPanelContent(
             viewModel = clipboardViewModel,
             onDismiss = appMenuViewModel::dismissNotesPanel,
             onOpenExternal = {
-                appMenuViewModel.dismissNotesPanelForExternalOpen()
+                appMenuViewModel.dismissNotesPanelForExternalOpen(isTaskbarVisible)
+                TaskBarAccessibilityService.instance?.armReturnRestore()
                 taskbarViewModel.hideTaskbar()
                 appMenuViewModel.dismissMusicPanel()
             },

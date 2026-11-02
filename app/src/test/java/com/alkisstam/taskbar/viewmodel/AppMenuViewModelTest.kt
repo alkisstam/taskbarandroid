@@ -175,6 +175,18 @@ class AppMenuViewModelTest {
     }
 
     @Test
+    fun `restorePanelAfterExternalOpen reopens the closed panel once`() = runTest(mainDispatcherRule.dispatcher) {
+        val vm = createViewModel()
+        vm.toggleClipboardPanel()
+        vm.dismissClipboardPanelForExternalOpen(dockVisible = true)
+        assertFalse(vm.clipboardPanelVisible.value)
+        assertTrue(vm.restorePanelAfterExternalOpen())
+        assertTrue(vm.clipboardPanelVisible.value)
+        assertTrue(vm.dockVisibleBeforeExternalOpen)
+        assertFalse(vm.restorePanelAfterExternalOpen())
+    }
+
+    @Test
     fun `toggleNotificationPanel dismisses notes panel`() = runTest(mainDispatcherRule.dispatcher) {
         val vm = createViewModel()
         vm.toggleNotesPanel()

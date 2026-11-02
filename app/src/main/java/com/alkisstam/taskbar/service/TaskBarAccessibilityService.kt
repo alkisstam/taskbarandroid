@@ -103,6 +103,39 @@ class TaskBarAccessibilityService : AccessibilityService() {
 
     private var lastForegroundPackage: String? = null
     private var shadeOpen = false
+
+    // App under the overlay, ignoring our own windows, SystemUI, the keyboard and the app chooser,
+    // so it still names the user's app while a panel is open.
+    private var lastAppPackage: String? = null
+    private var returnOrigin: String? = null
+    private var returnViewer: String? = null
+
+    // A panel opened a file/link in another app: reopen it when the user comes back to the app
+    // they were in. Going home or on to a third app cancels it.
+    fun armReturnRestore() {
+        returnOrigin = lastAppPackage
+        returnViewer = null
+    }
+
+    private fun trackReturnFromExternal(pkg: String, cls: String?) {
+        if (pkg == packageName || pkg == "com.android.systemui" || pkg == "android" ||
+            pkg == "com.android.intentresolver" || cls == "android.inputmethodservice.SoftInputWindow"
+        ) return
+        if (pkg == lastAppPackage) return
+        lastAppPackage = pkg
+        val origin = returnOrigin ?: return
+        val viewer = returnViewer
+        when {
+            pkg == origin && viewer != null -> {
+                returnOrigin = null
+                sendBroadcast(Intent(OverlayService.ACTION_RETURNED_FROM_EXTERNAL).setPackage(packageName))
+            }
+            pkg == origin -> {}
+            pkg in launcherPackages() -> returnOrigin = null
+            viewer == null -> returnViewer = pkg
+            pkg != viewer -> returnOrigin = null
+        }
+    }
     private val keyguardManager by lazy { getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager }
 
     private val handler = Handler(Looper.getMainLooper())
@@ -169,6 +202,8 @@ class TaskBarAccessibilityService : AccessibilityService() {
                     Intent(OverlayService.ACTION_DISMISS_ALL).setPackage(packageName)
                 )
             }
+            // After the home dismiss, so returning to a launcher origin reopens the panel.
+            trackReturnFromExternal(pkg, cls)
         }
     }
 

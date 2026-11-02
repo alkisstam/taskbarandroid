@@ -294,7 +294,9 @@ class AppMenuViewModel @Inject constructor(
         _noMediaMessage.value = null
     }
 
-    private var clipboardDismissedForExternalOpen = false
+    private var panelClosedForExternalOpen: String? = null
+    var dockVisibleBeforeExternalOpen = false
+        private set
 
     fun toggleClipboardPanel() {
         val newValue = !_clipboardPanelVisible.value
@@ -326,8 +328,21 @@ class AppMenuViewModel @Inject constructor(
         _notesPanelVisible.value = false
     }
 
-    fun dismissNotesPanelForExternalOpen() {
+    fun dismissNotesPanelForExternalOpen(dockVisible: Boolean) {
+        panelClosedForExternalOpen = "notes"
+        dockVisibleBeforeExternalOpen = dockVisible
         _notesPanelVisible.value = false
+    }
+
+    // Returns false when nothing was closed for an external open, so the caller leaves the dock alone.
+    fun restorePanelAfterExternalOpen(): Boolean {
+        val panel = panelClosedForExternalOpen ?: return false
+        panelClosedForExternalOpen = null
+        when (panel) {
+            "clipboard" -> if (!_clipboardPanelVisible.value) toggleClipboardPanel()
+            "notes" -> if (!_notesPanelVisible.value) toggleNotesPanel()
+        }
+        return true
     }
 
     fun toggleQuickSettingsPanel() {
@@ -382,15 +397,10 @@ class AppMenuViewModel @Inject constructor(
         _notificationPanelVisible.value = false
     }
 
-    fun dismissClipboardPanelForExternalOpen() {
-        clipboardDismissedForExternalOpen = true
+    fun dismissClipboardPanelForExternalOpen(dockVisible: Boolean) {
+        panelClosedForExternalOpen = "clipboard"
+        dockVisibleBeforeExternalOpen = dockVisible
         _clipboardPanelVisible.value = false
-    }
-
-    fun consumeClipboardDismissedForExternalOpen(): Boolean {
-        val result = clipboardDismissedForExternalOpen
-        clipboardDismissedForExternalOpen = false
-        return result
     }
 
     fun playPause() { mediaRepository.playPause() }

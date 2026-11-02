@@ -290,6 +290,12 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                 ACTION_IME_SHOWN -> {
                     if (this@OverlayService::taskbarViewModel.isInitialized) handler.post { startImePoll() }
                 }
+                ACTION_RETURNED_FROM_EXTERNAL -> {
+                    if (this@OverlayService::appMenuViewModel.isInitialized &&
+                        appMenuViewModel.restorePanelAfterExternalOpen() &&
+                        appMenuViewModel.dockVisibleBeforeExternalOpen
+                    ) taskbarViewModel.showTaskbar()
+                }
             }
         }
     }
@@ -390,6 +396,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         const val ACTION_SHADE_CHANGED = "com.alkisstam.taskbar.SHADE_CHANGED"
         const val EXTRA_SHADE_OPEN = "shade_open"
         const val ACTION_IME_SHOWN = "com.alkisstam.taskbar.IME_SHOWN"
+        const val ACTION_RETURNED_FROM_EXTERNAL = "com.alkisstam.taskbar.RETURNED_FROM_EXTERNAL"
         private const val PINNED_TOUCH_MARGIN_DP = 16
 
         @Volatile var isTaskbarVisibleForBack = false
@@ -444,6 +451,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             addAction(ACTION_CLIPBOARD_PANEL_SHOW)
             addAction(ACTION_SHADE_CHANGED)
             addAction(ACTION_IME_SHOWN)
+            addAction(ACTION_RETURNED_FROM_EXTERNAL)
         }
         ContextCompat.registerReceiver(this, lockscreenReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
         registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
