@@ -191,7 +191,7 @@ fun ClipItemCard(
                     val filename = item.fileName ?: remember(item.content) { File(item.content).name }
                     val preview by produceState<String?>(initialValue = null, item.content) {
                         value = withContext(Dispatchers.IO) {
-                            runCatching { File(item.content).readText(Charsets.UTF_8).take(300) }.getOrNull()
+                            runCatching { readTextPrefix(item.content, 300) }.getOrNull()
                         }
                     }
                     Box(modifier = Modifier.clickable { onOpenExternal(); openFile(context, item.content, "text/plain") }) {
@@ -325,7 +325,7 @@ fun ClipItemCard(
                     copyScope.launch {
                         val textToCopy = when (item.type) {
                             ClipType.TEXT_FILE -> withContext(Dispatchers.IO) {
-                                runCatching { File(item.content).readText().take(50_000) }.getOrElse { item.content }
+                                runCatching { readTextPrefix(item.content, 50_000) }.getOrElse { item.content }
                             }
                             else -> item.content
                         }
@@ -374,6 +374,19 @@ fun ClipItemCard(
         }
     }
 }
+
+// Shared text files can be up to 50 MB; readText() would load all of it to show a prefix.
+internal fun readTextPrefix(path: String, maxChars: Int): String =
+    File(path).bufferedReader(Charsets.UTF_8).use { reader ->
+        val buf = CharArray(maxChars)
+        var total = 0
+        while (total < maxChars) {
+            val n = reader.read(buf, total, maxChars - total)
+            if (n < 0) break
+            total += n
+        }
+        String(buf, 0, total)
+    }
 
 private fun openFile(context: Context, path: String, mimeType: String) {
     try {

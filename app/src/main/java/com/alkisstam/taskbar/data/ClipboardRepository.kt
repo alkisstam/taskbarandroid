@@ -11,7 +11,9 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 import org.json.JSONArray
@@ -72,9 +74,14 @@ class ClipboardRepository @Inject constructor(
         if (e is IOException) emit(emptyPreferences()) else throw e
     }
 
+    // Backup restores the clip list but not clipboard/ (Auto Backup's 25 MB cap), so hide
+    // file clips whose file didn't come along.
     val clips: Flow<List<ClipItem>> = safeData.map { prefs ->
-        prefs[CLIPS_KEY]?.let { deserializeClips(it) } ?: emptyList()
-    }
+        (prefs[CLIPS_KEY]?.let { deserializeClips(it) } ?: emptyList()).filter(::hasContent)
+    }.flowOn(Dispatchers.IO)
+
+    internal fun hasContent(item: ClipItem): Boolean =
+        item.type == ClipType.TEXT || item.type == ClipType.URL || File(item.content).exists()
 
     val noteItems: Flow<List<NoteItem>> = safeData.map { prefs ->
         prefs[NOTES_LIST_KEY]?.let { deserializeNotes(it) } ?: emptyList()

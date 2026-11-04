@@ -1,14 +1,63 @@
 package com.alkisstam.taskbar.data
 
+import android.content.Context
+import com.alkisstam.taskbar.ui.clipboard.readTextPrefix
+import io.mockk.every
 import io.mockk.mockk
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
+import java.io.IOException
+import java.io.InputStream
 
 class ClipboardRepositoryTest {
 
+    @get:Rule val tmp = TemporaryFolder()
+
     private val repo = ClipboardRepository(mockk(relaxed = true))
+
+    private fun repoWithFiles() = ClipboardRepository(mockk<Context> { every { filesDir } returns tmp.root })
+
+    @Test
+    fun `oversized share is rejected and its partial file deleted`() {
+        val repo = repoWithFiles()
+        var left = 50L * 1024 * 1024 + 1
+        val huge = object : InputStream() {
+            override fun read(): Int = if (left-- > 0) 0 else -1
+            override fun read(b: ByteArray, off: Int, len: Int): Int {
+                if (left <= 0) return -1
+                val n = minOf(len.toLong(), left).toInt()
+                left -= n
+                return n
+            }
+        }
+        try {
+            repo.copyStreamToStorage(huge, "txt", "big")
+            fail("expected IOException")
+        } catch (e: IOException) {
+            assertFalse(tmp.root.resolve("clipboard/big.txt").exists())
+        }
+    }
+
+    @Test
+    fun `file clips without their file are hidden, text clips kept`() {
+        val present = tmp.newFile("a.pdf").absolutePath
+        assertTrue(repo.hasContent(ClipItem("1", ClipType.PDF, present, "A", 1L)))
+        assertFalse(repo.hasContent(ClipItem("2", ClipType.IMAGE, "/missing/x.png", "A", 1L)))
+        assertTrue(repo.hasContent(ClipItem("3", ClipType.TEXT, "hello", "A", 1L)))
+        assertTrue(repo.hasContent(ClipItem("4", ClipType.URL, "https://x.y", "A", 1L)))
+    }
+
+    @Test
+    fun `text prefix reads only the requested chars`() {
+        val f = tmp.newFile("t.txt").apply { writeText("x".repeat(100_000)) }
+        assertEquals(300, readTextPrefix(f.path, 300).length)
+        assertEquals("hi", readTextPrefix(tmp.newFile("s.txt").apply { writeText("hi") }.path, 300))
+    }
 
     @Test
     fun `clips round-trip through JSON`() {

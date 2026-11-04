@@ -33,6 +33,9 @@ class ClipboardShareActivity : ComponentActivity() {
             "application/vnd.openxmlformats-officedocument.presentationml.presentation" to "pptx",
             "application/vnd.ms-powerpoint" to "ppt"
         )
+
+        internal fun isAllowedStream(uri: Uri, ownPackage: String): Boolean =
+            uri.scheme == "content" && uri.authority != "$ownPackage.fileprovider"
     }
 
     @Inject lateinit var clipboardRepository: ClipboardRepository
@@ -116,7 +119,7 @@ class ClipboardShareActivity : ComponentActivity() {
             @Suppress("DEPRECATION")
             intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
         }
-        return uri?.takeIf { it.scheme == "content" && it.authority != "$packageName.fileprovider" }
+        return uri?.takeIf { isAllowedStream(it, packageName) }
     }
 
     private fun resolveFileName(uri: Uri): String? {
