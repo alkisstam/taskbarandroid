@@ -108,13 +108,15 @@ class ClipboardShareActivity : ComponentActivity() {
         return if (file.renameTo(renamed)) item.copy(content = renamed.absolutePath) else item
     }
 
+    // Exported: a file:// or own-provider URI would let any app make us copy our private files.
     private fun intentStream(): Uri? {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
         } else {
             @Suppress("DEPRECATION")
             intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
         }
+        return uri?.takeIf { it.scheme == "content" && it.authority != "$packageName.fileprovider" }
     }
 
     private fun resolveFileName(uri: Uri): String? {

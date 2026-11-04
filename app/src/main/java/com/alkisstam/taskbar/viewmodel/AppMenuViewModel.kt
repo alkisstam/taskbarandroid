@@ -537,6 +537,8 @@ class AppMenuViewModel @Inject constructor(
     }
 
     override fun onCleared() {
+        // Dock stopping with caffeine on would otherwise leave the system timeout raised.
+        deactivateCaffeine()
         super.onCleared()
         quickControls.removeChangeListener(quickControlsChangeListener)
     }

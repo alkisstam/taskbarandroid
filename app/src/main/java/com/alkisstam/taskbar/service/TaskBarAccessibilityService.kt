@@ -186,7 +186,7 @@ class TaskBarAccessibilityService : AccessibilityService() {
                     packageName -> "self"
                     else -> "other"
                 }
-                val detail = "shade=$shade src=$source cls=$cls hasText=${event.text.isNotEmpty()} changes=${event.contentChangeTypes}"
+                val detail = "shade=$shade src=$source cls=${if (source == "other") "-" else cls} hasText=${event.text.isNotEmpty()} changes=${event.contentChangeTypes}"
                 FirebaseCrashlytics.getInstance().log(detail)
                 FirebaseCrashlytics.getInstance().setCustomKey("shade_event", detail)
                 setShadeOpen(shade)
