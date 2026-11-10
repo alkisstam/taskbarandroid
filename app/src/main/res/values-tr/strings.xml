@@ -464,4 +464,6 @@
     <string name="settings_about_version">Sürüm %1$s</string>
     <string name="settings_about_privacy">Gizlilik Politikası</string>
     <string name="settings_about_terms">Hizmet Şartları</string>
+    <string name="settings_backup_export_failed">Yedek dışa aktarılamadı</string>
+    <string name="settings_backup_restore_failed">Yedek geri yüklenemedi: geçersiz dosya</string>
 </resources>

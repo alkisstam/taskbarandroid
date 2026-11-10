@@ -22,6 +22,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,6 +33,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
 import rikka.shizuku.Shizuku
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
@@ -56,6 +60,7 @@ class AppRepository @Inject constructor(
     private val savedFloatingBounds: StateFlow<Map<String, String>> = preferencesRepository.floatingWindowBounds
         .stateIn(scope, SharingStarted.Eagerly, emptyMap())
     private val boundsTrackers = ConcurrentHashMap<String, Job>()
+    private val freeformMutex = Mutex()
 
     // Decoded icons keyed by packageName, so a package-changed broadcast or an
     // icon-skip retry doesn't re-decode apps that already succeeded. Bounded by
@@ -281,30 +286,35 @@ class AppRepository @Inject constructor(
         return proc.waitFor() to out
     }
 
-    private suspend fun shizukuFreeformLaunch(packageName: String, component: String, savedBounds: Rect?) {
+    // Overlapping launches would read each other's "1" as the original value.
+    private suspend fun shizukuFreeformLaunch(packageName: String, component: String, savedBounds: Rect?) = freeformMutex.withLock {
         val keys = listOf("enable_freeform_support", "force_resizable_activities")
-        val saved = try {
-            val saved = keys.associateWith { shell("settings", "get", "global", it).second }
+        val saved = mutableMapOf<String, String>()
+        try {
+            keys.forEach { saved[it] = shell("settings", "get", "global", it).second }
             saved.forEach { (key, value) -> if (value != "1") shell("settings", "put", "global", key, "1") }
             if (shell("am", "start", "--windowingMode", "5", "-n", component).first == 0) {
                 trackFloatingBounds(packageName, savedBounds)
+                // Put the device-wide flags back once the window exists, so nothing else on the device changes.
+                delay(3000)
             } else {
                 launchApp(packageName)
             }
-            saved
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.w("AppRepository", "Shizuku freeform launch failed for $packageName", e)
             launchApp(packageName)
-            return
-        }
-        // Put the device-wide flags back once the window exists, so nothing else on the device changes.
-        delay(3000)
-        saved.forEach { (key, value) ->
-            runCatching {
-                when (value) {
-                    "1" -> Unit
-                    "null" -> shell("settings", "delete", "global", key)
-                    else -> shell("settings", "put", "global", key, value)
+        } finally {
+            withContext(NonCancellable) {
+                saved.forEach { (key, value) ->
+                    runCatching {
+                        when (value) {
+                            "1" -> Unit
+                            "null" -> shell("settings", "delete", "global", key)
+                            else -> shell("settings", "put", "global", key, value)
+                        }
+                    }
                 }
             }
         }

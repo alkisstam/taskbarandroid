@@ -464,4 +464,6 @@
     <string name="settings_about_version">Versión %1$s</string>
     <string name="settings_about_privacy">Política de privacidad</string>
     <string name="settings_about_terms">Términos del servicio</string>
+    <string name="settings_backup_export_failed">No se ha podido exportar la copia de seguridad</string>
+    <string name="settings_backup_restore_failed">No se ha podido restaurar la copia de seguridad: archivo no válido</string>
 </resources>

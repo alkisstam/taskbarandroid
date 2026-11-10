@@ -464,4 +464,6 @@
     <string name="settings_about_version">Versione %1$s</string>
     <string name="settings_about_privacy">Informativa sulla privacy</string>
     <string name="settings_about_terms">Termini di servizio</string>
+    <string name="settings_backup_export_failed">Impossibile esportare il backup</string>
+    <string name="settings_backup_restore_failed">Impossibile ripristinare il backup: file non valido</string>
 </resources>

@@ -464,4 +464,6 @@
     <string name="settings_about_version">バージョン %1$s</string>
     <string name="settings_about_privacy">プライバシーポリシー</string>
     <string name="settings_about_terms">利用規約</string>
+    <string name="settings_backup_export_failed">バックアップをエクスポートできませんでした</string>
+    <string name="settings_backup_restore_failed">バックアップを復元できませんでした: 無効なファイルです</string>
 </resources>

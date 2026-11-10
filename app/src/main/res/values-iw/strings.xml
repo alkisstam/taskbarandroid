@@ -464,4 +464,6 @@
     <string name="settings_about_version">גרסה %1$s</string>
     <string name="settings_about_privacy">מדיניות פרטיות</string>
     <string name="settings_about_terms">תנאי שימוש</string>
+    <string name="settings_backup_export_failed">ייצוא הגיבוי נכשל</string>
+    <string name="settings_backup_restore_failed">שחזור הגיבוי נכשל: קובץ לא תקין</string>
 </resources>

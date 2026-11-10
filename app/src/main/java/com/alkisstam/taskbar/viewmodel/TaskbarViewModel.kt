@@ -11,6 +11,7 @@ import android.util.Log
 import androidx.compose.ui.unit.IntRect
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.AppGroup
 import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.AppRepository
@@ -722,8 +723,8 @@ class TaskbarViewModel @Inject constructor(
         context.stopService(intent)
     }
 
-    private val _backupError = MutableStateFlow<String?>(null)
-    val backupError: StateFlow<String?> = _backupError.asStateFlow()
+    private val _backupError = MutableStateFlow<Int?>(null)
+    val backupError: StateFlow<Int?> = _backupError.asStateFlow()
 
     fun clearBackupError() {
         _backupError.value = null
@@ -738,7 +739,7 @@ class TaskbarViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 Log.w("TaskbarViewModel", "Failed to export backup", e)
-                _backupError.value = "Failed to export backup"
+                _backupError.value = R.string.settings_backup_export_failed
             }
         }
     }
@@ -752,7 +753,7 @@ class TaskbarViewModel @Inject constructor(
                 prefsRepository.importFromJson(json)
             } catch (e: Exception) {
                 Log.w("TaskbarViewModel", "Failed to import backup", e)
-                _backupError.value = "Failed to restore backup: invalid file"
+                _backupError.value = R.string.settings_backup_restore_failed
             }
         }
     }

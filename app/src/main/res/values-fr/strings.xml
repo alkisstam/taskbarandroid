@@ -464,4 +464,6 @@
     <string name="settings_about_version">Version %1$s</string>
     <string name="settings_about_privacy">Politique de confidentialité</string>
     <string name="settings_about_terms">Conditions d\'utilisation</string>
+    <string name="settings_backup_export_failed">Impossible d\'exporter la sauvegarde</string>
+    <string name="settings_backup_restore_failed">Impossible de restaurer la sauvegarde : fichier non valide</string>
 </resources>

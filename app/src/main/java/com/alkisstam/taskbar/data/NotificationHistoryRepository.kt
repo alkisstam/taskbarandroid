@@ -16,6 +16,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -45,6 +47,9 @@ class NotificationHistoryRepository @Inject constructor(
         private const val TAG = "NotificationHistoryRepo"
         private val NOTIFICATIONS_KEY = stringPreferencesKey("notifications")
         private const val MAX_NOTIFICATIONS = 100
+
+        internal fun isRecordingAllowed(quickControlsEnabled: Boolean, disabledIds: Set<String>): Boolean =
+            quickControlsEnabled && "notif_history" !in disabledIds
     }
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -64,6 +69,21 @@ class NotificationHistoryRepository @Inject constructor(
         prefs[NOTIFICATIONS_KEY]?.let { deserializeEntries(it) } ?: emptyList()
     }
 
+    // Notification access may be granted only for the music panel; store nothing unless
+    // the user can actually reach notification history.
+    private val recordingAllowed: Flow<Boolean> =
+        combine(prefsRepository.quickControlsEnabled, prefsRepository.controlsDisabledIds, ::isRecordingAllowed)
+            .distinctUntilChanged()
+
+    init {
+        // Once the panel is unreachable its Clear button is too, so drop what was stored.
+        scope.launch {
+            recordingAllowed.collect { allowed ->
+                if (!allowed) try { clearAll() } catch (e: Exception) { Log.w(TAG, "Failed to clear history", e) }
+            }
+        }
+    }
+
     fun record(sbn: StatusBarNotification) {
         if (sbn.isOngoing) return
         val notification = sbn.notification ?: return
@@ -81,10 +101,7 @@ class NotificationHistoryRepository @Inject constructor(
             ?.filter { it.actionIntent != null && it.remoteInputs.isNullOrEmpty() && !it.title.isNullOrBlank() }
             .orEmpty()
         scope.launch {
-            // Notification access may be granted only for the music panel; store nothing unless
-            // the user can actually reach notification history.
-            if (!prefsRepository.quickControlsEnabled.first() ||
-                "notif_history" in prefsRepository.controlsDisabledIds.first()) return@launch
+            if (!recordingAllowed.first()) return@launch
             // resolveAppLabel does a binder IPC to the package manager; record() runs on
             // the listener's main thread, and that call stalling has caused ANRs.
             val entry = NotificationEntry(

@@ -464,4 +464,6 @@
     <string name="settings_about_version">Версия %1$s</string>
     <string name="settings_about_privacy">Политика конфиденциальности</string>
     <string name="settings_about_terms">Условия использования</string>
+    <string name="settings_backup_export_failed">Не удалось экспортировать резервную копию</string>
+    <string name="settings_backup_restore_failed">Не удалось восстановить резервную копию: недопустимый файл</string>
 </resources>

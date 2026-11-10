@@ -6,9 +6,17 @@ All notable changes to Floating Dock are documented here.
 
 ## [1.5.16] - 2026-11-04
 
-Clipboard, caffeine and privacy fixes.
+Clipboard, caffeine and privacy fixes, and a new About section.
+
+### Added
+- **About** — at the end of the General tab: the app version, the latest What's New, the Privacy Policy and the Terms of Service.
+
+### Changed
+- **Turning off notification history deletes it** — turning off the Notification history control, or all quick controls, now deletes the stored notifications instead of only stopping new ones.
 
 ### Fixed
+- **Floating windows leaving a system setting on** — opening an app in a floating window through Shizuku always puts the device's freeform settings back, even when the launch fails.
+- **Backup errors in English only** — the export and restore error messages are now translated.
 - **Caffeine keeps the screen on after the dock stops** — stopping the dock while Caffeine is on now puts your normal screen timeout back right away.
 - **Clipboard panel slow or crashing with large text files** — previews and copies read only the start of a shared text file instead of loading the whole file.
 - **Empty clips after restoring a backup** — image, PDF and document clips whose file didn't come back with the backup are hidden instead of showing blank.

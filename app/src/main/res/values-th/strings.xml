@@ -464,4 +464,6 @@
     <string name="settings_about_version">เวอร์ชัน %1$s</string>
     <string name="settings_about_privacy">นโยบายความเป็นส่วนตัว</string>
     <string name="settings_about_terms">ข้อกำหนดในการให้บริการ</string>
+    <string name="settings_backup_export_failed">ส่งออกข้อมูลสำรองไม่สำเร็จ</string>
+    <string name="settings_backup_restore_failed">กู้คืนข้อมูลสำรองไม่สำเร็จ: ไฟล์ไม่ถูกต้อง</string>
 </resources>

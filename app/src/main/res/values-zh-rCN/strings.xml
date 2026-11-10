@@ -464,4 +464,6 @@
     <string name="settings_about_version">版本 %1$s</string>
     <string name="settings_about_privacy">隐私政策</string>
     <string name="settings_about_terms">服务条款</string>
+    <string name="settings_backup_export_failed">无法导出备份</string>
+    <string name="settings_backup_restore_failed">无法恢复备份：文件无效</string>
 </resources>
