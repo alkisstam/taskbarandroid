@@ -607,112 +607,123 @@ private fun GeneralTab(
             )
         }
 
-        SettingsCard(title = stringResource(R.string.settings_contact_feedback_card_title)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(28.dp))
-                        .background(
-                            Brush.horizontalGradient(
-                                listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.tertiary)
-                            )
+        ContactCard()
+        AboutCard()
+    }
+}
+
+@Composable
+private fun ContactCard() {
+    val context = LocalContext.current
+    SettingsCard(title = stringResource(R.string.settings_contact_feedback_card_title)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(28.dp))
+                    .background(
+                        Brush.horizontalGradient(
+                            listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.tertiary)
                         )
-                        .clickable {
-                            try {
-                                val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:alkisstam@icloud.com"))
-                                context.startActivity(intent)
-                            } catch (e: Exception) {
-                                Toast.makeText(context, context.getString(R.string.settings_no_email_app_toast), Toast.LENGTH_SHORT).show()
-                            }
+                    )
+                    .clickable {
+                        try {
+                            val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:alkisstam@icloud.com"))
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            Toast.makeText(context, context.getString(R.string.settings_no_email_app_toast), Toast.LENGTH_SHORT).show()
                         }
-                        .padding(vertical = 14.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            Icons.Filled.Email,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onPrimary
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            stringResource(R.string.settings_contact_feedback_label),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
                     }
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Box(
-                    modifier = Modifier
-                        .size(56.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xFF26A5E4))
-                        .clickable {
-                            try {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/floatingdock"))
-                                context.startActivity(intent)
-                            } catch (e: Exception) {
-                                Toast.makeText(context, context.getString(R.string.settings_no_link_app_toast), Toast.LENGTH_SHORT).show()
-                            }
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
+                    .padding(vertical = 14.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        painterResource(R.drawable.ic_telegram),
-                        contentDescription = stringResource(R.string.settings_telegram_content_description),
-                        tint = Color.White,
-                        modifier = Modifier.size(28.dp)
+                        Icons.Filled.Email,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        stringResource(R.string.settings_contact_feedback_label),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }
+            Spacer(modifier = Modifier.width(8.dp))
+            Box(
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFF26A5E4))
+                    .clickable {
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/floatingdock"))
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            Toast.makeText(context, context.getString(R.string.settings_no_link_app_toast), Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painterResource(R.drawable.ic_telegram),
+                    contentDescription = stringResource(R.string.settings_telegram_content_description),
+                    tint = Color.White,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
         }
+    }
+}
 
-        val versionName = remember {
-            context.packageManager.getPackageInfo(context.packageName, 0).versionName.orEmpty()
+@Composable
+private fun AboutCard() {
+    val context = LocalContext.current
+    val versionName = remember {
+        context.packageManager.getPackageInfo(context.packageName, 0).versionName.orEmpty()
+    }
+    var showAboutWhatsNew by remember { mutableStateOf(false) }
+    val openLink = { url: String ->
+        try {
+            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        } catch (e: Exception) {
+            Toast.makeText(context, context.getString(R.string.settings_no_link_app_toast), Toast.LENGTH_SHORT).show()
         }
-        var showAboutWhatsNew by remember { mutableStateOf(false) }
-        val openLink = { url: String ->
-            try {
-                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-            } catch (e: Exception) {
-                Toast.makeText(context, context.getString(R.string.settings_no_link_app_toast), Toast.LENGTH_SHORT).show()
-            }
+    }
+    SettingsCard(title = stringResource(R.string.settings_about_card_title)) {
+        Text(
+            stringResource(R.string.settings_about_version, versionName),
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        OutlinedButton(onClick = { showAboutWhatsNew = true }, modifier = Modifier.fillMaxWidth()) {
+            Icon(Icons.Filled.NewReleases, contentDescription = null)
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(stringResource(R.string.whats_new_dialog_title))
         }
-        SettingsCard(title = stringResource(R.string.settings_about_card_title)) {
-            Text(
-                stringResource(R.string.settings_about_version, versionName),
-                style = MaterialTheme.typography.bodyLarge
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            OutlinedButton(onClick = { showAboutWhatsNew = true }, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Filled.NewReleases, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.whats_new_dialog_title))
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedButton(
-                onClick = { openLink("https://alkisstam.github.io/taskbarandroid/privacy-policy.html") },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(Icons.Filled.PrivacyTip, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.settings_about_privacy))
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            OutlinedButton(
-                onClick = { openLink("https://alkisstam.github.io/taskbarandroid/terms.html") },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(Icons.Filled.Description, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.settings_about_terms))
-            }
+        Spacer(modifier = Modifier.height(8.dp))
+        OutlinedButton(
+            onClick = { openLink("https://alkisstam.github.io/taskbarandroid/privacy-policy.html") },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(Icons.Filled.PrivacyTip, contentDescription = null)
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(stringResource(R.string.settings_about_privacy))
         }
-        if (showAboutWhatsNew) {
-            WhatsNewDialog(listOf(whatsNewReleases.maxBy { it.versionCode })) { showAboutWhatsNew = false }
+        Spacer(modifier = Modifier.height(8.dp))
+        OutlinedButton(
+            onClick = { openLink("https://alkisstam.github.io/taskbarandroid/terms.html") },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(Icons.Filled.Description, contentDescription = null)
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(stringResource(R.string.settings_about_terms))
         }
+    }
+    if (showAboutWhatsNew) {
+        WhatsNewDialog(listOf(whatsNewReleases.maxBy { it.versionCode })) { showAboutWhatsNew = false }
     }
 }
 
