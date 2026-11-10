@@ -1,0 +1,11 @@
+Nouveautés
+• À propos dans Général : version, nouveautés, confidentialité et conditions
+Modifié
+• Désactiver l'historique des notifications le supprime désormais
+Corrections
+• Calculatrice après un nombre négatif
+• Caféine rétablit la mise en veille quand le dock s'arrête
+• Presse-papiers avec de gros fichiers texte et après restauration
+• Partage plus sûr, rapports de plantage allégés
+• Les fenêtres flottantes ne laissent plus de réglage système actif
+• Plus de messages traduits

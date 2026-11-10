@@ -78,6 +78,9 @@ val whatsNewReleases = listOf(
         versionName = "1.5.16",
         versionCode = 71,
         highlights = listOf(
+            "New About section at the end of General, with the app version, What's New, the Privacy Policy and the Terms of Service",
+            "Turning off notification history now deletes the stored notifications",
+            "Fixed the calculator giving 0 when continuing from a negative result",
             "Stopping the dock while Caffeine is on puts your normal screen timeout back right away",
             "The clipboard panel no longer slows down or crashes with large text files",
             "Clips whose file didn't come back with a backup are hidden instead of showing blank",

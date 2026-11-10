@@ -4,9 +4,9 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
-## [1.5.16] - 2026-11-04
+## [1.5.16] - 2026-11-10
 
-Clipboard, caffeine and privacy fixes, and a new About section.
+A new About section, plus calculator, caffeine, clipboard and privacy fixes.
 
 ### Added
 - **About** — at the end of the General tab: the app version, the latest What's New, the Privacy Policy and the Terms of Service.
@@ -16,8 +16,9 @@ Clipboard, caffeine and privacy fixes, and a new About section.
 
 ### Fixed
 - **Floating windows leaving a system setting on** — opening an app in a floating window through Shizuku always puts the device's freeform settings back, even when the launch fails.
-- **Backup errors in English only** — the export and restore error messages are now translated.
-- **Caffeine keeps the screen on after the dock stops** — stopping the dock while Caffeine is on now puts your normal screen timeout back right away.
+- **Calculator wrong after a negative result** — continuing from a negative result, such as −3 × 2, now gives the right answer instead of 0.
+- **Messages in English only** — the backup export and restore errors and the "No media playing" message are now translated.
+- **Caffeine keeps the screen on after the dock stops** — stopping the dock while Caffeine is on now puts your normal screen timeout back right away, and a timeout you change later is no longer overwritten when the dock starts again.
 - **Clipboard panel slow or crashing with large text files** — previews and copies read only the start of a shared text file instead of loading the whole file.
 - **Empty clips after restoring a backup** — image, PDF and document clips whose file didn't come back with the backup are hidden instead of showing blank.
 - **Safer sharing to the clipboard** — the share target only accepts files from other apps, so no app can make Floating Dock copy its own private data into a clip.

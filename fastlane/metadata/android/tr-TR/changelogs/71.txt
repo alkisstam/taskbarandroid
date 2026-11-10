@@ -1,0 +1,11 @@
+Yenilikler
+• Genel'de Hakkında: sürüm, yenilikler, gizlilik politikası ve şartlar
+Değişenler
+• Bildirim geçmişini kapatmak artık onu siler
+Düzeltmeler
+• Negatif sayıdan sonra hesap makinesi sonuçları
+• Kafein, dock durunca ekran zaman aşımını geri yükler
+• Büyük metin dosyaları ve yedekten sonra pano
+• Daha güvenli paylaşım, çökme raporlarında daha az veri
+• Kayan pencereler artık bir sistem ayarını açık bırakmıyor
+• Daha fazla mesaj çevrildi

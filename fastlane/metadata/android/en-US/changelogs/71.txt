@@ -1,0 +1,11 @@
+Added
+• About in General: version, What's New, privacy policy and terms
+Changed
+• Turning off notification history now deletes it
+Fixed
+• Calculator results after a negative number
+• Caffeine restores your screen timeout when the dock stops
+• Clipboard handles large text files and restored backups
+• Safer sharing to the clipboard, less data in crash reports
+• Floating windows no longer leave a system setting on
+• More messages translated

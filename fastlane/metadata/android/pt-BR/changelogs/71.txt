@@ -1,0 +1,11 @@
+Novidades
+• Sobre em Geral: versão, novidades, privacidade e termos
+Alterado
+• Desativar o histórico de notificações agora o apaga
+Correções
+• Resultados da calculadora após um número negativo
+• Cafeína restaura o tempo de tela ao parar o dock
+• Área de transferência com arquivos de texto grandes e após backup
+• Compartilhamento mais seguro, menos dados em relatórios de falha
+• Janelas flutuantes não deixam mais uma configuração do sistema ativa
+• Mais mensagens traduzidas

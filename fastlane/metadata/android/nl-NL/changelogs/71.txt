@@ -1,0 +1,11 @@
+Nieuw
+• Over bij Algemeen: versie, wat is er nieuw, privacybeleid en voorwaarden
+Gewijzigd
+• Meldingsgeschiedenis uitzetten wist die nu
+Opgelost
+• Rekenmachine na een negatief getal
+• Cafeïne zet de schermtime-out terug als het dock stopt
+• Klembord met grote tekstbestanden en na een back-up
+• Veiliger delen, minder gegevens in crashrapporten
+• Zwevende vensters laten geen systeeminstelling meer aan
+• Meer meldingen vertaald

@@ -1,0 +1,11 @@
+Novedades
+• Acerca de en General: versión, novedades, privacidad y términos
+Cambios
+• Desactivar el historial de notificaciones ahora lo borra
+Correcciones
+• Resultados de la calculadora tras un número negativo
+• Cafeína restaura el tiempo de pantalla al detener el dock
+• Portapapeles con archivos de texto grandes y tras restaurar copias
+• Compartir más seguro y menos datos en informes de fallos
+• Las ventanas flotantes ya no dejan un ajuste del sistema activado
+• Más mensajes traducidos

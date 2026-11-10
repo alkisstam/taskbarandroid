@@ -1,0 +1,11 @@
+Baru
+• Tentang di Umum: versi, Yang Baru, kebijakan privasi dan ketentuan
+Diubah
+• Mematikan riwayat notifikasi kini menghapusnya
+Perbaikan
+• Hasil kalkulator setelah angka negatif
+• Kafein mengembalikan batas waktu layar saat dock berhenti
+• Papan klip dengan file teks besar dan setelah pemulihan
+• Berbagi lebih aman, lebih sedikit data di laporan error
+• Jendela mengambang tak lagi membiarkan setelan sistem aktif
+• Lebih banyak pesan diterjemahkan

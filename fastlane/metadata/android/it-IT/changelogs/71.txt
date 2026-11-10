@@ -1,0 +1,11 @@
+Novità
+• Info in Generali: versione, novità, privacy e termini
+Modificato
+• Disattivare la cronologia notifiche ora la elimina
+Correzioni
+• Risultati della calcolatrice dopo un numero negativo
+• Caffeina ripristina lo spegnimento schermo quando il dock si ferma
+• Appunti con file di testo grandi e dopo un ripristino
+• Condivisione più sicura, meno dati nei report di arresto
+• Le finestre mobili non lasciano più attiva un'impostazione di sistema
+• Più messaggi tradotti

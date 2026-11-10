@@ -1,0 +1,11 @@
+Neu
+• Info im Tab Allgemein: Version, Neuigkeiten, Datenschutz und Nutzungsbedingungen
+Geändert
+• Ausschalten des Benachrichtigungsverlaufs löscht ihn jetzt
+Behoben
+• Rechner-Ergebnisse nach einer negativen Zahl
+• Koffein stellt die Bildschirmzeit wieder her, wenn das Dock stoppt
+• Zwischenablage mit großen Textdateien und nach Backups
+• Sichereres Teilen, weniger Daten in Absturzberichten
+• Schwebende Fenster lassen keine Systemeinstellung mehr an
+• Mehr Meldungen übersetzt
