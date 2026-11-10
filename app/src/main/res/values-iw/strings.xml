@@ -466,4 +466,5 @@
     <string name="settings_about_terms">תנאי שימוש</string>
     <string name="settings_backup_export_failed">ייצוא הגיבוי נכשל</string>
     <string name="settings_backup_restore_failed">שחזור הגיבוי נכשל: קובץ לא תקין</string>
+    <string name="music_no_media_playing">אין מדיה מתנגנת</string>
 </resources>

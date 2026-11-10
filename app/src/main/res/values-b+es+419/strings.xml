@@ -466,4 +466,5 @@
     <string name="settings_about_terms">Términos del servicio</string>
     <string name="settings_backup_export_failed">No se pudo exportar la copia de seguridad</string>
     <string name="settings_backup_restore_failed">No se pudo restaurar la copia de seguridad: archivo no válido</string>
+    <string name="music_no_media_playing">No se está reproduciendo nada</string>
 </resources>

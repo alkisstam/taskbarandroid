@@ -466,4 +466,5 @@
     <string name="settings_about_terms">شروط الخدمة</string>
     <string name="settings_backup_export_failed">تعذّر تصدير النسخة الاحتياطية</string>
     <string name="settings_backup_restore_failed">تعذّرت استعادة النسخة الاحتياطية: ملف غير صالح</string>
+    <string name="music_no_media_playing">لا توجد وسائط قيد التشغيل</string>
 </resources>

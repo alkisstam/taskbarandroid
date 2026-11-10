@@ -9,6 +9,7 @@ import com.alkisstam.taskbar.ui.appmenu.buildVolumeStreams
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.AppRepository
 import com.alkisstam.taskbar.data.AppSortOrder
@@ -192,8 +193,8 @@ class AppMenuViewModel @Inject constructor(
     val musicPanelVisible: StateFlow<Boolean> = _musicPanelVisible.asStateFlow()
     private var _musicWasVisibleBeforeOverlay = false
 
-    private val _noMediaMessage = MutableStateFlow<String?>(null)
-    val noMediaMessage: StateFlow<String?> = _noMediaMessage.asStateFlow()
+    private val _noMediaMessage = MutableStateFlow<Int?>(null)
+    val noMediaMessage: StateFlow<Int?> = _noMediaMessage.asStateFlow()
 
     private val _clipboardPanelVisible = MutableStateFlow(false)
     val clipboardPanelVisible: StateFlow<Boolean> = _clipboardPanelVisible.asStateFlow()
@@ -276,7 +277,7 @@ class AppMenuViewModel @Inject constructor(
 
     fun toggleMusicPanel() {
         if (!_musicPanelVisible.value && !mediaState.value.hasSession && !alwaysShowMusicPanel.value) {
-            _noMediaMessage.value = "No Media Playing"
+            _noMediaMessage.value = R.string.music_no_media_playing
             return
         }
         val newValue = !_musicPanelVisible.value

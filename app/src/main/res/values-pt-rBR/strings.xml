@@ -466,4 +466,5 @@
     <string name="settings_about_terms">Termos de Serviço</string>
     <string name="settings_backup_export_failed">Falha ao exportar o backup</string>
     <string name="settings_backup_restore_failed">Falha ao restaurar o backup: arquivo inválido</string>
+    <string name="music_no_media_playing">Nenhuma mídia em reprodução</string>
 </resources>

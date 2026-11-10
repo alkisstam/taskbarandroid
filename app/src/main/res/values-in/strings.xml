@@ -466,4 +466,5 @@
     <string name="settings_about_terms">Ketentuan Layanan</string>
     <string name="settings_backup_export_failed">Gagal mengekspor cadangan</string>
     <string name="settings_backup_restore_failed">Gagal memulihkan cadangan: file tidak valid</string>
+    <string name="music_no_media_playing">Tidak ada media yang diputar</string>
 </resources>

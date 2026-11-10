@@ -466,4 +466,5 @@
     <string name="settings_about_terms">Conditions d\'utilisation</string>
     <string name="settings_backup_export_failed">Impossible d\'exporter la sauvegarde</string>
     <string name="settings_backup_restore_failed">Impossible de restaurer la sauvegarde : fichier non valide</string>
+    <string name="music_no_media_playing">Aucun média en cours de lecture</string>
 </resources>

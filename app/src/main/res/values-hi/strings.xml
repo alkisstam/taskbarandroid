@@ -466,4 +466,5 @@
     <string name="settings_about_terms">सेवा की शर्तें</string>
     <string name="settings_backup_export_failed">बैकअप निर्यात नहीं हो सका</string>
     <string name="settings_backup_restore_failed">बैकअप पुनर्स्थापित नहीं हो सका: अमान्य फ़ाइल</string>
+    <string name="music_no_media_playing">कोई मीडिया नहीं चल रहा</string>
 </resources>

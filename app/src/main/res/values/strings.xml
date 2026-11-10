@@ -466,4 +466,5 @@
     <string name="settings_about_terms">Terms of Service</string>
     <string name="settings_backup_export_failed">Failed to export backup</string>
     <string name="settings_backup_restore_failed">Failed to restore backup: invalid file</string>
+    <string name="music_no_media_playing">No media playing</string>
 </resources>

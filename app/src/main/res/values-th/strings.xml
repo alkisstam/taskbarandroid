@@ -466,4 +466,5 @@
     <string name="settings_about_terms">ข้อกำหนดในการให้บริการ</string>
     <string name="settings_backup_export_failed">ส่งออกข้อมูลสำรองไม่สำเร็จ</string>
     <string name="settings_backup_restore_failed">กู้คืนข้อมูลสำรองไม่สำเร็จ: ไฟล์ไม่ถูกต้อง</string>
+    <string name="music_no_media_playing">ไม่มีสื่อที่กำลังเล่น</string>
 </resources>

@@ -466,4 +466,5 @@
     <string name="settings_about_terms">Servicevoorwaarden</string>
     <string name="settings_backup_export_failed">Back-up exporteren mislukt</string>
     <string name="settings_backup_restore_failed">Back-up herstellen mislukt: ongeldig bestand</string>
+    <string name="music_no_media_playing">Er wordt geen media afgespeeld</string>
 </resources>

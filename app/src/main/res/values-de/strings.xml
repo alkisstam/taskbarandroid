@@ -466,4 +466,5 @@
     <string name="settings_about_terms">Nutzungsbedingungen</string>
     <string name="settings_backup_export_failed">Sicherung konnte nicht exportiert werden</string>
     <string name="settings_backup_restore_failed">Sicherung konnte nicht wiederhergestellt werden: ungültige Datei</string>
+    <string name="music_no_media_playing">Keine Medienwiedergabe</string>
 </resources>
