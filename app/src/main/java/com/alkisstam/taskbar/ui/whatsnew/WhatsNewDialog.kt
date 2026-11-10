@@ -329,6 +329,17 @@ val whatsNewReleases = listOf(
             "The dock and its panels shrink to fit their icons, with an option to center the icons pill",
             "The Quick Settings tile opens the app when the overlay permission is missing"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.5.16",
+        versionCode = 71,
+        highlights = listOf(
+            "Stopping the dock while Caffeine is on puts your normal screen timeout back right away",
+            "The clipboard panel no longer slows down or crashes with large text files",
+            "Clips whose file didn't come back with a backup are hidden instead of showing blank",
+            "Sharing to the clipboard only accepts files from other apps",
+            "Crash reports no longer include the window names of other apps"
+        )
     )
 )
 

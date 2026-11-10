@@ -460,4 +460,8 @@
     <string name="settings_hide_app_menu_desc">Retire le bouton du menu des applications du Dock. Un geste sur la pilule peut toujours ouvrir le menu.</string>
     <string name="dock_hide_info_line_label">Masquer l\'heure, la date et la batterie</string>
     <string name="pill_custom_color_hex_label">Couleur</string>
+    <string name="settings_about_card_title">À propos</string>
+    <string name="settings_about_version">Version %1$s</string>
+    <string name="settings_about_privacy">Politique de confidentialité</string>
+    <string name="settings_about_terms">Conditions d\'utilisation</string>
 </resources>

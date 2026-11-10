@@ -460,4 +460,8 @@
     <string name="settings_hide_app_menu_desc">Hapus tombol Menu Aplikasi dari dock. Gestur pil tetap dapat membuka menu.</string>
     <string name="dock_hide_info_line_label">Sembunyikan waktu, tanggal &amp; baterai</string>
     <string name="pill_custom_color_hex_label">Warna</string>
+    <string name="settings_about_card_title">Tentang</string>
+    <string name="settings_about_version">Versi %1$s</string>
+    <string name="settings_about_privacy">Kebijakan Privasi</string>
+    <string name="settings_about_terms">Ketentuan Layanan</string>
 </resources>

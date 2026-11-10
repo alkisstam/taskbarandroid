@@ -460,4 +460,8 @@
     <string name="settings_hide_app_menu_desc">Quita el botón del menú de aplicaciones del Dock. Un gesto de la píldora aún puede abrir el menú.</string>
     <string name="dock_hide_info_line_label">Ocultar hora, fecha y batería</string>
     <string name="pill_custom_color_hex_label">Color</string>
+    <string name="settings_about_card_title">Acerca de</string>
+    <string name="settings_about_version">Versión %1$s</string>
+    <string name="settings_about_privacy">Política de privacidad</string>
+    <string name="settings_about_terms">Términos del servicio</string>
 </resources>

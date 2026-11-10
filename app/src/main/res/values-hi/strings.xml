@@ -460,4 +460,8 @@
     <string name="settings_hide_app_menu_desc">डॉक से ऐप मेनू बटन हटाएँ। पिल जेस्चर से मेनू अब भी खोला जा सकता है।</string>
     <string name="dock_hide_info_line_label">समय, तारीख और बैटरी छिपाएँ</string>
     <string name="pill_custom_color_hex_label">रंग</string>
+    <string name="settings_about_card_title">ऐप के बारे में</string>
+    <string name="settings_about_version">संस्करण %1$s</string>
+    <string name="settings_about_privacy">गोपनीयता नीति</string>
+    <string name="settings_about_terms">सेवा की शर्तें</string>
 </resources>

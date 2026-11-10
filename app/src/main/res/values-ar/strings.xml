@@ -460,4 +460,8 @@
     <string name="settings_hide_app_menu_desc">إزالة زر قائمة التطبيقات من الشريط. لا يزال بإمكان إيماءة الشريط فتح القائمة.</string>
     <string name="dock_hide_info_line_label">إخفاء الوقت والتاريخ والبطارية</string>
     <string name="pill_custom_color_hex_label">اللون</string>
+    <string name="settings_about_card_title">حول</string>
+    <string name="settings_about_version">الإصدار %1$s</string>
+    <string name="settings_about_privacy">سياسة الخصوصية</string>
+    <string name="settings_about_terms">شروط الخدمة</string>
 </resources>

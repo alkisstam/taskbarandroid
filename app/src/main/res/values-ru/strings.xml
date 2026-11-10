@@ -460,4 +460,8 @@
     <string name="settings_hide_app_menu_desc">Убирает кнопку меню приложений с панели. Меню по-прежнему можно открыть жестом на пилюле.</string>
     <string name="dock_hide_info_line_label">Скрыть время, дату и батарею</string>
     <string name="pill_custom_color_hex_label">Цвет</string>
+    <string name="settings_about_card_title">О приложении</string>
+    <string name="settings_about_version">Версия %1$s</string>
+    <string name="settings_about_privacy">Политика конфиденциальности</string>
+    <string name="settings_about_terms">Условия использования</string>
 </resources>

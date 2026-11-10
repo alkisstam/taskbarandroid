@@ -460,4 +460,8 @@
     <string name="settings_hide_app_menu_desc">Verwijdert de App-menuknop uit het dock. Een pilgebaar kan het menu nog steeds openen.</string>
     <string name="dock_hide_info_line_label">Tijd, datum &amp; batterij verbergen</string>
     <string name="pill_custom_color_hex_label">Kleur</string>
+    <string name="settings_about_card_title">Over</string>
+    <string name="settings_about_version">Versie %1$s</string>
+    <string name="settings_about_privacy">Privacybeleid</string>
+    <string name="settings_about_terms">Servicevoorwaarden</string>
 </resources>

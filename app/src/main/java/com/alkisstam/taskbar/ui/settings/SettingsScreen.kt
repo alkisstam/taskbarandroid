@@ -78,6 +78,9 @@ import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.ScreenRotationAlt
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.NewReleases
+import androidx.compose.material.icons.filled.PrivacyTip
+import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material.icons.filled.Dashboard
@@ -137,6 +140,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.data.AppGroup
 import com.alkisstam.taskbar.data.AppInfo
+import com.alkisstam.taskbar.ui.whatsnew.WhatsNewDialog
+import com.alkisstam.taskbar.ui.whatsnew.whatsNewReleases
 import com.alkisstam.taskbar.data.MAX_APP_GROUPS
 import com.alkisstam.taskbar.data.AppSortOrder
 import com.alkisstam.taskbar.ui.common.AppGroupIcons
@@ -662,6 +667,51 @@ private fun GeneralTab(
                     )
                 }
             }
+        }
+
+        val versionName = remember {
+            context.packageManager.getPackageInfo(context.packageName, 0).versionName.orEmpty()
+        }
+        var showAboutWhatsNew by remember { mutableStateOf(false) }
+        val openLink = { url: String ->
+            try {
+                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            } catch (e: Exception) {
+                Toast.makeText(context, context.getString(R.string.settings_no_link_app_toast), Toast.LENGTH_SHORT).show()
+            }
+        }
+        SettingsCard(title = stringResource(R.string.settings_about_card_title)) {
+            Text(
+                stringResource(R.string.settings_about_version, versionName),
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            OutlinedButton(onClick = { showAboutWhatsNew = true }, modifier = Modifier.fillMaxWidth()) {
+                Icon(Icons.Filled.NewReleases, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(stringResource(R.string.whats_new_dialog_title))
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = { openLink("https://alkisstam.github.io/taskbarandroid/privacy-policy.html") },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Filled.PrivacyTip, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(stringResource(R.string.settings_about_privacy))
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = { openLink("https://alkisstam.github.io/taskbarandroid/terms.html") },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Filled.Description, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(stringResource(R.string.settings_about_terms))
+            }
+        }
+        if (showAboutWhatsNew) {
+            WhatsNewDialog(listOf(whatsNewReleases.maxBy { it.versionCode })) { showAboutWhatsNew = false }
         }
     }
 }

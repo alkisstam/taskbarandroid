@@ -460,4 +460,8 @@
     <string name="settings_hide_app_menu_desc">Uygulama Menüsü düğmesini dock\'tan kaldırır. Hap hareketi menüyü yine de açabilir.</string>
     <string name="dock_hide_info_line_label">Saati, tarihi ve pili gizle</string>
     <string name="pill_custom_color_hex_label">Renk</string>
+    <string name="settings_about_card_title">Hakkında</string>
+    <string name="settings_about_version">Sürüm %1$s</string>
+    <string name="settings_about_privacy">Gizlilik Politikası</string>
+    <string name="settings_about_terms">Hizmet Şartları</string>
 </resources>

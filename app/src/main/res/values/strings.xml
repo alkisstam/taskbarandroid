@@ -460,4 +460,8 @@
     <string name="settings_hide_app_menu_desc">Remove the App Menu button from the dock. A pill gesture can still open the menu.</string>
     <string name="dock_hide_info_line_label">Hide time, date &amp; battery</string>
     <string name="pill_custom_color_hex_label">Color</string>
+    <string name="settings_about_card_title">About</string>
+    <string name="settings_about_version">Version %1$s</string>
+    <string name="settings_about_privacy">Privacy Policy</string>
+    <string name="settings_about_terms">Terms of Service</string>
 </resources>

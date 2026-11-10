@@ -460,4 +460,8 @@
     <string name="settings_hide_app_menu_desc">นำปุ่มเมนูแอปออกจาก Dock ยังเปิดเมนูได้ด้วยท่าทางบนพิล</string>
     <string name="dock_hide_info_line_label">ซ่อนเวลา วันที่ และแบตเตอรี่</string>
     <string name="pill_custom_color_hex_label">สี</string>
+    <string name="settings_about_card_title">เกี่ยวกับ</string>
+    <string name="settings_about_version">เวอร์ชัน %1$s</string>
+    <string name="settings_about_privacy">นโยบายความเป็นส่วนตัว</string>
+    <string name="settings_about_terms">ข้อกำหนดในการให้บริการ</string>
 </resources>

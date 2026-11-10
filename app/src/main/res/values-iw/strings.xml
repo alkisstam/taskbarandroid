@@ -460,4 +460,8 @@
     <string name="settings_hide_app_menu_desc">הסרת כפתור תפריט האפליקציות מהמעגן. מחוות גלולה עדיין יכולה לפתוח את התפריט.</string>
     <string name="dock_hide_info_line_label">הסתר שעה, תאריך וסוללה</string>
     <string name="pill_custom_color_hex_label">צבע</string>
+    <string name="settings_about_card_title">אודות</string>
+    <string name="settings_about_version">גרסה %1$s</string>
+    <string name="settings_about_privacy">מדיניות פרטיות</string>
+    <string name="settings_about_terms">תנאי שימוש</string>
 </resources>

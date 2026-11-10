@@ -460,4 +460,8 @@
     <string name="settings_hide_app_menu_desc">ドックからアプリメニューボタンを削除します。ピルのジェスチャーでメニューを開くことは引き続き可能です。</string>
     <string name="dock_hide_info_line_label">時刻・日付・バッテリーを非表示</string>
     <string name="pill_custom_color_hex_label">色</string>
+    <string name="settings_about_card_title">アプリについて</string>
+    <string name="settings_about_version">バージョン %1$s</string>
+    <string name="settings_about_privacy">プライバシーポリシー</string>
+    <string name="settings_about_terms">利用規約</string>
 </resources>

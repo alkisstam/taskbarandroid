@@ -460,4 +460,8 @@
     <string name="settings_hide_app_menu_desc">Rimuove il pulsante del menu app dal Dock. Un gesto sulla pillola può comunque aprire il menu.</string>
     <string name="dock_hide_info_line_label">Nascondi ora, data e batteria</string>
     <string name="pill_custom_color_hex_label">Colore</string>
+    <string name="settings_about_card_title">Info</string>
+    <string name="settings_about_version">Versione %1$s</string>
+    <string name="settings_about_privacy">Informativa sulla privacy</string>
+    <string name="settings_about_terms">Termini di servizio</string>
 </resources>

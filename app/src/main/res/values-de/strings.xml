@@ -460,4 +460,8 @@
     <string name="settings_hide_app_menu_desc">Entfernt die App-Menü-Taste aus dem Dock. Eine Pillen-Geste kann das Menü weiterhin öffnen.</string>
     <string name="dock_hide_info_line_label">Uhrzeit, Datum &amp; Akku ausblenden</string>
     <string name="pill_custom_color_hex_label">Farbe</string>
+    <string name="settings_about_card_title">Über</string>
+    <string name="settings_about_version">Version %1$s</string>
+    <string name="settings_about_privacy">Datenschutzerklärung</string>
+    <string name="settings_about_terms">Nutzungsbedingungen</string>
 </resources>
