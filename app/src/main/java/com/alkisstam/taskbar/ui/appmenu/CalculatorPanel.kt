@@ -65,8 +65,23 @@ private const val OPERATORS = "+×÷^-"
 
 private fun isOperator(token: String) = token.length == 1 && token[0] in OPERATORS
 
-private fun tokenize(expr: String): List<String> =
-    Regex("(?<=[$OPERATORS])|(?=[$OPERATORS])").split(expr).filter { it.isNotEmpty() }
+// A '-' at the start or after another operator is a sign, e.g. a negative result carried on.
+private fun tokenize(expr: String): List<String> {
+    val raw = Regex("(?<=[$OPERATORS])|(?=[$OPERATORS])").split(expr).filter { it.isNotEmpty() }
+    val tokens = mutableListOf<String>()
+    var i = 0
+    while (i < raw.size) {
+        val next = raw.getOrNull(i + 1)
+        if (raw[i] == "-" && (tokens.isEmpty() || isOperator(tokens.last())) && next != null && !isOperator(next)) {
+            tokens.add("-$next")
+            i += 2
+        } else {
+            tokens.add(raw[i])
+            i++
+        }
+    }
+    return tokens
+}
 
 /** Drops a trailing operator so the token list always ends on a complete operand. */
 private fun completeTokens(tokens: List<String>): List<String> =

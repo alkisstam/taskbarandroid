@@ -20,6 +20,7 @@ import com.alkisstam.taskbar.data.QuickControlsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -538,7 +539,8 @@ class AppMenuViewModel @Inject constructor(
 
     override fun onCleared() {
         // Dock stopping with caffeine on would otherwise leave the system timeout raised.
-        deactivateCaffeine()
+        // viewModelScope is already cancelled here, so clear the saved timeout on another scope.
+        deactivateCaffeine(CoroutineScope(defaultDispatcher))
         super.onCleared()
         quickControls.removeChangeListener(quickControlsChangeListener)
     }
@@ -782,10 +784,10 @@ class AppMenuViewModel @Inject constructor(
         }
     }
 
-    fun deactivateCaffeine() {
+    fun deactivateCaffeine(scope: CoroutineScope = viewModelScope) {
         if (_quickControlsState.value.caffeineMinutes == 0) return
         if (originalScreenTimeoutMs > 0) quickControls.setScreenTimeout(originalScreenTimeoutMs)
-        viewModelScope.launch { prefsRepository.setCaffeineOriginalTimeout(null) }
+        scope.launch { prefsRepository.setCaffeineOriginalTimeout(null) }
         _quickControlsState.value = _quickControlsState.value.copy(caffeineMinutes = 0)
     }
 }

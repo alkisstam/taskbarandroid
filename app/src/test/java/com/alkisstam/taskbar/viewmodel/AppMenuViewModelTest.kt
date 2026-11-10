@@ -11,6 +11,7 @@ import com.alkisstam.taskbar.data.MediaState
 import com.alkisstam.taskbar.data.PreferencesRepository
 import com.alkisstam.taskbar.data.QuickControlsRepository
 import com.alkisstam.taskbar.util.MainDispatcherRule
+import androidx.lifecycle.ViewModelStore
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -397,6 +398,20 @@ class AppMenuViewModelTest {
         coVerify { prefsRepo.setCaffeineOriginalTimeout(30_000) }
         coVerify { prefsRepo.setCaffeineOriginalTimeout(null) }
         assertEquals(0, vm.quickControlsState.value.caffeineMinutes)
+    }
+
+    @Test
+    fun `clearing the view model with caffeine on clears the saved timeout`() = runTest(mainDispatcherRule.dispatcher) {
+        every { quickControls.canWriteSettings() } returns true
+        every { quickControls.getScreenTimeout() } returns 30_000
+        val vm = createViewModel()
+        advanceUntilIdle()
+        vm.cycleCaffeineTimeout()
+        // ViewModelStore.clear() cancels viewModelScope before onCleared, as the service does.
+        ViewModelStore().apply { put("vm", vm) }.clear()
+        advanceUntilIdle()
+        verify { quickControls.setScreenTimeout(30_000) }
+        coVerify { prefsRepo.setCaffeineOriginalTimeout(null) }
     }
 
     // endregion

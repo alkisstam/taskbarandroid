@@ -97,4 +97,12 @@ class CalculatorStateTest {
         val s = CalculatorState().digit("3").operator('-').digit("5").equals(errorText)
         assertEquals("-2", s.expression)
     }
+
+    @Test
+    fun `negative result keeps working in the next calculation`() {
+        val negative = CalculatorState().digit("5").operator('-').digit("8").equals("Error")
+        assertEquals("-6", negative.operator('×').digit("2").equals("Error").expression)
+        assertEquals("-2", negative.operator('+').digit("1").equals("Error").expression)
+        assertEquals("-11", negative.operator('-').digit("8").equals("Error").expression)
+    }
 }
