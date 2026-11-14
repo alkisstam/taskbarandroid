@@ -1,0 +1,7 @@
+Yenilikler
+• Yeni simge şekilleri: Kurabiye, Yonca ve Çakıl, ayrıca daha yumuşak Squircle
+• Simgeler basıldığında şekil değiştirir
+• Ayar menülerinde simgeler
+Değişenler
+• Uzun basma menüleri artık simgeyi kapatmıyor
+• Ayar menüleri ortada açılır ve metne göre boyutlanır

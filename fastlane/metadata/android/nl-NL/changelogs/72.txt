@@ -1,0 +1,7 @@
+Nieuw
+• Nieuwe pictogramvormen: Koekje, Klaver en Kiezel, plus een zachtere Squircle
+• Pictogrammen veranderen van vorm als je erop drukt
+• Pictogrammen in instellingenmenu’s
+Gewijzigd
+• Menu’s bij lang drukken bedekken het pictogram niet meer
+• Instellingenmenu’s openen in het midden en passen zich aan de tekst aan

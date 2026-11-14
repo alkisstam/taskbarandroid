@@ -1,0 +1,7 @@
+Novidades
+• Novos formatos de ícone: Biscoito, Trevo e Seixo, e um Squircle mais suave
+• Os ícones mudam de forma ao serem tocados
+• Ícones nos menus de configurações
+Alterado
+• Os menus de toque longo não cobrem mais o ícone
+• Os menus de configurações abrem centralizados e se ajustam ao texto

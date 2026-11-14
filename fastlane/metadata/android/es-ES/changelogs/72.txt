@@ -1,0 +1,7 @@
+Novedades
+• Nuevas formas de icono: Galleta, Trébol y Guijarro, y un Squircle más suave
+• Los iconos cambian de forma al pulsarlos
+• Iconos en los menús de ajustes
+Cambios
+• Los menús de pulsación larga ya no tapan el icono
+• Los menús de ajustes se abren centrados y se ajustan al texto

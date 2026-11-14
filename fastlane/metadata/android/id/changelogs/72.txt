@@ -1,0 +1,7 @@
+Baru
+• Bentuk ikon baru: Kue, Semanggi dan Kerikil, serta Squircle yang lebih halus
+• Ikon berubah bentuk saat ditekan
+• Ikon di menu setelan
+Diubah
+• Menu tekan lama tidak lagi menutupi ikon
+• Menu setelan terbuka di tengah dan menyesuaikan teks

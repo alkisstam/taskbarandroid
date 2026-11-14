@@ -4,6 +4,22 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.5.17] - 2026-11-14
+
+New icon shapes with playful animations, and menus that stay out of your way.
+
+### Added
+- **New icon shapes** — Cookie, Clover and Pebble join the Icon Shape options, and Squircle now has smoother corners.
+- **Shape animations** — dock and app grid icons change shape while you press them, and the All Apps button turns into a cookie when the App Menu opens.
+- **Icons in settings menus** — the options in gesture, pill, hold-and-drag, All Apps button, theme style, app order and icon shape menus now show an icon; icon shapes show a preview of the shape.
+
+### Changed
+- **Long-press menus don't cover the icon** — the menu for dock and App Menu icons opens just above the icon, toward the side with more room, and is only as wide as its text.
+- **Sort menu** — the App Menu sort menu opens above the search bar, next to the button, instead of in the bottom corner.
+- **Settings menus open centered** — dropdowns in settings and the Quick Settings panel open in the middle of the screen with rounded corners, fit their text, and scroll when the list is long.
+
+---
+
 ## [1.5.16] - 2026-11-10
 
 A new About section, plus calculator, caffeine, clipboard and privacy fixes.

@@ -1,0 +1,7 @@
+Novità
+• Nuove forme delle icone: Biscotto, Trifoglio e Ciottolo, e uno Squircle più morbido
+• Le icone cambiano forma quando le premi
+• Icone nei menu delle impostazioni
+Modificato
+• I menu a pressione prolungata non coprono più l'icona
+• I menu delle impostazioni si aprono al centro e si adattano al testo

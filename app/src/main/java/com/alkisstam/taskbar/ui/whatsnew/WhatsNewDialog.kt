@@ -87,6 +87,17 @@ val whatsNewReleases = listOf(
             "Sharing to the clipboard only accepts files from other apps",
             "Crash reports no longer include the window names of other apps"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.5.17",
+        versionCode = 72,
+        highlights = listOf(
+            "New icon shapes: Cookie, Clover and Pebble, and a smoother Squircle",
+            "Dock and app grid icons change shape while you press them",
+            "The All Apps button turns into a cookie when the App Menu opens",
+            "Long-press menus open above the icon instead of covering it",
+            "Settings menus open centered, fit their text and show an icon for each option"
+        )
     )
 )
 

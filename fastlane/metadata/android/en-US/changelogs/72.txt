@@ -1,0 +1,7 @@
+Added
+• New icon shapes: Cookie, Clover and Pebble, plus a smoother Squircle
+• Icons change shape when you press them
+• Icons in settings menus
+Changed
+• Long-press menus no longer cover the icon
+• Settings menus open centered and fit their text

@@ -1,0 +1,7 @@
+Nouveautés
+• Nouvelles formes d'icône : Biscuit, Trèfle et Galet, et un Squircle plus doux
+• Les icônes changent de forme quand vous appuyez dessus
+• Icônes dans les menus des réglages
+Modifié
+• Les menus d'appui long ne cachent plus l'icône
+• Les menus des réglages s'ouvrent au centre et s'adaptent au texte

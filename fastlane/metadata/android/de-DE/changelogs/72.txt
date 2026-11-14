@@ -1,0 +1,7 @@
+Neu
+• Neue Symbolformen: Keks, Kleeblatt und Kiesel, dazu ein weicheres Squircle
+• Symbole ändern beim Drücken ihre Form
+• Symbole in Einstellungsmenüs
+Geändert
+• Menüs bei langem Drücken verdecken das Symbol nicht mehr
+• Einstellungsmenüs öffnen sich mittig und passen sich dem Text an
