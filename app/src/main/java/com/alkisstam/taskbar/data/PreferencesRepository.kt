@@ -90,7 +90,7 @@ enum class DockPadding { DEFAULT, SMALL, LARGE }
 
 enum class AppMenuButtonSide { LEFT, RIGHT }
 
-enum class IconShape { DEFAULT, SQUARE, SQUIRCLE, CIRCLE }
+enum class IconShape { DEFAULT, SQUARE, SQUIRCLE, CIRCLE, COOKIE, CLOVER, PEBBLE }
 
 enum class AppSortOrder { NAME, INSTALL_TIME, USAGE }
 
@@ -120,6 +120,9 @@ private fun String?.toIconShape() = when (this) {
     "SQUARE"   -> IconShape.SQUARE
     "SQUIRCLE" -> IconShape.SQUIRCLE
     "CIRCLE"   -> IconShape.CIRCLE
+    "COOKIE"   -> IconShape.COOKIE
+    "CLOVER"   -> IconShape.CLOVER
+    "PEBBLE"   -> IconShape.PEBBLE
     else       -> IconShape.DEFAULT
 }
 

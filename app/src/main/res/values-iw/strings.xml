@@ -64,6 +64,9 @@
     <string name="pill_blur_tint_alpha_label">עוצמת הגוון</string>
     <string name="pill_height_label">גובה</string>
     <string name="pill_icon_shape_circle">עיגול</string>
+    <string name="pill_icon_shape_cookie">עוגייה</string>
+    <string name="pill_icon_shape_clover">תלתן</string>
+    <string name="pill_icon_shape_pebble">חלוק</string>
     <string name="pill_icon_shape_default">ברירת מחדל</string>
     <string name="pill_icon_shape_square">ריבוע</string>
     <string name="pill_icon_shape_squircle">סקוורקל</string>

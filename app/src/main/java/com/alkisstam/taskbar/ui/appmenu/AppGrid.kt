@@ -2,7 +2,9 @@ package com.alkisstam.taskbar.ui.appmenu
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,7 +45,7 @@ import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.IconShape
 import com.alkisstam.taskbar.ui.common.AppIconImage
-import com.alkisstam.taskbar.ui.common.toComposeShape
+import com.alkisstam.taskbar.ui.common.rememberPressMorphShape
 import com.alkisstam.taskbar.ui.theme.GlassBackdrop
 import com.alkisstam.taskbar.ui.theme.LocalGlassSurface
 
@@ -107,11 +109,14 @@ private fun AppGridItem(
     var showMenu by remember { mutableStateOf(false) }
     val haptic = LocalHapticFeedback.current
     val hapticEnabled = LocalHapticEnabled.current
+    val interactionSource = remember { MutableInteractionSource() }
 
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
             .combinedClickable(
+                interactionSource = interactionSource,
+                indication = LocalIndication.current,
                 onClick = onLaunch,
                 onLongClick = {
                     if (hapticEnabled) haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -126,7 +131,7 @@ private fun AppGridItem(
             AppIconImage(
                 icon = app.icon,
                 contentDescription = app.label,
-                shape = iconShape.toComposeShape(),
+                shape = rememberPressMorphShape(iconShape, interactionSource),
                 // Clamped to the cell width so large sizes shrink instead of overflowing.
                 modifier = Modifier.widthIn(max = iconSize).fillMaxWidth().aspectRatio(1f)
             )

@@ -64,6 +64,9 @@
     <string name="pill_blur_tint_alpha_label">Kekuatan warna</string>
     <string name="pill_height_label">Tinggi</string>
     <string name="pill_icon_shape_circle">Lingkaran</string>
+    <string name="pill_icon_shape_cookie">Kue</string>
+    <string name="pill_icon_shape_clover">Semanggi</string>
+    <string name="pill_icon_shape_pebble">Kerikil</string>
     <string name="pill_icon_shape_default">Bawaan</string>
     <string name="pill_icon_shape_square">Persegi</string>
     <string name="pill_icon_shape_squircle">Squircle</string>

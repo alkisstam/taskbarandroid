@@ -64,6 +64,9 @@
     <string name="pill_blur_tint_alpha_label">टिंट की तीव्रता</string>
     <string name="pill_height_label">ऊंचाई</string>
     <string name="pill_icon_shape_circle">वृत्त</string>
+    <string name="pill_icon_shape_cookie">कुकी</string>
+    <string name="pill_icon_shape_clover">तिपतिया</string>
+    <string name="pill_icon_shape_pebble">कंकड़</string>
     <string name="pill_icon_shape_default">डिफ़ॉल्ट</string>
     <string name="pill_icon_shape_square">वर्ग</string>
     <string name="pill_icon_shape_squircle">स्क्वियरकल</string>

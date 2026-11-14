@@ -64,6 +64,9 @@
     <string name="pill_blur_tint_alpha_label">Intensità della tinta</string>
     <string name="pill_height_label">Altezza</string>
     <string name="pill_icon_shape_circle">Cerchio</string>
+    <string name="pill_icon_shape_cookie">Biscotto</string>
+    <string name="pill_icon_shape_clover">Trifoglio</string>
+    <string name="pill_icon_shape_pebble">Ciottolo</string>
     <string name="pill_icon_shape_default">Predefinita</string>
     <string name="pill_icon_shape_square">Quadrato</string>
     <string name="pill_icon_shape_squircle">Squircle</string>

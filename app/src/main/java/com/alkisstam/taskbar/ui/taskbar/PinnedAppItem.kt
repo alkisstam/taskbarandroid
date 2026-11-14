@@ -1,7 +1,9 @@
 package com.alkisstam.taskbar.ui.taskbar
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -34,7 +36,7 @@ import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.IconShape
 import com.alkisstam.taskbar.ui.common.AppIconImage
 import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
-import com.alkisstam.taskbar.ui.common.toComposeShape
+import com.alkisstam.taskbar.ui.common.rememberPressMorphShape
 import com.alkisstam.taskbar.ui.theme.GlassBackdrop
 import com.alkisstam.taskbar.ui.theme.LocalGlassSurface
 
@@ -55,6 +57,7 @@ fun PinnedAppItem(
     var showMenu by remember { mutableStateOf(false) }
     val haptic = LocalHapticFeedback.current
     val hapticEnabled = LocalHapticEnabled.current
+    val interactionSource = remember { MutableInteractionSource() }
 
     Column(
         modifier = modifier,
@@ -63,10 +66,12 @@ fun PinnedAppItem(
         AppIconImage(
             icon = app.icon,
             contentDescription = app.label,
-            shape = iconShape.toComposeShape(),
+            shape = rememberPressMorphShape(iconShape, interactionSource),
             modifier = Modifier
                 .size(iconSize)
                 .combinedClickable(
+                    interactionSource = interactionSource,
+                    indication = LocalIndication.current,
                     onClick = onLaunch,
                     onLongClick = {
                         if (hapticEnabled) haptic.performHapticFeedback(HapticFeedbackType.LongPress)

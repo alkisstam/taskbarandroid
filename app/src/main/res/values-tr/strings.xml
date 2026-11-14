@@ -64,6 +64,9 @@
     <string name="pill_blur_tint_alpha_label">Renk tonu yoğunluğu</string>
     <string name="pill_height_label">Yükseklik</string>
     <string name="pill_icon_shape_circle">Daire</string>
+    <string name="pill_icon_shape_cookie">Kurabiye</string>
+    <string name="pill_icon_shape_clover">Yonca</string>
+    <string name="pill_icon_shape_pebble">Çakıl</string>
     <string name="pill_icon_shape_default">Varsayılan</string>
     <string name="pill_icon_shape_square">Kare</string>
     <string name="pill_icon_shape_squircle">Squircle</string>

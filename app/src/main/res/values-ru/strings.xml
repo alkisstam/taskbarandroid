@@ -64,6 +64,9 @@
     <string name="pill_blur_tint_alpha_label">Сила оттенка</string>
     <string name="pill_height_label">Высота</string>
     <string name="pill_icon_shape_circle">Круг</string>
+    <string name="pill_icon_shape_cookie">Печенье</string>
+    <string name="pill_icon_shape_clover">Клевер</string>
+    <string name="pill_icon_shape_pebble">Галька</string>
     <string name="pill_icon_shape_default">По умолчанию</string>
     <string name="pill_icon_shape_square">Квадрат</string>
     <string name="pill_icon_shape_squircle">Сквиркл</string>
