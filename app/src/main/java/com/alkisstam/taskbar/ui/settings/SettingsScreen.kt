@@ -55,6 +55,9 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.Dp
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Insights
+import androidx.compose.material.icons.filled.InstallMobile
+import androidx.compose.material.icons.filled.SortByAlpha
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.Add
@@ -1496,6 +1499,11 @@ internal fun AppOrderCard(viewModel: TaskbarViewModel) {
             icon = Icons.AutoMirrored.Filled.Sort,
             selectedLabel = options.first { it.second == appSortOrder }.first,
             options = options,
+            optionIcon = { Icon(when (it) {
+                AppSortOrder.NAME -> Icons.Filled.SortByAlpha
+                AppSortOrder.INSTALL_TIME -> Icons.Filled.InstallMobile
+                AppSortOrder.USAGE -> Icons.Filled.Insights
+            }, contentDescription = null) },
             isSelected = { it == appSortOrder },
             onSelect = { viewModel.setAppSortOrder(it) }
         )

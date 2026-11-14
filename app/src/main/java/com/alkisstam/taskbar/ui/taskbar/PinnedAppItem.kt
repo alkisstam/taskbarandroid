@@ -5,6 +5,8 @@ import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.unit.Dp
@@ -22,18 +24,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.data.IconShape
+import com.alkisstam.taskbar.ui.common.AboveAnchorPopupPosition
 import com.alkisstam.taskbar.ui.common.AppIconImage
 import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import com.alkisstam.taskbar.ui.common.rememberPressMorphShape
@@ -93,23 +94,19 @@ fun PinnedAppItem(
         }
 
         if (showMenu) {
-            val density = LocalDensity.current
-            val yOffset = with(density) { (iconSize + 8.dp).roundToPx() }
             Popup(
-                alignment = Alignment.TopCenter,
-                offset = IntOffset(0, -yOffset),
+                popupPositionProvider = AboveAnchorPopupPosition,
                 onDismissRequest = { showMenu = false },
                 properties = PopupProperties(focusable = true)
             ) {
                 Surface(
                     shape = RoundedCornerShape(12.dp),
                     tonalElevation = 8.dp,
-                    shadowElevation = 8.dp,
-                    modifier = Modifier.width(180.dp)
+                    shadowElevation = 8.dp
                 ) {
                     // Popups inherit the panel's glass state, so the menu frosts like the panel it opens from.
                     GlassBackdrop(enabled = LocalGlassSurface.current, cornerRadius = 12.dp, tint = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f)) {
-                        Column {
+                        Column(Modifier.width(IntrinsicSize.Max)) {
                             AppMenuAction(stringResource(R.string.pinned_app_menu_open)) { onLaunch(); showMenu = false }
                             altLaunchLabel?.let { AppMenuAction(it) { onAltLaunch(); showMenu = false } }
                             AppMenuAction(unpinLabel ?: stringResource(R.string.pinned_app_menu_unpin)) { onUnpin(); showMenu = false }
@@ -125,12 +122,12 @@ fun PinnedAppItem(
 private fun AppMenuAction(label: String, onClick: () -> Unit) {
     TextButton(
         onClick = onClick,
-        modifier = Modifier.width(180.dp)
+        modifier = Modifier.fillMaxWidth()
     ) {
         Text(
             text = label,
             style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.width(148.dp)
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }

@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -37,6 +39,24 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import com.alkisstam.taskbar.ui.common.toComposeShape
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.FlashlightOn
+import androidx.compose.material.icons.filled.Screenshot
+import androidx.compose.material.icons.filled.PowerSettingsNew
+import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Apps
+import androidx.compose.material.icons.filled.Dock
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
+import androidx.compose.material.icons.filled.Android
+import androidx.compose.material.icons.filled.Block
+import androidx.compose.material.icons.filled.East
+import androidx.compose.material.icons.filled.West
+import androidx.compose.material.icons.filled.South
+import androidx.compose.material.icons.filled.Circle
+import androidx.compose.material.icons.filled.Opacity
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.BrightnessMedium
@@ -58,7 +78,7 @@ import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.Surface
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -99,6 +119,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -115,6 +138,7 @@ import com.alkisstam.taskbar.data.PillEdgePosition
 import com.alkisstam.taskbar.data.ThemeMode
 import com.alkisstam.taskbar.service.crossWindowBlurEnabled
 import com.alkisstam.taskbar.service.semBlurSupported
+import com.alkisstam.taskbar.ui.common.CenteredPopupPosition
 import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import com.alkisstam.taskbar.ui.taskbar.isGestureNavigation
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
@@ -225,6 +249,7 @@ private fun ThemeSectionContent(viewModel: TaskbarViewModel) {
         icon = Icons.Filled.Palette,
         selectedLabel = if (translucentMode) transparentLabel else solidLabel,
         options = listOf(solidLabel to false, transparentLabel to true),
+        optionIcon = { Icon(if (it) Icons.Filled.Opacity else Icons.Filled.Circle, contentDescription = null) },
         isSelected = { it == translucentMode },
         onSelect = { viewModel.setTranslucentMode(it) }
     )
@@ -411,6 +436,12 @@ private fun PillSectionContent(viewModel: TaskbarViewModel) {
             edgeRightLabel to PillEdgePosition.RIGHT,
             edgeBothLabel to PillEdgePosition.BOTH
         ),
+        optionIcon = { Icon(when (it) {
+            PillEdgePosition.BOTTOM -> Icons.Filled.South
+            PillEdgePosition.LEFT -> Icons.Filled.West
+            PillEdgePosition.RIGHT -> Icons.Filled.East
+            PillEdgePosition.BOTH -> Icons.Filled.SwapHoriz
+        }, contentDescription = null) },
         isSelected = { it == pillSettings.edgePosition },
         onSelect = { pos ->
             val (w, h) = if (pos == PillEdgePosition.BOTTOM) 140f to 12f else 4f to 90f
@@ -498,6 +529,11 @@ private fun PillSectionContent(viewModel: TaskbarViewModel) {
                 holdDragBrightnessLabel to PillHoldDragAction.BRIGHTNESS,
                 holdDragVolumeLabel to PillHoldDragAction.VOLUME
             ),
+            optionIcon = { Icon(when (it) {
+                PillHoldDragAction.DISABLED -> Icons.Filled.Block
+                PillHoldDragAction.BRIGHTNESS -> Icons.Filled.BrightnessMedium
+                PillHoldDragAction.VOLUME -> Icons.AutoMirrored.Filled.VolumeUp
+            }, contentDescription = null) },
             isSelected = { it == pillSettings.holdDragAction },
             onSelect = { action ->
                 viewModel.savePillSettings(pillSettings.copy(holdDragAction = action))
@@ -623,6 +659,10 @@ private fun DockSectionContent(viewModel: TaskbarViewModel, expanded: Boolean) {
             appMenuSideLeftLabel to AppMenuButtonSide.LEFT,
             appMenuSideRightLabel to AppMenuButtonSide.RIGHT
         ),
+        optionIcon = { Icon(when (it) {
+            AppMenuButtonSide.LEFT -> Icons.Filled.West
+            AppMenuButtonSide.RIGHT -> Icons.Filled.East
+        }, contentDescription = null) },
         isSelected = { it == taskbarSettings.appMenuButtonSide },
         onSelect = { viewModel.saveTaskbarSettings(taskbarSettings.copy(appMenuButtonSide = it)) }
     )
@@ -679,6 +719,10 @@ private fun DockSectionContent(viewModel: TaskbarViewModel, expanded: Boolean) {
             iconShapeCloverLabel to IconShape.CLOVER,
             iconShapePebbleLabel to IconShape.PEBBLE
         ),
+        optionIcon = { shape ->
+            if (shape == IconShape.DEFAULT) Icon(Icons.Filled.Android, contentDescription = null)
+            else Box(Modifier.size(20.dp).clip(shape.toComposeShape()).background(LocalContentColor.current))
+        },
         isSelected = { it == taskbarSettings.iconShape },
         onSelect = { viewModel.saveTaskbarSettings(taskbarSettings.copy(iconShape = it)) }
     )
@@ -711,7 +755,19 @@ private fun GestureActionDropdown(
         selectedLabel = options.first { it.second == selected }.first,
         options = options,
         isSelected = { it == selected },
-        onSelect = onSelect
+        onSelect = onSelect,
+        optionIcon = { Icon(when (it) {
+            GestureAction.SHOW_DOCK -> Icons.Filled.Dock
+            GestureAction.SHOW_APP_MENU -> Icons.Filled.Apps
+            GestureAction.SHOW_SEARCH -> Icons.Filled.Search
+            GestureAction.SHOW_NOTIFICATIONS -> Icons.Filled.Notifications
+            GestureAction.SHOW_QUICK_SETTINGS -> Icons.Filled.Tune
+            GestureAction.POWER_MENU -> Icons.Filled.PowerSettingsNew
+            GestureAction.TAKE_SCREENSHOT -> Icons.Filled.Screenshot
+            GestureAction.TOGGLE_FLASHLIGHT -> Icons.Filled.FlashlightOn
+            GestureAction.LOCK_SCREEN -> Icons.Filled.Lock
+            GestureAction.DISABLED -> Icons.Filled.Block
+        }, contentDescription = null) }
     )
 }
 
@@ -1186,7 +1242,8 @@ internal fun <T> GradientDropdownField(
     selectedLabel: String,
     options: List<Pair<String, T>>,
     isSelected: (T) -> Boolean,
-    onSelect: (T) -> Unit
+    onSelect: (T) -> Unit,
+    optionIcon: (@Composable (T) -> Unit)? = null
 ) {
     var expanded by remember { mutableStateOf(false) }
     Box {
@@ -1223,22 +1280,38 @@ internal fun <T> GradientDropdownField(
                 )
             }
         }
-        DropdownMenu(
-            expanded = expanded,
+        if (expanded) Popup(
+            popupPositionProvider = CenteredPopupPosition(LocalView.current),
             onDismissRequest = { expanded = false },
-            modifier = Modifier.fillMaxWidth(0.9f)
+            properties = PopupProperties(focusable = true)
         ) {
-            options.forEach { (label, value) ->
-                DropdownMenuItem(
-                    text = { Text(label) },
-                    leadingIcon = if (isSelected(value)) {
-                        { Icon(Icons.Filled.Check, contentDescription = null) }
-                    } else null,
-                    onClick = {
-                        onSelect(value)
-                        expanded = false
+            Surface(
+                shape = RoundedCornerShape(28.dp),
+                color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                shadowElevation = 8.dp
+            ) {
+                Column(
+                    Modifier
+                        .width(IntrinsicSize.Max)
+                        .heightIn(max = (LocalConfiguration.current.screenHeightDp * 0.7f).dp)
+                        .verticalScroll(rememberScrollState())
+                        .padding(vertical = 12.dp)
+                ) {
+                    options.forEach { (label, value) ->
+                        val selected = isSelected(value)
+                        val check: @Composable () -> Unit = { Icon(Icons.Filled.Check, contentDescription = null) }
+                        DropdownMenuItem(
+                            text = { Text(label) },
+                            leadingIcon = optionIcon?.let { { it(value) } } ?: check.takeIf { selected },
+                            trailingIcon = check.takeIf { selected && optionIcon != null },
+                            onClick = {
+                                onSelect(value)
+                                expanded = false
+                            },
+                            modifier = Modifier.padding(horizontal = 8.dp)
+                        )
                     }
-                )
+                }
             }
         }
     }
