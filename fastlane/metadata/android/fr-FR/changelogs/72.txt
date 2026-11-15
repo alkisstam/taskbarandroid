@@ -5,3 +5,5 @@ Nouveautés
 Modifié
 • Les menus d'appui long ne cachent plus l'icône
 • Les menus des réglages s'ouvrent au centre et s'adaptent au texte
+Corrigé
+• Plantage à l'ouverture de la recherche ou d'une note

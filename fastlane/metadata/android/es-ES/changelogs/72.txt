@@ -5,3 +5,5 @@ Novedades
 Cambios
 • Los menús de pulsación larga ya no tapan el icono
 • Los menús de ajustes se abren centrados y se ajustan al texto
+Correcciones
+• Cierre inesperado al abrir la búsqueda o una nota

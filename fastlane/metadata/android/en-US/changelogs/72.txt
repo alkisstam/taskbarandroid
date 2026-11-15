@@ -5,3 +5,5 @@ Added
 Changed
 • Long-press menus no longer cover the icon
 • Settings menus open centered and fit their text
+Fixed
+• Crash when opening search or a note

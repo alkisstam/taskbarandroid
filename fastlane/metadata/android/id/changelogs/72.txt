@@ -5,3 +5,5 @@ Baru
 Diubah
 • Menu tekan lama tidak lagi menutupi ikon
 • Menu setelan terbuka di tengah dan menyesuaikan teks
+Diperbaiki
+• Aplikasi error saat membuka pencarian atau catatan

@@ -5,3 +5,5 @@ Novedades
 Cambios
 • Los menús de mantener presionado ya no tapan el ícono
 • Los menús de configuración se abren centrados y se ajustan al texto
+Correcciones
+• Cierre inesperado al abrir la búsqueda o una nota

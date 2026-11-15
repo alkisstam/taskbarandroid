@@ -5,3 +5,5 @@ Novità
 Modificato
 • I menu a pressione prolungata non coprono più l'icona
 • I menu delle impostazioni si aprono al centro e si adattano al testo
+Corretto
+• Arresto anomalo all'apertura della ricerca o di una nota

@@ -5,3 +5,5 @@ Nieuw
 Gewijzigd
 • Menu’s bij lang drukken bedekken het pictogram niet meer
 • Instellingenmenu’s openen in het midden en passen zich aan de tekst aan
+Opgelost
+• Crash bij het openen van zoeken of een notitie

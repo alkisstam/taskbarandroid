@@ -5,3 +5,5 @@ Neu
 Geändert
 • Menüs bei langem Drücken verdecken das Symbol nicht mehr
 • Einstellungsmenüs öffnen sich mittig und passen sich dem Text an
+Behoben
+• Absturz beim Öffnen der Suche oder einer Notiz

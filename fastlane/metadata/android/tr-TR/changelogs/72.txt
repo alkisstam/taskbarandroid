@@ -5,3 +5,5 @@ Yenilikler
 Değişenler
 • Uzun basma menüleri artık simgeyi kapatmıyor
 • Ayar menüleri ortada açılır ve metne göre boyutlanır
+Düzeltilenler
+• Arama veya not açılırken oluşan çökme

@@ -5,3 +5,5 @@ Novidades
 Alterado
 • Os menus de toque longo não cobrem mais o ícone
 • Os menus de configurações abrem centralizados e se ajustam ao texto
+Corrigido
+• Falha ao abrir a pesquisa ou uma nota
