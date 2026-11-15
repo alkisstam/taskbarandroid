@@ -30,6 +30,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.layout.onPlaced
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -74,9 +77,11 @@ fun FloatingSearchBar(
     val recentApps by viewModel.recentApps.collectAsState()
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
+    // Focusing before first layout crashes in ContentInViewNode (zero viewport); search view starts GONE
+    var fieldPlaced by remember { mutableStateOf(false) }
 
-    LaunchedEffect(isSearching) {
-        if (isSearching) {
+    LaunchedEffect(isSearching, fieldPlaced) {
+        if (isSearching && fieldPlaced) {
             focusRequester.requestFocus()
             keyboardController?.show()
         }
@@ -145,7 +150,8 @@ fun FloatingSearchBar(
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .focusRequester(focusRequester),
+                            .focusRequester(focusRequester)
+                            .onPlaced { fieldPlaced = true },
                         shape = RoundedCornerShape(16.dp)
                     )
                 }

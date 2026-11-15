@@ -44,6 +44,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -75,7 +76,10 @@ internal fun NoteComposer(
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    if (autoFocus) {
+    // Focusing before first layout crashes in ContentInViewNode (zero viewport)
+    var fieldPlaced by remember { mutableStateOf(false) }
+
+    if (autoFocus && fieldPlaced) {
         LaunchedEffect(Unit) {
             focusRequester.requestFocus()
             keyboardController?.show()
@@ -92,7 +96,7 @@ internal fun NoteComposer(
             OutlinedTextField(
                 value = text,
                 onValueChange = { text = it },
-                modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
+                modifier = Modifier.fillMaxWidth().focusRequester(focusRequester).onPlaced { fieldPlaced = true },
                 placeholder = { Text(placeholder) },
                 shape = RoundedCornerShape(8.dp),
                 minLines = 3

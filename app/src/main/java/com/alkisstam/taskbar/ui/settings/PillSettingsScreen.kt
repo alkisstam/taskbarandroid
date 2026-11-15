@@ -102,6 +102,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -960,8 +961,11 @@ fun SettingsSlider(
         hasFocus = false
     }
 
-    LaunchedEffect(isEditing) {
-        if (isEditing) focusRequester.requestFocus()
+    // Focusing before first layout crashes in ContentInViewNode (zero viewport)
+    var fieldPlaced by remember(isEditing) { mutableStateOf(false) }
+
+    LaunchedEffect(isEditing, fieldPlaced) {
+        if (isEditing && fieldPlaced) focusRequester.requestFocus()
     }
 
     Column {
@@ -1005,6 +1009,7 @@ fun SettingsSlider(
                             modifier = Modifier
                                 .width(48.dp)
                                 .focusRequester(focusRequester)
+                                .onPlaced { fieldPlaced = true }
                                 .onFocusChanged {
                                     if (it.isFocused) hasFocus = true
                                     else if (hasFocus && isEditing) commitEdit()
