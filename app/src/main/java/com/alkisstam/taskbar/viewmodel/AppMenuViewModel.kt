@@ -211,6 +211,10 @@ class AppMenuViewModel @Inject constructor(
     private val _quickSettingsPanelVisible = MutableStateFlow(false)
     val quickSettingsPanelVisible: StateFlow<Boolean> = _quickSettingsPanelVisible.asStateFlow()
 
+    val sheetPanelOpen: StateFlow<Boolean> = combine(
+        _clipboardPanelVisible, _notificationPanelVisible, _notesPanelVisible, _quickSettingsPanelVisible
+    ) { a, b, c, d -> a || b || c || d }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     val mediaState: StateFlow<MediaState> = mediaRepository.mediaState
 
     private val _brightnessLevel = MutableStateFlow(128)

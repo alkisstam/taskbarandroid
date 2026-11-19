@@ -58,6 +58,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import com.alkisstam.taskbar.R
@@ -87,8 +88,15 @@ import com.alkisstam.taskbar.viewmodel.NotificationHistoryViewModel
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
 import kotlin.math.roundToInt
 
-private fun dockAwarePanelBottomPadding(isTaskbarVisible: Boolean, heightDp: Float, expandedRows: Int, bottomGapDp: Float) =
-    if (isTaskbarVisible) (bottomGapDp + heightDp * (1 + expandedRows) + 4f * expandedRows + 16f + 18f).dp else 0.dp
+// Measured dock stack (pill row + dock), so sheets sit the same gap above it as the pill does above the dock.
+@Composable
+private fun dockAwarePanelBottomPadding(taskbarViewModel: TaskbarViewModel, isTaskbarVisible: Boolean, heightDp: Float, expandedRows: Int, bottomGapDp: Float): Dp {
+    val stackHeightPx by taskbarViewModel.dockStackHeightPx.collectAsState()
+    val navInset by taskbarViewModel.navBarInsetDp.collectAsState()
+    if (!isTaskbarVisible) return 0.dp
+    val stackPx = stackHeightPx ?: return (bottomGapDp + heightDp * (1 + expandedRows) + 4f * expandedRows + 16f + 18f).dp
+    return maxOf(bottomGapDp, navInset).dp + with(LocalDensity.current) { stackPx.toDp() } + QuickControlsButtonGap
+}
 
 // Dispatched insets are zero in accessibility overlays, so sheets take the status bar, cutout and
 // side nav bar sizes that OverlayService reads from WindowManager metrics.
@@ -480,7 +488,7 @@ internal fun ClipboardPanelContent(
     val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
 
     val expandedRows = if (isDockExpanded) 1 else 0
-    val dockBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.dockHeightDp, expandedRows, taskbarSettings.dockPadding.bottomGapDp)
+    val dockBottomPadding = dockAwarePanelBottomPadding(taskbarViewModel, isTaskbarVisible, taskbarSettings.dockHeightDp, expandedRows, taskbarSettings.dockPadding.bottomGapDp)
 
     TaskBarTheme(themeMode = themeMode) {
         ClipboardPanel(
@@ -520,7 +528,7 @@ internal fun NotesPanelContent(
     val isDockExpanded by taskbarViewModel.isDockExpanded.collectAsState()
 
     val expandedRows = if (isDockExpanded) 1 else 0
-    val dockBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.dockHeightDp, expandedRows, taskbarSettings.dockPadding.bottomGapDp)
+    val dockBottomPadding = dockAwarePanelBottomPadding(taskbarViewModel, isTaskbarVisible, taskbarSettings.dockHeightDp, expandedRows, taskbarSettings.dockPadding.bottomGapDp)
 
     TaskBarTheme(themeMode = themeMode) {
         NotesPanel(
@@ -566,7 +574,7 @@ internal fun QuickSettingsPanelContent(
     val quickSettingsPanelVisible by appMenuViewModel.quickSettingsPanelVisible.collectAsState()
 
     val expandedRows = if (isDockExpanded) 1 else 0
-    val dockBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.dockHeightDp, expandedRows, taskbarSettings.dockPadding.bottomGapDp)
+    val dockBottomPadding = dockAwarePanelBottomPadding(taskbarViewModel, isTaskbarVisible, taskbarSettings.dockHeightDp, expandedRows, taskbarSettings.dockPadding.bottomGapDp)
     val context = LocalContext.current
     val hasNotificationListenerPermission = remember(quickSettingsPanelVisible) {
         notificationListenerEnabled(context)
@@ -608,7 +616,7 @@ internal fun NotificationHistoryPanelContent(
     val appsByPackage = remember(allApps) { allApps.associateBy { it.packageName } }
 
     val expandedRows = if (isDockExpanded) 1 else 0
-    val dockBottomPadding = dockAwarePanelBottomPadding(isTaskbarVisible, taskbarSettings.dockHeightDp, expandedRows, taskbarSettings.dockPadding.bottomGapDp)
+    val dockBottomPadding = dockAwarePanelBottomPadding(taskbarViewModel, isTaskbarVisible, taskbarSettings.dockHeightDp, expandedRows, taskbarSettings.dockPadding.bottomGapDp)
 
     TaskBarTheme(themeMode = themeMode) {
         NotificationHistoryPanel(
@@ -644,11 +652,12 @@ internal fun MusicPanelContent(
     val alwaysShowMusicPanel by appMenuViewModel.alwaysShowMusicPanel.collectAsState()
     val isSearching by appMenuViewModel.isSearching.collectAsState()
     val menuVisible by appMenuViewModel.menuVisible.collectAsState()
+    val sheetOpen by appMenuViewModel.sheetPanelOpen.collectAsState()
 
     val dockRevealProgress by taskbarViewModel.dockRevealProgress.collectAsState()
     val isTaskbarVisible by taskbarViewModel.isTaskbarVisible.collectAsState()
 
-    val panelShouldShow = musicPanelEnabled && (mediaState.hasSession || alwaysShowMusicPanel) && musicPanelVisible && !isSearching && !menuVisible
+    val panelShouldShow = musicPanelEnabled && (mediaState.hasSession || alwaysShowMusicPanel) && musicPanelVisible && !isSearching && !menuVisible && !sheetOpen
 
     val revealAnim = remember { Animatable(0f) }
     var panelWidthPx by remember { mutableFloatStateOf(0f) }
