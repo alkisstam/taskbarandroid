@@ -5,5 +5,6 @@ Baru
 Diubah
 • Menu tekan lama tidak lagi menutupi ikon
 • Menu setelan terbuka di tengah dan menyesuaikan teks
+• Panel lebih dekat ke dock; musik disembunyikan saat panel lain terbuka
 Diperbaiki
 • Aplikasi error saat membuka pencarian atau catatan

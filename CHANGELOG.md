@@ -17,6 +17,7 @@ New icon shapes with playful animations, and menus that stay out of your way.
 - **Long-press menus don't cover the icon** — the menu for dock and App Menu icons opens just above the icon, toward the side with more room, and is only as wide as its text.
 - **Sort menu** — the App Menu sort menu opens above the search bar, next to the button, instead of in the bottom corner.
 - **Settings menus open centered** — dropdowns in settings and the Quick Settings panel open in the middle of the screen with rounded corners, fit their text, and scroll when the list is long.
+- **Panels sit closer to the dock** — the Quick Settings, notification, clipboard, notes, calculator, volume and brightness panels open just above the dock, with the same small gap as the icons pill. The music panel hides while the Quick Settings, notification, clipboard or notes panel is open and comes back when it closes.
 
 ### Fixed
 - **Crash when a text field opens** — opening search, the note composer or a pill slider's value editor could crash the app on some devices if the field took focus before it was drawn.

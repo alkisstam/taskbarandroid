@@ -5,5 +5,6 @@ Nouveautés
 Modifié
 • Les menus d'appui long ne cachent plus l'icône
 • Les menus des réglages s'ouvrent au centre et s'adaptent au texte
+• Les panneaux sont plus près du dock ; la musique se masque quand un autre panneau est ouvert
 Corrigé
 • Plantage à l'ouverture de la recherche ou d'une note

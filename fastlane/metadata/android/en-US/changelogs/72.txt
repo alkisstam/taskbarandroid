@@ -5,5 +5,6 @@ Added
 Changed
 • Long-press menus no longer cover the icon
 • Settings menus open centered and fit their text
+• Panels sit closer to the dock; music hides while other panels are open
 Fixed
 • Crash when opening search or a note

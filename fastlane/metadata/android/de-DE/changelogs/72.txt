@@ -5,5 +5,6 @@ Neu
 Geändert
 • Menüs bei langem Drücken verdecken das Symbol nicht mehr
 • Einstellungsmenüs öffnen sich mittig und passen sich dem Text an
+• Panels sitzen näher am Dock; Musik wird bei anderen offenen Panels ausgeblendet
 Behoben
 • Absturz beim Öffnen der Suche oder einer Notiz

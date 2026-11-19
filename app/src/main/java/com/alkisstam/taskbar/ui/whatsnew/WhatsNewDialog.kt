@@ -97,6 +97,7 @@ val whatsNewReleases = listOf(
             "The All Apps button turns into a cookie when the App Menu opens",
             "Long-press menus open above the icon instead of covering it",
             "Settings menus open centered, fit their text and show an icon for each option",
+            "Panels open closer to the dock, and the music panel steps aside while another panel is open",
             "Fixed a crash when opening search or a note"
         )
     )

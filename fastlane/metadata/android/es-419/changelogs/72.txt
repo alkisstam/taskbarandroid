@@ -5,5 +5,6 @@ Novedades
 Cambios
 • Los menús de mantener presionado ya no tapan el ícono
 • Los menús de configuración se abren centrados y se ajustan al texto
+• Los paneles quedan más cerca del dock; la música se oculta con otros paneles abiertos
 Correcciones
 • Cierre inesperado al abrir la búsqueda o una nota
