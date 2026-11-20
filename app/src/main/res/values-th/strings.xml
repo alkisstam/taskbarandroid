@@ -453,11 +453,16 @@
     <string name="settings_choose_apps_dialog_title">เลือกแอป</string>
     <string name="app_group_add_button">เพิ่มแผง</string>
     <string name="app_group_default_name">แผง %1$d</string>
-    <string name="app_group_card_title">แผงแอป (%1$d)</string>
     <string name="app_group_choose_icon">เลือกไอคอน</string>
     <string name="app_group_delete">ลบแผง</string>
     <string name="app_group_empty_hint">ยังไม่มีแอป เพิ่มได้ที่ การตั้งค่า › แอป</string>
     <string name="app_group_remove_app">นำออกจากแผง</string>
+    <string name="app_group_dialog_new_title">แผงใหม่</string>
+    <string name="app_group_dialog_edit_title">แก้ไขแผง</string>
+    <string name="app_group_dialog_cancel">ยกเลิก</string>
+    <string name="app_group_dialog_save">บันทึก</string>
+    <string name="app_group_enabled_label">แสดงใน Dock</string>
+    <string name="app_group_preview_empty">ยังไม่มีแอป</string>
     <string name="settings_pill_auto_hide_title">ซ่อนแคปซูลไอคอนอัตโนมัติ</string>
     <string name="settings_pill_auto_hide_desc">ซ่อนแคปซูลไอคอนเหนือ Dock จนกว่าคุณจะปัดขึ้นบน Dock ปัดลงเพื่อซ่อนอีกครั้ง</string>
     <string name="settings_pill_centered_title">จัดแคปซูลไอคอนไว้ตรงกลาง</string>

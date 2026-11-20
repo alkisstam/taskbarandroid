@@ -541,25 +541,9 @@ class TaskbarViewModel @Inject constructor(
         }
     }
 
-    fun addAppGroup(name: String) {
-        viewModelScope.launch { prefsRepository.addAppGroup(name, "folder") }
-    }
-
-    fun renameAppGroup(id: String, name: String) {
-        viewModelScope.launch { prefsRepository.renameAppGroup(id, name) }
-    }
-
-    fun setAppGroupEnabled(id: String, enabled: Boolean) {
-        if (!enabled && _expandedGroupId.value == id) collapseDock()
-        viewModelScope.launch { prefsRepository.setAppGroupEnabled(id, enabled) }
-    }
-
-    fun setAppGroupIcon(id: String, iconKey: String) {
-        viewModelScope.launch { prefsRepository.setAppGroupIcon(id, iconKey) }
-    }
-
-    fun toggleAppGroupPackage(id: String, packageName: String) {
-        viewModelScope.launch { prefsRepository.toggleAppGroupPackage(id, packageName) }
+    fun saveAppGroup(group: AppGroup) {
+        if (!group.enabled && _expandedGroupId.value == group.id) collapseDock()
+        viewModelScope.launch { prefsRepository.saveAppGroup(group) }
     }
 
     fun removeAppGroupPackage(id: String, packageName: String) {
@@ -569,10 +553,6 @@ class TaskbarViewModel @Inject constructor(
     fun deleteAppGroup(id: String) {
         if (_expandedGroupId.value == id) collapseDock()
         viewModelScope.launch { prefsRepository.deleteAppGroup(id) }
-    }
-
-    fun setAppGroupPackages(id: String, packages: List<String>) {
-        viewModelScope.launch { prefsRepository.setAppGroupPackages(id, packages) }
     }
 
     fun reorderPinnedApps(newOrder: List<String>) {

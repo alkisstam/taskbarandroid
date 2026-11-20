@@ -453,11 +453,16 @@
     <string name="settings_choose_apps_dialog_title">Apps auswählen</string>
     <string name="app_group_add_button">Panel hinzufügen</string>
     <string name="app_group_default_name">Panel %1$d</string>
-    <string name="app_group_card_title">App-Panel (%1$d)</string>
     <string name="app_group_choose_icon">Symbol auswählen</string>
     <string name="app_group_delete">Panel löschen</string>
     <string name="app_group_empty_hint">Noch keine Apps. Füge welche unter Einstellungen › Apps hinzu.</string>
     <string name="app_group_remove_app">Aus Panel entfernen</string>
+    <string name="app_group_dialog_new_title">Neues Panel</string>
+    <string name="app_group_dialog_edit_title">Panel bearbeiten</string>
+    <string name="app_group_dialog_cancel">Abbrechen</string>
+    <string name="app_group_dialog_save">Speichern</string>
+    <string name="app_group_enabled_label">Im Dock anzeigen</string>
+    <string name="app_group_preview_empty">Noch keine Apps</string>
     <string name="settings_pill_auto_hide_title">Symbolleiste automatisch ausblenden</string>
     <string name="settings_pill_auto_hide_desc">Blendet die Symbolleiste über dem Dock aus, bis du auf dem Dock nach oben wischst. Wische nach unten, um sie wieder auszublenden.</string>
     <string name="settings_pill_centered_title">Symbolleiste zentrieren</string>

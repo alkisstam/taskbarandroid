@@ -453,11 +453,16 @@
     <string name="settings_choose_apps_dialog_title">Uygulama Seç</string>
     <string name="app_group_add_button">Panel Ekle</string>
     <string name="app_group_default_name">Panel %1$d</string>
-    <string name="app_group_card_title">Uygulama Paneli (%1$d)</string>
     <string name="app_group_choose_icon">Simge seç</string>
     <string name="app_group_delete">Paneli sil</string>
     <string name="app_group_empty_hint">Henüz uygulama yok. Ayarlar › Uygulamalar bölümünden ekleyin.</string>
     <string name="app_group_remove_app">Panelden kaldır</string>
+    <string name="app_group_dialog_new_title">Yeni panel</string>
+    <string name="app_group_dialog_edit_title">Paneli düzenle</string>
+    <string name="app_group_dialog_cancel">İptal</string>
+    <string name="app_group_dialog_save">Kaydet</string>
+    <string name="app_group_enabled_label">Dock\'ta göster</string>
+    <string name="app_group_preview_empty">Henüz uygulama yok</string>
     <string name="settings_pill_auto_hide_title">Simge Hapını Otomatik Gizle</string>
     <string name="settings_pill_auto_hide_desc">Dock üzerinde yukarı kaydırana kadar Dock üzerindeki simge hapını gizler. Tekrar gizlemek için aşağı kaydırın.</string>
     <string name="settings_pill_centered_title">Simge Hapını Ortala</string>

@@ -453,11 +453,16 @@
     <string name="settings_choose_apps_dialog_title">اختيار التطبيقات</string>
     <string name="app_group_add_button">إضافة لوحة</string>
     <string name="app_group_default_name">لوحة %1$d</string>
-    <string name="app_group_card_title">لوحة تطبيقات (%1$d)</string>
     <string name="app_group_choose_icon">اختيار أيقونة</string>
     <string name="app_group_delete">حذف اللوحة</string>
     <string name="app_group_empty_hint">لا توجد تطبيقات بعد. أضفها من الإعدادات › التطبيقات.</string>
     <string name="app_group_remove_app">إزالة من اللوحة</string>
+    <string name="app_group_dialog_new_title">لوحة جديدة</string>
+    <string name="app_group_dialog_edit_title">تعديل اللوحة</string>
+    <string name="app_group_dialog_cancel">إلغاء</string>
+    <string name="app_group_dialog_save">حفظ</string>
+    <string name="app_group_enabled_label">إظهار في الشريط</string>
+    <string name="app_group_preview_empty">لا توجد تطبيقات بعد</string>
     <string name="settings_pill_auto_hide_title">إخفاء كبسولة الأيقونات تلقائيًا</string>
     <string name="settings_pill_auto_hide_desc">يخفي كبسولة الأيقونات فوق الشريط حتى تسحب لأعلى على الشريط. اسحب لأسفل لإخفائها مجددًا.</string>
     <string name="settings_pill_centered_title">توسيط كبسولة الأيقونات</string>

@@ -179,7 +179,7 @@ data class AppGroup(
     val enabled: Boolean = true
 )
 
-const val MAX_APP_GROUPS = 3
+const val MAX_APP_GROUPS = 5
 
 @Singleton
 class PreferencesRepository @Inject constructor(
@@ -531,23 +531,16 @@ class PreferencesRepository @Inject constructor(
         }
     }
 
-    suspend fun addAppGroup(name: String, iconKey: String) = editAppGroups { groups ->
-        if (groups.size >= MAX_APP_GROUPS) groups
-        else groups + AppGroup(java.util.UUID.randomUUID().toString(), name, iconKey, emptyList())
+    suspend fun saveAppGroup(group: AppGroup) = editAppGroups { groups ->
+        when {
+            groups.any { it.id == group.id } -> groups.map { if (it.id == group.id) group else it }
+            groups.size >= MAX_APP_GROUPS -> groups
+            else -> groups + group
+        }
     }
 
     private suspend fun editAppGroup(id: String, transform: (AppGroup) -> AppGroup) = editAppGroups { groups ->
         groups.map { if (it.id == id) transform(it) else it }
-    }
-
-    suspend fun renameAppGroup(id: String, name: String) = editAppGroup(id) { it.copy(name = name) }
-
-    suspend fun setAppGroupEnabled(id: String, enabled: Boolean) = editAppGroup(id) { it.copy(enabled = enabled) }
-
-    suspend fun setAppGroupIcon(id: String, iconKey: String) = editAppGroup(id) { it.copy(iconKey = iconKey) }
-
-    suspend fun toggleAppGroupPackage(id: String, packageName: String) = editAppGroup(id) {
-        it.copy(packages = if (packageName in it.packages) it.packages - packageName else it.packages + packageName)
     }
 
     suspend fun removeAppGroupPackage(id: String, packageName: String) = editAppGroup(id) {
@@ -555,10 +548,6 @@ class PreferencesRepository @Inject constructor(
     }
 
     suspend fun deleteAppGroup(id: String) = editAppGroups { groups -> groups.filterNot { it.id == id } }
-
-    suspend fun setAppGroupPackages(id: String, packages: List<String>) = editAppGroup(id) {
-        it.copy(packages = packages.distinct())
-    }
 
     val pillSettings: Flow<PillSettings> = safeData.map { prefs ->
         PillSettings(

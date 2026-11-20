@@ -453,11 +453,16 @@
     <string name="settings_choose_apps_dialog_title">Escolher apps</string>
     <string name="app_group_add_button">Adicionar painel</string>
     <string name="app_group_default_name">Painel %1$d</string>
-    <string name="app_group_card_title">Painel de apps (%1$d)</string>
     <string name="app_group_choose_icon">Escolher ícone</string>
     <string name="app_group_delete">Excluir painel</string>
     <string name="app_group_empty_hint">Nenhum app ainda. Adicione em Configurações › Apps.</string>
     <string name="app_group_remove_app">Remover do painel</string>
+    <string name="app_group_dialog_new_title">Novo painel</string>
+    <string name="app_group_dialog_edit_title">Editar painel</string>
+    <string name="app_group_dialog_cancel">Cancelar</string>
+    <string name="app_group_dialog_save">Salvar</string>
+    <string name="app_group_enabled_label">Mostrar no dock</string>
+    <string name="app_group_preview_empty">Nenhum app ainda</string>
     <string name="settings_pill_auto_hide_title">Ocultar pílula de ícones</string>
     <string name="settings_pill_auto_hide_desc">Oculta a pílula de ícones acima do Dock até você deslizar para cima no Dock. Deslize para baixo para ocultá-la novamente.</string>
     <string name="settings_pill_centered_title">Centralizar pílula de ícones</string>

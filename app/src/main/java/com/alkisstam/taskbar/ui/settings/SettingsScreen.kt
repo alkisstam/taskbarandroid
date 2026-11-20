@@ -34,6 +34,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -146,10 +147,13 @@ import com.alkisstam.taskbar.data.AppInfo
 import com.alkisstam.taskbar.ui.whatsnew.WhatsNewDialog
 import com.alkisstam.taskbar.ui.whatsnew.whatsNewReleases
 import com.alkisstam.taskbar.data.MAX_APP_GROUPS
+import com.alkisstam.taskbar.data.TaskbarSettings
 import com.alkisstam.taskbar.data.AppSortOrder
 import com.alkisstam.taskbar.ui.common.AppGroupIcons
 import com.alkisstam.taskbar.ui.common.AppIconImage
 import com.alkisstam.taskbar.ui.common.appGroupIcon
+import com.alkisstam.taskbar.ui.common.CookiePolygon
+import com.alkisstam.taskbar.ui.common.PolygonShape
 import com.alkisstam.taskbar.ui.common.LocalHapticEnabled
 import com.alkisstam.taskbar.ui.common.toComposeShape
 import com.alkisstam.taskbar.viewmodel.TaskbarViewModel
@@ -1032,7 +1036,26 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
     val appGridIconSize by viewModel.appGridIconSize.collectAsState()
     val showRecentAppsRow by viewModel.showRecentAppsRow.collectAsState()
     var showHideAppPicker by remember { mutableStateOf(false) }
+    var editingGroup by remember { mutableStateOf<AppGroup?>(null) }
     val defaultGroupName = stringResource(R.string.app_group_default_name, appGroups.size + 1)
+
+    editingGroup?.let { group ->
+        AppGroupDialog(
+            initial = group,
+            isNew = appGroups.none { it.first.id == group.id },
+            allApps = allApps,
+            iconShape = iconShape,
+            onSave = {
+                viewModel.saveAppGroup(it)
+                editingGroup = null
+            },
+            onDelete = {
+                viewModel.deleteAppGroup(group.id)
+                editingGroup = null
+            },
+            onDismiss = { editingGroup = null }
+        )
+    }
 
     if (showHideAppPicker) {
         AppPickerDialog(
@@ -1062,14 +1085,31 @@ private fun PinnedAppsTab(viewModel: TaskbarViewModel, bottomPadding: Dp = 0.dp)
             PinnedAppsReorderCard(
                 viewModel = viewModel,
                 pinnedApps = pinnedApps,
-                iconShape = iconShape,
-                onAddPanel = if (appGroups.size < MAX_APP_GROUPS) {
-                    { viewModel.addAppGroup(defaultGroupName) }
-                } else null
+                iconShape = iconShape
             )
         }
         items(appGroups, key = { it.first.id }) { (group, apps) ->
-            AppGroupCard(viewModel = viewModel, group = group, apps = apps, allApps = allApps, iconShape = iconShape)
+            AppGroupPreview(
+                group = group,
+                apps = apps,
+                settings = taskbarSettings,
+                iconShape = iconShape,
+                onClick = { editingGroup = group }
+            )
+        }
+        if (appGroups.size < MAX_APP_GROUPS) {
+            item(key = "add_panel") {
+                OutlinedButton(
+                    onClick = {
+                        editingGroup = AppGroup(java.util.UUID.randomUUID().toString(), defaultGroupName, "folder", emptyList())
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(stringResource(R.string.app_group_add_button))
+                }
+            }
         }
         item {
             SettingsCard(title = stringResource(R.string.settings_hidden_apps_title, hiddenApps.size)) {
@@ -1213,8 +1253,7 @@ internal fun PinnedAppsReorderCard(
     viewModel: TaskbarViewModel,
     pinnedApps: List<AppInfo>,
     iconShape: Shape,
-    inlinePicker: Boolean = false,
-    onAddPanel: (() -> Unit)? = null
+    inlinePicker: Boolean = false
 ) {
     val allApps by viewModel.allApps.collectAsState()
     val pinnedPackages = remember(pinnedApps) { pinnedApps.map { it.packageName }.toSet() }
@@ -1249,144 +1288,241 @@ internal fun PinnedAppsReorderCard(
                 )
             }
         }
-        onAddPanel?.let {
-            OutlinedButton(onClick = it, modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.app_group_add_button))
-            }
-        }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+// Settings-side look-alike of the overlay AppGroupPanel; the real one needs overlay gestures and blur.
 @Composable
-private fun AppGroupCard(
-    viewModel: TaskbarViewModel,
+private fun AppGroupPreview(
     group: AppGroup,
     apps: List<AppInfo>,
-    allApps: List<AppInfo>,
-    iconShape: Shape
+    settings: TaskbarSettings,
+    iconShape: Shape,
+    onClick: () -> Unit
 ) {
-    var showPicker by remember { mutableStateOf(false) }
-    var showIcons by remember { mutableStateOf(false) }
-    var name by remember(group.id) { mutableStateOf(group.name) }
-    SettingsCard(title = stringResource(R.string.app_group_card_title, apps.size)) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+    Column(
+        modifier = Modifier.alpha(if (group.enabled) 1f else 0.5f),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Text(
+            text = group.name,
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(start = 4.dp)
+        )
+        Surface(
+            onClick = onClick,
+            shape = RoundedCornerShape(settings.cornerRadiusDp.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            modifier = Modifier.fillMaxWidth().height(settings.dockHeightDp.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.secondaryContainer)
-                    .clickable { showIcons = !showIcons },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = appGroupIcon(group.iconKey),
-                    contentDescription = stringResource(R.string.app_group_choose_icon),
-                    tint = MaterialTheme.colorScheme.onSecondaryContainer
-                )
-            }
-            val focusManager = LocalFocusManager.current
-            val interactionSource = remember { MutableInteractionSource() }
-            BasicTextField(
-                value = name,
-                onValueChange = {
-                    name = it
-                    viewModel.renameAppGroup(group.id, it)
-                },
-                singleLine = true,
-                textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-                interactionSource = interactionSource,
-                modifier = Modifier.weight(1f).height(40.dp)
-            ) { innerTextField ->
-                OutlinedTextFieldDefaults.DecorationBox(
-                    value = name,
-                    innerTextField = innerTextField,
-                    enabled = true,
-                    singleLine = true,
-                    visualTransformation = VisualTransformation.None,
-                    interactionSource = interactionSource,
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                    container = {
-                        OutlinedTextFieldDefaults.Container(
-                            enabled = true,
-                            isError = false,
-                            interactionSource = interactionSource,
-                            colors = OutlinedTextFieldDefaults.colors(),
-                            shape = CircleShape
-                        )
-                    }
-                )
-            }
-            Switch(
-                checked = group.enabled,
-                onCheckedChange = { viewModel.setAppGroupEnabled(group.id, it) }
-            )
-            IconButton(onClick = { viewModel.deleteAppGroup(group.id) }) {
-                Icon(
-                    imageVector = Icons.Filled.Delete,
-                    contentDescription = stringResource(R.string.app_group_delete),
-                    tint = MaterialTheme.colorScheme.error
-                )
-            }
-        }
-        if (showIcons) {
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                AppGroupIcons.chunked(6).forEach { row ->
-                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        row.forEach { (key, icon) ->
-                            val selected = key == group.iconKey
-                            Box(
-                                modifier = Modifier
-                                    .size(44.dp)
-                                    .clip(CircleShape)
-                                    .background(
-                                        if (selected) MaterialTheme.colorScheme.primary
-                                        else MaterialTheme.colorScheme.surfaceVariant
-                                    )
-                                    .clickable {
-                                        viewModel.setAppGroupIcon(group.id, key)
-                                        showIcons = false
-                                    },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = icon,
-                                    contentDescription = key,
-                                    tint = if (selected) MaterialTheme.colorScheme.onPrimary
-                                           else MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .size(settings.pinnedIconSizeDp.dp)
+                        .clip(PolygonShape(CookiePolygon))
+                        .background(MaterialTheme.colorScheme.primary),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = appGroupIcon(group.iconKey),
+                        contentDescription = group.name,
+                        tint = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+                if (apps.isEmpty()) {
+                    Text(
+                        text = stringResource(R.string.app_group_preview_empty),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        modifier = Modifier.weight(1f)
+                    )
+                } else {
+                    Row(
+                        modifier = Modifier
+                            .weight(1f)
+                            .horizontalScroll(rememberScrollState())
+                            .padding(horizontal = 12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(settings.pinnedIconPaddingDp.dp, Alignment.CenterHorizontally),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        apps.forEach { app ->
+                            AppIconImage(
+                                icon = app.icon,
+                                contentDescription = app.label,
+                                shape = iconShape,
+                                modifier = Modifier.size(settings.pinnedIconSizeDp.dp)
+                            )
                         }
                     }
                 }
             }
         }
-        ReorderableAppRow(
-            apps = apps,
-            iconShape = iconShape,
-            onAdd = { showPicker = true },
-            onRemove = { viewModel.removeAppGroupPackage(group.id, it) },
-            onReorder = { viewModel.setAppGroupPackages(group.id, it) }
-        )
-        if (showPicker) {
-            AppPickerDialog(
-                title = stringResource(R.string.settings_choose_apps_dialog_title),
-                apps = allApps,
-                selected = group.packages.toSet(),
-                iconShape = iconShape,
-                onToggle = { viewModel.toggleAppGroupPackage(group.id, it) },
-                onDismiss = { showPicker = false }
-            )
-        }
     }
+}
+
+@Composable
+private fun AppGroupDialog(
+    initial: AppGroup,
+    isNew: Boolean,
+    allApps: List<AppInfo>,
+    iconShape: Shape,
+    onSave: (AppGroup) -> Unit,
+    onDelete: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateAsState()
+    if (!lifecycleState.isAtLeast(Lifecycle.State.RESUMED)) return
+    var draft by remember(initial.id) { mutableStateOf(initial) }
+    var showPicker by remember { mutableStateOf(false) }
+    var showIcons by remember { mutableStateOf(false) }
+    val appsByPackage = remember(allApps) { allApps.associateBy { it.packageName } }
+    val draftApps = remember(draft.packages, appsByPackage) { draft.packages.mapNotNull { appsByPackage[it] } }
+
+    if (showPicker) {
+        AppPickerDialog(
+            title = stringResource(R.string.settings_choose_apps_dialog_title),
+            apps = allApps,
+            selected = draft.packages.toSet(),
+            iconShape = iconShape,
+            onToggle = { pkg ->
+                draft = draft.copy(packages = if (pkg in draft.packages) draft.packages - pkg else draft.packages + pkg)
+            },
+            onDismiss = { showPicker = false }
+        )
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(stringResource(if (isNew) R.string.app_group_dialog_new_title else R.string.app_group_dialog_edit_title))
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.secondaryContainer)
+                            .clickable { showIcons = !showIcons },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = appGroupIcon(draft.iconKey),
+                            contentDescription = stringResource(R.string.app_group_choose_icon),
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                    }
+                    val focusManager = LocalFocusManager.current
+                    val interactionSource = remember { MutableInteractionSource() }
+                    BasicTextField(
+                        value = draft.name,
+                        onValueChange = { draft = draft.copy(name = it) },
+                        singleLine = true,
+                        textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+                        interactionSource = interactionSource,
+                        modifier = Modifier.weight(1f).height(40.dp)
+                    ) { innerTextField ->
+                        OutlinedTextFieldDefaults.DecorationBox(
+                            value = draft.name,
+                            innerTextField = innerTextField,
+                            enabled = true,
+                            singleLine = true,
+                            visualTransformation = VisualTransformation.None,
+                            interactionSource = interactionSource,
+                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                            container = {
+                                OutlinedTextFieldDefaults.Container(
+                                    enabled = true,
+                                    isError = false,
+                                    interactionSource = interactionSource,
+                                    colors = OutlinedTextFieldDefaults.colors(),
+                                    shape = CircleShape
+                                )
+                            }
+                        )
+                    }
+                }
+                if (showIcons) {
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        AppGroupIcons.chunked(6).forEach { row ->
+                            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                row.forEach { (key, icon) ->
+                                    val selected = key == draft.iconKey
+                                    Box(
+                                        modifier = Modifier
+                                            .size(40.dp)
+                                            .clip(CircleShape)
+                                            .background(
+                                                if (selected) MaterialTheme.colorScheme.primary
+                                                else MaterialTheme.colorScheme.surfaceVariant
+                                            )
+                                            .clickable {
+                                                draft = draft.copy(iconKey = key)
+                                                showIcons = false
+                                            },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = icon,
+                                            contentDescription = key,
+                                            tint = if (selected) MaterialTheme.colorScheme.onPrimary
+                                                   else MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(stringResource(R.string.app_group_enabled_label), style = MaterialTheme.typography.bodyLarge)
+                    Switch(
+                        checked = draft.enabled,
+                        onCheckedChange = { draft = draft.copy(enabled = it) }
+                    )
+                }
+                ReorderableAppRow(
+                    apps = draftApps,
+                    iconShape = iconShape,
+                    onAdd = { showPicker = true },
+                    onRemove = { pkg -> draft = draft.copy(packages = draft.packages - pkg) },
+                    onReorder = { draft = draft.copy(packages = it.distinct()) }
+                )
+                if (!isNew) {
+                    TextButton(onClick = onDelete) {
+                        Icon(
+                            Icons.Filled.Delete,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(stringResource(R.string.app_group_delete), color = MaterialTheme.colorScheme.error)
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onSave(draft) }) { Text(stringResource(R.string.app_group_dialog_save)) }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.app_group_dialog_cancel)) }
+        }
+    )
 }
 
 @Composable

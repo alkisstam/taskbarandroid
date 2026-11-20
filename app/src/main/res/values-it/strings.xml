@@ -453,11 +453,16 @@
     <string name="settings_choose_apps_dialog_title">Scegli app</string>
     <string name="app_group_add_button">Aggiungi pannello</string>
     <string name="app_group_default_name">Pannello %1$d</string>
-    <string name="app_group_card_title">Pannello app (%1$d)</string>
     <string name="app_group_choose_icon">Scegli icona</string>
     <string name="app_group_delete">Elimina pannello</string>
     <string name="app_group_empty_hint">Nessuna app. Aggiungine in Impostazioni › App.</string>
     <string name="app_group_remove_app">Rimuovi dal pannello</string>
+    <string name="app_group_dialog_new_title">Nuovo pannello</string>
+    <string name="app_group_dialog_edit_title">Modifica pannello</string>
+    <string name="app_group_dialog_cancel">Annulla</string>
+    <string name="app_group_dialog_save">Salva</string>
+    <string name="app_group_enabled_label">Mostra nel dock</string>
+    <string name="app_group_preview_empty">Ancora nessuna app</string>
     <string name="settings_pill_auto_hide_title">Nascondi pillola icone</string>
     <string name="settings_pill_auto_hide_desc">Nasconde la pillola delle icone sopra il Dock finché non scorri verso l\'alto sul Dock. Scorri verso il basso per nasconderla di nuovo.</string>
     <string name="settings_pill_centered_title">Centra pillola icone</string>

@@ -453,11 +453,16 @@
     <string name="settings_choose_apps_dialog_title">Choisir des applis</string>
     <string name="app_group_add_button">Ajouter un panneau</string>
     <string name="app_group_default_name">Panneau %1$d</string>
-    <string name="app_group_card_title">Panneau d\'applis (%1$d)</string>
     <string name="app_group_choose_icon">Choisir une icône</string>
     <string name="app_group_delete">Supprimer le panneau</string>
     <string name="app_group_empty_hint">Aucune appli. Ajoutez-en dans Paramètres › Applis.</string>
     <string name="app_group_remove_app">Retirer du panneau</string>
+    <string name="app_group_dialog_new_title">Nouveau panneau</string>
+    <string name="app_group_dialog_edit_title">Modifier le panneau</string>
+    <string name="app_group_dialog_cancel">Annuler</string>
+    <string name="app_group_dialog_save">Enregistrer</string>
+    <string name="app_group_enabled_label">Afficher dans le dock</string>
+    <string name="app_group_preview_empty">Aucune appli pour l\'instant</string>
     <string name="settings_pill_auto_hide_title">Masquer la pilule d\'icônes</string>
     <string name="settings_pill_auto_hide_desc">Masque la pilule d\'icônes au-dessus du Dock jusqu\'à ce que vous balayiez vers le haut sur le Dock. Balayez vers le bas pour la masquer à nouveau.</string>
     <string name="settings_pill_centered_title">Centrer la pilule d\'icônes</string>

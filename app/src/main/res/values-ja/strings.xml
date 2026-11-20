@@ -453,11 +453,16 @@
     <string name="settings_choose_apps_dialog_title">アプリを選択</string>
     <string name="app_group_add_button">パネルを追加</string>
     <string name="app_group_default_name">パネル %1$d</string>
-    <string name="app_group_card_title">アプリパネル (%1$d)</string>
     <string name="app_group_choose_icon">アイコンを選択</string>
     <string name="app_group_delete">パネルを削除</string>
     <string name="app_group_empty_hint">アプリがまだありません。設定 › アプリ で追加してください。</string>
     <string name="app_group_remove_app">パネルから削除</string>
+    <string name="app_group_dialog_new_title">新しいパネル</string>
+    <string name="app_group_dialog_edit_title">パネルを編集</string>
+    <string name="app_group_dialog_cancel">キャンセル</string>
+    <string name="app_group_dialog_save">保存</string>
+    <string name="app_group_enabled_label">ドックに表示</string>
+    <string name="app_group_preview_empty">アプリはまだありません</string>
     <string name="settings_pill_auto_hide_title">アイコンピルを自動で隠す</string>
     <string name="settings_pill_auto_hide_desc">ドックを上にスワイプするまで、ドック上のアイコンピルを隠します。下にスワイプすると再び隠れます。</string>
     <string name="settings_pill_centered_title">アイコンピルを中央に配置</string>

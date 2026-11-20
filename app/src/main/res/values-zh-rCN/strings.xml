@@ -453,11 +453,16 @@
     <string name="settings_choose_apps_dialog_title">选择应用</string>
     <string name="app_group_add_button">添加面板</string>
     <string name="app_group_default_name">面板 %1$d</string>
-    <string name="app_group_card_title">应用面板 (%1$d)</string>
     <string name="app_group_choose_icon">选择图标</string>
     <string name="app_group_delete">删除面板</string>
     <string name="app_group_empty_hint">还没有应用。请在 设置 › 应用 中添加。</string>
     <string name="app_group_remove_app">从面板移除</string>
+    <string name="app_group_dialog_new_title">新建面板</string>
+    <string name="app_group_dialog_edit_title">编辑面板</string>
+    <string name="app_group_dialog_cancel">取消</string>
+    <string name="app_group_dialog_save">保存</string>
+    <string name="app_group_enabled_label">在程序坞中显示</string>
+    <string name="app_group_preview_empty">暂无应用</string>
     <string name="settings_pill_auto_hide_title">自动隐藏图标胶囊</string>
     <string name="settings_pill_auto_hide_desc">隐藏 Dock 上方的图标胶囊，直到你在 Dock 上向上滑动。向下滑动可再次隐藏。</string>
     <string name="settings_pill_centered_title">图标胶囊居中</string>
