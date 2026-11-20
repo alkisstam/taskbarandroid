@@ -4,6 +4,15 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.5.18] - 2026-11-20
+
+Updated app framework, preparing for more icon shapes.
+
+### Changed
+- **Updated UI framework** — Floating Dock now runs on the latest Material 3 and Jetpack Compose, bringing rendering and stability fixes and laying the groundwork for new Material 3 Expressive icon shapes.
+
+---
+
 ## [1.5.17] - 2026-11-14
 
 New icon shapes with playful animations, and menus that stay out of your way.

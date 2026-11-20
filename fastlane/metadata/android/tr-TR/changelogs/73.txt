@@ -1,0 +1,2 @@
+Değişenler
+• Daha iyi kararlılık için en son Material 3 ve Jetpack Compose sürümüne güncellendi; yeni simge şekillerine hazırlık

@@ -1,0 +1,2 @@
+Diubah
+• Diperbarui ke Material 3 dan Jetpack Compose terbaru untuk stabilitas yang lebih baik, sebagai persiapan bentuk ikon baru

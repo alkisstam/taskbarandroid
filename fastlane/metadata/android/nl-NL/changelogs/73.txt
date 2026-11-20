@@ -1,0 +1,2 @@
+Gewijzigd
+• Bijgewerkt naar de nieuwste Material 3 en Jetpack Compose voor betere stabiliteit, als voorbereiding op nieuwe pictogramvormen

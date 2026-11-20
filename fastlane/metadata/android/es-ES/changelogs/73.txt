@@ -1,0 +1,2 @@
+Cambios
+• Actualizado a la última versión de Material 3 y Jetpack Compose para mayor estabilidad, como preparación para nuevas formas de iconos

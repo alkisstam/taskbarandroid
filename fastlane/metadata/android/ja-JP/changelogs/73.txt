@@ -1,0 +1,2 @@
+変更
+• 安定性向上のため最新の Material 3 と Jetpack Compose に更新（新しいアイコン形状に向けた準備）

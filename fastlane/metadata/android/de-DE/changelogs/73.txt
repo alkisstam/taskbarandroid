@@ -1,0 +1,2 @@
+Geändert
+• Aktualisiert auf das neueste Material 3 und Jetpack Compose für mehr Stabilität, als Vorbereitung auf neue Symbolformen

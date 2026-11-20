@@ -1,0 +1,2 @@
+Changed
+• Updated to the latest Material 3 and Jetpack Compose for better stability, preparing for new icon shapes
