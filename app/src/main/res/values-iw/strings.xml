@@ -137,7 +137,10 @@
     <string name="settings_app_grid_columns_label">עמודות</string>
     <string name="settings_app_grid_icon_size_label">גודל סמל</string>
     <string name="settings_app_grid_title">רשת אפליקציות</string>
-    <string name="settings_app_order_desc">שינוי סדר האפליקציות בתפריט האפליקציות</string>
+    <string name="settings_app_order_sort_by">מיון לפי</string>
+    <string name="settings_app_order_name">שם</string>
+    <string name="settings_app_order_install">התקנה</string>
+    <string name="settings_app_order_usage">שימוש</string>
     <string name="settings_app_order_title">סדר אפליקציות</string>
     <string name="settings_autohide_fullscreen_desc">הסתרת הדוק כשאפליקציה עוברת למסך מלא</string>
     <string name="settings_autohide_fullscreen_title">הסתרה אוטומטית במסך מלא</string>

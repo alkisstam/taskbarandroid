@@ -137,7 +137,10 @@
     <string name="settings_app_grid_columns_label">Sütun</string>
     <string name="settings_app_grid_icon_size_label">Simge Boyutu</string>
     <string name="settings_app_grid_title">Uygulama Izgarası</string>
-    <string name="settings_app_order_desc">Uygulama Menüsü\'ndeki uygulama sırasını değiştirir</string>
+    <string name="settings_app_order_sort_by">Sıralama ölçütü</string>
+    <string name="settings_app_order_name">Ad</string>
+    <string name="settings_app_order_install">Yükleme</string>
+    <string name="settings_app_order_usage">Kullanım</string>
     <string name="settings_app_order_title">Uygulama Sırası</string>
     <string name="settings_autohide_fullscreen_desc">Bir uygulama tam ekrana geçtiğinde dock\'u gizle</string>
     <string name="settings_autohide_fullscreen_title">Tam Ekranda Otomatik Gizle</string>

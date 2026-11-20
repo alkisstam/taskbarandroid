@@ -137,7 +137,10 @@
     <string name="settings_app_grid_columns_label">คอลัมน์</string>
     <string name="settings_app_grid_icon_size_label">ขนาดไอคอน</string>
     <string name="settings_app_grid_title">ตารางแอป</string>
-    <string name="settings_app_order_desc">เปลี่ยนลำดับแอปในเมนูแอป</string>
+    <string name="settings_app_order_sort_by">เรียงตาม</string>
+    <string name="settings_app_order_name">ชื่อ</string>
+    <string name="settings_app_order_install">การติดตั้ง</string>
+    <string name="settings_app_order_usage">การใช้งาน</string>
     <string name="settings_app_order_title">ลำดับแอป</string>
     <string name="settings_autohide_fullscreen_desc">ซ่อนด็อกเมื่อแอปเข้าสู่โหมดเต็มจอ</string>
     <string name="settings_autohide_fullscreen_title">ซ่อนอัตโนมัติเมื่อเต็มจอ</string>

@@ -137,7 +137,10 @@
     <string name="settings_app_grid_columns_label">Spalten</string>
     <string name="settings_app_grid_icon_size_label">Symbolgröße</string>
     <string name="settings_app_grid_title">App-Raster</string>
-    <string name="settings_app_order_desc">Ändert die Reihenfolge der Apps im App-Menü</string>
+    <string name="settings_app_order_sort_by">Sortieren nach</string>
+    <string name="settings_app_order_name">Name</string>
+    <string name="settings_app_order_install">Installation</string>
+    <string name="settings_app_order_usage">Nutzung</string>
     <string name="settings_app_order_title">App-Reihenfolge</string>
     <string name="settings_autohide_fullscreen_desc">Das Dock ausblenden, wenn eine App in den Vollbildmodus wechselt</string>
     <string name="settings_autohide_fullscreen_title">Automatisch ausblenden im Vollbildmodus</string>

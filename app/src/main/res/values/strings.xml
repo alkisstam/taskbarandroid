@@ -137,7 +137,10 @@
     <string name="settings_app_grid_columns_label">Columns</string>
     <string name="settings_app_grid_icon_size_label">Icon Size</string>
     <string name="settings_app_grid_title">App Grid</string>
-    <string name="settings_app_order_desc">Change the app order in the App Menu</string>
+    <string name="settings_app_order_sort_by">Sort by</string>
+    <string name="settings_app_order_name">Name</string>
+    <string name="settings_app_order_install">Install</string>
+    <string name="settings_app_order_usage">Usage</string>
     <string name="settings_app_order_title">App order</string>
     <string name="settings_autohide_fullscreen_desc">Hide the dock when an app goes fullscreen</string>
     <string name="settings_autohide_fullscreen_title">Auto-hide in Fullscreen</string>

@@ -137,7 +137,10 @@
     <string name="settings_app_grid_columns_label">الأعمدة</string>
     <string name="settings_app_grid_icon_size_label">حجم الأيقونة</string>
     <string name="settings_app_grid_title">شبكة التطبيقات</string>
-    <string name="settings_app_order_desc">تغيير ترتيب التطبيقات في قائمة التطبيقات</string>
+    <string name="settings_app_order_sort_by">ترتيب حسب</string>
+    <string name="settings_app_order_name">الاسم</string>
+    <string name="settings_app_order_install">التثبيت</string>
+    <string name="settings_app_order_usage">الاستخدام</string>
     <string name="settings_app_order_title">ترتيب التطبيقات</string>
     <string name="settings_autohide_fullscreen_desc">إخفاء الرصيف عندما ينتقل تطبيق إلى وضع ملء الشاشة</string>
     <string name="settings_autohide_fullscreen_title">الإخفاء التلقائي في وضع ملء الشاشة</string>

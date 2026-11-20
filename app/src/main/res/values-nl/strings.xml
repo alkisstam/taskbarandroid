@@ -137,7 +137,10 @@
     <string name="settings_app_grid_columns_label">Kolommen</string>
     <string name="settings_app_grid_icon_size_label">Pictogramgrootte</string>
     <string name="settings_app_grid_title">App-raster</string>
-    <string name="settings_app_order_desc">Wijzig de app-volgorde in het App-menu</string>
+    <string name="settings_app_order_sort_by">Sorteren op</string>
+    <string name="settings_app_order_name">Naam</string>
+    <string name="settings_app_order_install">Installatie</string>
+    <string name="settings_app_order_usage">Gebruik</string>
     <string name="settings_app_order_title">App-volgorde</string>
     <string name="settings_autohide_fullscreen_desc">Verberg de dock wanneer een app volledig scherm gebruikt</string>
     <string name="settings_autohide_fullscreen_title">Automatisch verbergen in volledig scherm</string>

@@ -137,7 +137,10 @@
     <string name="settings_app_grid_columns_label">列数</string>
     <string name="settings_app_grid_icon_size_label">アイコンサイズ</string>
     <string name="settings_app_grid_title">アプリグリッド</string>
-    <string name="settings_app_order_desc">アプリメニュー内のアプリの並び順を変更します</string>
+    <string name="settings_app_order_sort_by">並べ替え</string>
+    <string name="settings_app_order_name">名前</string>
+    <string name="settings_app_order_install">インストール</string>
+    <string name="settings_app_order_usage">使用状況</string>
     <string name="settings_app_order_title">アプリの並び順</string>
     <string name="settings_autohide_fullscreen_desc">アプリが全画面表示になったときにドックを隠す</string>
     <string name="settings_autohide_fullscreen_title">全画面時に自動的に隠す</string>

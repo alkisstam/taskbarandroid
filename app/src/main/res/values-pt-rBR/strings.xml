@@ -137,7 +137,10 @@
     <string name="settings_app_grid_columns_label">Colunas</string>
     <string name="settings_app_grid_icon_size_label">Tamanho dos ícones</string>
     <string name="settings_app_grid_title">Grade de Apps</string>
-    <string name="settings_app_order_desc">Altera a ordem dos apps no Menu de Apps</string>
+    <string name="settings_app_order_sort_by">Ordenar por</string>
+    <string name="settings_app_order_name">Nome</string>
+    <string name="settings_app_order_install">Instalação</string>
+    <string name="settings_app_order_usage">Uso</string>
     <string name="settings_app_order_title">Ordem dos Apps</string>
     <string name="settings_autohide_fullscreen_desc">Oculta o dock quando um app entra em tela cheia</string>
     <string name="settings_autohide_fullscreen_title">Ocultar Automaticamente em Tela Cheia</string>

@@ -137,7 +137,10 @@
     <string name="settings_app_grid_columns_label">कॉलम</string>
     <string name="settings_app_grid_icon_size_label">आइकन का आकार</string>
     <string name="settings_app_grid_title">ऐप ग्रिड</string>
-    <string name="settings_app_order_desc">ऐप मेनू में ऐप्स का क्रम बदलें</string>
+    <string name="settings_app_order_sort_by">इसके अनुसार क्रमित करें</string>
+    <string name="settings_app_order_name">नाम</string>
+    <string name="settings_app_order_install">इंस्टॉल</string>
+    <string name="settings_app_order_usage">उपयोग</string>
     <string name="settings_app_order_title">ऐप क्रम</string>
     <string name="settings_autohide_fullscreen_desc">जब कोई ऐप फुलस्क्रीन हो जाए तो डॉक को छिपाएं</string>
     <string name="settings_autohide_fullscreen_title">फुलस्क्रीन में ऑटो-हाइड</string>

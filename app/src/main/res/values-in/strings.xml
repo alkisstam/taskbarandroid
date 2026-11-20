@@ -137,7 +137,10 @@
     <string name="settings_app_grid_columns_label">Kolom</string>
     <string name="settings_app_grid_icon_size_label">Ukuran Ikon</string>
     <string name="settings_app_grid_title">Grid Aplikasi</string>
-    <string name="settings_app_order_desc">Mengubah urutan aplikasi di Menu Aplikasi</string>
+    <string name="settings_app_order_sort_by">Urutkan menurut</string>
+    <string name="settings_app_order_name">Nama</string>
+    <string name="settings_app_order_install">Instal</string>
+    <string name="settings_app_order_usage">Penggunaan</string>
     <string name="settings_app_order_title">Urutan Aplikasi</string>
     <string name="settings_autohide_fullscreen_desc">Sembunyikan dock saat aplikasi masuk mode layar penuh</string>
     <string name="settings_autohide_fullscreen_title">Sembunyikan Otomatis saat Layar Penuh</string>
