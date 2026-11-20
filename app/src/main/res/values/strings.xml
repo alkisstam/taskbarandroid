@@ -67,6 +67,9 @@
     <string name="pill_icon_shape_cookie">Cookie</string>
     <string name="pill_icon_shape_clover">Clover</string>
     <string name="pill_icon_shape_pebble">Pebble</string>
+    <string name="pill_icon_shape_arrow">Arrow</string>
+    <string name="pill_icon_shape_pixel_circle">Pixel Circle</string>
+    <string name="pill_icon_shape_sunny">Sunny</string>
     <string name="pill_icon_shape_default">Default</string>
     <string name="pill_icon_shape_square">Square</string>
     <string name="pill_icon_shape_squircle">Squircle</string>

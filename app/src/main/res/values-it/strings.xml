@@ -67,6 +67,9 @@
     <string name="pill_icon_shape_cookie">Biscotto</string>
     <string name="pill_icon_shape_clover">Trifoglio</string>
     <string name="pill_icon_shape_pebble">Ciottolo</string>
+    <string name="pill_icon_shape_arrow">Freccia</string>
+    <string name="pill_icon_shape_pixel_circle">Cerchio pixel</string>
+    <string name="pill_icon_shape_sunny">Sole</string>
     <string name="pill_icon_shape_default">Predefinita</string>
     <string name="pill_icon_shape_square">Quadrato</string>
     <string name="pill_icon_shape_squircle">Squircle</string>

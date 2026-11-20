@@ -67,6 +67,9 @@
     <string name="pill_icon_shape_cookie">Печенье</string>
     <string name="pill_icon_shape_clover">Клевер</string>
     <string name="pill_icon_shape_pebble">Галька</string>
+    <string name="pill_icon_shape_arrow">Стрелка</string>
+    <string name="pill_icon_shape_pixel_circle">Пиксельный круг</string>
+    <string name="pill_icon_shape_sunny">Солнце</string>
     <string name="pill_icon_shape_default">По умолчанию</string>
     <string name="pill_icon_shape_square">Квадрат</string>
     <string name="pill_icon_shape_squircle">Сквиркл</string>

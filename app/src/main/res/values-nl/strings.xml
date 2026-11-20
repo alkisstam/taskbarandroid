@@ -67,6 +67,9 @@
     <string name="pill_icon_shape_cookie">Koekje</string>
     <string name="pill_icon_shape_clover">Klaver</string>
     <string name="pill_icon_shape_pebble">Kiezel</string>
+    <string name="pill_icon_shape_arrow">Pijl</string>
+    <string name="pill_icon_shape_pixel_circle">Pixelcirkel</string>
+    <string name="pill_icon_shape_sunny">Zon</string>
     <string name="pill_icon_shape_default">Standaard</string>
     <string name="pill_icon_shape_square">Vierkant</string>
     <string name="pill_icon_shape_squircle">Squircle</string>

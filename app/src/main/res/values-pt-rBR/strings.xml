@@ -67,6 +67,9 @@
     <string name="pill_icon_shape_cookie">Biscoito</string>
     <string name="pill_icon_shape_clover">Trevo</string>
     <string name="pill_icon_shape_pebble">Seixo</string>
+    <string name="pill_icon_shape_arrow">Seta</string>
+    <string name="pill_icon_shape_pixel_circle">Círculo pixelado</string>
+    <string name="pill_icon_shape_sunny">Sol</string>
     <string name="pill_icon_shape_default">Padrão</string>
     <string name="pill_icon_shape_square">Quadrado</string>
     <string name="pill_icon_shape_squircle">Squircle</string>

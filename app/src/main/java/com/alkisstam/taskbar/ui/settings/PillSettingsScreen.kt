@@ -700,6 +700,9 @@ private fun DockSectionContent(viewModel: TaskbarViewModel, expanded: Boolean) {
     val iconShapeCookieLabel = stringResource(R.string.pill_icon_shape_cookie)
     val iconShapeCloverLabel = stringResource(R.string.pill_icon_shape_clover)
     val iconShapePebbleLabel = stringResource(R.string.pill_icon_shape_pebble)
+    val iconShapeArrowLabel = stringResource(R.string.pill_icon_shape_arrow)
+    val iconShapePixelCircleLabel = stringResource(R.string.pill_icon_shape_pixel_circle)
+    val iconShapeSunnyLabel = stringResource(R.string.pill_icon_shape_sunny)
     GradientDropdownField(
         icon = Icons.Filled.CropSquare,
         selectedLabel = when (taskbarSettings.iconShape) {
@@ -710,6 +713,9 @@ private fun DockSectionContent(viewModel: TaskbarViewModel, expanded: Boolean) {
             IconShape.COOKIE -> iconShapeCookieLabel
             IconShape.CLOVER -> iconShapeCloverLabel
             IconShape.PEBBLE -> iconShapePebbleLabel
+            IconShape.ARROW -> iconShapeArrowLabel
+            IconShape.PIXEL_CIRCLE -> iconShapePixelCircleLabel
+            IconShape.SUNNY -> iconShapeSunnyLabel
         },
         options = listOf(
             iconShapeDefaultLabel to IconShape.DEFAULT,
@@ -718,7 +724,10 @@ private fun DockSectionContent(viewModel: TaskbarViewModel, expanded: Boolean) {
             iconShapeCircleLabel to IconShape.CIRCLE,
             iconShapeCookieLabel to IconShape.COOKIE,
             iconShapeCloverLabel to IconShape.CLOVER,
-            iconShapePebbleLabel to IconShape.PEBBLE
+            iconShapePebbleLabel to IconShape.PEBBLE,
+            iconShapeArrowLabel to IconShape.ARROW,
+            iconShapePixelCircleLabel to IconShape.PIXEL_CIRCLE,
+            iconShapeSunnyLabel to IconShape.SUNNY
         ),
         optionIcon = { shape ->
             if (shape == IconShape.DEFAULT) Icon(Icons.Filled.Android, contentDescription = null)
