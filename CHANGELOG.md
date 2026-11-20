@@ -4,6 +4,23 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.5.19] - 2026-11-20
+
+Material 3 Expressive shapes and controls, and a new way to edit app panels.
+
+### Added
+- **New icon shapes** — Arrow, Pixel Circle and Sunny join the Icon Shape options, each changing shape when pressed.
+- **More app panels** — you can now create up to 5 app panels instead of 3.
+
+### Changed
+- **Material 3 shapes** — Cookie, Clover and the circle used in press animations now use the official Material 3 Expressive shapes.
+- **App panel editor** — in Settings › Apps, Add Panel sits below your panels and opens a pop-up to set the panel's name, icon, apps and visibility, with Cancel and Save. Each saved panel shows as a preview of how it looks on the dock; tap it to edit or delete it.
+- **Settings buttons** — choices with up to three options (theme style, hold & drag, dock edge padding, All Apps button side, app order) are now connected button groups. Longer lists (pill position, icon pack, icon shape, gestures, language) are split buttons that show the selected option's icon, such as the current icon shape.
+- **App order** — reads "Sort by" with shorter Name, Install and Usage options.
+- **Panel buttons fit the dock** — the buttons above the dock (Quick Controls, app panels, Music, Pin) shrink to fit when there are many of them.
+
+---
+
 ## [1.5.18] - 2026-11-20
 
 Updated app framework, preparing for more icon shapes.

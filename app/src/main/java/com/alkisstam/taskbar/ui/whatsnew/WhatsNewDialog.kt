@@ -100,6 +100,17 @@ val whatsNewReleases = listOf(
             "Panels open closer to the dock, and the music panel steps aside while another panel is open",
             "Fixed a crash when opening search or a note"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.5.19",
+        versionCode = 74,
+        highlights = listOf(
+            "New icon shapes: Arrow, Pixel Circle and Sunny",
+            "Cookie and Clover now use the official Material 3 shapes",
+            "Up to 5 app panels, edited in a pop-up and previewed as they look on the dock",
+            "Settings choices are now button groups and split buttons",
+            "Panel buttons above the dock shrink to fit"
+        )
     )
 )
 

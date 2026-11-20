@@ -1,0 +1,8 @@
+Novità
+• Nuove forme delle icone: Freccia, Cerchio pixel e Sole
+• Fino a 5 pannelli app
+Modificato
+• Biscotto e Trifoglio usano le forme ufficiali Material 3
+• I pannelli app si modificano in un pop-up e appaiono come anteprima del dock
+• Le impostazioni usano gruppi di pulsanti e pulsanti divisi
+• I pulsanti dei pannelli sopra il dock si rimpiccioliscono per starci

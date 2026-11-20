@@ -1,0 +1,8 @@
+Novedades
+• Nuevas formas de íconos: Flecha, Círculo pixelado y Sol
+• Hasta 5 paneles de apps
+Cambios
+• Galleta y Trébol usan las formas oficiales de Material 3
+• Los paneles de apps se editan en una ventana y se muestran como vista previa del dock
+• La configuración usa grupos de botones y botones divididos
+• Los botones de panel sobre el dock se reducen para caber

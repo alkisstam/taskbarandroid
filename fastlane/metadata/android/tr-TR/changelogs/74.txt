@@ -1,0 +1,8 @@
+Yenilikler
+• Yeni simge şekilleri: Ok, Piksel Daire ve Güneş
+• En fazla 5 uygulama paneli
+Değişenler
+• Kurabiye ve Yonca resmi Material 3 şekillerini kullanır
+• Uygulama panelleri açılır pencerede düzenlenir ve dock önizlemesi olarak gösterilir
+• Ayarlar düğme grupları ve bölünmüş düğmeler kullanır
+• Dock üzerindeki panel düğmeleri sığacak şekilde küçülür

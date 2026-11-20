@@ -1,0 +1,8 @@
+Added
+• New icon shapes: Arrow, Pixel Circle and Sunny
+• Up to 5 app panels
+Changed
+• Cookie and Clover use the official Material 3 shapes
+• App panels are edited in a pop-up and shown as a dock preview
+• Settings use button groups and split buttons
+• Panel buttons above the dock shrink to fit

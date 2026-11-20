@@ -1,0 +1,8 @@
+Novidades
+• Novos formatos de ícone: Seta, Círculo pixelado e Sol
+• Até 5 painéis de apps
+Alterado
+• Biscoito e Trevo usam os formatos oficiais do Material 3
+• Os painéis de apps são editados em um pop-up e exibidos como prévia do dock
+• As configurações usam grupos de botões e botões divididos
+• Os botões de painel acima do dock diminuem para caber

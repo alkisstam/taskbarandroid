@@ -1,0 +1,8 @@
+Nouveautés
+• Nouvelles formes d'icônes : Flèche, Cercle pixelisé et Soleil
+• Jusqu'à 5 panneaux d'applis
+Modifié
+• Biscuit et Trèfle utilisent les formes officielles Material 3
+• Les panneaux d'applis se modifient dans une fenêtre et s'affichent en aperçu du dock
+• Les paramètres utilisent des groupes de boutons et des boutons scindés
+• Les boutons de panneau au-dessus du dock se réduisent pour tenir

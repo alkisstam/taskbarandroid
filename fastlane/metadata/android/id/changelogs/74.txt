@@ -1,0 +1,8 @@
+Baru
+• Bentuk ikon baru: Panah, Lingkaran Piksel, dan Cerah
+• Hingga 5 panel aplikasi
+Diubah
+• Kue dan Semanggi memakai bentuk resmi Material 3
+• Panel aplikasi diedit di pop-up dan ditampilkan sebagai pratinjau dock
+• Setelan memakai grup tombol dan tombol terpisah
+• Tombol panel di atas dock mengecil agar muat

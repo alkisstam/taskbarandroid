@@ -1,0 +1,8 @@
+Neu
+• Neue Symbolformen: Pfeil, Pixelkreis und Sonne
+• Bis zu 5 App-Panels
+Geändert
+• Keks und Kleeblatt nutzen die offiziellen Material-3-Formen
+• App-Panels werden in einem Pop-up bearbeitet und als Dock-Vorschau angezeigt
+• Einstellungen nutzen Schaltflächengruppen und geteilte Schaltflächen
+• Panel-Schaltflächen über dem Dock verkleinern sich passend

@@ -1,0 +1,8 @@
+Nieuw
+• Nieuwe pictogramvormen: Pijl, Pixelcirkel en Zon
+• Tot 5 app-panelen
+Gewijzigd
+• Koekje en Klaver gebruiken de officiële Material 3-vormen
+• App-panelen bewerk je in een pop-up en zie je als dockvoorbeeld
+• Instellingen gebruiken knopgroepen en gesplitste knoppen
+• Paneelknoppen boven het dock worden kleiner om te passen
