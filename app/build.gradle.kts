@@ -17,7 +17,7 @@ val keystoreProperties = Properties().apply {
 
 android {
     namespace = "com.alkisstam.taskbar"
-    compileSdk = 36
+    compileSdk = 37
 
     signingConfigs {
         create("release") {

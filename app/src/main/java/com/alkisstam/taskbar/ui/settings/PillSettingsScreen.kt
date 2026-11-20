@@ -909,7 +909,7 @@ internal fun ExpandableSection(
 
 @Composable
 fun FilledPillSliderTrack(sliderState: SliderState) {
-    val range = sliderState.valueRange
+    val range = sliderState.trackRange
     val fraction = ((sliderState.value - range.start) / (range.endInclusive - range.start)).coerceIn(0f, 1f)
     Box(
         modifier = Modifier
@@ -1046,8 +1046,10 @@ fun SettingsSlider(
             }
         }
         Spacer(modifier = Modifier.height(4.dp))
+        val sliderState = remember(sliderSteps, valueRange) { SliderState(localValue, sliderSteps, valueRange) }
+        sliderState.value = localValue
         Slider(
-            value = localValue,
+            state = sliderState,
             onValueChange = { newValue ->
                 val rangeSize = valueRange.endInclusive - valueRange.start
                 val stepCount = 24
@@ -1059,8 +1061,6 @@ fun SettingsSlider(
                 localValue = newValue
             },
             onValueChangeFinished = { commit(localValue) },
-            valueRange = valueRange,
-            steps = sliderSteps,
             track = { FilledPillSliderTrack(it) },
             thumb = {}
         )
