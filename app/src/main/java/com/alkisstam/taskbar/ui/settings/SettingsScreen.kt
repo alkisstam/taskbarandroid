@@ -85,12 +85,7 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.NewReleases
 import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material.icons.filled.Description
-import androidx.compose.material3.ButtonGroupDefaults
-import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.FileUpload
@@ -1636,42 +1631,18 @@ internal fun AppOrderCard(viewModel: TaskbarViewModel) {
             stringResource(R.string.settings_app_order_install) to AppSortOrder.INSTALL_TIME,
             stringResource(R.string.settings_app_order_usage) to AppSortOrder.USAGE
         )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween)
-        ) {
-            options.forEachIndexed { index, (label, order) ->
-                ToggleButton(
-                    checked = order == appSortOrder,
-                    onCheckedChange = { viewModel.setAppSortOrder(order) },
-                    shapes = when (index) {
-                        0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-                        options.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
-                        else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
-                    },
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 10.dp),
-                    modifier = Modifier.weight(1f).semantics { role = Role.RadioButton }
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(
-                            when (order) {
-                                AppSortOrder.NAME -> Icons.Filled.SortByAlpha
-                                AppSortOrder.INSTALL_TIME -> Icons.Filled.InstallMobile
-                                AppSortOrder.USAGE -> Icons.Filled.Insights
-                            },
-                            contentDescription = null,
-                            modifier = Modifier.size(ToggleButtonDefaults.IconSize)
-                        )
-                        Text(
-                            text = label,
-                            style = MaterialTheme.typography.labelMedium,
-                            maxLines = 1,
-                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                        )
-                    }
-                }
-            }
-        }
+        GradientDropdownField(
+            icon = Icons.Filled.SortByAlpha,
+            selectedLabel = options.first { it.second == appSortOrder }.first,
+            options = options,
+            optionIcon = { Icon(when (it) {
+                AppSortOrder.NAME -> Icons.Filled.SortByAlpha
+                AppSortOrder.INSTALL_TIME -> Icons.Filled.InstallMobile
+                AppSortOrder.USAGE -> Icons.Filled.Insights
+            }, contentDescription = null, modifier = Modifier.size(ToggleButtonDefaults.IconSize)) },
+            isSelected = { it == appSortOrder },
+            onSelect = { viewModel.setAppSortOrder(it) }
+        )
     }
 }
 

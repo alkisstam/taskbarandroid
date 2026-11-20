@@ -2,6 +2,17 @@
 
 package com.alkisstam.taskbar.ui.settings
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.material3.ButtonGroupDefaults
+import androidx.compose.material3.SplitButtonDefaults
+import androidx.compose.material3.SplitButtonLayout
+import androidx.compose.material3.ToggleButton
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -58,7 +69,6 @@ import androidx.compose.material.icons.filled.South
 import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.Opacity
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.BrightnessMedium
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CropSquare
@@ -688,7 +698,8 @@ private fun DockSectionContent(viewModel: TaskbarViewModel, expanded: Boolean) {
         options = listOf(iconPackSystemDefaultLabel to "") +
             availableIconPacks.map { it.label to it.packageName },
         isSelected = { it == iconPackPackage },
-        onSelect = { viewModel.setIconPack(it) }
+        onSelect = { viewModel.setIconPack(it) },
+        alwaysMenu = true
     )
     Spacer(modifier = Modifier.height(8.dp))
     Text(stringResource(R.string.dock_icon_shape_label), style = MaterialTheme.typography.bodyMedium)
@@ -1257,43 +1268,57 @@ internal fun <T> GradientDropdownField(
     options: List<Pair<String, T>>,
     isSelected: (T) -> Boolean,
     onSelect: (T) -> Unit,
-    optionIcon: (@Composable (T) -> Unit)? = null
+    optionIcon: (@Composable (T) -> Unit)? = null,
+    alwaysMenu: Boolean = false
 ) {
+    if (options.size <= 3 && !alwaysMenu) {
+        ConnectedOptionGroup(options = options, isSelected = isSelected, onSelect = onSelect, optionIcon = optionIcon)
+        return
+    }
     var expanded by remember { mutableStateOf(false) }
     Box {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(28.dp))
-                .background(
-                    Brush.horizontalGradient(
-                        listOf(
-                            MaterialTheme.colorScheme.primary,
-                            MaterialTheme.colorScheme.tertiary
-                        )
+        val height = SplitButtonDefaults.MediumContainerHeight
+        SplitButtonLayout(
+            modifier = Modifier.fillMaxWidth().height(height),
+            leadingButton = {
+                SplitButtonDefaults.LeadingButton(
+                    onClick = { expanded = true },
+                    shapes = SplitButtonDefaults.leadingButtonShapesFor(height),
+                    contentPadding = SplitButtonDefaults.leadingButtonContentPaddingFor(height),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    // The selected option's own icon (e.g. the shape preview) beats the generic one.
+                    val selectedValue = options.firstOrNull { isSelected(it.second) }?.second
+                    if (optionIcon != null && selectedValue != null) optionIcon(selectedValue)
+                    else Icon(icon, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        selectedLabel,
+                        style = MaterialTheme.typography.bodyLarge,
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, fill = false)
                     )
-                )
-                .clickable { expanded = true }
-                .padding(vertical = 14.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
-                Text(
-                    selectedLabel,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-                Icon(
-                    Icons.Filled.ArrowDropDown,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
+                }
+            },
+            trailingButton = {
+                SplitButtonDefaults.TrailingButton(
+                    checked = expanded,
+                    onCheckedChange = { expanded = it },
+                    shapes = SplitButtonDefaults.trailingButtonShapesFor(height),
+                    contentPadding = SplitButtonDefaults.trailingButtonContentPaddingFor(height)
+                ) {
+                    val rotation by animateFloatAsState(if (expanded) 180f else 0f, label = "splitChevron")
+                    Icon(
+                        Icons.Filled.KeyboardArrowDown,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(SplitButtonDefaults.MediumTrailingButtonIconSize)
+                            .graphicsLayer { rotationZ = rotation }
+                    )
+                }
             }
-        }
+        )
         if (expanded) Popup(
             popupPositionProvider = CenteredPopupPosition(LocalView.current),
             onDismissRequest = { expanded = false },
@@ -1325,6 +1350,43 @@ internal fun <T> GradientDropdownField(
                             modifier = Modifier.padding(horizontal = 8.dp)
                         )
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun <T> ConnectedOptionGroup(
+    options: List<Pair<String, T>>,
+    isSelected: (T) -> Boolean,
+    onSelect: (T) -> Unit,
+    optionIcon: (@Composable (T) -> Unit)?
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween)
+    ) {
+        options.forEachIndexed { index, (label, value) ->
+            ToggleButton(
+                checked = isSelected(value),
+                onCheckedChange = { onSelect(value) },
+                shapes = when (index) {
+                    0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                    options.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                    else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                },
+                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 10.dp),
+                modifier = Modifier.weight(1f).semantics { role = Role.RadioButton }
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    optionIcon?.invoke(value)
+                    Text(
+                        text = label,
+                        style = MaterialTheme.typography.labelMedium,
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                    )
                 }
             }
         }
