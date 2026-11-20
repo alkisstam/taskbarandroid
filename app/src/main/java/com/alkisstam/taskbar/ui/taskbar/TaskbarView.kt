@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -170,12 +171,13 @@ fun TaskbarView(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (pillIconCount > 0) {
-            Box(
+            BoxWithConstraints(
                 modifier = Modifier
                     .fillMaxWidth(dockWidthFraction)
                     .padding(bottom = QuickControlsButtonGap),
                 contentAlignment = Alignment.BottomCenter
             ) {
+                val pillMaxWidth = maxWidth
                 androidx.compose.animation.AnimatedVisibility(
                     visible = isDockExpanded && expandedGroupId == null && quickControlsEnabled,
                     enter = slideInHorizontally(initialOffsetX = slideFrom) + fadeIn(),
@@ -221,7 +223,6 @@ fun TaskbarView(
                     DisposableEffect(Unit) {
                         onDispose { taskbarViewModel.setQuickControlsButtonBounds(null) }
                     }
-                    val pillHeight = taskbarSettings.dockHeightDp.dp
                     val tileSize = taskbarSettings.quickControlSizeDp.dp
                     val controlsTile = QuickControlItemData(
                         id = "quick_controls", label = stringResource(R.string.quick_controls),
@@ -245,6 +246,12 @@ fun TaskbarView(
                             active = isDockPinned, icon = Icons.Filled.PushPin
                         ) to { taskbarViewModel.toggleDockPinned() })
                     }.let { if (buttonOnLeft) it else it.reversed() }
+                    // Shrink tiles so the pill fits the dock width; its height follows the fitted tiles.
+                    val fittedTileSize = if (tiles.isEmpty()) tileSize else minOf(
+                        tileSize,
+                        (pillMaxWidth - 16.dp - 8.dp * (tiles.size - 1)) / tiles.size
+                    ).coerceAtLeast(28.dp)
+                    val pillHeight = maxOf(taskbarSettings.heightDp.dp, fittedTileSize + 16.dp)
                     DockSurface(
                         taskbarViewModel = taskbarViewModel,
                         surfaceColor = surfaceColor,
@@ -259,12 +266,12 @@ fun TaskbarView(
                         Row(
                             modifier = Modifier
                                 .height(pillHeight)
-                                .padding(horizontal = ((pillHeight - tileSize) / 2).coerceAtLeast(8.dp)),
+                                .padding(horizontal = if (fittedTileSize < tileSize) 8.dp else ((pillHeight - tileSize) / 2).coerceAtLeast(8.dp)),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             tiles.forEach { (data, onToggle) ->
-                                QuickControlItem(item = data, onToggle = onToggle, showLabel = false, tileSize = tileSize)
+                                QuickControlItem(item = data, onToggle = onToggle, showLabel = false, tileSize = fittedTileSize)
                             }
                         }
                     }
