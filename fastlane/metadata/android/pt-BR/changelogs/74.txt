@@ -3,6 +3,9 @@ Novidades
 • Até 5 painéis de apps
 Alterado
 • Biscoito e Trevo usam os formatos oficiais do Material 3
-• Os painéis de apps são editados em um pop-up e exibidos como prévia do dock
+• Painéis de apps editados em pop-up com prévia do dock
 • As configurações usam grupos de botões e botões divididos
 • Os botões de painel acima do dock diminuem para caber
+• Seção Extras em Design para gestos e aparência do dock
+• Botões do dock seguem o formato dos ícones
+• Botões ficam destacados com o painel aberto

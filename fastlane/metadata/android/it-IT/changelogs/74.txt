@@ -3,6 +3,9 @@ Novità
 • Fino a 5 pannelli app
 Modificato
 • Biscotto e Trifoglio usano le forme ufficiali Material 3
-• I pannelli app si modificano in un pop-up e appaiono come anteprima del dock
+• Pannelli app modificabili in un pop-up con anteprima
 • Le impostazioni usano gruppi di pulsanti e pulsanti divisi
-• I pulsanti dei pannelli sopra il dock si rimpiccioliscono per starci
+• I pulsanti sopra il dock si rimpiccioliscono
+• Sezione Extra in Design per gesti e aspetto del dock
+• I pulsanti del dock seguono la forma delle icone
+• Pulsanti evidenziati quando il pannello è aperto

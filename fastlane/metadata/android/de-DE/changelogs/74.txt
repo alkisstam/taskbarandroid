@@ -3,6 +3,9 @@ Neu
 • Bis zu 5 App-Panels
 Geändert
 • Keks und Kleeblatt nutzen die offiziellen Material-3-Formen
-• App-Panels werden in einem Pop-up bearbeitet und als Dock-Vorschau angezeigt
+• App-Panels im Pop-up bearbeiten, mit Dock-Vorschau
 • Einstellungen nutzen Schaltflächengruppen und geteilte Schaltflächen
 • Panel-Schaltflächen über dem Dock verkleinern sich passend
+• Bereich Extras unter Design für Gesten und Dock-Optik
+• Dock-Schaltflächen folgen der Symbolform
+• Schaltflächen bleiben bei offenem Panel markiert

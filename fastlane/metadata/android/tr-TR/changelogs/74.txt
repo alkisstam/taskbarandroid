@@ -6,3 +6,6 @@ Değişenler
 • Uygulama panelleri açılır pencerede düzenlenir ve dock önizlemesi olarak gösterilir
 • Ayarlar düğme grupları ve bölünmüş düğmeler kullanır
 • Dock üzerindeki panel düğmeleri sığacak şekilde küçülür
+• Tasarım'da hareketler ve dock görünümü için Ekstralar
+• Dock düğmeleri simge şeklini izler
+• Düğmeler paneli açıkken vurgulu kalır

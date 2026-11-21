@@ -18,6 +18,9 @@ Material 3 Expressive shapes and controls, and a new way to edit app panels.
 - **Settings buttons** — choices with up to three options (theme style, hold & drag, dock edge padding, All Apps button side, app order) are now connected button groups. Longer lists (pill position, icon pack, icon shape, gestures, language) are split buttons that show the selected option's icon, such as the current icon shape.
 - **App order** — reads "Sort by" with shorter Name, Install and Usage options.
 - **Panel buttons fit the dock** — the buttons above the dock (Quick Controls, app panels, Music, Pin) shrink to fit when there are many of them.
+- **Extras section** — Settings › Design has a new Extras section below Dock Size & Appearance. It holds the pill gestures (swipe in, swipe up, swipe down, double tap, hold & drag) and the dock appearance options (hide time & date, edge padding, All Apps button, icon pack, icon shape), so the Pill and Dock sections only keep size and position settings.
+- **Matching button shapes** — the All Apps button and the quick control buttons now follow the selected icon shape, like your app icons. Default uses a circle and Square uses a squircle.
+- **Open panel highlight** — the Volume, Brightness, Clipboard, Notes and Calculator buttons stay highlighted while their panel is open.
 
 ---
 

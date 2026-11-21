@@ -3,6 +3,9 @@ Novedades
 • Hasta 5 paneles de apps
 Cambios
 • Galleta y Trébol usan las formas oficiales de Material 3
-• Los paneles de apps se editan en una ventana y se muestran como vista previa del dock
+• Paneles de apps editables en una ventana con vista previa
 • Los ajustes usan grupos de botones y botones divididos
 • Los botones de panel sobre el dock se reducen para caber
+• Sección Extras en Diseño para gestos y aspecto del dock
+• Los botones del dock siguen la forma de iconos
+• Los botones se resaltan con su panel abierto

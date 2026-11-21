@@ -6,3 +6,6 @@ Changed
 • App panels are edited in a pop-up and shown as a dock preview
 • Settings use button groups and split buttons
 • Panel buttons above the dock shrink to fit
+• Extras section in Design for gestures and dock look
+• Dock buttons match your icon shape
+• Buttons stay highlighted while their panel is open

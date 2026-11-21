@@ -109,7 +109,10 @@ val whatsNewReleases = listOf(
             "Cookie and Clover now use the official Material 3 shapes",
             "Up to 5 app panels, edited in a pop-up and previewed as they look on the dock",
             "Settings choices are now button groups and split buttons",
-            "Panel buttons above the dock shrink to fit"
+            "Panel buttons above the dock shrink to fit",
+            "New Extras section in Design for pill gestures and dock appearance",
+            "The All Apps and quick control buttons match your icon shape",
+            "Quick control buttons stay highlighted while their panel is open"
         )
     )
 )

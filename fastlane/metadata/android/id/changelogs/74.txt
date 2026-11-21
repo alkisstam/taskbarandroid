@@ -6,3 +6,6 @@ Diubah
 • Panel aplikasi diedit di pop-up dan ditampilkan sebagai pratinjau dock
 • Setelan memakai grup tombol dan tombol terpisah
 • Tombol panel di atas dock mengecil agar muat
+• Bagian Ekstra di Desain untuk gestur dan tampilan dock
+• Tombol dock mengikuti bentuk ikon
+• Tombol tetap disorot saat panelnya terbuka

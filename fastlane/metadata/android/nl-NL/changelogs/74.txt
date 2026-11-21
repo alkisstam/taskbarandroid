@@ -6,3 +6,6 @@ Gewijzigd
 • App-panelen bewerk je in een pop-up en zie je als dockvoorbeeld
 • Instellingen gebruiken knopgroepen en gesplitste knoppen
 • Paneelknoppen boven het dock worden kleiner om te passen
+• Sectie Extra in Ontwerp voor gebaren en dock-uiterlijk
+• Dockknoppen volgen je pictogramvorm
+• Knoppen blijven gemarkeerd als hun paneel open is
