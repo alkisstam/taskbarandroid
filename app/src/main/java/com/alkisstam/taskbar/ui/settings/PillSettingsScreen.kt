@@ -92,6 +92,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -165,6 +166,7 @@ fun PillSettingsScreen(
     var pillExpanded by remember { mutableStateOf(false) }
     var dockExpanded by remember { mutableStateOf(false) }
     var themeExpanded by remember { mutableStateOf(false) }
+    var extrasExpanded by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -194,7 +196,15 @@ fun PillSettingsScreen(
             expanded = dockExpanded,
             onToggle = { dockExpanded = !dockExpanded }
         ) {
-            DockSectionContent(viewModel, dockExpanded)
+            DockSectionContent(viewModel)
+        }
+
+        ExpandableSection(
+            title = stringResource(R.string.design_extras_section_title),
+            expanded = extrasExpanded,
+            onToggle = { extrasExpanded = !extrasExpanded }
+        ) {
+            ExtrasSectionContent(viewModel, extrasExpanded)
         }
     }
 }
@@ -463,18 +473,6 @@ private fun PillSectionContent(viewModel: TaskbarViewModel) {
         }
     )
     if (pillSettings.edgePosition == PillEdgePosition.BOTTOM) {
-        GestureActionDropdown(stringResource(R.string.pill_double_tap_action_label), Icons.Filled.TouchApp, pillSettings.doubleTapAction) {
-            viewModel.savePillSettings(pillSettings.copy(doubleTapAction = it))
-        }
-        GestureActionDropdown(stringResource(R.string.pill_swipe_up_action_label), Icons.Filled.SwipeUp, pillSettings.swipeUpAction) {
-            viewModel.savePillSettings(pillSettings.copy(swipeUpAction = it))
-        }
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = stringResource(R.string.pill_swipe_up_hint),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
         Spacer(modifier = Modifier.height(8.dp))
         SettingsSlider(
             label = stringResource(R.string.pill_position_from_bottom_label),
@@ -496,6 +494,55 @@ private fun PillSectionContent(viewModel: TaskbarViewModel) {
         )
     }
     if (pillSettings.edgePosition != PillEdgePosition.BOTTOM) {
+        Spacer(modifier = Modifier.height(8.dp))
+        SettingsSlider(
+            label = stringResource(R.string.pill_position_along_edge_label),
+            value = pillSettings.sidePositionPct,
+            valueRange = 0f..100f,
+            unit = "%",
+            step = 1f,
+            displayTransform = { "${it.toInt()}%" },
+            onValueChange = { viewModel.savePillSettings(pillSettings.copy(sidePositionPct = it)) }
+        )
+    }
+    Spacer(modifier = Modifier.height(12.dp))
+    PillPositionPreview(pillSettings.edgePosition, pillSettings.widthDp, pillSettings.heightDp, pillSettings.alpha, pillSettings.sidePositionPct, pillSettings.positionXPct, pillSettings.triggerOnWholeEdge)
+    Spacer(modifier = Modifier.height(8.dp))
+    if (pillSettings.edgePosition != PillEdgePosition.BOTTOM && pillSettings.swipeUpAction == GestureAction.SHOW_DOCK) {
+        Text(
+            text = stringResource(R.string.pill_swipe_up_activate_hint),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+private fun ExtrasSectionContent(viewModel: TaskbarViewModel, expanded: Boolean) {
+    val pillSettings by viewModel.pillSettings.collectAsState()
+    val taskbarSettings by viewModel.taskbarSettings.collectAsState()
+
+    Text(
+        stringResource(R.string.design_pill_gestures_header),
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+    if (pillSettings.edgePosition == PillEdgePosition.BOTTOM) {
+        GestureActionDropdown(stringResource(R.string.pill_double_tap_action_label), Icons.Filled.TouchApp, pillSettings.doubleTapAction) {
+            viewModel.savePillSettings(pillSettings.copy(doubleTapAction = it))
+        }
+        GestureActionDropdown(stringResource(R.string.pill_swipe_up_action_label), Icons.Filled.SwipeUp, pillSettings.swipeUpAction) {
+            viewModel.savePillSettings(pillSettings.copy(swipeUpAction = it))
+        }
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = stringResource(R.string.pill_swipe_up_hint),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    } else {
         GestureActionDropdown(stringResource(R.string.pill_swipe_in_action_label), Icons.Filled.SwapHoriz, pillSettings.swipeInAction) {
             viewModel.savePillSettings(pillSettings.copy(swipeInAction = it))
         }
@@ -508,16 +555,6 @@ private fun PillSectionContent(viewModel: TaskbarViewModel) {
         GestureActionDropdown(stringResource(R.string.pill_double_tap_action_label), Icons.Filled.TouchApp, pillSettings.doubleTapAction) {
             viewModel.savePillSettings(pillSettings.copy(doubleTapAction = it))
         }
-        Spacer(modifier = Modifier.height(8.dp))
-        SettingsSlider(
-            label = stringResource(R.string.pill_position_along_edge_label),
-            value = pillSettings.sidePositionPct,
-            valueRange = 0f..100f,
-            unit = "%",
-            step = 1f,
-            displayTransform = { "${it.toInt()}%" },
-            onValueChange = { viewModel.savePillSettings(pillSettings.copy(sidePositionPct = it)) }
-        )
     }
     // Hold-and-drag on a bottom pill collides with the system home/recents gesture.
     val context = LocalContext.current
@@ -556,67 +593,14 @@ private fun PillSectionContent(viewModel: TaskbarViewModel) {
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
-    Spacer(modifier = Modifier.height(12.dp))
-    PillPositionPreview(pillSettings.edgePosition, pillSettings.widthDp, pillSettings.heightDp, pillSettings.alpha, pillSettings.sidePositionPct, pillSettings.positionXPct, pillSettings.triggerOnWholeEdge)
-    Spacer(modifier = Modifier.height(8.dp))
-    if (pillSettings.edgePosition != PillEdgePosition.BOTTOM && pillSettings.swipeUpAction == GestureAction.SHOW_DOCK) {
-        Text(
-            text = stringResource(R.string.pill_swipe_up_activate_hint),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
-@Composable
-private fun DockSectionContent(viewModel: TaskbarViewModel, expanded: Boolean) {
-    val taskbarSettings by viewModel.taskbarSettings.collectAsState()
-
-    SettingsSlider(
-        label = stringResource(R.string.dock_height_label),
-        value = taskbarSettings.heightDp,
-        valueRange = 40f..120f,
-        unit = "dp",
-        step = 1f,
-        onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(heightDp = it)) }
+    HorizontalDivider(
+        modifier = Modifier.padding(vertical = 12.dp),
+        color = MaterialTheme.colorScheme.outlineVariant
     )
-    Spacer(modifier = Modifier.height(10.dp))
-    SettingsSlider(
-        label = stringResource(R.string.dock_pinned_icon_size_label),
-        value = taskbarSettings.pinnedIconSizeDp,
-        valueRange = 32f..120f,
-        unit = "dp",
-        step = 1f,
-        onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(pinnedIconSizeDp = it)) }
-    )
-    Spacer(modifier = Modifier.height(10.dp))
-    SettingsSlider(
-        label = stringResource(R.string.dock_pinned_icon_padding_label),
-        value = taskbarSettings.pinnedIconPaddingDp,
-        valueRange = 2f..12f,
-        unit = "dp",
-        step = 1f,
-        onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(pinnedIconPaddingDp = it)) }
-    )
-    Spacer(modifier = Modifier.height(10.dp))
-    SettingsSlider(
-        label = stringResource(R.string.dock_quick_controls_size_label),
-        value = taskbarSettings.quickControlSizeDp,
-        valueRange = 32f..120f,
-        unit = "dp",
-        step = 1f,
-        onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(quickControlSizeDp = it)) }
-    )
-    Spacer(modifier = Modifier.height(10.dp))
-    SettingsSlider(
-        label = stringResource(R.string.dock_corner_radius_label),
-        value = taskbarSettings.cornerRadiusDp,
-        valueRange = 0f..32f,
-        unit = "dp",
-        step = 1f,
-        onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(cornerRadiusDp = it)) }
+    Text(
+        stringResource(R.string.design_dock_appearance_header),
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
     )
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -746,6 +730,56 @@ private fun DockSectionContent(viewModel: TaskbarViewModel, expanded: Boolean) {
         },
         isSelected = { it == taskbarSettings.iconShape },
         onSelect = { viewModel.saveTaskbarSettings(taskbarSettings.copy(iconShape = it)) }
+    )
+}
+
+@Composable
+private fun DockSectionContent(viewModel: TaskbarViewModel) {
+    val taskbarSettings by viewModel.taskbarSettings.collectAsState()
+
+    SettingsSlider(
+        label = stringResource(R.string.dock_height_label),
+        value = taskbarSettings.heightDp,
+        valueRange = 40f..120f,
+        unit = "dp",
+        step = 1f,
+        onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(heightDp = it)) }
+    )
+    Spacer(modifier = Modifier.height(10.dp))
+    SettingsSlider(
+        label = stringResource(R.string.dock_pinned_icon_size_label),
+        value = taskbarSettings.pinnedIconSizeDp,
+        valueRange = 32f..120f,
+        unit = "dp",
+        step = 1f,
+        onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(pinnedIconSizeDp = it)) }
+    )
+    Spacer(modifier = Modifier.height(10.dp))
+    SettingsSlider(
+        label = stringResource(R.string.dock_pinned_icon_padding_label),
+        value = taskbarSettings.pinnedIconPaddingDp,
+        valueRange = 2f..12f,
+        unit = "dp",
+        step = 1f,
+        onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(pinnedIconPaddingDp = it)) }
+    )
+    Spacer(modifier = Modifier.height(10.dp))
+    SettingsSlider(
+        label = stringResource(R.string.dock_quick_controls_size_label),
+        value = taskbarSettings.quickControlSizeDp,
+        valueRange = 32f..120f,
+        unit = "dp",
+        step = 1f,
+        onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(quickControlSizeDp = it)) }
+    )
+    Spacer(modifier = Modifier.height(10.dp))
+    SettingsSlider(
+        label = stringResource(R.string.dock_corner_radius_label),
+        value = taskbarSettings.cornerRadiusDp,
+        valueRange = 0f..32f,
+        unit = "dp",
+        step = 1f,
+        onValueChange = { viewModel.saveTaskbarSettings(taskbarSettings.copy(cornerRadiusDp = it)) }
     )
 }
 

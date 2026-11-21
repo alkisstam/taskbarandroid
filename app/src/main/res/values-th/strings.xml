@@ -54,6 +54,9 @@
     <string name="pill_custom_color_cancel_button">ยกเลิก</string>
     <string name="pill_custom_color_dialog_title">สีกำหนดเอง</string>
     <string name="pill_dock_size_appearance_section_title">ขนาด &amp; รูปลักษณ์ของด็อก</string>
+    <string name="design_extras_section_title">เพิ่มเติม</string>
+    <string name="design_pill_gestures_header">ท่าทางของปุ่มลอย</string>
+    <string name="design_dock_appearance_header">รูปลักษณ์ของด็อก</string>
     <string name="pill_edge_both">ทั้งสองด้าน</string>
     <string name="pill_edge_bottom">ด้านล่าง</string>
     <string name="pill_edge_left">ด้านซ้าย</string>

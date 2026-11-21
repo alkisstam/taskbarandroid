@@ -54,6 +54,9 @@
     <string name="pill_custom_color_cancel_button">Отмена</string>
     <string name="pill_custom_color_dialog_title">Свой цвет</string>
     <string name="pill_dock_size_appearance_section_title">Размер &amp; вид панели</string>
+    <string name="design_extras_section_title">Дополнительно</string>
+    <string name="design_pill_gestures_header">Жесты капсулы</string>
+    <string name="design_dock_appearance_header">Вид панели</string>
     <string name="pill_edge_both">Обе стороны</string>
     <string name="pill_edge_bottom">Снизу</string>
     <string name="pill_edge_left">Слева</string>

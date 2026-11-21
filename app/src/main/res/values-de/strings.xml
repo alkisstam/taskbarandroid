@@ -54,6 +54,9 @@
     <string name="pill_custom_color_cancel_button">Abbrechen</string>
     <string name="pill_custom_color_dialog_title">Eigene Farbe</string>
     <string name="pill_dock_size_appearance_section_title">Dockgröße &amp; Erscheinungsbild</string>
+    <string name="design_extras_section_title">Extras</string>
+    <string name="design_pill_gestures_header">Pill-Gesten</string>
+    <string name="design_dock_appearance_header">Dock-Erscheinungsbild</string>
     <string name="pill_edge_both">Beide</string>
     <string name="pill_edge_bottom">Unten</string>
     <string name="pill_edge_left">Links</string>

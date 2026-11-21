@@ -54,6 +54,9 @@
     <string name="pill_custom_color_cancel_button">İptal</string>
     <string name="pill_custom_color_dialog_title">Özel Renk</string>
     <string name="pill_dock_size_appearance_section_title">Dock Boyutu &amp; Görünümü</string>
+    <string name="design_extras_section_title">Ekstralar</string>
+    <string name="design_pill_gestures_header">Hap Hareketleri</string>
+    <string name="design_dock_appearance_header">Dock Görünümü</string>
     <string name="pill_edge_both">İkisi de</string>
     <string name="pill_edge_bottom">Alt</string>
     <string name="pill_edge_left">Sol</string>
