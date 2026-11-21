@@ -22,10 +22,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.graphics.shapes.Morph
-import com.alkisstam.taskbar.ui.common.CirclePolygon
-import com.alkisstam.taskbar.ui.common.CookiePolygon
+import com.alkisstam.taskbar.data.IconShape
 import com.alkisstam.taskbar.ui.common.MorphShape
+import com.alkisstam.taskbar.ui.common.buttonShape
+import com.alkisstam.taskbar.ui.common.pressMorph
 import com.alkisstam.taskbar.R
 import com.alkisstam.taskbar.ui.theme.glass
 
@@ -36,9 +36,10 @@ fun AppMenuButton(
     size: Dp = 48.dp,
     modifier: Modifier = Modifier,
     icon: ImageVector = Icons.Filled.GridView,
-    contentDescription: String = stringResource(R.string.taskbar_app_menu_content_desc)
+    contentDescription: String = stringResource(R.string.taskbar_app_menu_content_desc),
+    iconShape: IconShape = IconShape.CIRCLE
 ) {
-    val morph = remember { Morph(CirclePolygon, CookiePolygon) }
+    val morph = remember(iconShape) { iconShape.buttonShape().pressMorph()!! }
     val progress by animateFloatAsState(
         targetValue = if (menuOpen) 1f else 0f,
         animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),

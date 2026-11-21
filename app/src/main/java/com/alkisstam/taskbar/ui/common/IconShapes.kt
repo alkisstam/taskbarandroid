@@ -73,7 +73,14 @@ fun IconShape.toComposeShape(): Shape = when (this) {
     IconShape.SUNNY -> SunnyShape
 }
 
-private fun IconShape.pressMorph(): Morph? = when (this) {
+// Buttons have no shape of their own, so the unmasked/hard-cornered options fall back to soft ones.
+fun IconShape.buttonShape(): IconShape = when (this) {
+    IconShape.DEFAULT -> IconShape.CIRCLE
+    IconShape.SQUARE -> IconShape.SQUIRCLE
+    else -> this
+}
+
+fun IconShape.pressMorph(): Morph? = when (this) {
     IconShape.DEFAULT -> null
     IconShape.SQUARE -> Morph(SquarePolygon, SquirclePolygon)
     IconShape.SQUIRCLE -> Morph(SquirclePolygon, CookiePolygon)

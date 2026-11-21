@@ -271,7 +271,7 @@ fun TaskbarView(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             tiles.forEach { (data, onToggle) ->
-                                QuickControlItem(item = data, onToggle = onToggle, showLabel = false, tileSize = fittedTileSize)
+                                QuickControlItem(item = data, onToggle = onToggle, showLabel = false, tileSize = fittedTileSize, iconShape = taskbarSettings.iconShape)
                             }
                         }
                     }
@@ -323,7 +323,8 @@ fun TaskbarView(
                             menuOpen = menuVisible,
                             onClick = { appMenuViewModel.toggleMenu() },
                             size = iconSize,
-                            modifier = Modifier.padding(start = 8.dp)
+                            modifier = Modifier.padding(start = 8.dp),
+                            iconShape = taskbarSettings.iconShape
                         )
                     }
 
@@ -361,7 +362,8 @@ fun TaskbarView(
                             menuOpen = menuVisible,
                             onClick = { appMenuViewModel.toggleMenu() },
                             size = iconSize,
-                            modifier = Modifier.padding(end = 8.dp)
+                            modifier = Modifier.padding(end = 8.dp),
+                            iconShape = taskbarSettings.iconShape
                         )
                     }
                 }
@@ -437,7 +439,20 @@ private fun QuickControlsPanel(
     val quickSettingsPanelVisible by appMenuViewModel.quickSettingsPanelVisible.collectAsState()
     val quickControls by appMenuViewModel.quickControlsState.collectAsState()
 
+    val volumePanelVisible by appMenuViewModel.volumePanelVisible.collectAsState()
+    val brightnessPanelVisible by appMenuViewModel.brightnessPanelVisible.collectAsState()
+    val clipboardPanelVisible by appMenuViewModel.clipboardPanelVisible.collectAsState()
+    val notesPanelVisible by appMenuViewModel.notesPanelVisible.collectAsState()
+    val calculatorPanelVisible by appMenuViewModel.calculatorPanelVisible.collectAsState()
+    val openPanelIds = buildSet {
+        if (volumePanelVisible) add("volume")
+        if (brightnessPanelVisible) add("brightness_slider")
+        if (clipboardPanelVisible) add("clipboard")
+        if (notesPanelVisible) add("notes")
+        if (calculatorPanelVisible) add("calculator")
+    }
     val quickControlItems = quickControls.toItems(controlsOrder, controlsDisabledIds)
+        .map { if (it.id in openPanelIds) it.copy(active = true) else it }
     val quickSettingsLabel = stringResource(R.string.quick_control_settings_label)
     val extraTiles = buildList<Pair<QuickControlItemData, () -> Unit>> {
         if (quickSettingsPanelEnabled) add(QuickControlItemData(id = "quick_settings", label = quickSettingsLabel, active = quickSettingsPanelVisible, icon = Icons.Filled.Settings) to { appMenuViewModel.toggleQuickSettingsPanel() })
@@ -464,7 +479,8 @@ private fun QuickControlsPanel(
                         item = data,
                         onToggle = onToggle,
                         showLabel = taskbarSettings.showControlLabels,
-                        tileSize = taskbarSettings.quickControlSizeDp.dp
+                        tileSize = taskbarSettings.quickControlSizeDp.dp,
+                        iconShape = taskbarSettings.iconShape
                     )
                 }
                 items(quickControlItems) { item ->
@@ -480,7 +496,8 @@ private fun QuickControlsPanel(
                             }
                         },
                         showLabel = taskbarSettings.showControlLabels,
-                        tileSize = taskbarSettings.quickControlSizeDp.dp
+                        tileSize = taskbarSettings.quickControlSizeDp.dp,
+                        iconShape = taskbarSettings.iconShape
                     )
                 }
             }
@@ -510,7 +527,8 @@ private fun PanelRow(
                 size = taskbarSettings.pinnedIconSizeDp.dp,
                 modifier = padding,
                 icon = icon,
-                contentDescription = label
+                contentDescription = label,
+                iconShape = taskbarSettings.iconShape
             )
         }
         if (buttonOnLeft) button(Modifier.padding(start = 8.dp))

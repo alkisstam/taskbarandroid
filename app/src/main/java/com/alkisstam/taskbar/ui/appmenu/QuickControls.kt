@@ -1,7 +1,13 @@
 package com.alkisstam.taskbar.ui.appmenu
 
 import android.media.AudioManager
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.runtime.remember
+import com.alkisstam.taskbar.data.IconShape
+import com.alkisstam.taskbar.ui.common.buttonShape
+import com.alkisstam.taskbar.ui.common.rememberPressMorphShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -175,7 +180,8 @@ fun QuickControlItem(
     onToggle: () -> Unit,
     showLabel: Boolean = true,
     tileSize: Dp = 44.dp,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    iconShape: IconShape = IconShape.CIRCLE
 ) {
     QuickControlTile(
         icon = item.icon,
@@ -185,7 +191,8 @@ fun QuickControlItem(
         showLabel = showLabel,
         badge = item.badge,
         tileSize = tileSize,
-        modifier = modifier
+        modifier = modifier,
+        iconShape = iconShape
     )
 }
 
@@ -198,8 +205,11 @@ private fun QuickControlTile(
     showLabel: Boolean = true,
     badge: String? = null,
     tileSize: Dp = 44.dp,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    iconShape: IconShape = IconShape.CIRCLE
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val shape = rememberPressMorphShape(iconShape.buttonShape(), interactionSource)
     val containerColor = if (active)
         MaterialTheme.colorScheme.primaryContainer
     else
@@ -218,10 +228,10 @@ private fun QuickControlTile(
             Surface(
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(CircleShape)
-                    .clickable(onClick = onClick),
+                    .clip(shape)
+                    .clickable(interactionSource = interactionSource, indication = LocalIndication.current, onClick = onClick),
                 color = containerColor,
-                shape = CircleShape
+                shape = shape
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
