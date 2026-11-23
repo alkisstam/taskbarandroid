@@ -1044,7 +1044,8 @@ class PreferencesRepository @Inject constructor(
     }
 
     val appGridColumns: Flow<Int> = safeData.map { prefs ->
-        prefs[APP_GRID_COLUMNS_KEY] ?: 4
+        // Clamped to the slider range: restore accepts any number, and GridCells.Fixed(0) throws.
+        prefs[APP_GRID_COLUMNS_KEY]?.coerceIn(3, 6) ?: 4
     }
 
     suspend fun setAppGridColumns(value: Int) {

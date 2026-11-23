@@ -1,5 +1,6 @@
 package com.alkisstam.taskbar.ui.settings
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
@@ -664,14 +665,7 @@ private fun ContactCard() {
                     .size(56.dp)
                     .clip(CircleShape)
                     .background(Color(0xFF26A5E4))
-                    .clickable {
-                        try {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/floatingdock"))
-                            context.startActivity(intent)
-                        } catch (e: Exception) {
-                            Toast.makeText(context, context.getString(R.string.settings_no_link_app_toast), Toast.LENGTH_SHORT).show()
-                        }
-                    },
+                    .clickable { openUrl(context, "https://t.me/floatingdock") },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -685,6 +679,14 @@ private fun ContactCard() {
     }
 }
 
+private fun openUrl(context: Context, url: String) {
+    try {
+        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+    } catch (e: Exception) {
+        Toast.makeText(context, context.getString(R.string.settings_no_link_app_toast), Toast.LENGTH_SHORT).show()
+    }
+}
+
 @Composable
 private fun AboutCard() {
     val context = LocalContext.current
@@ -692,13 +694,7 @@ private fun AboutCard() {
         context.packageManager.getPackageInfo(context.packageName, 0).versionName.orEmpty()
     }
     var showAboutWhatsNew by remember { mutableStateOf(false) }
-    val openLink = { url: String ->
-        try {
-            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-        } catch (e: Exception) {
-            Toast.makeText(context, context.getString(R.string.settings_no_link_app_toast), Toast.LENGTH_SHORT).show()
-        }
-    }
+    val openLink = { url: String -> openUrl(context, url) }
     SettingsCard(title = stringResource(R.string.settings_about_card_title)) {
         Text(
             stringResource(R.string.settings_about_version, versionName),

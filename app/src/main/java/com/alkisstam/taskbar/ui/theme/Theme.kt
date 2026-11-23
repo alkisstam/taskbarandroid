@@ -31,6 +31,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.ImageShader
+import androidx.compose.ui.graphics.ShaderBrush
+import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -149,19 +152,10 @@ fun Modifier.grain(enabled: Boolean = true, alpha: Float = 0.10f): Modifier {
             bmp.setPixels(pixels, 0, tileSize, 0, 0, tileSize, tileSize)
             bmp.asImageBitmap()
         }
+        val noiseBrush = remember(noiseBitmap) { ShaderBrush(ImageShader(noiseBitmap, TileMode.Repeated, TileMode.Repeated)) }
         drawWithContent {
             drawContent()
-            val bw = noiseBitmap.width.toFloat()
-            val bh = noiseBitmap.height.toFloat()
-            var ty = 0f
-            while (ty < size.height) {
-                var tx = 0f
-                while (tx < size.width) {
-                    drawImage(noiseBitmap, topLeft = Offset(tx, ty))
-                    tx += bw
-                }
-                ty += bh
-            }
+            drawRect(noiseBrush)
         }
     }
 }
