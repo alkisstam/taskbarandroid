@@ -1,0 +1,7 @@
+Corrigido
+• A calculadora resolve potências antes de × e ÷ e recomeça após um erro
+• Apps desinstalados não reaparecem mais no dock
+• Toques não chegam mais ao app atrás do menu de apps reaberto rapidamente
+• Os controles de brilho usam toda a faixa do seu celular
+• Janelas flutuantes sempre restauram as configurações do sistema
+• Restaurar um backup danificado não trava mais o menu de apps

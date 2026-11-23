@@ -1,0 +1,7 @@
+Corrigé
+• La calculatrice calcule les puissances avant × et ÷, et repart de zéro après une erreur
+• Les applis désinstallées ne réapparaissent plus dans le dock
+• Les appuis n'atteignent plus l'appli derrière le menu des applis rouvert rapidement
+• Les réglages de luminosité utilisent toute la plage de votre téléphone
+• Les fenêtres flottantes rétablissent toujours vos paramètres système
+• Restaurer une sauvegarde endommagée ne fait plus planter le menu des applis

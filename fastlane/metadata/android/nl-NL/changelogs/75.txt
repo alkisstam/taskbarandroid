@@ -1,0 +1,7 @@
+Opgelost
+• Rekenmachine berekent machten vóór × en ÷ en begint opnieuw na een fout
+• Verwijderde apps verschijnen niet meer in het dock
+• Tikken bereiken niet meer de app achter een snel heropend app-menu
+• Helderheidsregelaars gebruiken het volledige bereik van je telefoon
+• Zwevende vensters zetten je systeeminstellingen altijd terug
+• Een beschadigde back-up terugzetten laat het app-menu niet meer crashen

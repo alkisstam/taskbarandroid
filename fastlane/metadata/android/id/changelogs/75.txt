@@ -1,0 +1,7 @@
+Diperbaiki
+• Kalkulator menghitung pangkat sebelum × dan ÷, dan mulai ulang setelah error
+• Aplikasi yang dihapus tidak muncul lagi di dock
+• Ketukan tidak lagi tembus ke aplikasi di balik Menu Aplikasi yang cepat dibuka ulang
+• Kontrol kecerahan memakai rentang penuh ponsel Anda
+• Jendela mengambang selalu mengembalikan pengaturan sistem
+• Memulihkan cadangan yang rusak tidak lagi membuat Menu Aplikasi crash

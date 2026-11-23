@@ -14,6 +14,9 @@ Calculator and reliability fixes.
 - **Uninstalled apps reappearing** — an app you uninstall while the app list is loading no longer shows up again in the dock or app menu.
 - **Floating windows leaving a system setting on** — if Floating Dock is closed during a Shizuku floating launch, the device's freeform settings are put back the next time it starts.
 - **Leftover shared files** — a file shared to the clipboard that fails to save no longer stays behind in storage.
+- **Taps reaching the app behind the App Menu** — closing and quickly reopening the App Menu no longer lets taps pass through to the app underneath for a moment.
+- **Backup restore crash** — restoring a damaged or hand-edited backup with an invalid App Menu column count no longer crashes the App Menu.
+- **Brightness range** — the brightness slider and the pill's hold & drag gesture use your phone's full brightness range on devices that use a wider scale.
 
 ---
 

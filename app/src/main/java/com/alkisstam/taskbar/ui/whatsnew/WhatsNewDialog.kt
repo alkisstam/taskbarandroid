@@ -114,6 +114,18 @@ val whatsNewReleases = listOf(
             "The All Apps and quick control buttons match your icon shape",
             "Quick control buttons stay highlighted while their panel is open"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.5.20",
+        versionCode = 75,
+        highlights = listOf(
+            "Calculator works out powers before × and ÷, and starts fresh after an error",
+            "Uninstalled apps no longer reappear in the dock",
+            "Taps no longer reach the app behind a quickly reopened App Menu",
+            "Brightness controls use your phone's full range",
+            "Floating windows always put your system settings back",
+            "Restoring a damaged backup no longer crashes the App Menu"
+        )
     )
 )
 

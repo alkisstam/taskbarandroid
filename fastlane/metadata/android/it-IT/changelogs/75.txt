@@ -1,0 +1,7 @@
+Corretto
+• La calcolatrice calcola le potenze prima di × e ÷ e riparte da zero dopo un errore
+• Le app disinstallate non ricompaiono più nel dock
+• I tocchi non raggiungono più l'app dietro il menu app riaperto rapidamente
+• I controlli della luminosità usano l'intera gamma del telefono
+• Le finestre mobili ripristinano sempre le impostazioni di sistema
+• Ripristinare un backup danneggiato non fa più arrestare il menu app
