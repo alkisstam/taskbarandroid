@@ -25,6 +25,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.content.ContextCompat
 import androidx.compose.runtime.collectAsState
@@ -70,6 +71,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -1554,196 +1556,74 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     }
 
     private fun addClipboardPanelView() {
-        if (clipboardPanelView?.isAttachedToWindow == true) return
-        clipboardPanelView?.let { removeViewFromAnyWM(it) }
-        clipboardPanelView = null
-        try {
-            val composeView = ComposeView(this).apply {
-                setViewTreeLifecycleOwner(this@OverlayService)
-                setViewTreeViewModelStoreOwner(this@OverlayService)
-                setViewTreeSavedStateRegistryOwner(this@OverlayService)
-                setContent {
-                    val hapticEnabled by taskbarViewModel.hapticFeedbackEnabled.collectAsState()
-                    CompositionLocalProvider(LocalHapticEnabled provides hapticEnabled) {
-                        ClipboardPanelContent(
-                            taskbarViewModel = taskbarViewModel,
-                            appMenuViewModel = appMenuViewModel,
-                            clipboardViewModel = clipboardViewModel
-                        )
-                    }
-                }
-            }
-            val wrapper = object : FrameLayout(this) {
-                override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-                    if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
-                        appMenuViewModel.dismissClipboardPanel()
-                        return true
-                    }
-                    return super.dispatchKeyEvent(event)
-                }
-            }
-            wrapper.setViewTreeLifecycleOwner(this@OverlayService)
-            wrapper.setViewTreeViewModelStoreOwner(this@OverlayService)
-            wrapper.setViewTreeSavedStateRegistryOwner(this@OverlayService)
-            wrapper.addView(composeView)
-            val visible = appMenuViewModel.clipboardPanelVisible.value
-            wrapper.visibility = if (visible) View.VISIBLE else View.GONE
-            clipboardPanelView = wrapper
-            windowManager.addView(wrapper, searchLayoutParams(focusable = visible))
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to add clipboard panel view", e)
-            clipboardPanelView = null
+        clipboardPanelView = addFullScreenPanel(clipboardPanelView, "clipboard", appMenuViewModel.clipboardPanelVisible.value, appMenuViewModel::dismissClipboardPanel) {
+            ClipboardPanelContent(
+                taskbarViewModel = taskbarViewModel,
+                appMenuViewModel = appMenuViewModel,
+                clipboardViewModel = clipboardViewModel
+            )
         }
     }
 
-    private fun observeClipboardPanel() {
-        serviceScope.launch {
-            appMenuViewModel.clipboardPanelVisible.collect { visible ->
-                clipboardPanelView?.visibility = if (visible) View.VISIBLE else View.GONE
-                clipboardPanelView?.let { view ->
-                    try { windowManager.updateViewLayoutKeepingType(view, searchLayoutParams(focusable = visible)) }
-                    catch (e: Exception) { Log.w(TAG, "Failed to update clipboard panel flags", e) }
-                }
-                updateClipboardBlur()
-            }
-        }
-    }
+    private fun observeClipboardPanel() =
+        observeFullScreenPanel(appMenuViewModel.clipboardPanelVisible, "clipboard") { clipboardPanelView }
 
     private fun addNotesPanelView() {
-        if (notesPanelView?.isAttachedToWindow == true) return
-        notesPanelView?.let { removeViewFromAnyWM(it) }
-        notesPanelView = null
-        try {
-            val composeView = ComposeView(this).apply {
-                setViewTreeLifecycleOwner(this@OverlayService)
-                setViewTreeViewModelStoreOwner(this@OverlayService)
-                setViewTreeSavedStateRegistryOwner(this@OverlayService)
-                setContent {
-                    val hapticEnabled by taskbarViewModel.hapticFeedbackEnabled.collectAsState()
-                    CompositionLocalProvider(LocalHapticEnabled provides hapticEnabled) {
-                        NotesPanelContent(
-                            taskbarViewModel = taskbarViewModel,
-                            appMenuViewModel = appMenuViewModel,
-                            clipboardViewModel = clipboardViewModel
-                        )
-                    }
-                }
-            }
-            val wrapper = object : FrameLayout(this) {
-                override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-                    if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
-                        appMenuViewModel.dismissNotesPanel()
-                        return true
-                    }
-                    return super.dispatchKeyEvent(event)
-                }
-            }
-            wrapper.setViewTreeLifecycleOwner(this@OverlayService)
-            wrapper.setViewTreeViewModelStoreOwner(this@OverlayService)
-            wrapper.setViewTreeSavedStateRegistryOwner(this@OverlayService)
-            wrapper.addView(composeView)
-            val visible = appMenuViewModel.notesPanelVisible.value
-            wrapper.visibility = if (visible) View.VISIBLE else View.GONE
-            notesPanelView = wrapper
-            windowManager.addView(wrapper, searchLayoutParams(focusable = visible))
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to add notes panel view", e)
-            notesPanelView = null
+        notesPanelView = addFullScreenPanel(notesPanelView, "notes", appMenuViewModel.notesPanelVisible.value, appMenuViewModel::dismissNotesPanel) {
+            NotesPanelContent(
+                taskbarViewModel = taskbarViewModel,
+                appMenuViewModel = appMenuViewModel,
+                clipboardViewModel = clipboardViewModel
+            )
         }
     }
 
-    private fun observeNotesPanel() {
-        serviceScope.launch {
-            appMenuViewModel.notesPanelVisible.collect { visible ->
-                notesPanelView?.visibility = if (visible) View.VISIBLE else View.GONE
-                notesPanelView?.let { view ->
-                    try { windowManager.updateViewLayoutKeepingType(view, searchLayoutParams(focusable = visible)) }
-                    catch (e: Exception) { Log.w(TAG, "Failed to update notes panel flags", e) }
-                }
-                updateClipboardBlur()
-            }
-        }
-    }
+    private fun observeNotesPanel() =
+        observeFullScreenPanel(appMenuViewModel.notesPanelVisible, "notes") { notesPanelView }
 
     private fun addQuickSettingsPanelView() {
-        if (quickSettingsPanelView?.isAttachedToWindow == true) return
-        quickSettingsPanelView?.let { removeViewFromAnyWM(it) }
-        quickSettingsPanelView = null
-        try {
-            val composeView = ComposeView(this).apply {
-                setViewTreeLifecycleOwner(this@OverlayService)
-                setViewTreeViewModelStoreOwner(this@OverlayService)
-                setViewTreeSavedStateRegistryOwner(this@OverlayService)
-                setContent {
-                    val hapticEnabled by taskbarViewModel.hapticFeedbackEnabled.collectAsState()
-                    CompositionLocalProvider(LocalHapticEnabled provides hapticEnabled) {
-                        QuickSettingsPanelContent(
-                            taskbarViewModel = taskbarViewModel,
-                            appMenuViewModel = appMenuViewModel
-                        )
-                    }
-                }
-            }
-            val wrapper = object : FrameLayout(this) {
-                override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-                    if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
-                        appMenuViewModel.dismissQuickSettingsPanel()
-                        return true
-                    }
-                    return super.dispatchKeyEvent(event)
-                }
-            }
-            wrapper.setViewTreeLifecycleOwner(this@OverlayService)
-            wrapper.setViewTreeViewModelStoreOwner(this@OverlayService)
-            wrapper.setViewTreeSavedStateRegistryOwner(this@OverlayService)
-            wrapper.addView(composeView)
-            val visible = appMenuViewModel.quickSettingsPanelVisible.value
-            wrapper.visibility = if (visible) View.VISIBLE else View.GONE
-            quickSettingsPanelView = wrapper
-            windowManager.addView(wrapper, searchLayoutParams(focusable = visible))
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to add quick settings panel view", e)
-            quickSettingsPanelView = null
+        quickSettingsPanelView = addFullScreenPanel(quickSettingsPanelView, "quick settings", appMenuViewModel.quickSettingsPanelVisible.value, appMenuViewModel::dismissQuickSettingsPanel) {
+            QuickSettingsPanelContent(
+                taskbarViewModel = taskbarViewModel,
+                appMenuViewModel = appMenuViewModel
+            )
         }
     }
 
-    private fun observeQuickSettingsPanel() {
-        serviceScope.launch {
-            appMenuViewModel.quickSettingsPanelVisible.collect { visible ->
-                quickSettingsPanelView?.visibility = if (visible) View.VISIBLE else View.GONE
-                quickSettingsPanelView?.let { view ->
-                    try { windowManager.updateViewLayoutKeepingType(view, searchLayoutParams(focusable = visible)) }
-                    catch (e: Exception) { Log.w(TAG, "Failed to update quick settings panel flags", e) }
-                }
-                updateClipboardBlur()
-            }
-        }
-    }
+    private fun observeQuickSettingsPanel() =
+        observeFullScreenPanel(appMenuViewModel.quickSettingsPanelVisible, "quick settings") { quickSettingsPanelView }
 
     private fun addNotificationPanelView() {
-        if (notificationPanelView?.isAttachedToWindow == true) return
-        notificationPanelView?.let { removeViewFromAnyWM(it) }
-        notificationPanelView = null
-        try {
+        notificationPanelView = addFullScreenPanel(notificationPanelView, "notification", appMenuViewModel.notificationPanelVisible.value, appMenuViewModel::dismissNotificationPanel) {
+            NotificationHistoryPanelContent(
+                taskbarViewModel = taskbarViewModel,
+                appMenuViewModel = appMenuViewModel,
+                notificationHistoryViewModel = notificationHistoryViewModel
+            )
+        }
+    }
+
+    private fun observeNotificationPanel() =
+        observeFullScreenPanel(appMenuViewModel.notificationPanelVisible, "notification") { notificationPanelView }
+
+    // Full-screen panels share one window shape: focusable while visible, back key dismisses.
+    private fun addFullScreenPanel(current: View?, name: String, visible: Boolean, onBack: () -> Unit, content: @Composable () -> Unit): View? {
+        if (current?.isAttachedToWindow == true) return current
+        current?.let { removeViewFromAnyWM(it) }
+        return try {
             val composeView = ComposeView(this).apply {
                 setViewTreeLifecycleOwner(this@OverlayService)
                 setViewTreeViewModelStoreOwner(this@OverlayService)
                 setViewTreeSavedStateRegistryOwner(this@OverlayService)
                 setContent {
                     val hapticEnabled by taskbarViewModel.hapticFeedbackEnabled.collectAsState()
-                    CompositionLocalProvider(LocalHapticEnabled provides hapticEnabled) {
-                        NotificationHistoryPanelContent(
-                            taskbarViewModel = taskbarViewModel,
-                            appMenuViewModel = appMenuViewModel,
-                            notificationHistoryViewModel = notificationHistoryViewModel
-                        )
-                    }
+                    CompositionLocalProvider(LocalHapticEnabled provides hapticEnabled) { content() }
                 }
             }
             val wrapper = object : FrameLayout(this) {
                 override fun dispatchKeyEvent(event: KeyEvent): Boolean {
                     if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
-                        appMenuViewModel.dismissNotificationPanel()
+                        onBack()
                         return true
                     }
                     return super.dispatchKeyEvent(event)
@@ -1753,23 +1633,22 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             wrapper.setViewTreeViewModelStoreOwner(this@OverlayService)
             wrapper.setViewTreeSavedStateRegistryOwner(this@OverlayService)
             wrapper.addView(composeView)
-            val visible = appMenuViewModel.notificationPanelVisible.value
             wrapper.visibility = if (visible) View.VISIBLE else View.GONE
-            notificationPanelView = wrapper
             windowManager.addView(wrapper, searchLayoutParams(focusable = visible))
+            wrapper
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to add notification panel view", e)
-            notificationPanelView = null
+            Log.e(TAG, "Failed to add $name panel view", e)
+            null
         }
     }
 
-    private fun observeNotificationPanel() {
+    private fun observeFullScreenPanel(visibleFlow: StateFlow<Boolean>, name: String, view: () -> View?) {
         serviceScope.launch {
-            appMenuViewModel.notificationPanelVisible.collect { visible ->
-                notificationPanelView?.visibility = if (visible) View.VISIBLE else View.GONE
-                notificationPanelView?.let { view ->
-                    try { windowManager.updateViewLayoutKeepingType(view, searchLayoutParams(focusable = visible)) }
-                    catch (e: Exception) { Log.w(TAG, "Failed to update notification panel flags", e) }
+            visibleFlow.collect { visible ->
+                view()?.let {
+                    it.visibility = if (visible) View.VISIBLE else View.GONE
+                    try { windowManager.updateViewLayoutKeepingType(it, searchLayoutParams(focusable = visible)) }
+                    catch (e: Exception) { Log.w(TAG, "Failed to update $name panel flags", e) }
                 }
                 updateClipboardBlur()
             }

@@ -120,7 +120,11 @@ internal data class CalculatorState(
 ) {
     private fun tokens() = tokenize(expression)
 
+    // Results start with a digit or '-'; anything else is the localized error text.
+    private val isError get() = !expression.first().isDigit() && expression.first() != '-'
+
     fun digit(d: String): CalculatorState {
+        if (isError) return CalculatorState().digit(d)
         if (justEvaluated) return copy(expression = if (d == "00") "0" else d, justEvaluated = false)
         val lastToken = tokens().lastOrNull() ?: ""
         return when {
@@ -132,6 +136,7 @@ internal data class CalculatorState(
     }
 
     fun dot(): CalculatorState {
+        if (isError) return CalculatorState().dot()
         if (justEvaluated) return copy(expression = "0.", justEvaluated = false)
         val lastToken = tokens().lastOrNull() ?: ""
         return when {
@@ -142,6 +147,7 @@ internal data class CalculatorState(
     }
 
     fun backspace(): CalculatorState {
+        if (isError) return CalculatorState()
         if (justEvaluated) return copy(expression = "0", justEvaluated = false)
         if (expression.length <= 1) return copy(expression = "0")
         return copy(expression = expression.dropLast(1).ifEmpty { "0" })
@@ -161,6 +167,7 @@ internal data class CalculatorState(
     }
 
     fun operator(op: Char): CalculatorState {
+        if (isError) return CalculatorState().operator(op)
         val lastToken = tokens().lastOrNull() ?: ""
         val base = if (isOperator(lastToken)) expression.dropLast(1) else expression
         return copy(expression = base + op, justEvaluated = false)

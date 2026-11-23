@@ -24,6 +24,14 @@ class CalculatorStateTest {
     }
 
     @Test
+    fun `input after Error starts fresh`() {
+        val err = CalculatorState().digit("5").operator('÷').digit("0").equals(errorText)
+        assertEquals("3", err.operator('+').digit("3").equals(errorText).expression)
+        assertEquals("7", err.digit("7").expression)
+        assertEquals("0", err.backspace().expression)
+    }
+
+    @Test
     fun `power binds tighter than multiplication`() {
         val s = CalculatorState().digit("2").operator('×').digit("3").operator('^').digit("2").equals(errorText)
         assertEquals("18", s.expression)

@@ -43,16 +43,20 @@ class ClipboardShareActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         lifecycleScope.launch {
+            var item: ClipItem? = null
             try {
-                val item = withContext(Dispatchers.IO) { buildClipItem() }
-                if (item != null) {
-                    withContext(Dispatchers.IO) { clipboardRepository.addClip(item) }
+                val built = withContext(Dispatchers.IO) { buildClipItem() }
+                item = built
+                if (built != null) {
+                    withContext(Dispatchers.IO) { clipboardRepository.addClip(built) }
                     sendBroadcast(
                         Intent(OverlayService.ACTION_CLIPBOARD_PANEL_SHOW).apply { setPackage(packageName) }
                     )
                 }
             } catch (e: Exception) {
                 Log.w("ClipboardShareActivity", "Failed to save shared item", e)
+                // The copied file has no clip entry pointing at it, so nothing would ever prune it.
+                item?.let { clipboardRepository.pruneFile(it) }
             } finally {
                 finish()
             }
