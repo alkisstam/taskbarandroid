@@ -62,6 +62,9 @@ class AppRepository @Inject constructor(
         .stateIn(scope, SharingStarted.Eagerly, emptyMap())
     private val boundsTrackers = ConcurrentHashMap<String, Job>()
     private val freeformMutex = Mutex()
+    // Original global settings changed by a Shizuku freeform launch. Not in backup_rules,
+    // so originals from one device never restore onto another.
+    private val freeformRestore = context.getSharedPreferences("freeform_restore", Context.MODE_PRIVATE)
 
     // Decoded icons keyed by packageName, so a package-changed broadcast or an
     // icon-skip retry doesn't re-decode apps that already succeeded. Bounded by
@@ -78,6 +81,15 @@ class AppRepository @Inject constructor(
     }
 
     init {
+        Shizuku.addBinderReceivedListenerSticky {
+            if (freeformRestore.all.isEmpty()) return@addBinderReceivedListenerSticky
+            scope.launch {
+                freeformMutex.withLock {
+                    val granted = runCatching { Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED }.getOrDefault(false)
+                    if (granted) restoreFreeformGlobals()
+                }
+            }
+        }
         // First emission covers the initial load; later emissions re-theme icons live,
         // so every cached icon is stale (drawn from a different pack) and must be dropped.
         scope.launch {
@@ -294,10 +306,11 @@ class AppRepository @Inject constructor(
     // Overlapping launches would read each other's "1" as the original value.
     private suspend fun shizukuFreeformLaunch(packageName: String, component: String, savedBounds: Rect?) = freeformMutex.withLock {
         val keys = listOf("enable_freeform_support", "force_resizable_activities")
-        val saved = mutableMapOf<String, String>()
         try {
-            keys.forEach { saved[it] = shell("settings", "get", "global", it).second }
-            saved.forEach { (key, value) -> if (value != "1") shell("settings", "put", "global", key, "1") }
+            val changed = keys.associateWith { shell("settings", "get", "global", it).second }.filterValues { it != "1" }
+            // Persisted before the change: if the process dies before finally, the next start puts them back.
+            freeformRestore.edit().apply { changed.forEach { (key, value) -> putString(key, value) } }.commit()
+            changed.keys.forEach { shell("settings", "put", "global", it, "1") }
             if (shell("am", "start", "--windowingMode", "5", "-n", component).first == 0) {
                 trackFloatingBounds(packageName, savedBounds)
                 // Put the device-wide flags back once the window exists, so nothing else on the device changes.
@@ -311,18 +324,21 @@ class AppRepository @Inject constructor(
             Log.w("AppRepository", "Shizuku freeform launch failed for $packageName", e)
             launchApp(packageName)
         } finally {
-            withContext(NonCancellable) {
-                saved.forEach { (key, value) ->
-                    runCatching {
-                        when (value) {
-                            "1" -> Unit
-                            "null" -> shell("settings", "delete", "global", key)
-                            else -> shell("settings", "put", "global", key, value)
-                        }
-                    }
-                }
+            withContext(NonCancellable) { restoreFreeformGlobals() }
+        }
+    }
+
+    // Keys are only dropped once restored, so a failed restore is retried on the next launch or start.
+    private fun restoreFreeformGlobals() {
+        val editor = freeformRestore.edit()
+        freeformRestore.all.forEach { (key, value) ->
+            runCatching {
+                if (value == "null") shell("settings", "delete", "global", key)
+                else shell("settings", "put", "global", key, value.toString())
+                editor.remove(key)
             }
         }
+        editor.commit()
     }
 
     // Polls the app's freeform task via Shizuku while its window is open and saves the bounds, so the
