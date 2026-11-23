@@ -4,6 +4,19 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.5.20] - 2026-11-23
+
+Calculator and reliability fixes.
+
+### Fixed
+- **Calculator powers** — powers are now worked out before multiplication and division, so 2 × 3 ^ 2 gives 18 instead of 36.
+- **Calculator after an error** — typing a number or operator after an Error result starts a new calculation instead of continuing from 0.
+- **Uninstalled apps reappearing** — an app you uninstall while the app list is loading no longer shows up again in the dock or app menu.
+- **Floating windows leaving a system setting on** — if Floating Dock is closed during a Shizuku floating launch, the device's freeform settings are put back the next time it starts.
+- **Leftover shared files** — a file shared to the clipboard that fails to save no longer stays behind in storage.
+
+---
+
 ## [1.5.19] - 2026-11-20
 
 Material 3 Expressive shapes and controls, and a new way to edit app panels.
