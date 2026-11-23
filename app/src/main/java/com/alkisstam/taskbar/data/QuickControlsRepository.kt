@@ -329,10 +329,6 @@ class QuickControlsRepository @Inject constructor(
             add(Intent("com.google.zxing.client.android.SCAN").apply {
                 putExtra("SCAN_MODE", "QR_CODE_MODE")
             })
-            // Google Lens as a last resort (widely available)
-            add(Intent(Intent.ACTION_VIEW).apply {
-                setPackage("com.google.ar.lens")
-            })
         }
         val pm = context.packageManager
         for (intent in candidates) {
@@ -349,40 +345,15 @@ class QuickControlsRepository @Inject constructor(
         Log.w(TAG, "No QR scanner app found on this device")
     }
 
-    fun showPowerMenu(): Boolean {
-        val instance = TaskBarAccessibilityService.instance
-        return if (instance != null) {
-            instance.showPowerMenu()
-            true
-        } else {
-            Log.w(TAG, "Cannot show power menu - accessibility service not running")
-            false
-        }
-    }
+    fun showPowerMenu() { TaskBarAccessibilityService.instance?.showPowerMenu() }
 
     fun canShowPowerMenu(): Boolean = TaskBarAccessibilityService.isRunning()
 
-    fun takeScreenshot(): Boolean {
-        val instance = TaskBarAccessibilityService.instance
-        return if (instance != null) {
-            instance.takeScreenshot()
-        } else {
-            Log.w(TAG, "Cannot take screenshot - accessibility service not running")
-            false
-        }
-    }
+    fun takeScreenshot() { TaskBarAccessibilityService.instance?.takeScreenshot() }
 
     fun canTakeScreenshot(): Boolean = TaskBarAccessibilityService.isRunning()
 
-    fun lockScreen(): Boolean {
-        val instance = TaskBarAccessibilityService.instance
-        return if (instance != null) {
-            instance.lockScreen()
-        } else {
-            Log.w(TAG, "Cannot lock screen - accessibility service not running")
-            false
-        }
-    }
+    fun lockScreen() { TaskBarAccessibilityService.instance?.lockScreen() }
 
     fun canLockScreen(): Boolean = TaskBarAccessibilityService.isRunning()
 

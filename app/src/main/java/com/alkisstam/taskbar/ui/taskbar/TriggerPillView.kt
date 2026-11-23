@@ -91,12 +91,11 @@ fun TriggerPillView(
                         },
                         onDragEnd = {
                             if (holdActive) return@detectDragGestures
-                            val upward = -totalDragY
-                            when {
-                                pillSettings.swipeUpAction == GestureAction.SHOW_DOCK && upward > 0 -> {
-                                    val progress = (upward / dockRevealMaxDragPx).coerceIn(0f, 1f)
-                                    if (progress >= 0.4f) onRevealCommit() else onRevealCancel()
-                                }
+                            // Always settle the reveal: a swipe that ends below its start or turned
+                            // into another gesture must not leave the dock half-drawn.
+                            if (pillSettings.swipeUpAction == GestureAction.SHOW_DOCK) {
+                                val progress = (-totalDragY / dockRevealMaxDragPx).coerceIn(0f, 1f)
+                                if (progress >= 0.4f && !swipeFiredLocal) onRevealCommit() else onRevealCancel()
                             }
                             totalDragX = 0f
                             totalDragY = 0f
@@ -104,9 +103,7 @@ fun TriggerPillView(
                         },
                         onDragCancel = {
                             if (holdActive) return@detectDragGestures
-                            if (pillSettings.swipeUpAction == GestureAction.SHOW_DOCK && -totalDragY > 0) {
-                                onRevealCancel()
-                            }
+                            if (pillSettings.swipeUpAction == GestureAction.SHOW_DOCK) onRevealCancel()
                             totalDragX = 0f
                             totalDragY = 0f
                             swipeFiredLocal = false
