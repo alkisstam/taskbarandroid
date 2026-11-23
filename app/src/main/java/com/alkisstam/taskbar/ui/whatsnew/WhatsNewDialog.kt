@@ -123,6 +123,7 @@ val whatsNewReleases = listOf(
             "Uninstalled apps no longer reappear in the dock",
             "Taps no longer reach the app behind a quickly reopened App Menu",
             "Brightness controls use your phone's full range",
+            "Swiping the pill no longer leaves the dock half-open",
             "Floating windows always put your system settings back",
             "Restoring a damaged backup no longer crashes the App Menu"
         )

@@ -3,5 +3,6 @@ Corretto
 • Le app disinstallate non ricompaiono più nel dock
 • I tocchi non raggiungono più l'app dietro il menu app riaperto rapidamente
 • I controlli della luminosità usano l'intera gamma del telefono
+• Scorrere sulla pillola non lascia più il dock aperto a metà
 • Le finestre mobili ripristinano sempre le impostazioni di sistema
 • Ripristinare un backup danneggiato non fa più arrestare il menu app

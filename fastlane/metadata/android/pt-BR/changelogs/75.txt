@@ -3,5 +3,6 @@ Corrigido
 • Apps desinstalados não reaparecem mais no dock
 • Toques não chegam mais ao app atrás do menu de apps reaberto rapidamente
 • Os controles de brilho usam toda a faixa do seu celular
+• Deslizar o pill não deixa mais o dock meio aberto
 • Janelas flutuantes sempre restauram as configurações do sistema
 • Restaurar um backup danificado não trava mais o menu de apps

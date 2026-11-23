@@ -16,6 +16,7 @@ Calculator and reliability fixes.
 - **Leftover shared files** — a file shared to the clipboard that fails to save no longer stays behind in storage.
 - **Taps reaching the app behind the App Menu** — closing and quickly reopening the App Menu no longer lets taps pass through to the app underneath for a moment.
 - **Backup restore crash** — restoring a damaged or hand-edited backup with an invalid App Menu column count no longer crashes the App Menu.
+- **Dock stuck half-open** — swiping up on the pill and sliding back down before letting go no longer leaves the dock partly revealed, and a diagonal swipe no longer runs the swipe-in action and opens the dock at the same time.
 - **Brightness range** — the brightness slider and the pill's hold & drag gesture use your phone's full brightness range on devices that use a wider scale.
 
 ---

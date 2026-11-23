@@ -3,5 +3,6 @@ Opgelost
 • Verwijderde apps verschijnen niet meer in het dock
 • Tikken bereiken niet meer de app achter een snel heropend app-menu
 • Helderheidsregelaars gebruiken het volledige bereik van je telefoon
+• Vegen over de pil laat het dock niet meer half open
 • Zwevende vensters zetten je systeeminstellingen altijd terug
 • Een beschadigde back-up terugzetten laat het app-menu niet meer crashen

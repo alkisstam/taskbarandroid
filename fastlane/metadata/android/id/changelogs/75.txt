@@ -3,5 +3,6 @@ Diperbaiki
 • Aplikasi yang dihapus tidak muncul lagi di dock
 • Ketukan tidak lagi tembus ke aplikasi di balik Menu Aplikasi yang cepat dibuka ulang
 • Kontrol kecerahan memakai rentang penuh ponsel Anda
+• Menggeser pil tidak lagi membuat dock setengah terbuka
 • Jendela mengambang selalu mengembalikan pengaturan sistem
 • Memulihkan cadangan yang rusak tidak lagi membuat Menu Aplikasi crash

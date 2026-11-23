@@ -3,5 +3,6 @@ Correcciones
 • Las apps desinstaladas ya no reaparecen en el dock
 • Los toques ya no llegan a la app detrás del menú de apps reabierto rápidamente
 • Los controles de brillo usan todo el rango de tu teléfono
+• Deslizar el pill ya no deja el dock medio abierto
 • Las ventanas flotantes siempre restauran la configuración del sistema
 • Restaurar una copia de seguridad dañada ya no bloquea el menú de apps

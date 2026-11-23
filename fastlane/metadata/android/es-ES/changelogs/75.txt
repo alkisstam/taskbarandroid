@@ -1,7 +1,8 @@
 Correcciones
 • La calculadora resuelve las potencias antes de × y ÷, y empieza de nuevo tras un error
 • Las aplicaciones desinstaladas ya no reaparecen en el dock
-• Los toques ya no llegan a la aplicación detrás del menú de aplicaciones reabierto rápidamente
+• Los toques ya no atraviesan el menú de aplicaciones al reabrirlo rápido
 • Los controles de brillo usan todo el rango de tu teléfono
+• El dock ya no se queda medio abierto
 • Las ventanas flotantes siempre restauran los ajustes del sistema
 • Restaurar una copia de seguridad dañada ya no bloquea el menú de aplicaciones

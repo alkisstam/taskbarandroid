@@ -3,5 +3,6 @@ Behoben
 • Deinstallierte Apps erscheinen nicht mehr im Dock
 • Tippen erreicht nicht mehr die App hinter einem schnell wieder geöffneten App-Menü
 • Helligkeitsregler nutzen den vollen Bereich deines Telefons
+• Das Dock bleibt nach dem Wischen nicht mehr halb offen
 • Schwebende Fenster stellen deine Systemeinstellungen immer wieder her
 • Wiederherstellen einer beschädigten Sicherung lässt das App-Menü nicht mehr abstürzen

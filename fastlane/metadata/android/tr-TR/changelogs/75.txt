@@ -3,5 +3,6 @@ Düzeltilenler
 • Kaldırılan uygulamalar artık dock'ta yeniden görünmüyor
 • Hızla yeniden açılan Uygulama Menüsü'nün arkasındaki uygulamaya dokunuşlar artık geçmiyor
 • Parlaklık kontrolleri telefonunuzun tüm aralığını kullanır
+• Hapı kaydırmak artık dock'u yarı açık bırakmıyor
 • Kayan pencereler sistem ayarlarınızı her zaman geri yükler
 • Hasarlı bir yedeği geri yüklemek artık Uygulama Menüsü'nü çökertmiyor
