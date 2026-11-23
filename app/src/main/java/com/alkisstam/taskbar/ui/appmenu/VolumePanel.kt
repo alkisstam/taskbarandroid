@@ -190,6 +190,7 @@ private fun VolumeSliderColumn(
 @Composable
 fun BrightnessPanel(
     brightnessLevel: Int,
+    maxBrightness: Int,
     onBrightnessChange: (Int) -> Unit,
     autoBrightnessEnabled: Boolean,
     onAutoBrightnessToggle: () -> Unit,
@@ -200,7 +201,6 @@ fun BrightnessPanel(
     surfaceTintColor: Long = 0L,
     modifier: Modifier = Modifier
 ) {
-    val maxBrightness = 255
     var trackWidthPx by remember { mutableFloatStateOf(1f) }
     var isDragging by remember { mutableStateOf(false) }
     var localCurrent by remember { mutableIntStateOf(brightnessLevel) }

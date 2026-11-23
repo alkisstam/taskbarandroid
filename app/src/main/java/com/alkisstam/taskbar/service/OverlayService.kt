@@ -602,7 +602,9 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
             ) { menuOpen, searching ->
                 Pair(menuOpen, menuOpen && !searching)
             }
-            .collect { (interactive, focusable) ->
+            // collectLatest: a reopen during the hide delay must cancel it, or the menu shows
+            // while the overlay still lets taps through to the app underneath.
+            .collectLatest { (interactive, focusable) ->
                 if (interactive) {
                     overlayView?.visibility = View.VISIBLE
                     setOverlayFlags(interactive = true, focusable = focusable)

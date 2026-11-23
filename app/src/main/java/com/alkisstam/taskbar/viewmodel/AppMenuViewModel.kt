@@ -422,6 +422,8 @@ class AppMenuViewModel @Inject constructor(
         }
     }
 
+    val brightnessMax: Int get() = quickControls.brightnessMax
+
     fun beginBrightnessDrag(): Int? {
         if (quickControls.canWriteSettings()) {
             return quickControls.getBrightness().also { _brightnessLevel.value = it }

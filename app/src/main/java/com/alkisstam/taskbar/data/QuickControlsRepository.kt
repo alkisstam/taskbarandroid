@@ -12,6 +12,7 @@ import android.hardware.camera2.CameraManager
 import android.media.AudioManager
 import android.net.wifi.WifiManager
 import android.os.Build
+import android.os.PowerManager
 import android.provider.Settings
 import android.util.Log
 import androidx.core.content.ContextCompat
@@ -187,8 +188,16 @@ class QuickControlsRepository @Inject constructor(
         Settings.System.putInt(
             context.contentResolver,
             Settings.System.SCREEN_BRIGHTNESS,
-            value.coerceIn(1, 255)
+            value.coerceIn(1, brightnessMax)
         )
+    }
+
+    // Some ROMs store SCREEN_BRIGHTNESS on a wider scale than 0-255; the hidden getter reports it,
+    // and the 255 fallback covers devices where the call is blocked.
+    val brightnessMax: Int by lazy {
+        val pm = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+        runCatching { PowerManager::class.java.getMethod("getMaximumScreenBrightnessSetting").invoke(pm) as Int }
+            .getOrNull()?.coerceAtLeast(255) ?: 255
     }
 
     fun canWriteSettings(): Boolean = Settings.System.canWrite(context)
