@@ -24,6 +24,12 @@ class CalculatorStateTest {
     }
 
     @Test
+    fun `power binds tighter than multiplication`() {
+        val s = CalculatorState().digit("2").operator('×').digit("3").operator('^').digit("2").equals(errorText)
+        assertEquals("18", s.expression)
+    }
+
+    @Test
     fun `division by zero shows Error`() {
         val s = CalculatorState().digit("5").operator('÷').digit("0").equals(errorText)
         assertEquals("Error", s.expression)

@@ -97,14 +97,16 @@ private fun evaluate(tokens: List<String>): Double {
         nums.add(tokens[idx + 1].toDoubleOrNull() ?: 0.0)
         idx += 2
     }
-    var i = 0
-    while (i < ops.size) {
-        if (ops[i] == '×' || ops[i] == '÷' || ops[i] == '^') {
-            nums[i] = compute(nums[i], ops[i], nums[i + 1])
-            nums.removeAt(i + 1)
-            ops.removeAt(i)
-        } else {
-            i++
+    for (level in listOf("^", "×÷")) {
+        var i = 0
+        while (i < ops.size) {
+            if (ops[i] in level) {
+                nums[i] = compute(nums[i], ops[i], nums[i + 1])
+                nums.removeAt(i + 1)
+                ops.removeAt(i)
+            } else {
+                i++
+            }
         }
     }
     var total = nums[0]

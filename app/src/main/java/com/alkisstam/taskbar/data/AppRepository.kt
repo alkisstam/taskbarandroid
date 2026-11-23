@@ -25,6 +25,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -117,8 +118,10 @@ class AppRepository @Inject constructor(
                     val memInfo = ActivityManager.MemoryInfo()
                     var memoryLow = false
                     var iconsSkipped = false
-                    _apps.value = pm.queryIntentActivities(intent, PackageManager.GET_META_DATA)
+                    val loaded = pm.queryIntentActivities(intent, PackageManager.GET_META_DATA)
                         .mapNotNull { resolveInfo ->
+                            // The loop never suspends, so without this cancel() can't stop a superseded load.
+                            ensureActive()
                             val activityInfo = resolveInfo.activityInfo ?: return@mapNotNull null
                             // Icon decode under system-wide memory pressure can kill the
                             // process natively (scudo aborts on mmap failure inside
@@ -148,6 +151,8 @@ class AppRepository @Inject constructor(
                         }
                         .distinctBy { it.packageName }
                         .sortedBy { it.label.lowercase() }
+                    ensureActive()
+                    _apps.value = loaded
                     if (iconsSkipped && iconRetriesLeft > 0) {
                         iconRetriesLeft--
                         delay(5000)
