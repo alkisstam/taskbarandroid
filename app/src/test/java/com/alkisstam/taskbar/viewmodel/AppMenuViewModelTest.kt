@@ -1,5 +1,6 @@
 package com.alkisstam.taskbar.viewmodel
 
+import android.app.KeyguardManager
 import android.content.Context
 import android.graphics.Bitmap
 import android.media.AudioManager
@@ -173,6 +174,21 @@ class AppMenuViewModelTest {
         vm.toggleClipboardPanel()
         assertFalse(vm.notesPanelVisible.value)
         assertTrue(vm.clipboardPanelVisible.value)
+    }
+
+    @Test
+    fun `sensitive panels stay closed over a secure keyguard`() = runTest(mainDispatcherRule.dispatcher) {
+        every { context.getSystemService(Context.KEYGUARD_SERVICE) } returns mockk<KeyguardManager> {
+            every { isKeyguardLocked } returns true
+            every { isDeviceSecure } returns true
+        }
+        val vm = createViewModel()
+        vm.toggleClipboardPanel()
+        vm.toggleNotesPanel()
+        vm.toggleNotificationPanel()
+        assertFalse(vm.clipboardPanelVisible.value)
+        assertFalse(vm.notesPanelVisible.value)
+        assertFalse(vm.notificationPanelVisible.value)
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.alkisstam.taskbar.viewmodel
 
+import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
@@ -304,8 +305,15 @@ class AppMenuViewModel @Inject constructor(
     var dockVisibleBeforeExternalOpen = false
         private set
 
+    // Clipboard, notes and notification history hold private data; never show them over a secure keyguard.
+    private fun isSecurelyLocked(): Boolean {
+        val km = context.getSystemService(Context.KEYGUARD_SERVICE) as? KeyguardManager ?: return false
+        return km.isKeyguardLocked && km.isDeviceSecure
+    }
+
     fun toggleClipboardPanel() {
         val newValue = !_clipboardPanelVisible.value
+        if (newValue && isSecurelyLocked()) return
         if (newValue) {
             _calculatorPanelVisible.value = false
             _notificationPanelVisible.value = false
@@ -321,6 +329,7 @@ class AppMenuViewModel @Inject constructor(
 
     fun toggleNotesPanel() {
         val newValue = !_notesPanelVisible.value
+        if (newValue && isSecurelyLocked()) return
         if (newValue) {
             _calculatorPanelVisible.value = false
             _notificationPanelVisible.value = false
@@ -390,6 +399,7 @@ class AppMenuViewModel @Inject constructor(
 
     fun toggleNotificationPanel() {
         val newValue = !_notificationPanelVisible.value
+        if (newValue && isSecurelyLocked()) return
         if (newValue) {
             _calculatorPanelVisible.value = false
             _clipboardPanelVisible.value = false
