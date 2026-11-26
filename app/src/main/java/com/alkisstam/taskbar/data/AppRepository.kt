@@ -307,7 +307,8 @@ class AppRepository @Inject constructor(
     private suspend fun shizukuFreeformLaunch(packageName: String, component: String, savedBounds: Rect?) = freeformMutex.withLock {
         val keys = listOf("enable_freeform_support", "force_resizable_activities")
         try {
-            val changed = keys.associateWith { shell("settings", "get", "global", it).second }.filterValues { it != "1" }
+            // Empty output means unset; store it as "null" so restore deletes the key instead of writing "".
+            val changed = keys.associateWith { shell("settings", "get", "global", it).second.ifEmpty { "null" } }.filterValues { it != "1" }
             // Persisted before the change: if the process dies before finally, the next start puts them back.
             freeformRestore.edit().apply { changed.forEach { (key, value) -> putString(key, value) } }.commit()
             changed.keys.forEach { shell("settings", "put", "global", it, "1") }
@@ -333,9 +334,9 @@ class AppRepository @Inject constructor(
         val editor = freeformRestore.edit()
         freeformRestore.all.forEach { (key, value) ->
             runCatching {
-                if (value == "null") shell("settings", "delete", "global", key)
-                else shell("settings", "put", "global", key, value.toString())
-                editor.remove(key)
+                val exit = if (value == "null") shell("settings", "delete", "global", key).first
+                else shell("settings", "put", "global", key, value.toString()).first
+                if (exit == 0) editor.remove(key)
             }
         }
         editor.commit()
