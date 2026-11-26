@@ -82,16 +82,20 @@ class QuickControlsRepository @Inject constructor(
                 Log.w(TAG, "Failed to register torch callback", e)
             }
         }
+        // DND changes fire no ringer broadcast; without this the DND tile shows stale state.
+        val ringerAndDndFilter = android.content.IntentFilter(AudioManager.RINGER_MODE_CHANGED_ACTION).apply {
+            addAction(NotificationManager.ACTION_INTERRUPTION_FILTER_CHANGED)
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             context.registerReceiver(
                 ringerReceiver,
-                android.content.IntentFilter(AudioManager.RINGER_MODE_CHANGED_ACTION),
+                ringerAndDndFilter,
                 Context.RECEIVER_NOT_EXPORTED
             )
         } else {
             context.registerReceiver(
                 ringerReceiver,
-                android.content.IntentFilter(AudioManager.RINGER_MODE_CHANGED_ACTION)
+                ringerAndDndFilter
             )
         }
         context.contentResolver.registerContentObserver(
