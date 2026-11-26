@@ -13,4 +13,13 @@ class NotificationHistoryRepositoryTest {
         assertFalse(NotificationHistoryRepository.isRecordingAllowed(true, setOf("notif_history")))
         assertFalse(NotificationHistoryRepository.isRecordingAllowed(false, emptySet()))
     }
+
+    @Test
+    fun `corrupt history is detected so it can be kept before the next write`() {
+        val good = """{"id":"a","packageName":"p","appLabel":"P","title":"t","text":"x","timestamp":1}"""
+        assertFalse(NotificationHistoryRepository.hasCorruptRecords("[$good]"))
+        assertTrue(NotificationHistoryRepository.hasCorruptRecords("""[$good,{"id":"b"}]"""))
+        assertTrue(NotificationHistoryRepository.hasCorruptRecords("not json"))
+        assertFalse(NotificationHistoryRepository.hasCorruptRecords("[]"))
+    }
 }

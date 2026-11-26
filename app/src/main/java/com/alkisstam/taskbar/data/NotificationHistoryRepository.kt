@@ -5,6 +5,7 @@ import android.content.Context
 import android.service.notification.StatusBarNotification
 import android.util.Log
 import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
@@ -46,10 +47,40 @@ class NotificationHistoryRepository @Inject constructor(
     companion object {
         private const val TAG = "NotificationHistoryRepo"
         private val NOTIFICATIONS_KEY = stringPreferencesKey("notifications")
+        private val CORRUPT_BACKUP_KEY = stringPreferencesKey("notifications_corrupt_backup")
         private const val MAX_NOTIFICATIONS = 100
 
         internal fun isRecordingAllowed(quickControlsEnabled: Boolean, disabledIds: Set<String>): Boolean =
             quickControlsEnabled && "notif_history" !in disabledIds
+
+        internal fun hasCorruptRecords(json: String): Boolean = try {
+            JSONArray(json).length() != deserializeEntries(json).size
+        } catch (e: Exception) {
+            true
+        }
+
+        internal fun deserializeEntries(json: String): List<NotificationEntry> = try {
+            val arr = JSONArray(json)
+            (0 until arr.length()).mapNotNull { i ->
+                try {
+                    val obj = arr.getJSONObject(i)
+                    NotificationEntry(
+                        id = obj.getString("id"),
+                        packageName = obj.getString("packageName"),
+                        appLabel = obj.getString("appLabel"),
+                        title = obj.getString("title"),
+                        text = obj.getString("text"),
+                        timestamp = obj.getLong("timestamp")
+                    )
+                } catch (e: Exception) {
+                    Log.w(TAG, "Skipping corrupt notification record at index $i", e)
+                    null
+                }
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to parse notifications JSON", e)
+            emptyList()
+        }
     }
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -114,6 +145,7 @@ class NotificationHistoryRepository @Inject constructor(
             )
             try {
                 context.notificationHistoryDataStore.edit { prefs ->
+                    stashIfCorrupt(prefs)
                     val current = prefs[NOTIFICATIONS_KEY]?.let { deserializeEntries(it) } ?: emptyList()
                     val updated = (listOf(entry) + current.filter { it.id != entry.id }).take(MAX_NOTIFICATIONS)
                     prefs[NOTIFICATIONS_KEY] = serializeEntries(updated)
@@ -130,6 +162,7 @@ class NotificationHistoryRepository @Inject constructor(
 
     suspend fun remove(id: String) {
         context.notificationHistoryDataStore.edit { prefs ->
+            stashIfCorrupt(prefs)
             val current = prefs[NOTIFICATIONS_KEY]?.let { deserializeEntries(it) } ?: emptyList()
             prefs[NOTIFICATIONS_KEY] = serializeEntries(current.filter { it.id != id })
         }
@@ -139,8 +172,16 @@ class NotificationHistoryRepository @Inject constructor(
     suspend fun clearAll() {
         context.notificationHistoryDataStore.edit { prefs ->
             prefs[NOTIFICATIONS_KEY] = serializeEntries(emptyList())
+            prefs.remove(CORRUPT_BACKUP_KEY)
         }
         synchronized(actionsByKey) { actionsByKey.clear() }
+    }
+
+    // The next write would drop records that failed to parse; keep the first unreadable
+    // payload so it is not lost for good.
+    private fun stashIfCorrupt(prefs: MutablePreferences) {
+        val raw = prefs[NOTIFICATIONS_KEY] ?: return
+        if (prefs[CORRUPT_BACKUP_KEY] == null && hasCorruptRecords(raw)) prefs[CORRUPT_BACKUP_KEY] = raw
     }
 
     private fun String.stripImageSpanChar(): String = replace("￼", "").trim()
@@ -170,28 +211,5 @@ class NotificationHistoryRepository @Inject constructor(
             })
         }
         return arr.toString()
-    }
-
-    internal fun deserializeEntries(json: String): List<NotificationEntry> = try {
-        val arr = JSONArray(json)
-        (0 until arr.length()).mapNotNull { i ->
-            try {
-                val obj = arr.getJSONObject(i)
-                NotificationEntry(
-                    id = obj.getString("id"),
-                    packageName = obj.getString("packageName"),
-                    appLabel = obj.getString("appLabel"),
-                    title = obj.getString("title"),
-                    text = obj.getString("text"),
-                    timestamp = obj.getLong("timestamp")
-                )
-            } catch (e: Exception) {
-                Log.w(TAG, "Skipping corrupt notification record at index $i", e)
-                null
-            }
-        }
-    } catch (e: Exception) {
-        Log.w(TAG, "Failed to parse notifications JSON", e)
-        emptyList()
     }
 }
