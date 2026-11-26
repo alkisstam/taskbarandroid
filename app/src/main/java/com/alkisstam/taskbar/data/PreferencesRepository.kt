@@ -657,6 +657,8 @@ class PreferencesRepository @Inject constructor(
     suspend fun setPinDockControlEnabled(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[PIN_DOCK_CONTROL_ENABLED_KEY] = enabled
+            // A pin left behind would silently re-pin the dock when the tile comes back.
+            if (!enabled) prefs[DOCK_PINNED_KEY] = false
         }
     }
 
