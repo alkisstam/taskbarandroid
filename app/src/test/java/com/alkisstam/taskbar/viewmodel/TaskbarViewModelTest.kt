@@ -17,6 +17,7 @@ import io.mockk.verify
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -229,5 +230,15 @@ class TaskbarViewModelTest {
         vm.launchAppAlternate("com.a")
         verify { appRepo.launchApp("com.a") }
         verify(exactly = 0) { appRepo.launchAppFloating(any()) }
+    }
+
+    @Test
+    fun `restore with no readable stream shows the restore error`() = runTest(mainDispatcherRule.dispatcher) {
+        val uri = mockk<android.net.Uri>()
+        every { context.contentResolver.openInputStream(uri) } returns null
+        val vm = createViewModel()
+        vm.importBackup(uri)
+        // The read runs on Dispatchers.IO, outside the test scheduler, so wait for the result.
+        assertEquals(com.alkisstam.taskbar.R.string.settings_backup_restore_failed, vm.backupError.first { it != null })
     }
 }

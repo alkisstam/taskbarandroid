@@ -716,7 +716,9 @@ class TaskbarViewModel @Inject constructor(
             try {
                 val json = prefsRepository.exportToJson()
                 withContext(Dispatchers.IO) {
+                    // A null stream means nothing was written; report it like any other failure.
                     context.contentResolver.openOutputStream(uri)?.use { it.write(json.toByteArray()) }
+                        ?: throw java.io.IOException("No output stream for $uri")
                 }
             } catch (e: Exception) {
                 Log.w("TaskbarViewModel", "Failed to export backup", e)
@@ -730,7 +732,7 @@ class TaskbarViewModel @Inject constructor(
             try {
                 val json = withContext(Dispatchers.IO) {
                     context.contentResolver.openInputStream(uri)?.use { it.readBytes().toString(Charsets.UTF_8) }
-                } ?: return@launch
+                } ?: throw java.io.IOException("No input stream for $uri")
                 prefsRepository.importFromJson(json)
             } catch (e: Exception) {
                 Log.w("TaskbarViewModel", "Failed to import backup", e)
