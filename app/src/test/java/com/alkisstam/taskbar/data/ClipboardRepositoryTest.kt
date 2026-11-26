@@ -73,6 +73,17 @@ class ClipboardRepositoryTest {
     }
 
     @Test
+    fun `orphan file clips are dropped on the next add and free their cap slot`() {
+        val orphans = (1..5).map { ClipItem("x$it", ClipType.IMAGE, "/missing/$it.png", "A", it.toLong()) }
+        val old = (1..95).map { ClipItem("o$it", ClipType.TEXT, "o$it", "A", it.toLong()) }
+        val new = ClipItem("new", ClipType.TEXT, "hello", "A", 999L)
+        val (kept, evicted) = repo.withNewClip(new, orphans + old)
+        assertEquals(96, kept.size)
+        assertTrue(kept.none { it.id.startsWith("x") })
+        assertTrue(evicted.isEmpty())
+    }
+
+    @Test
     fun `text prefix reads only the requested chars`() {
         val f = tmp.newFile("t.txt").apply { writeText("x".repeat(100_000)) }
         assertEquals(300, readTextPrefix(f.path, 300).length)

@@ -111,7 +111,8 @@ class ClipboardRepository @Inject constructor(
     }
 
     internal fun withNewClip(item: ClipItem, current: List<ClipItem>): Pair<List<ClipItem>, List<ClipItem>> {
-        val list = listOf(item) + current
+        // Records whose file is gone are unusable; drop them so they don't hold cap slots.
+        val list = listOf(item) + current.filter(::hasContent)
         if (list.size <= MAX_CLIPS) return list to emptyList()
         val pinned = list.filter { it.isPinned }
         val unpinned = list.filter { !it.isPinned }
