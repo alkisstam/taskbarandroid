@@ -13,6 +13,7 @@ import com.alkisstam.taskbar.data.TaskbarSettings
 import com.alkisstam.taskbar.data.ThemeMode
 import com.alkisstam.taskbar.util.MainDispatcherRule
 import io.mockk.every
+import io.mockk.verify
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -217,5 +218,16 @@ class TaskbarViewModelTest {
         vm.hideTaskbar()
         advanceUntilIdle()
         assertFalse(vm.pillVisible.value)
+    }
+
+    @Test
+    fun `alternate launch is a normal launch when floating windows are off`() = runTest(mainDispatcherRule.dispatcher) {
+        every { prefsRepo.floatingWindowsEnabled } returns flowOf(false)
+        every { prefsRepo.floatingWindowsOnTap } returns flowOf(false)
+        val vm = createViewModel()
+        advanceUntilIdle()
+        vm.launchAppAlternate("com.a")
+        verify { appRepo.launchApp("com.a") }
+        verify(exactly = 0) { appRepo.launchAppFloating(any()) }
     }
 }

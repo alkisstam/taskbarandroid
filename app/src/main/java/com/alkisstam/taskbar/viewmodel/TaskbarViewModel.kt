@@ -512,8 +512,9 @@ class TaskbarViewModel @Inject constructor(
         else appRepository.launchApp(packageName)
     }
 
+    // With floating windows off, the alternate gesture is a normal launch, like a tap.
     fun launchAppAlternate(packageName: String) {
-        if (floatingWindowsOnTap.value) appRepository.launchApp(packageName)
+        if (!floatingWindowsEnabled.value || floatingWindowsOnTap.value) appRepository.launchApp(packageName)
         else appRepository.launchAppFloating(packageName)
     }
 
