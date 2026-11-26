@@ -34,3 +34,6 @@ app/google-services.json
 app/release/
 
 AUDIT-*.md
+
+# Code-modernization analysis artifacts (local only)
+/analysis/
