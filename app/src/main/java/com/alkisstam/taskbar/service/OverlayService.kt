@@ -385,6 +385,15 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private lateinit var clipboardViewModel: ClipboardViewModel
     private lateinit var notificationHistoryViewModel: NotificationHistoryViewModel
 
+    // The QS tile is an ACTIVE_TILE: it only re-reads state when asked to.
+    private fun refreshQsTile() {
+        runCatching {
+            android.service.quicksettings.TileService.requestListeningState(
+                this, android.content.ComponentName(this, OverlayTileService::class.java)
+            )
+        }
+    }
+
     companion object {
         // Whether the dock service is alive in this process; the saved "dock on" flag can be
         // true while it isn't (e.g. boot with the overlay permission revoked).
@@ -435,6 +444,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         savedStateRegistryController.performRestore(null)
         super.onCreate()
         isRunning = true
+        refreshQsTile()
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
         _windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         createNotificationChannel()
@@ -1793,6 +1803,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
 
     override fun onDestroy() {
         isRunning = false
+        refreshQsTile()
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)
