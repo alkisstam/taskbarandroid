@@ -386,6 +386,11 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private lateinit var notificationHistoryViewModel: NotificationHistoryViewModel
 
     companion object {
+        // Whether the dock service is alive in this process; the saved "dock on" flag can be
+        // true while it isn't (e.g. boot with the overlay permission revoked).
+        @Volatile var isRunning = false
+            private set
+
         // true = hide, false = show, null = leave the dock alone. A dock unpinned while
         // force-hidden stays hidden: re-showing it would undo the user's dismissal.
         internal fun systemUiAutoHideAction(pinned: Boolean, obscured: Boolean, forceHidden: Boolean): Boolean? {
@@ -429,6 +434,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     override fun onCreate() {
         savedStateRegistryController.performRestore(null)
         super.onCreate()
+        isRunning = true
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
         _windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         createNotificationChannel()
@@ -1786,6 +1792,7 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     // endregion
 
     override fun onDestroy() {
+        isRunning = false
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY)

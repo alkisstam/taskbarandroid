@@ -34,8 +34,7 @@ class OverlayTileService : TileService() {
     override fun onStartListening() {
         super.onStartListening()
         scope.launch {
-            val enabled = prefsRepository.overlayEnabled.first()
-            updateTile(enabled)
+            updateTile(prefsRepository.overlayEnabled.first() && OverlayService.isRunning)
         }
     }
 
@@ -43,7 +42,8 @@ class OverlayTileService : TileService() {
         super.onClick()
         scope.launch {
             toggleMutex.withLock {
-                val currentlyEnabled = prefsRepository.overlayEnabled.first()
+                // Saved flag alone can say "on" with no dock running; a tap then starts it.
+                val currentlyEnabled = prefsRepository.overlayEnabled.first() && OverlayService.isRunning
                 if (currentlyEnabled) {
                     prefsRepository.setOverlayEnabled(false)
                     stopService(Intent(this@OverlayTileService, OverlayService::class.java))
