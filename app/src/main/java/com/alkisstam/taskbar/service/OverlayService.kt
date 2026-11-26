@@ -386,6 +386,18 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     private lateinit var notificationHistoryViewModel: NotificationHistoryViewModel
 
     companion object {
+        // true = hide, false = show, null = leave the dock alone. A dock unpinned while
+        // force-hidden stays hidden: re-showing it would undo the user's dismissal.
+        internal fun systemUiAutoHideAction(pinned: Boolean, obscured: Boolean, forceHidden: Boolean): Boolean? {
+            val forceHide = pinned && obscured
+            return when {
+                forceHide == forceHidden -> null
+                forceHide -> true
+                pinned -> false
+                else -> null
+            }
+        }
+
         private const val TAG = "OverlayService"
         private const val DOCK_BLUR_SETTLE_MS = 120L
         private const val NOTIFICATION_ID = 1001
@@ -1029,10 +1041,15 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
     // Pinned dock hides under the keyboard and notification shade. Acts only on transitions so an
     // unpinned dock the user dismissed isn't re-shown.
     private fun applySystemUiAutoHide() {
-        val forceHide = taskbarViewModel.isDockPinned.value && (lastImeVisible || shadeOpen)
-        if (forceHide == forceHiddenForSystemUi) return
-        forceHiddenForSystemUi = forceHide
-        if (forceHide) taskbarViewModel.hideTaskbar(force = true) else taskbarViewModel.showTaskbar()
+        val pinned = taskbarViewModel.isDockPinned.value
+        val obscured = lastImeVisible || shadeOpen
+        val action = systemUiAutoHideAction(pinned, obscured, forceHiddenForSystemUi)
+        forceHiddenForSystemUi = pinned && obscured
+        when (action) {
+            true -> taskbarViewModel.hideTaskbar(force = true)
+            false -> taskbarViewModel.showTaskbar()
+            null -> Unit
+        }
     }
 
     // Insets dispatched to the overlay never report the IME and the a11y service gets no event when
