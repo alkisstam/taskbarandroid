@@ -94,7 +94,7 @@ private fun dockAwarePanelBottomPadding(taskbarViewModel: TaskbarViewModel, isTa
     val stackHeightPx by taskbarViewModel.dockStackHeightPx.collectAsState()
     val navInset by taskbarViewModel.navBarInsetDp.collectAsState()
     if (!isTaskbarVisible) return 0.dp
-    val stackPx = stackHeightPx ?: return (bottomGapDp + heightDp * (1 + expandedRows) + 4f * expandedRows + 16f + 18f).dp
+    val stackPx = stackHeightPx ?: return (maxOf(bottomGapDp, navInset) + heightDp * (1 + expandedRows) + 4f * expandedRows + 16f + 18f).dp
     return maxOf(bottomGapDp, navInset).dp + with(LocalDensity.current) { stackPx.toDp() } + QuickControlsButtonGap
 }
 
