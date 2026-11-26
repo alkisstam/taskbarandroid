@@ -25,6 +25,10 @@ import javax.inject.Inject
 class ClipboardShareActivity : ComponentActivity() {
 
     companion object {
+        // Drop parameters ("text/plain; charset=utf-8") so exact type checks still match.
+        internal fun baseMimeType(type: String?): String? =
+            type?.lowercase()?.substringBefore(';')?.trim()?.ifEmpty { null }
+
         private val OFFICE_DOC_EXTENSIONS = mapOf(
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document" to "docx",
             "application/msword" to "doc",
@@ -65,7 +69,7 @@ class ClipboardShareActivity : ComponentActivity() {
 
     private fun buildClipItem(): ClipItem? {
         if (intent?.action != Intent.ACTION_SEND) return null
-        val mimeType = intent.type?.lowercase() ?: return null
+        val mimeType = baseMimeType(intent.type) ?: return null
         val id = UUID.randomUUID().toString()
         val timestamp = System.currentTimeMillis()
         val sourceApp = callerPackageLabel()
