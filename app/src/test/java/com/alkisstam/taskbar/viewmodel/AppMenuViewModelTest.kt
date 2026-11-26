@@ -408,6 +408,14 @@ class AppMenuViewModelTest {
 
     // endregion
 
+    @Test
+    fun `dismissing the music panel persists it as closed`() = runTest(mainDispatcherRule.dispatcher) {
+        val vm = createViewModel()
+        vm.dismissMusicPanel()
+        advanceUntilIdle()
+        coVerify { prefsRepo.setMusicPanelOpen(false) }
+    }
+
     // region Caffeine
 
     @Test

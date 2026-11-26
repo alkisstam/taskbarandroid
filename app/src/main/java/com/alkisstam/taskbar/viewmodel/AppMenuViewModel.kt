@@ -295,6 +295,7 @@ class AppMenuViewModel @Inject constructor(
     fun dismissMusicPanel() {
         _musicPanelVisible.value = false
         _musicWasVisibleBeforeOverlay = false
+        viewModelScope.launch { prefsRepository.setMusicPanelOpen(false) }
     }
 
     fun clearNoMediaMessage() {
