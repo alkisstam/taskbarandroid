@@ -39,6 +39,13 @@ class PreferencesRepositoryTest {
     }
 
     @Test
+    fun `one malformed app group is skipped, the rest are kept`() {
+        val good = PreferencesRepository.serializeAppGroups(listOf(AppGroup("g1", "Social", "social", listOf("com.a"))))
+        val mixed = good.dropLast(1) + ",{\"id\":\"g2\"}]"
+        assertEquals(listOf("g1"), PreferencesRepository.deserializeAppGroups(mixed).map { it.id })
+    }
+
+    @Test
     fun `corrupt app groups yields empty`() {
         assertEquals(emptyList<AppGroup>(), PreferencesRepository.deserializeAppGroups("garbage"))
     }

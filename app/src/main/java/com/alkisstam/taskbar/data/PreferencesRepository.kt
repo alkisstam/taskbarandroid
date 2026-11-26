@@ -304,16 +304,22 @@ class PreferencesRepository @Inject constructor(
         internal fun deserializeAppGroups(stored: String): List<AppGroup> =
             try {
                 val arr = JSONArray(stored)
-                List(arr.length()) { i ->
-                    val o = arr.getJSONObject(i)
-                    val pkgs = o.getJSONArray("packages")
-                    AppGroup(
-                        id = o.getString("id"),
-                        name = o.getString("name"),
-                        iconKey = o.getString("icon"),
-                        packages = List(pkgs.length()) { pkgs.getString(it) },
-                        enabled = o.optBoolean("enabled", true)
-                    )
+                // Skip a malformed group instead of failing the list: the next save would
+                // otherwise overwrite every group with an empty list.
+                (0 until arr.length()).mapNotNull { i ->
+                    try {
+                        val o = arr.getJSONObject(i)
+                        val pkgs = o.getJSONArray("packages")
+                        AppGroup(
+                            id = o.getString("id"),
+                            name = o.getString("name"),
+                            iconKey = o.getString("icon"),
+                            packages = List(pkgs.length()) { pkgs.getString(it) },
+                            enabled = o.optBoolean("enabled", true)
+                        )
+                    } catch (e: JSONException) {
+                        null
+                    }
                 }
             } catch (e: JSONException) {
                 emptyList()
