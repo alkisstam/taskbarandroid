@@ -1,5 +1,5 @@
 [versions]
-agp = "9.4.1"
+agp = "9.5.3"
 junit = "4.13.2"
 mockk = "1.14.12"
 kotlin = "2.2.10"
