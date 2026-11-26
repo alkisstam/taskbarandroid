@@ -17,7 +17,10 @@ val keystoreProperties = Properties().apply {
 
 android {
     namespace = "com.alkisstam.taskbar"
-    compileSdk = 37
+    // Compose 1.13 (BOM 2026.11.01) requires compiling against 37.1; targetSdk is unaffected.
+    compileSdk {
+        version = release(37) { minorApiLevel = 1 }
+    }
 
     signingConfigs {
         create("release") {
