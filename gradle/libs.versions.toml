@@ -18,8 +18,8 @@ coroutines = "1.11.0"
 appcompat = "1.8.0"
 appUpdate = "2.1.0"
 review = "2.0.2"
-firebaseCrashlytics = "20.1.1"
-googleGmsGoogleServices = "4.5.0"
+firebaseCrashlytics = "21.1.0"
+googleGmsGoogleServices = "4.6.0"
 googleFirebaseCrashlytics = "3.0.8"
 
 [libraries]
