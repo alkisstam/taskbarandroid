@@ -794,8 +794,7 @@ class AppMenuViewModel @Inject constructor(
                 _quickControlsState.value = _quickControlsState.value.copy(caffeineMinutes = 10)
             }
             else -> {
-                if (originalScreenTimeoutMs > 0) quickControls.setScreenTimeout(originalScreenTimeoutMs)
-                viewModelScope.launch { prefsRepository.setCaffeineOriginalTimeout(null) }
+                restoreScreenTimeout(viewModelScope)
                 _quickControlsState.value = _quickControlsState.value.copy(caffeineMinutes = 0)
             }
         }
@@ -803,8 +802,18 @@ class AppMenuViewModel @Inject constructor(
 
     fun deactivateCaffeine(scope: CoroutineScope = viewModelScope) {
         if (_quickControlsState.value.caffeineMinutes == 0) return
-        if (originalScreenTimeoutMs > 0) quickControls.setScreenTimeout(originalScreenTimeoutMs)
-        scope.launch { prefsRepository.setCaffeineOriginalTimeout(null) }
+        restoreScreenTimeout(scope)
         _quickControlsState.value = _quickControlsState.value.copy(caffeineMinutes = 0)
+    }
+
+    // Fall back to the persisted original when the in-memory copy is missing, so the
+    // user's real timeout is never left forced.
+    private fun restoreScreenTimeout(scope: CoroutineScope) {
+        val inMemory = originalScreenTimeoutMs
+        scope.launch {
+            val ms = inMemory.takeIf { it > 0 } ?: prefsRepository.caffeineOriginalTimeout.first()
+            if (ms != null && ms > 0) quickControls.setScreenTimeout(ms)
+            prefsRepository.setCaffeineOriginalTimeout(null)
+        }
     }
 }

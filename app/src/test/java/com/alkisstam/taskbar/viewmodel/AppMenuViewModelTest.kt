@@ -417,6 +417,19 @@ class AppMenuViewModelTest {
     }
 
     @Test
+    fun `caffeine off restores the persisted timeout when the in-memory one is missing`() = runTest(mainDispatcherRule.dispatcher) {
+        every { quickControls.canWriteSettings() } returns true
+        every { quickControls.getScreenTimeout() } returns -1
+        every { prefsRepo.caffeineOriginalTimeout } returnsMany listOf(flowOf(null), flowOf(45_000))
+        val vm = createViewModel()
+        advanceUntilIdle()
+        repeat(4) { vm.cycleCaffeineTimeout() }
+        advanceUntilIdle()
+        verify { quickControls.setScreenTimeout(45_000) }
+        assertEquals(0, vm.quickControlsState.value.caffeineMinutes)
+    }
+
+    @Test
     fun `clearing the view model with caffeine on clears the saved timeout`() = runTest(mainDispatcherRule.dispatcher) {
         every { quickControls.canWriteSettings() } returns true
         every { quickControls.getScreenTimeout() } returns 30_000
