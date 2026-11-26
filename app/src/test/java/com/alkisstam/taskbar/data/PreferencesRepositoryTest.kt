@@ -1,6 +1,8 @@
 package com.alkisstam.taskbar.data
 
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.mutablePreferencesOf
+import androidx.datastore.preferences.core.stringPreferencesKey
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -163,5 +165,15 @@ class PreferencesRepositoryTest {
     @Test
     fun `empty prefs export empty backup`() {
         assertEquals(0, PreferencesRepository.exportPrefs(mutablePreferencesOf()).length())
+    }
+
+    @Test
+    fun `reset keeps the saved caffeine timeout and clears other settings`() {
+        val caffeine = intPreferencesKey("caffeine_original_timeout")
+        val theme = stringPreferencesKey("theme_mode")
+        val prefs = mutablePreferencesOf(caffeine to 30_000, theme to "DARK")
+        PreferencesRepository.resetPrefs(prefs)
+        assertEquals(30_000, prefs[caffeine])
+        assertEquals(null, prefs[theme])
     }
 }

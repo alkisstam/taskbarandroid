@@ -440,6 +440,19 @@ class PreferencesRepository @Inject constructor(
             BACKUP_INT_KEYS.forEach { key -> prefs[key]?.let { put(key.name, it) } }
         }
 
+        internal fun resetPrefs(prefs: MutablePreferences) {
+            val onboarding = prefs[ONBOARDING_COMPLETE_KEY]
+            // Clearing this while the service keeps running would leave the settings
+            // screen showing "stopped" under a live dock.
+            val overlayEnabled = prefs[OVERLAY_ENABLED_KEY]
+            // The user's real screen timeout while caffeine is on; losing it leaves the timeout forced.
+            val caffeineOriginal = prefs[CAFFEINE_ORIGINAL_TIMEOUT_KEY]
+            prefs.clear()
+            if (onboarding == true) prefs[ONBOARDING_COMPLETE_KEY] = true
+            if (overlayEnabled == true) prefs[OVERLAY_ENABLED_KEY] = true
+            if (caffeineOriginal != null) prefs[CAFFEINE_ORIGINAL_TIMEOUT_KEY] = caffeineOriginal
+        }
+
         internal fun importPrefs(prefs: MutablePreferences, obj: JSONObject) {
             BACKUP_STRING_KEYS.forEach { if (obj.has(it.name)) prefs[it] = obj.getString(it.name) }
             BACKUP_BOOLEAN_KEYS.forEach { if (obj.has(it.name)) prefs[it] = obj.getBoolean(it.name) }
@@ -1106,15 +1119,7 @@ class PreferencesRepository @Inject constructor(
     }
 
     suspend fun resetAllSettings() {
-        context.dataStore.edit { prefs ->
-            val onboarding = prefs[ONBOARDING_COMPLETE_KEY]
-            // Clearing this while the service keeps running would leave the settings
-            // screen showing "stopped" under a live dock.
-            val overlayEnabled = prefs[OVERLAY_ENABLED_KEY]
-            prefs.clear()
-            if (onboarding == true) prefs[ONBOARDING_COMPLETE_KEY] = true
-            if (overlayEnabled == true) prefs[OVERLAY_ENABLED_KEY] = true
-        }
+        context.dataStore.edit { resetPrefs(it) }
     }
 
 }
