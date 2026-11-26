@@ -53,6 +53,10 @@ class NotificationHistoryRepository @Inject constructor(
         internal fun isRecordingAllowed(quickControlsEnabled: Boolean, disabledIds: Set<String>): Boolean =
             quickControlsEnabled && "notif_history" !in disabledIds
 
+        // Some apps post an empty EXTRA_TEXT and put the content only in EXTRA_BIG_TEXT.
+        internal fun notificationText(text: String?, bigText: String?): String =
+            text?.takeIf { it.isNotBlank() } ?: bigText.orEmpty()
+
         internal fun hasCorruptRecords(json: String): Boolean = try {
             JSONArray(json).length() != deserializeEntries(json).size
         } catch (e: Exception) {
@@ -124,8 +128,10 @@ class NotificationHistoryRepository @Inject constructor(
         if (notification.category == Notification.CATEGORY_TRANSPORT) return
         val extras = notification.extras
         val title = extras.getCharSequence(Notification.EXTRA_TITLE)?.toString().orEmpty().stripImageSpanChar()
-        val text = (extras.getCharSequence(Notification.EXTRA_TEXT)?.toString()
-            ?: extras.getCharSequence(Notification.EXTRA_BIG_TEXT)?.toString().orEmpty()).stripImageSpanChar()
+        val text = notificationText(
+            extras.getCharSequence(Notification.EXTRA_TEXT)?.toString(),
+            extras.getCharSequence(Notification.EXTRA_BIG_TEXT)?.toString()
+        ).stripImageSpanChar()
         if (title.isBlank() && text.isBlank()) return
 
         val actions = notification.actions

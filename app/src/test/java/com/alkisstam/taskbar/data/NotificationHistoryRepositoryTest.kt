@@ -1,5 +1,6 @@
 package com.alkisstam.taskbar.data
 
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -21,5 +22,12 @@ class NotificationHistoryRepositoryTest {
         assertTrue(NotificationHistoryRepository.hasCorruptRecords("""[$good,{"id":"b"}]"""))
         assertTrue(NotificationHistoryRepository.hasCorruptRecords("not json"))
         assertFalse(NotificationHistoryRepository.hasCorruptRecords("[]"))
+    }
+
+    @Test
+    fun `expanded text is used when the short text is blank`() {
+        assertEquals("long", NotificationHistoryRepository.notificationText("", "long"))
+        assertEquals("short", NotificationHistoryRepository.notificationText("short", "long"))
+        assertEquals("", NotificationHistoryRepository.notificationText(null, null))
     }
 }
