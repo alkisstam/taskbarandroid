@@ -26,9 +26,9 @@ class IconPackRepository @Inject constructor(
 
     private class PackData(
         val resources: Resources,
-        // exact "pkg/activity" -> drawable name, plus first drawable seen per package
-        val componentMap: Map<String, String>,
-        val packageFallback: Map<String, String>
+        // exact "pkg/activity" -> drawable name. No per-package fallback: the first entry for a
+        // package can belong to another activity, so a miss keeps the app's own icon.
+        val componentMap: Map<String, String>
     )
 
     @Volatile private var cachedPack: Pair<String, PackData>? = null
@@ -50,9 +50,7 @@ class IconPackRepository @Inject constructor(
 
     fun getIcon(packPackage: String, appPackage: String, activityName: String): Drawable? {
         val pack = loadPack(packPackage) ?: return null
-        val drawableName = pack.componentMap["$appPackage/$activityName"]
-            ?: pack.packageFallback[appPackage]
-            ?: return null
+        val drawableName = pack.componentMap["$appPackage/$activityName"] ?: return null
         return try {
             val resId = pack.resources.getIdentifier(drawableName, "drawable", packPackage)
             if (resId == 0) null
@@ -67,16 +65,12 @@ class IconPackRepository @Inject constructor(
         val data = try {
             val res = context.packageManager.getResourcesForApplication(packPackage)
             val componentMap = mutableMapOf<String, String>()
-            val packageFallback = mutableMapOf<String, String>()
             parseAppFilter(res, packPackage) { component, drawable ->
                 // component format: ComponentInfo{pkg/activity}
                 val inner = component.substringAfter("ComponentInfo{", "").substringBefore("}", "")
-                if (inner.contains('/')) {
-                    componentMap.putIfAbsent(inner, drawable)
-                    packageFallback.putIfAbsent(inner.substringBefore('/'), drawable)
-                }
+                if (inner.contains('/')) componentMap.putIfAbsent(inner, drawable)
             }
-            PackData(res, componentMap, packageFallback)
+            PackData(res, componentMap)
         } catch (e: Throwable) {
             Log.w(TAG, "Failed to load icon pack $packPackage", e)
             null
