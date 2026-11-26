@@ -142,7 +142,7 @@ internal fun Context.clipboardBlurLayoutParams(blurBehind: Boolean = false, blur
     }
 }
 
-internal fun Context.volumePanelLayoutParams(yOffsetDp: Float, translucentMode: Boolean = false, active: Boolean = true): WindowManager.LayoutParams {
+internal fun Context.volumePanelLayoutParams(yOffsetDp: Float, active: Boolean = true): WindowManager.LayoutParams {
     val flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
@@ -213,7 +213,7 @@ internal fun Context.volumeScrimLayoutParams(active: Boolean = false): WindowMan
     }
 }
 
-internal fun Context.musicPanelLayoutParams(yOffsetDp: Float, translucentMode: Boolean = false, active: Boolean = true): WindowManager.LayoutParams {
+internal fun Context.musicPanelLayoutParams(yOffsetDp: Float, active: Boolean = true): WindowManager.LayoutParams {
     val flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
             WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
