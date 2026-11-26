@@ -195,12 +195,16 @@ class TaskBarAccessibilityService : AccessibilityService() {
             // while already in the foreground (icon layout/widget refresh etc). Only dismiss on
             // an actual transition into the launcher, or the pill triggers this while sitting on
             // the home screen and the dock collapses itself right after showing.
-            val enteredFromElsewhere = pkg != lastForegroundPackage
-            lastForegroundPackage = pkg
-            if (pkg in launcherPackages() && enteredFromElsewhere) {
-                sendBroadcast(
-                    Intent(OverlayService.ACTION_DISMISS_ALL).setPackage(packageName)
-                )
+            // Our own overlay windows and SystemUI (shade) float over the launcher; counting them as
+            // the foreground would make the next launcher event look like a fresh arrival home.
+            if (pkg != packageName && pkg != "com.android.systemui") {
+                val enteredFromElsewhere = pkg != lastForegroundPackage
+                lastForegroundPackage = pkg
+                if (pkg in launcherPackages() && enteredFromElsewhere) {
+                    sendBroadcast(
+                        Intent(OverlayService.ACTION_DISMISS_ALL).setPackage(packageName)
+                    )
+                }
             }
             // After the home dismiss, so returning to a launcher origin reopens the panel.
             trackReturnFromExternal(pkg, cls)
