@@ -104,16 +104,20 @@ class ClipboardRepository @Inject constructor(
     suspend fun addClip(item: ClipItem) {
         context.clipboardDataStore.edit { prefs ->
             val current = prefs[CLIPS_KEY]?.let { deserializeClips(it) } ?: emptyList()
-            val updated = (listOf(item) + current).let { list ->
-                if (list.size <= MAX_CLIPS) return@let list
-                val pinned = list.filter { it.isPinned }
-                val unpinned = list.filter { !it.isPinned }
-                val keep = unpinned.take((MAX_CLIPS - pinned.size).coerceAtLeast(0))
-                (unpinned - keep.toSet()).forEach { pruneFile(it) }
-                pinned + keep
-            }
+            val (updated, evicted) = withNewClip(item, current)
+            evicted.forEach { pruneFile(it) }
             prefs[CLIPS_KEY] = serializeClips(updated)
         }
+    }
+
+    internal fun withNewClip(item: ClipItem, current: List<ClipItem>): Pair<List<ClipItem>, List<ClipItem>> {
+        val list = listOf(item) + current
+        if (list.size <= MAX_CLIPS) return list to emptyList()
+        val pinned = list.filter { it.isPinned }
+        val unpinned = list.filter { !it.isPinned }
+        // At least 1: when pins alone fill the cap, the clip just added must still survive.
+        val keep = unpinned.take((MAX_CLIPS - pinned.size).coerceAtLeast(1))
+        return (pinned + keep) to (unpinned - keep.toSet())
     }
 
     suspend fun removeClip(id: String) {

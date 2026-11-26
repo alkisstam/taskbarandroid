@@ -53,6 +53,26 @@ class ClipboardRepositoryTest {
     }
 
     @Test
+    fun `new clip survives when pinned clips fill the cap`() {
+        val pinned = (1..100).map { ClipItem("p$it", ClipType.TEXT, "p$it", "A", it.toLong(), isPinned = true) }
+        val new = ClipItem("new", ClipType.TEXT, "hello", "A", 999L)
+        val (kept, evicted) = repo.withNewClip(new, pinned)
+        assertTrue(kept.any { it.id == "new" })
+        assertEquals(101, kept.size)
+        assertTrue(evicted.isEmpty())
+    }
+
+    @Test
+    fun `oldest unpinned clip is evicted past the cap`() {
+        val old = (1..100).map { ClipItem("o$it", ClipType.TEXT, "o$it", "A", it.toLong()) }
+        val new = ClipItem("new", ClipType.TEXT, "hello", "A", 999L)
+        val (kept, evicted) = repo.withNewClip(new, old)
+        assertEquals(100, kept.size)
+        assertEquals(listOf("o100"), evicted.map { it.id })
+        assertEquals("new", kept.first().id)
+    }
+
+    @Test
     fun `text prefix reads only the requested chars`() {
         val f = tmp.newFile("t.txt").apply { writeText("x".repeat(100_000)) }
         assertEquals(300, readTextPrefix(f.path, 300).length)
