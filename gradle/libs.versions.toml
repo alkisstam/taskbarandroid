@@ -1,7 +1,7 @@
 [versions]
 agp = "9.4.1"
 junit = "4.13.2"
-mockk = "1.13.12"
+mockk = "1.14.12"
 kotlin = "2.2.10"
 ksp = "2.3.6"
 coreKtx = "1.19.1"
