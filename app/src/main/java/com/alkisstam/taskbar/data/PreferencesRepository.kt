@@ -63,18 +63,9 @@ enum class GestureAction {
     TAKE_SCREENSHOT, TOGGLE_FLASHLIGHT, LOCK_SCREEN, SHOW_APP_MENU, SHOW_SEARCH
 }
 
-private fun String?.toGestureAction() = when (this) {
-    "SHOW_NOTIFICATIONS"  -> GestureAction.SHOW_NOTIFICATIONS
-    "SHOW_QUICK_SETTINGS" -> GestureAction.SHOW_QUICK_SETTINGS
-    "POWER_MENU"          -> GestureAction.POWER_MENU
-    "DISABLED"            -> GestureAction.DISABLED
-    "TAKE_SCREENSHOT"     -> GestureAction.TAKE_SCREENSHOT
-    "TOGGLE_FLASHLIGHT"   -> GestureAction.TOGGLE_FLASHLIGHT
-    "LOCK_SCREEN"         -> GestureAction.LOCK_SCREEN
-    "SHOW_APP_MENU"       -> GestureAction.SHOW_APP_MENU
-    "SHOW_SEARCH"         -> GestureAction.SHOW_SEARCH
-    else                  -> GestureAction.SHOW_DOCK
-}
+internal fun String?.toGestureActionOrNull() = GestureAction.entries.firstOrNull { it.name == this }
+
+private fun String?.toGestureAction() = toGestureActionOrNull() ?: GestureAction.SHOW_DOCK
 
 enum class PillHoldDragAction { DISABLED, BRIGHTNESS, VOLUME }
 
@@ -160,7 +151,8 @@ data class PillSettings(
     val alpha: Float = 0.30f,
     val positionYDp: Float = 2f,
     val positionXPct: Float = 50f,
-    val edgePosition: PillEdgePosition = PillEdgePosition.BOTTOM,
+    // Matches toPillEdgePosition(null): a fresh install puts the pill on the right edge.
+    val edgePosition: PillEdgePosition = PillEdgePosition.RIGHT,
     val sidePositionPct: Float = 50f,
     val triggerAreaDp: Float = 22f,
     val restrictTriggerToPill: Boolean = true,
@@ -597,9 +589,9 @@ class PreferencesRepository @Inject constructor(
 
     val pillSettings: Flow<PillSettings> = safeData.map { prefs ->
         PillSettings(
-            swipeUpAction    = prefs[PILL_SWIPE_UP_ACTION_KEY]?.toGestureAction() ?: GestureAction.DISABLED,
+            swipeUpAction    = prefs[PILL_SWIPE_UP_ACTION_KEY].toGestureActionOrNull() ?: GestureAction.DISABLED,
             swipeDownAction  = prefs[PILL_SWIPE_DOWN_ACTION_KEY].toGestureAction(),
-            swipeInAction    = prefs[PILL_SWIPE_IN_ACTION_KEY]?.toGestureAction() ?: GestureAction.DISABLED,
+            swipeInAction    = prefs[PILL_SWIPE_IN_ACTION_KEY].toGestureActionOrNull() ?: GestureAction.DISABLED,
             doubleTapAction  = prefs[PILL_DOUBLE_TAP_ACTION_KEY].toGestureAction(),
             holdDragAction   = prefs[PILL_HOLD_DRAG_ACTION_KEY].toPillHoldDragAction(),
             widthDp      = prefs[PILL_WIDTH_KEY]           ?: 4f,

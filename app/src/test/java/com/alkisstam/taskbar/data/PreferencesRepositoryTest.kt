@@ -176,4 +176,12 @@ class PreferencesRepositoryTest {
         assertEquals(30_000, prefs[caffeine])
         assertEquals(null, prefs[theme])
     }
+
+    @Test
+    fun `unknown gesture names map to null and the default pill edge is right`() {
+        assertEquals(null, "BOGUS".toGestureActionOrNull())
+        assertEquals(null, (null as String?).toGestureActionOrNull())
+        assertEquals(GestureAction.POWER_MENU, "POWER_MENU".toGestureActionOrNull())
+        assertEquals(PillEdgePosition.RIGHT, PillSettings().edgePosition)
+    }
 }
