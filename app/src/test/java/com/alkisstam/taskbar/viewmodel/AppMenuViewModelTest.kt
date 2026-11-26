@@ -330,6 +330,25 @@ class AppMenuViewModelTest {
     // region filteredApps
 
     @Test
+    fun `recentApps leaves out hidden apps`() = runTest(mainDispatcherRule.dispatcher) {
+        val icon = mockk<Bitmap>()
+        every { appRepo.apps } returns MutableStateFlow(listOf(
+            AppInfo("com.a", "Alpha", icon),
+            AppInfo("com.b", "Beta", icon),
+        ))
+        every { prefsRepo.recentOpenedApps } returns flowOf(listOf("com.b", "com.a"))
+        every { prefsRepo.hiddenApps } returns flowOf(setOf("com.b"))
+
+        val vm = createViewModel()
+        val collected = mutableListOf<List<AppInfo>>()
+        val job = launch { vm.recentApps.collect { collected.add(it) } }
+        advanceUntilIdle()
+
+        assertEquals(listOf("com.a"), collected.last().map { it.packageName })
+        job.cancel()
+    }
+
+    @Test
     fun `filteredApps returns all apps when query is empty`() = runTest(mainDispatcherRule.dispatcher) {
         val icon = mockk<Bitmap>()
         every { appRepo.apps } returns MutableStateFlow(listOf(

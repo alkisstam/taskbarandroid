@@ -150,9 +150,9 @@ class AppMenuViewModel @Inject constructor(
     val showRecentAppsRow: StateFlow<Boolean> = prefsRepository.showRecentAppsRow
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
-    val recentApps: StateFlow<List<AppInfo>> = combine(prefsRepository.recentOpenedApps, appRepository.apps) { recentPackages, apps ->
+    val recentApps: StateFlow<List<AppInfo>> = combine(prefsRepository.recentOpenedApps, appRepository.apps, prefsRepository.hiddenApps) { recentPackages, apps, hidden ->
         val byPackage = apps.associateBy { it.packageName }
-        recentPackages.mapNotNull { byPackage[it] }
+        recentPackages.filter { it !in hidden }.mapNotNull { byPackage[it] }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val hiddenApps: StateFlow<Set<String>> = prefsRepository.hiddenApps
