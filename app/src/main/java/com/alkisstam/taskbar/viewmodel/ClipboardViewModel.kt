@@ -70,8 +70,10 @@ class ClipboardViewModel @Inject constructor(
         viewModelScope.launch { clipboardRepository.updateNote(item.copy(isPinned = !item.isPinned)) }
     }
 
+    // Same non-blank rule as creation; a blank edit keeps the existing text.
     fun updateNote(item: NoteItem) {
-        viewModelScope.launch { clipboardRepository.updateNote(item) }
+        if (item.content.isBlank()) return
+        viewModelScope.launch { clipboardRepository.updateNote(item.copy(content = item.content.trim())) }
     }
 
     fun addTodo(content: String) {
@@ -93,6 +95,7 @@ class ClipboardViewModel @Inject constructor(
     }
 
     fun updateTodo(item: TodoItem) {
-        viewModelScope.launch { clipboardRepository.updateTodo(item) }
+        if (item.content.isBlank()) return
+        viewModelScope.launch { clipboardRepository.updateTodo(item.copy(content = item.content.trim())) }
     }
 }
