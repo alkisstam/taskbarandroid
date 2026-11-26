@@ -409,6 +409,29 @@ class PreferencesRepository @Inject constructor(
         private val BACKUP_INT_KEYS = listOf(
             APP_GRID_COLUMNS_KEY
         )
+        // Settings slider ranges; a restored value outside them can break the overlay layout.
+        // Screen-dependent sliders (pill size/position, dock offset) get loose fixed bounds.
+        private val BACKUP_FLOAT_RANGES = mapOf(
+            APP_GRID_ICON_SIZE_KEY to 32f..120f,
+            PILL_WIDTH_KEY to 2f..2000f,
+            PILL_HEIGHT_KEY to 2f..1000f,
+            PILL_ALPHA_KEY to 0f..1f,
+            PILL_POSITION_Y_KEY to 0f..2000f,
+            PILL_POSITION_X_PCT_KEY to 0f..100f,
+            PILL_SIDE_POSITION_PCT_KEY to 0f..100f,
+            TASKBAR_POSITION_Y_KEY to 0f..2000f,
+            TASKBAR_HEIGHT_KEY to 40f..120f,
+            PINNED_ICON_SIZE_KEY to 32f..120f,
+            PINNED_ICON_PADDING_KEY to 2f..12f,
+            QUICK_CONTROL_SIZE_KEY to 32f..120f,
+            TASKBAR_CORNER_RADIUS_KEY to 0f..32f,
+            PILL_TRIGGER_AREA_KEY to 8f..40f,
+            PILL_SWIPE_THRESHOLD_KEY to 4f..40f,
+            TRANSLUCENT_ALPHA_KEY to 0.3f..1f,
+            GRAIN_ALPHA_KEY to 0f..0.3f,
+            BLUR_RADIUS_KEY to 0f..48f,
+            BLUR_TINT_ALPHA_KEY to 0f..1f
+        )
 
         internal fun exportPrefs(prefs: Preferences): JSONObject = JSONObject().apply {
             BACKUP_STRING_KEYS.forEach { key -> prefs[key]?.let { put(key.name, it) } }
@@ -420,8 +443,12 @@ class PreferencesRepository @Inject constructor(
         internal fun importPrefs(prefs: MutablePreferences, obj: JSONObject) {
             BACKUP_STRING_KEYS.forEach { if (obj.has(it.name)) prefs[it] = obj.getString(it.name) }
             BACKUP_BOOLEAN_KEYS.forEach { if (obj.has(it.name)) prefs[it] = obj.getBoolean(it.name) }
-            BACKUP_FLOAT_KEYS.forEach { if (obj.has(it.name)) prefs[it] = obj.getDouble(it.name).toFloat() }
-            BACKUP_INT_KEYS.forEach { if (obj.has(it.name)) prefs[it] = obj.getInt(it.name) }
+            BACKUP_FLOAT_KEYS.forEach { key ->
+                if (!obj.has(key.name)) return@forEach
+                val v = obj.getDouble(key.name).toFloat()
+                if (v.isFinite()) prefs[key] = BACKUP_FLOAT_RANGES[key]?.let { v.coerceIn(it) } ?: v
+            }
+            if (obj.has(APP_GRID_COLUMNS_KEY.name)) prefs[APP_GRID_COLUMNS_KEY] = obj.getInt(APP_GRID_COLUMNS_KEY.name).coerceIn(3, 6)
         }
     }
 

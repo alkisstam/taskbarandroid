@@ -127,6 +127,23 @@ class PreferencesRepositoryTest {
     }
 
     @Test
+    fun `restored values are clamped to slider ranges and non-finite ones skipped`() {
+        val prefs = mutablePreferencesOf()
+        PreferencesRepository.importPrefs(prefs, JSONObject()
+            .put("pill_alpha", 5.0)
+            .put("pinned_icon_size_dp", 1000.0)
+            .put("blur_radius_dp", -3.0)
+            .put("app_grid_columns", 40)
+            .put("taskbar_height_dp", "NaN"))
+        val out = PreferencesRepository.exportPrefs(prefs)
+        assertEquals(1.0, out.getDouble("pill_alpha"), 0.0)
+        assertEquals(120.0, out.getDouble("pinned_icon_size_dp"), 0.0)
+        assertEquals(0.0, out.getDouble("blur_radius_dp"), 0.0)
+        assertEquals(6, out.getInt("app_grid_columns"))
+        assertEquals(false, out.has("taskbar_height_dp"))
+    }
+
+    @Test
     fun `partial backup only overwrites present settings`() {
         val prefs = mutablePreferencesOf()
         PreferencesRepository.importPrefs(prefs, fullBackup())
