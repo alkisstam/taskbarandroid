@@ -1,0 +1,10 @@
+Modificato
+• Pronto per Android 17
+Corretto
+• Appunti, Note e Cronologia notifiche restano chiusi a telefono bloccato
+• Il testo condiviso da più app arriva negli appunti
+• Pannelli app, note e cronologia sono più protetti dai danni
+• Caffeina ripristina sempre il timeout dello schermo
+• Le app nascoste non compaiono più tra le Recenti
+• Il riquadro Impostazioni rapide e il tasto Non disturbare mostrano lo stato reale
+• Il dock non si chiude né ricompare più all’improvviso

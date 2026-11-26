@@ -1,0 +1,10 @@
+Alterado
+• Pronto para o Android 17
+Corrigido
+• Área de transferência, Notas e Histórico de notificações ficam fechados com o celular bloqueado
+• Texto compartilhado de mais apps chega à área de transferência
+• Painéis de apps, notas e histórico estão mais protegidos contra danos
+• Cafeína sempre restaura o tempo de tela
+• Apps ocultos não aparecem mais em Recentes
+• O bloco de Configurações rápidas e o botão Não perturbe mostram o estado real
+• O dock não fecha nem reaparece mais sem motivo

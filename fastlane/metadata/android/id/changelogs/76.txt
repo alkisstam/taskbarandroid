@@ -1,0 +1,10 @@
+Diubah
+• Siap untuk Android 17
+Diperbaiki
+• Papan klip, Catatan, dan Riwayat Notifikasi tetap tertutup saat ponsel terkunci
+• Teks yang dibagikan dari lebih banyak aplikasi masuk ke papan klip
+• Panel aplikasi, catatan, dan riwayat lebih terlindungi dari kerusakan
+• Kafein selalu mengembalikan batas waktu layar
+• Aplikasi tersembunyi tidak muncul di Terbaru
+• Ubin Setelan Cepat dan tombol Jangan Ganggu menampilkan status sebenarnya
+• Dock tidak lagi tertutup atau muncul tiba-tiba

@@ -1,0 +1,10 @@
+Geändert
+• Bereit für Android 17
+Behoben
+• Zwischenablage, Notizen und Benachrichtigungsverlauf bleiben bei gesperrtem Telefon zu
+• Geteilter Text aus mehr Apps landet in der Zwischenablage
+• App-Panels, Notizen und Verlauf sind besser vor Schäden geschützt
+• Koffein stellt die Bildschirmzeit zuverlässig wieder her
+• Ausgeblendete Apps fehlen in der Leiste „Zuletzt“
+• Schnelleinstellungs-Kachel und DND-Taste zeigen den echten Status
+• Das Dock schließt oder erscheint nicht mehr unerwartet

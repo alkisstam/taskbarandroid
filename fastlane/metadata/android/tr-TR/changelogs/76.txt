@@ -1,0 +1,10 @@
+Değişenler
+• Android 17’ye hazır
+Düzeltilenler
+• Pano, Notlar ve Bildirim Geçmişi kilitli telefonda açılmaz
+• Daha fazla uygulamadan paylaşılan metin panoya gelir
+• Uygulama panelleri, notlar ve geçmiş hasara karşı daha iyi korunur
+• Kafein ekran zaman aşımını her zaman geri getirir
+• Gizli uygulamalar Son Kullanılanlar’da görünmez
+• Hızlı Ayarlar kutucuğu ve RAHATSIZ ETME düğmesi gerçek durumu gösterir
+• Dock artık beklenmedik şekilde kapanmaz veya geri gelmez

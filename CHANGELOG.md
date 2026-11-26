@@ -4,6 +4,37 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.5.21] - 2026-11-26
+
+Android 17 support, lock screen privacy, and a large round of reliability fixes.
+
+### Changed
+- **Android 17** — Floating Dock now targets Android 17 and is built with the latest Kotlin, build tools and libraries.
+
+### Fixed
+- **Private panels on the lock screen** — Clipboard, Notes and Notification History no longer open from the dock while a PIN, pattern or password lock is active.
+- **Shares ignored** — text shared by apps that label it with a character set (such as some browsers) is now saved to the clipboard instead of being skipped.
+- **New clips dropped** — with 100 or more pinned clips, a newly shared clip is no longer discarded right away.
+- **Broken clips taking up space** — clips whose file is gone (for example after restoring a backup) are cleared out instead of quietly using history slots.
+- **Notes and to-dos emptied** — editing a note or to-do to blank text is no longer saved, and edits are trimmed like new entries.
+- **Notification History** — notifications that only carry expanded text are no longer saved blank, and a damaged history is kept instead of being overwritten.
+- **App panels lost** — one damaged app panel no longer wipes out all your panels.
+- **Backup restore** — sizes and transparency values from a backup are kept within the settings' ranges, and an error is shown if the backup file can't be opened or saved.
+- **Caffeine** — your normal screen timeout is put back after Reset All Settings and in more situations when Caffeine is turned off.
+- **Hidden apps** — apps you hide no longer appear in the Recent apps row.
+- **Dock coming back** — a dock you unpinned while the keyboard or notification shade was open no longer reappears when they close.
+- **Dock closing on the home screen** — closing a dock panel or the notification shade on the home screen no longer closes the dock.
+- **Panels over the dock** — sheets no longer overlap the dock for a moment when first opened on phones with a tall navigation bar.
+- **Do Not Disturb tile** — the dock's DND button updates when Do Not Disturb is changed from the system.
+- **Quick Settings tile** — the Floating Dock tile shows whether the dock is really running.
+- **Pin Dock** — turning off the Pin Dock button in settings also unpins the dock, so it doesn't pin itself again later.
+- **Floating windows** — the alternate launch option opens apps normally when Floating Windows is turned off.
+- **Icon packs** — an app that the icon pack doesn't cover keeps its own icon instead of borrowing one meant for another screen of the app.
+- **Music panel** — a music panel you closed stays closed after the dock restarts.
+- **Pill gestures** — an unrecognized saved gesture no longer turns on Show Dock by itself.
+
+---
+
 ## [1.5.20] - 2026-11-23
 
 Calculator and reliability fixes.

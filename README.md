@@ -2,7 +2,7 @@
 
 A system-overlay dock for Android that renders above all other apps — including the system navigation bar when the Accessibility Service is enabled.
 
-**Current version:** 1.5.20 (versionCode 75) — see [CHANGELOG.md](CHANGELOG.md)
+**Current version:** 1.5.21 (versionCode 76) — see [CHANGELOG.md](CHANGELOG.md)
 
 ## Features
 

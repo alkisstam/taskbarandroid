@@ -127,6 +127,20 @@ val whatsNewReleases = listOf(
             "Floating windows always put your system settings back",
             "Restoring a damaged backup no longer crashes the App Menu"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.5.21",
+        versionCode = 76,
+        highlights = listOf(
+            "Ready for Android 17",
+            "Clipboard, Notes and Notification History stay closed on a locked phone",
+            "Shared text from more apps lands in your clipboard, and new clips are kept even with many pinned",
+            "App panels, notes and notification history are better protected against damage",
+            "Caffeine reliably puts your screen timeout back",
+            "Hidden apps stay out of the Recent row",
+            "The Quick Settings tile and the dock's DND button show the real state",
+            "The dock no longer closes or reappears unexpectedly around the keyboard, shade and home screen"
+        )
     )
 )
 

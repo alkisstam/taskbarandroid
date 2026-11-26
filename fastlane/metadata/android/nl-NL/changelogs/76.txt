@@ -1,0 +1,10 @@
+Gewijzigd
+• Klaar voor Android 17
+Opgelost
+• Klembord, Notities en Meldingsgeschiedenis blijven dicht op een vergrendelde telefoon
+• Gedeelde tekst uit meer apps komt op het klembord
+• App-panelen, notities en geschiedenis zijn beter beschermd tegen schade
+• Cafeïne zet je schermtime-out betrouwbaar terug
+• Verborgen apps staan niet meer bij Recent
+• De snelle-instellingentegel en de NST-knop tonen de echte status
+• Het dock sluit of verschijnt niet meer onverwacht

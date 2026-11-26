@@ -1,0 +1,10 @@
+Modifié
+• Prêt pour Android 17
+Corrigé
+• Presse-papiers, Notes et Historique des notifications restent fermés sur un téléphone verrouillé
+• Le texte partagé depuis plus d’apps arrive dans le presse-papiers
+• Panneaux d’apps, notes et historique mieux protégés
+• Caféine rétablit toujours votre délai d’écran
+• Les apps masquées n’apparaissent plus dans Récents
+• La tuile Réglages rapides et le bouton NPD affichent l’état réel
+• Le dock ne se ferme ni ne réapparaît plus sans raison

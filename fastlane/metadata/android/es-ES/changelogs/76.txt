@@ -1,0 +1,10 @@
+Cambios
+• Preparado para Android 17
+Correcciones
+• Portapapeles, Notas e Historial de notificaciones no se abren con el móvil bloqueado
+• El texto compartido desde más apps llega al portapapeles
+• Paneles de apps, notas e historial están mejor protegidos contra daños
+• Cafeína restaura siempre el tiempo de pantalla
+• Las apps ocultas no aparecen en Recientes
+• El icono de Ajustes rápidos y el botón No molestar muestran el estado real
+• El dock ya no se cierra ni reaparece de forma inesperada

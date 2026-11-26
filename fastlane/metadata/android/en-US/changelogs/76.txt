@@ -1,0 +1,10 @@
+Changed
+• Ready for Android 17
+Fixed
+• Clipboard, Notes and Notification History stay closed on a locked phone
+• Shared text from more apps reaches your clipboard
+• App panels, notes and notification history are better protected against damage
+• Caffeine reliably puts your screen timeout back
+• Hidden apps stay out of the Recent row
+• The Quick Settings tile and DND button show the real state
+• The dock no longer closes or reappears unexpectedly around the keyboard, shade and home screen
