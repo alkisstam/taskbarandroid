@@ -1,0 +1,4 @@
+Değişenler
+• Paneller ve Uygulama Menüsü artık solarak ve yakınlaşarak açılıp kapanıyor
+Düzeltilenler
+• Uygulama Menüsü açılınca müzik paneli artık ekranın ortasında kaybolmuyor

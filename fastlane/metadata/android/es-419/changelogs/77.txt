@@ -1,0 +1,4 @@
+Cambios
+• Los paneles y el menú de apps ahora aparecen y desaparecen con zoom
+Correcciones
+• El panel de música ya no se desvanece en medio de la pantalla al abrir el menú de apps

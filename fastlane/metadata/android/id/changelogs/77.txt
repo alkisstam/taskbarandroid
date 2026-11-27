@@ -1,0 +1,4 @@
+Diubah
+• Panel dan Menu Aplikasi kini muncul dan hilang dengan efek pudar dan zoom
+Diperbaiki
+• Panel musik tidak lagi memudar di tengah layar saat Menu Aplikasi dibuka

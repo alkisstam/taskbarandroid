@@ -1,0 +1,4 @@
+Geändert
+• Panels und App-Menü blenden jetzt mit Zoom ein und aus
+Behoben
+• Das Musik-Panel verschwindet beim Öffnen des App-Menüs nicht mehr in der Bildschirmmitte

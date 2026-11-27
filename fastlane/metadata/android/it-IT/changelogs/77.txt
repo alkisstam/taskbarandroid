@@ -1,0 +1,4 @@
+Modificato
+• I pannelli e il menu app ora appaiono e scompaiono con dissolvenza e zoom
+Corretto
+• Il pannello musica non svanisce più a metà schermo quando si apre il menu app

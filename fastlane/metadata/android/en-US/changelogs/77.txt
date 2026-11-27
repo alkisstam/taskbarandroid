@@ -1,0 +1,4 @@
+Changed
+• Panels and the App Menu now fade and zoom in and out
+Fixed
+• The music panel no longer fades out mid-screen when the App Menu opens

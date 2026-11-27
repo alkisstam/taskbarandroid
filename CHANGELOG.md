@@ -4,6 +4,18 @@ All notable changes to Floating Dock are documented here.
 
 ---
 
+## [1.5.22] - 2026-11-27
+
+Smoother panel animations.
+
+### Changed
+- **Panel animations** — the quick controls, app panels, music panel and app menu now fade and zoom in and out, like the icons pill, instead of sliding.
+
+### Fixed
+- **Music panel and app menu** — opening the app menu no longer makes the music panel fade out in the middle of the screen.
+
+---
+
 ## [1.5.21] - 2026-11-26
 
 Android 17 support, lock screen privacy, and a large round of reliability fixes.

@@ -1,0 +1,4 @@
+Gewijzigd
+• Panelen en het app-menu verschijnen en verdwijnen nu met vervaging en zoom
+Opgelost
+• Het muziekpaneel vervaagt niet meer midden op het scherm bij het openen van het app-menu

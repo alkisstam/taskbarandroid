@@ -1,0 +1,4 @@
+Alterado
+• Os painéis e o menu de apps agora aparecem e somem com esmaecimento e zoom
+Corrigido
+• O painel de música não some mais no meio da tela ao abrir o menu de apps

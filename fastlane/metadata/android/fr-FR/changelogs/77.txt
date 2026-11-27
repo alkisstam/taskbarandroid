@@ -1,0 +1,4 @@
+Modifié
+• Les panneaux et le menu des applis apparaissent et disparaissent désormais en fondu avec zoom
+Corrigé
+• Le panneau musique ne disparaît plus au milieu de l’écran à l’ouverture du menu des applis

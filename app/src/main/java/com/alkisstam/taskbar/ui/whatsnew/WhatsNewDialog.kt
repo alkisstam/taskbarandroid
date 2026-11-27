@@ -141,6 +141,14 @@ val whatsNewReleases = listOf(
             "The Quick Settings tile and the dock's DND button show the real state",
             "The dock no longer closes or reappears unexpectedly around the keyboard, shade and home screen"
         )
+    ),
+    WhatsNewRelease(
+        versionName = "1.5.22",
+        versionCode = 77,
+        highlights = listOf(
+            "Panels and the App Menu now fade and zoom in and out instead of sliding",
+            "The music panel no longer fades out mid-screen when you open the App Menu"
+        )
     )
 )
 
