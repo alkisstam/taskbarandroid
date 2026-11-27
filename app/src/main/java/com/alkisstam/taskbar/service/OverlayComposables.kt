@@ -646,10 +646,9 @@ internal fun MusicPanelContent(
     val panelShouldShow = musicPanelEnabled && (mediaState.hasSession || alwaysShowMusicPanel) && musicPanelVisible && !isSearching && !menuVisible && !sheetOpen
 
     val revealAnim = remember { Animatable(0f) }
-    var panelWidthPx by remember { mutableFloatStateOf(0f) }
 
     // Mirrors the dock's reveal spring in OverlayContent, so the panel can wait for the quick
-    // controls button to rise into place before sliding out from behind it.
+    // controls button to rise into place before fading in beside it.
     val dockAnim = remember { Animatable(0f) }
     LaunchedEffect(isTaskbarVisible, dockRevealProgress) {
         when {
@@ -728,10 +727,9 @@ internal fun MusicPanelContent(
                         .fillMaxWidth(taskbarSettings.dockPadding.widthFraction)
                         .then(if (dockWidth > 0.dp) Modifier.wrapContentWidth().width(dockWidth.coerceAtLeast(280.dp)) else Modifier)
                         .padding(start = if (buttonOnLeft) buttonInset else 0.dp, end = if (buttonOnLeft) 0.dp else buttonInset)
-                        .onGloballyPositioned { panelWidthPx = it.size.width.toFloat() }
                         .graphicsLayer {
-                            // Slides from the quick controls button's side, like the quick controls panel.
-                            translationX = panelWidthPx * (1f - revealAnim.value) * (if (buttonOnLeft) -1f else 1f)
+                            scaleX = revealAnim.value
+                            scaleY = revealAnim.value
                             alpha = revealAnim.value
                         }
                 )

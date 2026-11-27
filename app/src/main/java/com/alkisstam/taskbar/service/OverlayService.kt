@@ -820,7 +820,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
         serviceScope.launch {
             kotlinx.coroutines.flow.combine(
                 taskbarViewModel.taskbarSettings,
-                appMenuViewModel.menuVisible,
                 taskbarViewModel.dockExpandProgress,
                 taskbarViewModel.navBarInsetDp,
                 combine(
@@ -829,13 +828,13 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     combine(taskbarViewModel.dockHeightPx, taskbarViewModel.dockStackHeightPx, ::Pair),
                     ::Triple
                 )
-            ) { settings, menuOpen, expandProgress, navInset, (pillIconCount, pillState, heights) ->
+            ) { settings, expandProgress, navInset, (pillIconCount, pillState, heights) ->
                 val (pillVisible, pillCentered) = pillState
                 val (dockHeightPx, stackHeightPx) = heights
                 val density = resources.displayMetrics.density
                 val bottomGap = maxOf(settings.dockPadding.bottomGapDp, navInset)
                 val baseY = bottomGap + settings.dockHeightDp + 16f + 16f + expandProgress * (settings.dockHeightDp + 4f)
-                val y = when {
+                when {
                     // Beside a 1-2 icon pill at the dock's edge, or in its row while it is auto-hidden: just above the dock.
                     pillIconCount > 0 && (!pillVisible || pillIconCount <= 2 && !pillCentered) && expandProgress == 0f && dockHeightPx != null ->
                         bottomGap + dockHeightPx / density + QuickControlsButtonGap.value
@@ -843,7 +842,6 @@ class OverlayService : Service(), LifecycleOwner, ViewModelStoreOwner, SavedStat
                     stackHeightPx != null -> bottomGap + stackHeightPx / density + QuickControlsButtonGap.value
                     else -> baseY
                 }
-                if (menuOpen) y + 400f else y
             }.distinctUntilChanged().collect { yOffset ->
                 musicPanelYOffsetDp = yOffset
                 val view = musicPanelView ?: return@collect

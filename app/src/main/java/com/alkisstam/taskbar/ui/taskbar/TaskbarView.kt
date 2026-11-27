@@ -6,8 +6,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
@@ -158,8 +156,6 @@ fun TaskbarView(
 
     val hostView = LocalView.current
     val buttonOnLeft = taskbarSettings.appMenuButtonSide == AppMenuButtonSide.LEFT
-    // Slides in from the button's side and back out towards it.
-    val slideFrom: (Int) -> Int = { width -> if (buttonOnLeft) -width else width }
     // The dock shrinks to its icons; the pill sits at its edge and the info line spans it.
     var dockWidthPx by remember { mutableIntStateOf(0) }
     var dockRowWidthPx by remember { mutableIntStateOf(0) }
@@ -180,8 +176,8 @@ fun TaskbarView(
                 val pillMaxWidth = maxWidth
                 androidx.compose.animation.AnimatedVisibility(
                     visible = isDockExpanded && expandedGroupId == null && quickControlsEnabled,
-                    enter = slideInHorizontally(initialOffsetX = slideFrom) + fadeIn(),
-                    exit = slideOutHorizontally(targetOffsetX = slideFrom) + fadeOut()
+                    enter = fadeIn() + scaleIn(),
+                    exit = fadeOut() + scaleOut()
                 ) {
                     QuickControlsPanel(
                         taskbarViewModel = taskbarViewModel,
@@ -193,8 +189,8 @@ fun TaskbarView(
                 appGroups.forEach { (group, apps) ->
                     androidx.compose.animation.AnimatedVisibility(
                         visible = isDockExpanded && expandedGroupId == group.id,
-                        enter = slideInHorizontally(initialOffsetX = slideFrom) + fadeIn(),
-                        exit = slideOutHorizontally(targetOffsetX = slideFrom) + fadeOut()
+                        enter = fadeIn() + scaleIn(),
+                        exit = fadeOut() + scaleOut()
                     ) {
                         AppGroupPanel(
                             taskbarViewModel = taskbarViewModel,
