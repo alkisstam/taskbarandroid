@@ -3,11 +3,10 @@ package com.alkisstam.taskbar.ui.appmenu
 import androidx.compose.ui.platform.LocalConfiguration
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -93,11 +92,8 @@ fun AppMenuPanel(
 
     AnimatedVisibility(
         visible = menuVisible,
-        enter = slideInVertically(
-            animationSpec = spring(),
-            initialOffsetY = { it / 8 }
-        ) + fadeIn(),
-        exit = fadeOut(tween(150)),
+        enter = fadeIn() + scaleIn(),
+        exit = fadeOut() + scaleOut(),
         modifier = modifier
     ) {
         Surface(
